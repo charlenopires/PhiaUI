@@ -1,0 +1,105 @@
+/*
+ * PhiaUI — TailwindCSS v4 Theme
+ *
+ * CSS custom properties registered via @theme for automatic utility generation.
+ * All color values use the oklch() color space for wide-gamut support.
+ *
+ * Light mode is the default. Dark mode overrides are applied automatically
+ * via the prefers-color-scheme media query — no JavaScript required.
+ *
+ * Generated utilities examples:
+ *   bg-primary, text-foreground, border-border, ring-ring, bg-muted, etc.
+ */
+
+@theme {
+  /* ── Spacing & Shape ────────────────────────────────────────────────────── */
+  --radius: 0.625rem;
+
+  /* ── Semantic Color Tokens — Light Mode ─────────────────────────────────── */
+
+  /* Page surface */
+  --color-background:             oklch(1 0 0);
+  --color-foreground:             oklch(0.141 0.004 285.82);
+
+  /* Card surface */
+  --color-card:                   oklch(1 0 0);
+  --color-card-foreground:        oklch(0.141 0.004 285.82);
+
+  /* Popover / dropdown surface */
+  --color-popover:                oklch(1 0 0);
+  --color-popover-foreground:     oklch(0.141 0.004 285.82);
+
+  /* Primary action */
+  --color-primary:                oklch(0.211 0.005 285.82);
+  --color-primary-foreground:     oklch(0.985 0 0);
+
+  /* Secondary / ghost */
+  --color-secondary:              oklch(0.967 0.001 286.38);
+  --color-secondary-foreground:   oklch(0.211 0.005 285.82);
+
+  /* Muted / disabled */
+  --color-muted:                  oklch(0.967 0.001 286.38);
+  --color-muted-foreground:       oklch(0.552 0.016 286.07);
+
+  /* Accent / hover highlight */
+  --color-accent:                 oklch(0.967 0.001 286.38);
+  --color-accent-foreground:      oklch(0.211 0.005 285.82);
+
+  /* Destructive / error */
+  --color-destructive:            oklch(0.577 0.245 27.325);
+  --color-destructive-foreground: oklch(0.985 0 0);
+
+  /* Structural */
+  --color-border:                 oklch(0.929 0.004 286.32);
+  --color-input:                  oklch(0.929 0.004 286.32);
+  --color-ring:                   oklch(0.141 0.004 285.82);
+
+  /* ── Dashboard Shell ────────────────────────────────────────────────────── */
+  --color-sidebar-background:     oklch(0.985 0.001 286.38);
+}
+
+/* ── Dark Mode Overrides ──────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    /* Page surface */
+    --color-background:             oklch(0.141 0.004 285.82);
+    --color-foreground:             oklch(0.985 0 0);
+
+    /* Card surface */
+    --color-card:                   oklch(0.211 0.005 285.82);
+    --color-card-foreground:        oklch(0.985 0 0);
+
+    /* Popover / dropdown surface */
+    --color-popover:                oklch(0.211 0.005 285.82);
+    --color-popover-foreground:     oklch(0.985 0 0);
+
+    /* Primary action */
+    --color-primary:                oklch(0.985 0 0);
+    --color-primary-foreground:     oklch(0.211 0.005 285.82);
+
+    /* Secondary / ghost */
+    --color-secondary:              oklch(0.279 0.007 285.82);
+    --color-secondary-foreground:   oklch(0.985 0 0);
+
+    /* Muted / disabled */
+    --color-muted:                  oklch(0.279 0.007 285.82);
+    --color-muted-foreground:       oklch(0.71 0.01 286.07);
+
+    /* Accent / hover highlight */
+    --color-accent:                 oklch(0.279 0.007 285.82);
+    --color-accent-foreground:      oklch(0.985 0 0);
+
+    /* Destructive / error */
+    --color-destructive:            oklch(0.704 0.191 22.216);
+    --color-destructive-foreground: oklch(0.985 0 0);
+
+    /* Structural */
+    --color-border:                 oklch(1 0 0 / 10%);
+    --color-input:                  oklch(1 0 0 / 15%);
+    --color-ring:                   oklch(0.552 0.016 286.07);
+
+    /* ── Dashboard Shell ──────────────────────────────────────────────────── */
+    --color-sidebar-background:     oklch(0.211 0.005 285.82);
+  }
+}

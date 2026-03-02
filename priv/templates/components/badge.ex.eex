@@ -1,0 +1,52 @@
+defmodule <%= @module %>.Components.Badge do
+  @moduledoc """
+  Badge component for labels, status indicators and tags.
+
+  Ejected from PhiaUI — owns this copy of the source. Customise freely.
+
+  ## Examples
+
+      <.badge>New</.badge>
+      <.badge variant={:secondary}>Beta</.badge>
+      <.badge variant={:destructive}>Error</.badge>
+      <.badge variant={:outline}>Draft</.badge>
+      <.badge class="uppercase tracking-wide">Custom</.badge>
+  """
+
+  use Phoenix.Component
+
+  import <%= @module %>.ClassMerger, only: [cn: 1]
+
+  attr :variant, :atom,
+    values: [:default, :secondary, :destructive, :outline],
+    default: :default,
+    doc: "Visual style variant"
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global, doc: "HTML attributes forwarded to the div element"
+  slot :inner_block, required: true, doc: "Badge label content"
+
+  def badge(assigns) do
+    ~H"""
+    <div class={cn([base_class(), variant_class(@variant), @class])} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+
+  defp base_class do
+    "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors"
+  end
+
+  defp variant_class(:default),
+    do: "bg-primary text-primary-foreground hover:bg-primary/80"
+
+  defp variant_class(:secondary),
+    do: "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+
+  defp variant_class(:destructive),
+    do: "bg-destructive text-destructive-foreground hover:bg-destructive/80"
+
+  defp variant_class(:outline),
+    do: "text-foreground"
+end

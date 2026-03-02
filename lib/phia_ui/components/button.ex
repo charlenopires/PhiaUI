@@ -1,0 +1,135 @@
+defmodule PhiaUi.Components.Button do
+  @moduledoc """
+  Stateless Button component with 6 variants and 4 sizes.
+
+  Follows the shadcn/ui Button anatomy adapted for Phoenix LiveView.
+  Classes are built via `PhiaUi.ClassMerger.cn/1` so callers can safely
+  override individual utilities using the `:class` attribute.
+
+  ## Variants
+
+  | Variant       | Use case                              |
+  |---------------|---------------------------------------|
+  | `:default`    | Primary call-to-action                |
+  | `:destructive`| Dangerous or irreversible actions     |
+  | `:outline`    | Secondary actions, cancel             |
+  | `:secondary`  | Lower-emphasis actions                |
+  | `:ghost`      | Minimal emphasis, toolbar actions     |
+  | `:link`       | Inline navigation-like actions        |
+
+  ## Sizes
+
+  | Size      | Dimensions          |
+  |-----------|---------------------|
+  | `:default`| h-10 px-4 py-2      |
+  | `:sm`     | h-9 px-3            |
+  | `:lg`     | h-11 px-8           |
+  | `:icon`   | h-10 w-10 (square)  |
+
+  ## Examples
+
+      <.button>Save changes</.button>
+
+      <.button variant={:destructive}>Delete account</.button>
+
+      <.button variant={:outline}>Cancel</.button>
+
+      <.button variant={:secondary}>More options</.button>
+
+      <.button variant={:ghost}>Settings</.button>
+
+      <.button variant={:link}>View details</.button>
+
+      <.button size={:sm}>Compact action</.button>
+
+      <.button size={:lg}>Prominent action</.button>
+
+      <.button size={:icon} aria-label="Add item">
+        <.icon name="hero-plus" />
+      </.button>
+
+      <.button phx-click="save" phx-disable-with="Saving…">
+        Save
+      </.button>
+
+      <.button disabled={true}>Unavailable</.button>
+
+      <.button class="w-full">Full width</.button>
+  """
+
+  use Phoenix.Component
+
+  import PhiaUi.ClassMerger, only: [cn: 1]
+
+  attr :variant, :atom,
+    values: [:default, :destructive, :outline, :secondary, :ghost, :link],
+    default: :default,
+    doc: "Visual style variant"
+
+  attr :size, :atom,
+    values: [:default, :sm, :lg, :icon],
+    default: :default,
+    doc: "Size variant"
+
+  attr :class, :string,
+    default: nil,
+    doc: "Additional CSS classes (merged via cn/1, last wins)"
+
+  attr :disabled, :boolean,
+    default: false,
+    doc: "Disables the button and adds pointer-events-none opacity-50"
+
+  attr :rest, :global,
+    doc: "HTML attributes forwarded to the <button> element (phx-click, data-*, aria-*, etc.)"
+
+  slot :inner_block, required: true, doc: "Button label, text or icon content"
+
+  @doc """
+  Renders a `<button>` element with semantic PhiaUI theming.
+  """
+  def button(assigns) do
+    ~H"""
+    <button
+      class={cn([base_class(), variant_class(@variant), size_class(@size), @disabled && "pointer-events-none opacity-50", @class])}
+      disabled={@disabled}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # Private class helpers — all via pattern matching, never case/cond
+  # ---------------------------------------------------------------------------
+
+  defp base_class do
+    "inline-flex items-center justify-center whitespace-nowrap rounded-md " <>
+      "text-sm font-medium ring-offset-background transition-colors " <>
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " <>
+      "focus-visible:ring-offset-2"
+  end
+
+  defp variant_class(:default),
+    do: "bg-primary text-primary-foreground shadow hover:bg-primary/90"
+
+  defp variant_class(:destructive),
+    do: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90"
+
+  defp variant_class(:outline),
+    do: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
+
+  defp variant_class(:secondary),
+    do: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80"
+
+  defp variant_class(:ghost),
+    do: "hover:bg-accent hover:text-accent-foreground"
+
+  defp variant_class(:link),
+    do: "text-primary underline-offset-4 hover:underline"
+
+  defp size_class(:default), do: "h-10 px-4 py-2"
+  defp size_class(:sm), do: "h-9 rounded-md px-3"
+  defp size_class(:lg), do: "h-11 rounded-md px-8"
+  defp size_class(:icon), do: "h-10 w-10"
+end
