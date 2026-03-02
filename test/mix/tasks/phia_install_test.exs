@@ -47,8 +47,19 @@ defmodule Mix.Tasks.Phia.InstallTest do
       dir = Path.join(@tmp_dir, "hooks_idem_#{:erlang.unique_integer([:positive])}")
       File.mkdir_p!(dir)
 
+      prev_shell = Mix.shell()
+      Mix.shell(Mix.Shell.Process)
+
+      # First run — file doesn't exist, Mix.Generator creates it
       Install.inject_hooks(dir)
+      assert_receive {:mix_shell, :info, _}
+
+      # Second run — file exists, answer "no" to overwrite prompt
+      send(self(), {:mix_shell_input, :yes?, false})
       Install.inject_hooks(dir)
+      assert_receive {:mix_shell, :info, _}
+
+      Mix.shell(prev_shell)
 
       hooks_path = Path.join([dir, "assets", "js", "phia_hooks", "index.js"])
       content = File.read!(hooks_path)
@@ -56,6 +67,30 @@ defmodule Mix.Tasks.Phia.InstallTest do
       # "PhiaHooks" should appear at most twice (once in export, once in object)
       assert count <= 3
 
+      File.rm_rf!(dir)
+    end
+
+    test "uses Mix.Generator conflict handling when hooks file already exists" do
+      dir = Path.join(@tmp_dir, "hooks_conflict_#{:erlang.unique_integer([:positive])}")
+      hooks_path = Path.join([dir, "assets", "js", "phia_hooks", "index.js"])
+      File.mkdir_p!(Path.dirname(hooks_path))
+      File.write!(hooks_path, "// existing content")
+
+      prev_shell = Mix.shell()
+      Mix.shell(Mix.Shell.Process)
+
+      # Pre-queue "no" response to the overwrite prompt
+      send(self(), {:mix_shell_input, :yes?, false})
+
+      Install.inject_hooks(dir)
+
+      # Mix.Generator must have logged "* create ..."
+      assert_receive {:mix_shell, :info, _}
+
+      # File must be unchanged since user said "no"
+      assert File.read!(hooks_path) == "// existing content"
+
+      Mix.shell(prev_shell)
       File.rm_rf!(dir)
     end
   end
@@ -157,6 +192,32 @@ defmodule Mix.Tasks.Phia.InstallTest do
     test "adds idempotency marker on injection" do
       result = run_install("")
       assert result =~ @theme_marker
+    end
+  end
+
+  describe "run/1 --help" do
+    test "prints usage documentation when called with --help" do
+      prev_shell = Mix.shell()
+      Mix.shell(Mix.Shell.Process)
+
+      Install.run(["--help"])
+
+      assert_receive {:mix_shell, :info, [content]}
+      assert content =~ "mix phia.install"
+
+      Mix.shell(prev_shell)
+    end
+
+    test "--help output includes usage section" do
+      prev_shell = Mix.shell()
+      Mix.shell(Mix.Shell.Process)
+
+      Install.run(["--help"])
+
+      assert_receive {:mix_shell, :info, [content]}
+      assert content =~ "Usage"
+
+      Mix.shell(prev_shell)
     end
   end
 end

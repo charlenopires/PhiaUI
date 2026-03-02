@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Phia.Add do
 
   ## Available components
 
-      button    badge    card    table
+      button    badge    card    table    dialog
 
   ## Behaviour
 
@@ -32,7 +32,7 @@ defmodule Mix.Tasks.Phia.Add do
 
   @shortdoc "Ejects a PhiaUI component into your project"
 
-  @known_components ~w(button badge card table)
+  @known_components ~w(button badge card table dialog)
 
   @impl Mix.Task
   def run(["--help"]) do
@@ -84,60 +84,171 @@ defmodule Mix.Tasks.Phia.Add do
   ## Example
 
       iex> Mix.Tasks.Phia.Add.component_path("/project", "button")
-      "/project/lib/phia_ui_web/components/button.ex"
+      "/project/lib/phia_ui_web/components/ui/button.ex"
   """
   @spec component_path(Path.t(), String.t()) :: Path.t()
   def component_path(root, component_name) do
     app_web_dir = app_web_name() |> Macro.underscore()
-    Path.join([root, "lib", app_web_dir, "components", "#{component_name}.ex"])
+    Path.join([root, "lib", app_web_dir, "components", "ui", "#{component_name}.ex"])
   end
 
   @doc """
   Ejects a component from PhiaUI's templates into `root`.
 
-  Returns `:ok` on success, `:already_exists` if the file is already present
-  and the user declines to overwrite, or `{:error, reason}` for unknown
-  components.
+  Also automatically ejects ClassMerger (a required dependency for all
+  components) unless it is already present.
+
+  Returns `:ok` on success, `:already_exists` if the file is already present,
+  or `{:error, reason}` for unknown components.
   """
   @spec eject_component(String.t(), Path.t()) :: :ok | :already_exists | {:error, String.t()}
   def eject_component(component_name, root \\ File.cwd!()) do
-    with {:ok, template_path} <- resolve_template(component_name) do
-      target = component_path(root, component_name)
-      module = app_web_name()
-      content = render_template(template_path, module)
-      File.mkdir_p!(Path.dirname(target))
+    %{component: component_name, root: root}
+    |> validate()
+    |> resolve_target()
+    |> render_content()
+    |> write_file()
+  end
 
-      if File.exists?(target) do
-        :already_exists
-      else
+  @doc """
+  Ejects the ClassMerger dependency files into `root`.
+
+  Creates three files:
+  - `lib/{app_web}/class_merger.ex`
+  - `lib/{app_web}/class_merger/cache.ex`
+  - `lib/{app_web}/class_merger/groups.ex`
+
+  Skips any file that already exists (idempotent).
+  """
+  @spec eject_class_merger(Path.t()) :: :ok
+  def eject_class_merger(root) do
+    app_web_dir = app_web_name() |> Macro.underscore()
+    module = app_web_name()
+
+    class_merger_files() |> Enum.each(fn {tpl_file, target_rel} ->
+      target = Path.join([root, "lib", app_web_dir, target_rel])
+
+      unless File.exists?(target) do
+        tpl = class_merger_template_path(tpl_file)
+        content = render_template(tpl, module)
+        File.mkdir_p!(Path.dirname(target))
         File.write!(target, content)
-        :ok
       end
+    end)
+
+    :ok
+  end
+
+  @doc """
+  Copies the JS hook file for `component_name` into `root/assets/js/phia_hooks/`
+  if a hook template exists at `priv/templates/js/hooks/{component}.js`.
+
+  No-op (returns `:ok`) when no hook template is found.
+  Idempotent: skips copy if the target already exists.
+  """
+  @spec eject_js_hooks(String.t(), Path.t()) :: :ok
+  def eject_js_hooks(component_name, root) do
+    case js_hook_template_path(component_name) do
+      {:ok, template} ->
+        hook_dir = Path.join([root, "assets", "js", "phia_hooks"])
+        target = Path.join(hook_dir, "#{component_name}.js")
+
+        unless File.exists?(target) do
+          File.mkdir_p!(hook_dir)
+          File.cp!(template, target)
+        end
+
+        :ok
+
+      :not_found ->
+        :ok
     end
+  end
+
+  @doc """
+  Returns a next-steps message to display after ejecting `component_name`.
+  """
+  @spec next_steps_message(String.t()) :: String.t()
+  def next_steps_message(component_name) do
+    app_web = app_web_name()
+
+    """
+    Next steps for #{component_name}:
+
+    1. Run `mix phia.install` to inject the PhiaUI theme tokens into app.css
+       (if you haven't already).
+
+    2. Add ClassMerger to your supervision tree in application.ex:
+         children = [#{app_web}.ClassMerger.Cache, ...]
+
+    3. Import the component where needed:
+         import #{app_web}.Components.UI.#{Macro.camelize(component_name)}
+    """
   end
 
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
 
-  # Substitutes the `<%= @module %>` placeholder in the template with the
-  # actual module name. All other `<%= %>` markers in the template are HEEx /
-  # docstring literals that must pass through unchanged, so we avoid running
-  # EEx.eval_file which would try to compile them as Elixir expressions.
+  # Renders an EEx template with `module_name` and `app_web` assigns.
+  # HEEx markers in templates must be escaped as `<%%= %>` so EEx passes
+  # them through as literal `<%= %>` in the output.
   defp render_template(path, module_name) do
-    path
-    |> File.read!()
-    |> String.replace("<%= @module %>", module_name)
+    EEx.eval_file(path, assigns: [module_name: module_name, app_web: module_name])
   end
 
-  defp resolve_template(component_name) do
-    if component_name in @known_components do
-      {:ok, template_path(component_name)}
+  # Returns [{template_filename, target_relative_path}, ...]
+  defp class_merger_files do
+    [
+      {"class_merger.ex.eex", "class_merger.ex"},
+      {"cache.ex.eex", "class_merger/cache.ex"},
+      {"groups.ex.eex", "class_merger/groups.ex"}
+    ]
+  end
+
+  defp class_merger_template_path(filename) do
+    local = Path.join([File.cwd!(), "priv/templates/class_merger", filename])
+
+    if File.exists?(local) do
+      local
     else
-      {:error,
-       "Unknown component: #{component_name}. Available: #{Enum.join(@known_components, ", ")}"}
+      Application.app_dir(:phia_ui, "priv/templates/class_merger/#{filename}")
     end
   end
+
+  # Pipeline steps for eject_component/2.
+  # Each step receives a context map or passes {:error, reason} through unchanged.
+
+  defp validate(%{component: name} = ctx) do
+    if name in @known_components do
+      ctx
+    else
+      {:error, "Unknown component: #{name}. Available: #{Enum.join(@known_components, ", ")}"}
+    end
+  end
+
+  defp resolve_target(%{component: name, root: root} = ctx) do
+    ctx
+    |> Map.put(:target, component_path(root, name))
+    |> Map.put(:template, template_path(name))
+  end
+
+  defp resolve_target({:error, _} = err), do: err
+
+  defp render_content(%{template: tpl} = ctx) do
+    Map.put(ctx, :content, render_template(tpl, app_web_name()))
+  end
+
+  defp render_content({:error, _} = err), do: err
+
+  defp write_file(%{target: target, content: content, component: name, root: root}) do
+    File.mkdir_p!(Path.dirname(target))
+    eject_class_merger(root)
+    eject_js_hooks(name, root)
+    if Mix.Generator.create_file(target, content), do: :ok, else: :already_exists
+  end
+
+  defp write_file({:error, _} = err), do: err
 
   defp template_path(component_name) do
     filename = "#{component_name}.ex.eex"
@@ -149,6 +260,23 @@ defmodule Mix.Tasks.Phia.Add do
       local
     else
       Application.app_dir(:phia_ui, "priv/templates/components/#{filename}")
+    end
+  end
+
+  defp js_hook_template_path(component_name) do
+    filename = "#{component_name}.js"
+    local = Path.join([File.cwd!(), "priv/templates/js/hooks", filename])
+
+    if File.exists?(local) do
+      {:ok, local}
+    else
+      installed = Application.app_dir(:phia_ui, "priv/templates/js/hooks/#{filename}")
+
+      if File.exists?(installed) do
+        {:ok, installed}
+      else
+        :not_found
+      end
     end
   end
 end

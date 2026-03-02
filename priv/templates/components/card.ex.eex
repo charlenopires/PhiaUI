@@ -1,4 +1,4 @@
-defmodule <%= @module %>.Components.Card do
+defmodule <%= @module_name %>.Components.UI.Card do
   @moduledoc """
   Composable Card component with 6 independent sub-components.
 
@@ -33,7 +33,7 @@ defmodule <%= @module %>.Components.Card do
 
   use Phoenix.Component
 
-  import <%= @module %>.ClassMerger, only: [cn: 1]
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
 
   attr :class, :string, default: nil, doc: "Additional CSS classes"
   attr :rest, :global, doc: "HTML attributes forwarded to the div element"
@@ -42,7 +42,7 @@ defmodule <%= @module %>.Components.Card do
   def card(assigns) do
     ~H"""
     <div class={cn(["rounded-lg border bg-card text-card-foreground shadow", @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </div>
     """
   end
@@ -54,7 +54,7 @@ defmodule <%= @module %>.Components.Card do
   def card_header(assigns) do
     ~H"""
     <div class={cn(["flex flex-col space-y-1.5 p-6", @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </div>
     """
   end
@@ -66,7 +66,7 @@ defmodule <%= @module %>.Components.Card do
   def card_title(assigns) do
     ~H"""
     <h3 class={cn(["font-semibold leading-none tracking-tight", @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </h3>
     """
   end
@@ -78,7 +78,7 @@ defmodule <%= @module %>.Components.Card do
   def card_description(assigns) do
     ~H"""
     <p class={cn(["text-sm text-muted-foreground", @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </p>
     """
   end
@@ -90,7 +90,7 @@ defmodule <%= @module %>.Components.Card do
   def card_content(assigns) do
     ~H"""
     <div class={cn(["p-6 pt-0", @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </div>
     """
   end
@@ -102,7 +102,7 @@ defmodule <%= @module %>.Components.Card do
   def card_footer(assigns) do
     ~H"""
     <div class={cn(["flex items-center p-6 pt-0", @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </div>
     """
   end

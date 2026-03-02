@@ -1,4 +1,4 @@
-defmodule <%= @module %>.Components.Badge do
+defmodule <%= @module_name %>.Components.UI.Badge do
   @moduledoc """
   Badge component for labels, status indicators and tags.
 
@@ -15,7 +15,7 @@ defmodule <%= @module %>.Components.Badge do
 
   use Phoenix.Component
 
-  import <%= @module %>.ClassMerger, only: [cn: 1]
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
 
   attr :variant, :atom,
     values: [:default, :secondary, :destructive, :outline],
@@ -29,7 +29,7 @@ defmodule <%= @module %>.Components.Badge do
   def badge(assigns) do
     ~H"""
     <div class={cn([base_class(), variant_class(@variant), @class])} {@rest}>
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </div>
     """
   end

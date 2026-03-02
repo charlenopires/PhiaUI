@@ -1,0 +1,47 @@
+defmodule <%= @module_name %>.ClassMerger.Cache do
+  @moduledoc """
+  ETS-backed cache for memoising resolved Tailwind class strings.
+
+  Stores `{input_key, resolved_string}` pairs so that identical
+  lists of class tokens are merged only once per application lifetime.
+  """
+
+  use GenServer
+
+  @table __MODULE__
+
+  # --- Public API -----------------------------------------------------------
+
+  @doc "Starts the cache and registers it under its module name."
+  def start_link(_opts) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  @doc "Returns the cached string for `key`, or `nil` if absent."
+  @spec get(term()) :: String.t() | nil
+  def get(key), do: lookup(key)
+
+  @doc "Stores `value` under `key` and returns `value`."
+  @spec put(term(), String.t()) :: String.t()
+  def put(key, value) do
+    :ets.insert(@table, {key, value})
+    value
+  end
+
+  # --- GenServer callbacks ---------------------------------------------------
+
+  @impl GenServer
+  def init(_) do
+    :ets.new(@table, [:named_table, :public, read_concurrency: true])
+    {:ok, []}
+  end
+
+  # --- Private helpers -------------------------------------------------------
+
+  defp lookup(key) do
+    case :ets.lookup(@table, key) do
+      [{^key, value}] -> value
+      [] -> nil
+    end
+  end
+end

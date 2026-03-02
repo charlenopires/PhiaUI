@@ -99,20 +99,15 @@ defmodule Mix.Tasks.Phia.Install do
   @doc """
   Creates `assets/js/phia_hooks/index.js` under `root` with PhiaHooks export.
 
-  Skips if the file already exists (idempotent).
+  Uses `Mix.Generator.create_file/3` for interactive conflict handling: if the
+  file already exists, the user is prompted before any overwrite.
   """
-  @spec inject_hooks(Path.t()) :: :ok | :already_installed
+  @spec inject_hooks(Path.t()) :: :ok | nil
   def inject_hooks(root) do
     hooks_dir = Path.join([root, "assets", "js", "phia_hooks"])
     hooks_path = Path.join(hooks_dir, "index.js")
-
-    if File.exists?(hooks_path) do
-      :already_installed
-    else
-      File.mkdir_p!(hooks_dir)
-      File.write!(hooks_path, @hooks_content)
-      :ok
-    end
+    File.mkdir_p!(hooks_dir)
+    Mix.Generator.create_file(hooks_path, @hooks_content)
   end
 
   @doc """

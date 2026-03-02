@@ -1,0 +1,124 @@
+defmodule <%= @module %>.Components.Shell do
+  @moduledoc """
+  Dashboard layout shell with responsive sidebar and topbar.
+
+  Ejected from PhiaUI — owns this copy of the source. Customise freely.
+
+  CSS Grid on desktop (sidebar 240 px + 1fr content); sidebar becomes a
+  JS-toggled drawer on mobile via `Phoenix.LiveView.JS` — no Alpine.js required.
+
+  ## Sub-components
+
+  - `shell/1` — full-height outer wrapper
+  - `topbar/1` — sticky top navigation bar
+  - `sidebar/1` — collapsible sidebar (drawer on mobile, static on desktop)
+  - `mobile_sidebar_toggle/1` — hamburger button that calls `JS.toggle/1`
+
+  ## Example
+
+      <.shell>
+        <.topbar>
+          <.mobile_sidebar_toggle />
+          <span class="font-semibold">My App</span>
+        </.topbar>
+        <div class="flex flex-1 overflow-hidden">
+          <.sidebar>
+            <nav>...</nav>
+          </.sidebar>
+          <main class="flex-1 overflow-y-auto p-6">
+            <%= @inner_content %>
+          </main>
+        </div>
+      </.shell>
+  """
+
+  use Phoenix.Component
+
+  alias Phoenix.LiveView.JS
+
+  import <%= @module %>.ClassMerger, only: [cn: 1]
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper"
+  attr :rest, :global, doc: "HTML attributes forwarded to the wrapper div"
+  slot :inner_block, required: true
+
+  @doc "Full-height application shell wrapper."
+  def shell(assigns) do
+    ~H"""
+    <div class={cn(["min-h-screen bg-background", @class])} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  @doc "Horizontal top navigation bar (h-14, border-b)."
+  def topbar(assigns) do
+    ~H"""
+    <header class={cn(["flex h-14 items-center border-b bg-card px-4", @class])} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </header>
+    """
+  end
+
+  attr :id, :string, default: "sidebar-drawer", doc: "Element id used by JS.toggle"
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global, doc: "HTML attributes forwarded to the aside element"
+  slot :inner_block, required: true
+
+  @doc """
+  Responsive sidebar.
+
+  Hidden by default on mobile; shown as a fixed overlay drawer when toggled
+  via `mobile_sidebar_toggle/1`. Always visible on `md:` breakpoint and above.
+  """
+  def sidebar(assigns) do
+    ~H"""
+    <aside
+      id={@id}
+      class={cn([
+        "hidden md:flex md:w-60 md:flex-col md:border-r md:bg-card",
+        "fixed inset-y-0 left-0 z-50 w-60 flex-col border-r bg-card",
+        @class
+      ])}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </aside>
+    """
+  end
+
+  attr :target, :string,
+    default: "#sidebar-drawer",
+    doc: "CSS selector for the sidebar element to toggle"
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global
+
+  @doc """
+  Hamburger button that toggles the mobile sidebar via `Phoenix.LiveView.JS`.
+
+  Hidden on `md:` and above — only shown on mobile.
+  """
+  def mobile_sidebar_toggle(assigns) do
+    ~H"""
+    <button
+      type="button"
+      phx-click={JS.toggle(to: @target)}
+      class={cn([
+        "inline-flex items-center justify-center rounded-md p-2",
+        "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+        "md:hidden",
+        @class
+      ])}
+      aria-label="Toggle sidebar"
+      {@rest}
+    >
+      ☰
+    </button>
+    """
+  end
+end

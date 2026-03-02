@@ -1,4 +1,4 @@
-defmodule <%= @module %>.Components.Button do
+defmodule <%= @module_name %>.Components.UI.Button do
   @moduledoc """
   Stateless Button component with 6 variants and 4 sizes.
 
@@ -43,7 +43,7 @@ defmodule <%= @module %>.Components.Button do
   use Phoenix.Component
 
   # Replace with your app's class merger or remove if unused.
-  import <%= @module %>.ClassMerger, only: [cn: 1]
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
 
   attr :variant, :atom,
     values: [:default, :destructive, :outline, :secondary, :ghost, :link],
@@ -75,7 +75,7 @@ defmodule <%= @module %>.Components.Button do
       disabled={@disabled}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      <%%= render_slot(@inner_block) %>
     </button>
     """
   end
