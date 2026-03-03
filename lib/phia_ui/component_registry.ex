@@ -113,7 +113,7 @@ defmodule PhiaUi.ComponentRegistry do
       dependencies: [],
       tier: :primitive,
       shadcn_equivalent: "Skeleton",
-      status: :planned
+      status: :implemented
     },
     avatar: %{
       name: "avatar",
@@ -231,21 +231,21 @@ defmodule PhiaUi.ComponentRegistry do
       name: "popover",
       module: PhiaUi.Components.Popover,
       template_file: "priv/templates/components/popover.ex",
-      js_hooks: ["ClickOutside", "Popover"],
+      js_hooks: ["PhiaPopover"],
       dependencies: [],
       tier: :interactive,
       shadcn_equivalent: "Popover",
-      status: :planned
+      status: :implemented
     },
     tooltip: %{
       name: "tooltip",
       module: PhiaUi.Components.Tooltip,
       template_file: "priv/templates/components/tooltip.ex",
-      js_hooks: ["Tooltip"],
+      js_hooks: ["PhiaTooltip"],
       dependencies: [],
       tier: :interactive,
       shadcn_equivalent: "Tooltip",
-      status: :planned
+      status: :implemented
     },
     select: %{
       name: "select",
@@ -469,7 +469,7 @@ defmodule PhiaUi.ComponentRegistry do
       dependencies: [],
       tier: :navigation,
       shadcn_equivalent: "Breadcrumb",
-      status: :planned
+      status: :implemented
     },
     pagination: %{
       name: "pagination",
@@ -479,7 +479,7 @@ defmodule PhiaUi.ComponentRegistry do
       dependencies: [],
       tier: :navigation,
       shadcn_equivalent: "Pagination",
-      status: :planned
+      status: :implemented
     },
     scroll_area: %{
       name: "scroll_area",
@@ -499,7 +499,7 @@ defmodule PhiaUi.ComponentRegistry do
       dependencies: [],
       tier: :navigation,
       shadcn_equivalent: "Alert",
-      status: :planned
+      status: :implemented
     },
     alert_dialog: %{
       name: "alert_dialog",

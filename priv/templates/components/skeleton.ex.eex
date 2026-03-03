@@ -1,0 +1,78 @@
+defmodule <%= @module_name %>.Components.UI.Skeleton do
+  @moduledoc """
+  Skeleton loading placeholder components.
+
+  Ejected from PhiaUI — you own this copy. Customise freely.
+
+  ## Examples
+
+      <.skeleton class="h-4 w-full" />
+      <.skeleton shape={:circle} width="40px" height="40px" />
+      <.skeleton_text lines={4} />
+      <.skeleton_avatar size="16" />
+      <.skeleton_card />
+  """
+
+  use Phoenix.Component
+
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+
+  attr :shape, :atom, values: [:rectangle, :circle], default: :rectangle,
+    doc: "Shape of the skeleton: :rectangle (default) or :circle"
+  attr :width, :string, default: nil, doc: "CSS width value applied as inline style"
+  attr :height, :string, default: nil, doc: "CSS height value applied as inline style"
+  attr :class, :string, default: nil, doc: "Additional CSS classes (merged via cn/1)"
+  attr :rest, :global, doc: "HTML attributes forwarded to the root element"
+
+  def skeleton(assigns) do
+    ~H"""
+    <div
+      class={cn(["animate-pulse bg-muted", shape_class(@shape), @class])}
+      {style_attrs(@width, @height)}
+      {@rest}
+    >
+    </div>
+    """
+  end
+
+  attr :lines, :integer, default: 3, doc: "Number of text lines to render"
+  attr :class, :string, default: nil, doc: "Additional CSS classes for the wrapper"
+
+  def skeleton_text(assigns) do
+    ~H"""
+    <div class={cn(["space-y-2", @class])}>
+      <%%= for i <- 1..@lines do %>
+        <.skeleton class={cn(["h-4", if(i == @lines, do: "w-3/4", else: "w-full")])} />
+      <%% end %>
+    </div>
+    """
+  end
+
+  attr :size, :string, default: "10", doc: "Tailwind size number (e.g. '10' → w-10 h-10)"
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+
+  def skeleton_avatar(assigns) do
+    ~H"""
+    <.skeleton shape={:circle} class={cn(["w-#{@size} h-#{@size}", @class])} />
+    """
+  end
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes for the card wrapper"
+
+  def skeleton_card(assigns) do
+    ~H"""
+    <div class={cn(["rounded-lg border p-4 space-y-3", @class])}>
+      <.skeleton class="h-40 w-full" />
+      <.skeleton_text lines={3} />
+    </div>
+    """
+  end
+
+  defp shape_class(:rectangle), do: "rounded-md"
+  defp shape_class(:circle), do: "rounded-full"
+
+  defp style_attrs(nil, nil), do: %{}
+  defp style_attrs(width, nil), do: %{style: "width: #{width};"}
+  defp style_attrs(nil, height), do: %{style: "height: #{height};"}
+  defp style_attrs(width, height), do: %{style: "width: #{width}; height: #{height};"}
+end

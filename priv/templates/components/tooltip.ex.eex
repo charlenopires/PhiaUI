@@ -1,0 +1,97 @@
+defmodule <%= @module_name %>.Components.UI.Tooltip do
+  @moduledoc """
+  Tooltip component with PhiaTooltip vanilla JS hook.
+
+  Ejected from PhiaUI — you own this copy. Customise freely.
+
+  ## Example
+
+      <.tooltip id="user-tip" delay_ms={200}>
+        <.tooltip_trigger tooltip_id="user-tip">
+          <button>Hover me</button>
+        </.tooltip_trigger>
+        <.tooltip_content tooltip_id="user-tip" position={:top}>
+          This is helpful context.
+        </.tooltip_content>
+      </.tooltip>
+
+  ## Hook setup
+
+  Register PhiaTooltip in your app.js:
+
+      import PhiaTooltip from "./hooks/tooltip"
+      let liveSocket = new LiveSocket("/live", Socket, {
+        hooks: { PhiaTooltip }
+      })
+  """
+
+  use Phoenix.Component
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+
+  attr :id, :string, required: true, doc: "Unique ID for aria coordination"
+  attr :delay_ms, :integer, default: 200, doc: "Hover delay before showing tooltip (ms)"
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  def tooltip(assigns) do
+    ~H"""
+    <div
+      id={@id}
+      phx-hook="PhiaTooltip"
+      data-delay={@delay_ms}
+      class={cn(["relative inline-flex", @class])}
+      {@rest}
+    >
+      <%%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+
+  attr :tooltip_id, :string, required: true, doc: "ID of the parent tooltip wrapper"
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  def tooltip_trigger(assigns) do
+    ~H"""
+    <span
+      aria-describedby={"#{@tooltip_id}-content"}
+      data-tooltip-trigger
+      class={cn([@class])}
+      {@rest}
+    >
+      <%%= render_slot(@inner_block) %>
+    </span>
+    """
+  end
+
+  attr :tooltip_id, :string, required: true, doc: "ID of the parent tooltip wrapper"
+  attr :position, :atom,
+    default: :top,
+    values: [:top, :bottom, :left, :right],
+    doc: "Preferred position of the tooltip panel"
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  def tooltip_content(assigns) do
+    ~H"""
+    <div
+      id={"#{@tooltip_id}-content"}
+      role="tooltip"
+      data-position={@position}
+      data-tooltip-content
+      class={cn([
+        "absolute z-50 rounded-md bg-popover text-popover-foreground",
+        "px-3 py-1.5 text-sm shadow-md",
+        "opacity-0 invisible pointer-events-none transition-opacity duration-150",
+        @class
+      ])}
+      {@rest}
+    >
+      <%%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+end
