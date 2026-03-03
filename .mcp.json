@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "cwa": {
-      "command": "cwa",
-      "args": ["--project", "/Users/fazapp/projects/opensource/phiaui", "mcp", "stdio"],
-      "description": "CWA — Claude Workflow Architect (specs, tasks, domain model, memory)"
-    }
-  }
-}
