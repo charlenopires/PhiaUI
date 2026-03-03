@@ -8,8 +8,8 @@ defmodule PhiaUi.Components.BadgeTest do
     use Phoenix.Component
     import PhiaUi.Components.Badge
 
-    attr :variant, :atom, default: :default
-    attr :class, :string, default: nil
+    attr(:variant, :atom, default: :default)
+    attr(:class, :string, default: nil)
 
     def render_badge(assigns) do
       ~H"""
@@ -147,6 +147,41 @@ defmodule PhiaUi.Components.BadgeTest do
     test "passes data-testid to the element" do
       html = render_component(&H.render_with_rest/1, %{})
       assert html =~ ~s(data-testid="my-badge")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # New variants: ghost and link
+  # ---------------------------------------------------------------------------
+
+  describe "variant :ghost" do
+    test "renders hover:bg-accent" do
+      assert render_badge(%{variant: :ghost}) =~ "hover:bg-accent"
+    end
+
+    test "renders hover:text-accent-foreground" do
+      assert render_badge(%{variant: :ghost}) =~ "hover:text-accent-foreground"
+    end
+
+    test "does not render a solid bg color" do
+      html = render_badge(%{variant: :ghost})
+      refute html =~ "bg-primary"
+      refute html =~ "bg-secondary"
+      refute html =~ "bg-destructive"
+    end
+  end
+
+  describe "variant :link" do
+    test "renders text-primary" do
+      assert render_badge(%{variant: :link}) =~ "text-primary"
+    end
+
+    test "renders underline-offset-4" do
+      assert render_badge(%{variant: :link}) =~ "underline-offset-4"
+    end
+
+    test "renders hover:underline" do
+      assert render_badge(%{variant: :link}) =~ "hover:underline"
     end
   end
 end

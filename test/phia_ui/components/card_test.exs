@@ -70,6 +70,35 @@ defmodule PhiaUi.Components.CardTest do
       <.card data-testid="my-card">Content</.card>
       """
     end
+
+    def render_card_sm(assigns) do
+      ~H"""
+      <.card size="sm">Content</.card>
+      """
+    end
+
+    def render_card_action(assigns) do
+      ~H"""
+      <.card>
+        <.card_header>
+          <.card_title>Title</.card_title>
+          <.card_action>
+            <button>Edit</button>
+          </.card_action>
+        </.card_header>
+      </.card>
+      """
+    end
+
+    def render_card_action_with_class(assigns) do
+      ~H"""
+      <.card>
+        <.card_header>
+          <.card_action class="custom-action">Edit</.card_action>
+        </.card_header>
+      </.card>
+      """
+    end
   end
 
   defp render_sub(fun, attrs \\ %{class: nil}) do
@@ -267,6 +296,74 @@ defmodule PhiaUi.Components.CardTest do
     test "accepts custom class" do
       html = render_sub(&H.render_card_footer/1, %{class: "justify-between"})
       assert html =~ "justify-between"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # card/1 — size variant
+  # ---------------------------------------------------------------------------
+
+  describe "card/1 — size variant" do
+    test "default size renders without max-w-sm constraint" do
+      html = render_sub(&H.render_card/1)
+      refute html =~ "max-w-sm"
+    end
+
+    test "size='sm' adds max-w-sm class" do
+      html = render_component(&H.render_card_sm/1, %{})
+      assert html =~ "max-w-sm"
+    end
+
+    test "size='sm' still renders content" do
+      html = render_component(&H.render_card_sm/1, %{})
+      assert html =~ "Content"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # card_action/1
+  # ---------------------------------------------------------------------------
+
+  describe "card_action/1" do
+    test "card_action/1 is exported" do
+      assert function_exported?(PhiaUi.Components.Card, :card_action, 1)
+    end
+
+    test "renders a div element" do
+      html = render_component(&H.render_card_action/1, %{})
+      assert html =~ "<div"
+    end
+
+    test "is positioned absolutely" do
+      html = render_component(&H.render_card_action/1, %{})
+      assert html =~ "absolute"
+    end
+
+    test "is anchored to top-right" do
+      html = render_component(&H.render_card_action/1, %{})
+      assert html =~ "right-"
+      assert html =~ "top-"
+    end
+
+    test "renders inner content" do
+      html = render_component(&H.render_card_action/1, %{})
+      assert html =~ "Edit"
+    end
+
+    test "accepts :class override" do
+      html = render_component(&H.render_card_action_with_class/1, %{})
+      assert html =~ "custom-action"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # card_header/1 — relative positioning for card_action anchor
+  # ---------------------------------------------------------------------------
+
+  describe "card_header/1 — relative for card_action" do
+    test "card_header has relative class" do
+      html = render_sub(&H.render_card_header/1)
+      assert html =~ "relative"
     end
   end
 

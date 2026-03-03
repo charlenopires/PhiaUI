@@ -65,9 +65,9 @@ defmodule PhiaUi.Components.Dialog do
 
   Must wrap both `dialog_trigger/1` and `dialog_content/1`.
   """
-  attr :id, :string, required: true, doc: "Unique ID used as the hook anchor"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  slot :inner_block, required: true
+  attr(:id, :string, required: true, doc: "Unique ID used as the hook anchor")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  slot(:inner_block, required: true)
 
   def dialog(assigns) do
     ~H"""
@@ -84,10 +84,10 @@ defmodule PhiaUi.Components.Dialog do
   @doc """
   Opens the dialog by calling `JS.show/1` on `#dialog-{for}`.
   """
-  attr :for, :string, required: true, doc: "ID of the dialog to open (matches dialog/1's :id)"
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:for, :string, required: true, doc: "ID of the dialog to open (matches dialog/1's :id)")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def dialog_trigger(assigns) do
     ~H"""
@@ -112,10 +112,37 @@ defmodule PhiaUi.Components.Dialog do
 
   The outer container id is `"dialog-{id}"` (prefixed) so that
   `dialog_trigger/1` and `dialog_close/1` can target it.
+
+  ## Size variants
+
+  | Value       | Max width                  |
+  |-------------|----------------------------|
+  | `"sm"`      | `max-w-sm`                 |
+  | `"default"` | `max-w-lg` (default)       |
+  | `"lg"`      | `max-w-2xl`                |
+  | `"xl"`      | `max-w-4xl`                |
+  | `"full"`    | `max-w-[calc(100vw-2rem)]` |
   """
-  attr :id, :string, required: true, doc: "ID matching the parent dialog/1's :id"
-  attr :class, :string, default: nil, doc: "Additional classes for the panel"
-  slot :inner_block, required: true
+  attr(:id, :string, required: true, doc: "ID matching the parent dialog/1's :id")
+
+  attr(:size, :string,
+    default: "default",
+    values: ~w(sm default lg xl full),
+    doc: "Width of the dialog panel"
+  )
+
+  attr(:show_close_button, :boolean,
+    default: true,
+    doc: "Render the default X close button in the top-right corner of the panel"
+  )
+
+  attr(:scrollable, :boolean,
+    default: false,
+    doc: "Add overflow-y-auto to the panel for content that may overflow the viewport"
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional classes for the panel")
+  slot(:inner_block, required: true)
 
   def dialog_content(assigns) do
     ~H"""
@@ -133,13 +160,37 @@ defmodule PhiaUi.Components.Dialog do
         aria-labelledby={"#{@id}-title"}
         aria-describedby={"#{@id}-description"}
         class={cn([
-          "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
+          "fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%]",
           "gap-4 border bg-background p-6 shadow-lg sm:rounded-lg",
           "transition-all ease-out duration-300 opacity-0 scale-95",
+          dialog_content_size(@size),
+          @scrollable && "overflow-y-auto max-h-[calc(100vh-8rem)]",
           @class
         ])}
         data-dialog-panel
       >
+        <%= if @show_close_button do %>
+          <button
+            type="button"
+            aria-label="Close dialog"
+            phx-click={JS.hide(to: "#dialog-#{@id}")}
+            class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+            <span class="sr-only">Close</span>
+          </button>
+        <% end %>
         <%= render_slot(@inner_block) %>
       </div>
     </div>
@@ -151,9 +202,9 @@ defmodule PhiaUi.Components.Dialog do
   # ---------------------------------------------------------------------------
 
   @doc "Layout container for dialog title and description."
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def dialog_header(assigns) do
     ~H"""
@@ -170,10 +221,10 @@ defmodule PhiaUi.Components.Dialog do
   @doc """
   Dialog heading (`<h2>`). Set `:id` to `"{dialog-id}-title"` for ARIA linkage.
   """
-  attr :id, :string, default: nil
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:id, :string, default: nil)
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def dialog_title(assigns) do
     ~H"""
@@ -194,10 +245,10 @@ defmodule PhiaUi.Components.Dialog do
   @doc """
   Supporting text below the title. Set `:id` to `"{dialog-id}-description"` for ARIA linkage.
   """
-  attr :id, :string, default: nil
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:id, :string, default: nil)
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def dialog_description(assigns) do
     ~H"""
@@ -212,9 +263,9 @@ defmodule PhiaUi.Components.Dialog do
   # ---------------------------------------------------------------------------
 
   @doc "Action row at the bottom of the dialog (close button, confirmations)."
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def dialog_footer(assigns) do
     ~H"""
@@ -235,10 +286,10 @@ defmodule PhiaUi.Components.Dialog do
   Closes the dialog via `JS.hide/1` on `#dialog-{for}`.
   The Escape key is also handled by the `PhiaDialog` JS Hook.
   """
-  attr :for, :string, required: true, doc: "ID of the dialog to close (matches dialog/1's :id)"
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:for, :string, required: true, doc: "ID of the dialog to close (matches dialog/1's :id)")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   def dialog_close(assigns) do
     ~H"""
@@ -257,4 +308,14 @@ defmodule PhiaUi.Components.Dialog do
     </button>
     """
   end
+
+  # ---------------------------------------------------------------------------
+  # Private helpers
+  # ---------------------------------------------------------------------------
+
+  defp dialog_content_size("sm"), do: "max-w-sm"
+  defp dialog_content_size("default"), do: "max-w-lg"
+  defp dialog_content_size("lg"), do: "max-w-2xl"
+  defp dialog_content_size("xl"), do: "max-w-4xl"
+  defp dialog_content_size("full"), do: "max-w-[calc(100vw-2rem)]"
 end

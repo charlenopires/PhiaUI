@@ -66,6 +66,42 @@ defmodule PhiaUi.Components.DialogTest do
       """
     end
 
+    def render_content_size_sm(assigns) do
+      ~H"""
+      <.dialog_content id="test" size="sm">Body</.dialog_content>
+      """
+    end
+
+    def render_content_size_lg(assigns) do
+      ~H"""
+      <.dialog_content id="test" size="lg">Body</.dialog_content>
+      """
+    end
+
+    def render_content_size_xl(assigns) do
+      ~H"""
+      <.dialog_content id="test" size="xl">Body</.dialog_content>
+      """
+    end
+
+    def render_content_size_full(assigns) do
+      ~H"""
+      <.dialog_content id="test" size="full">Body</.dialog_content>
+      """
+    end
+
+    def render_content_no_close(assigns) do
+      ~H"""
+      <.dialog_content id="test" show_close_button={false}>Body</.dialog_content>
+      """
+    end
+
+    def render_content_scrollable(assigns) do
+      ~H"""
+      <.dialog_content id="test" scrollable={true}>Body</.dialog_content>
+      """
+    end
+
     def render_full_composition(assigns) do
       ~H"""
       <.dialog id="confirm">
@@ -320,6 +356,90 @@ defmodule PhiaUi.Components.DialogTest do
   end
 
   # ---------------------------------------------------------------------------
+  # dialog_content/1 — size variants
+  # ---------------------------------------------------------------------------
+
+  describe "dialog_content/1 — size variants" do
+    test "default size has max-w-lg class" do
+      html = render_component(&H.render_content/1, %{id: "test"})
+      assert html =~ "max-w-lg"
+    end
+
+    test "size='sm' has max-w-sm class" do
+      html = render_component(&H.render_content_size_sm/1, %{})
+      assert html =~ "max-w-sm"
+    end
+
+    test "size='lg' has max-w-2xl class" do
+      html = render_component(&H.render_content_size_lg/1, %{})
+      assert html =~ "max-w-2xl"
+    end
+
+    test "size='xl' has max-w-4xl class" do
+      html = render_component(&H.render_content_size_xl/1, %{})
+      assert html =~ "max-w-4xl"
+    end
+
+    test "size='full' has calc(100vw-based max-width" do
+      html = render_component(&H.render_content_size_full/1, %{})
+      assert html =~ "100vw"
+    end
+
+    test "size='sm' does not have max-w-lg" do
+      html = render_component(&H.render_content_size_sm/1, %{})
+      refute html =~ "max-w-lg"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # dialog_content/1 — show_close_button
+  # ---------------------------------------------------------------------------
+
+  describe "dialog_content/1 — show_close_button" do
+    test "show_close_button=true (default) renders X close button" do
+      html = render_component(&H.render_content/1, %{id: "test"})
+      assert html =~ ~s(aria-label="Close dialog")
+    end
+
+    test "show_close_button=true close button targets #dialog-{id}" do
+      html = render_component(&H.render_content/1, %{id: "test"})
+      assert html =~ "#dialog-test"
+    end
+
+    test "show_close_button=false omits the X button" do
+      html = render_component(&H.render_content_no_close/1, %{})
+      refute html =~ ~s(aria-label="Close dialog")
+    end
+
+    test "close button has sr-only label" do
+      html = render_component(&H.render_content/1, %{id: "test"})
+      assert html =~ "sr-only"
+      assert html =~ "Close"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # dialog_content/1 — scrollable
+  # ---------------------------------------------------------------------------
+
+  describe "dialog_content/1 — scrollable" do
+    test "scrollable=true adds overflow-y-auto class" do
+      html = render_component(&H.render_content_scrollable/1, %{})
+      assert html =~ "overflow-y-auto"
+    end
+
+    test "scrollable=true adds max-h constraint" do
+      html = render_component(&H.render_content_scrollable/1, %{})
+      assert html =~ "max-h-"
+    end
+
+    test "scrollable=false (default) has no overflow-y-auto" do
+      html = render_component(&H.render_content/1, %{id: "test"})
+      refute html =~ "overflow-y-auto"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   # AC 14: JS Hook file exists at priv/templates/js/hooks/dialog.js
   # ---------------------------------------------------------------------------
 
@@ -362,7 +482,9 @@ defmodule PhiaUi.Components.DialogTest do
     # AC 10: focus return to trigger
     test "stores and restores previouslyFocused element" do
       content = File.read!(@hook_path)
-      assert content =~ "previouslyFocused" or content =~ "triggerEl" or content =~ "activeElement"
+
+      assert content =~ "previouslyFocused" or content =~ "triggerEl" or
+               content =~ "activeElement"
     end
 
     # AC 11: scroll blocked
@@ -405,6 +527,7 @@ defmodule PhiaUi.Components.DialogTest do
     test "moduledoc mentions PhiaDialog hook registration" do
       {:docs_v1, _, _, _, %{"en" => moduledoc}, _, _} =
         Code.fetch_docs(PhiaUi.Components.Dialog)
+
       assert moduledoc =~ "PhiaDialog"
       assert moduledoc =~ "app.js"
     end

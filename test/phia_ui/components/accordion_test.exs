@@ -12,8 +12,8 @@ defmodule PhiaUi.Components.AccordionTest do
     use Phoenix.Component
     import PhiaUi.Components.Accordion
 
-    attr :type, :atom, default: :single
-    attr :accordion_id, :string, default: "test-accordion"
+    attr(:type, :atom, default: :single)
+    attr(:accordion_id, :string, default: "test-accordion")
 
     def render_accordion(assigns) do
       ~H"""
@@ -30,7 +30,7 @@ defmodule PhiaUi.Components.AccordionTest do
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
 
     def render_trigger(assigns) do
       ~H"""
@@ -68,6 +68,57 @@ defmodule PhiaUi.Components.AccordionTest do
         <.accordion_item value="b" type={:multiple} accordion_id="multi">
           <.accordion_trigger value="b" type={:multiple} accordion_id="multi">B</.accordion_trigger>
           <.accordion_content value="b">Content B</.accordion_content>
+        </.accordion_item>
+      </.accordion>
+      """
+    end
+
+    def render_disabled_item(assigns) do
+      ~H"""
+      <.accordion id="test" type={:single}>
+        <.accordion_item value="q1" type={:single} accordion_id="test" disabled={true}>
+          <.accordion_trigger value="q1" type={:single} accordion_id="test">
+            Disabled Question
+          </.accordion_trigger>
+          <.accordion_content value="q1">Disabled Answer</.accordion_content>
+        </.accordion_item>
+        <.accordion_item value="q2" type={:single} accordion_id="test">
+          <.accordion_trigger value="q2" type={:single} accordion_id="test">
+            Normal Question
+          </.accordion_trigger>
+          <.accordion_content value="q2">Normal Answer</.accordion_content>
+        </.accordion_item>
+      </.accordion>
+      """
+    end
+
+    def render_open_item(assigns) do
+      ~H"""
+      <.accordion id="test" type={:single}>
+        <.accordion_item value="q1" type={:single} accordion_id="test">
+          <.accordion_trigger value="q1" type={:single} accordion_id="test" open={true}>
+            Open by default
+          </.accordion_trigger>
+          <.accordion_content value="q1" open={true}>Default open content</.accordion_content>
+        </.accordion_item>
+        <.accordion_item value="q2" type={:single} accordion_id="test">
+          <.accordion_trigger value="q2" type={:single} accordion_id="test">
+            Closed by default
+          </.accordion_trigger>
+          <.accordion_content value="q2">Closed content</.accordion_content>
+        </.accordion_item>
+      </.accordion>
+      """
+    end
+
+    def render_collapsible(assigns) do
+      ~H"""
+      <.accordion id="test" type={:single}>
+        <.accordion_item value="q1" type={:single} accordion_id="test">
+          <.accordion_trigger value="q1" type={:single} accordion_id="test" collapsible={true}>
+            Collapsible Question
+          </.accordion_trigger>
+          <.accordion_content value="q1">Collapsible content</.accordion_content>
         </.accordion_item>
       </.accordion>
       """
@@ -321,6 +372,96 @@ defmodule PhiaUi.Components.AccordionTest do
       html = render_content()
       assert html =~ ~s(id="accordion-content-q1")
       assert html =~ ~s(aria-controls="accordion-content-q1")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # accordion_item/1 — disabled
+  # ---------------------------------------------------------------------------
+
+  describe "accordion_item/1 — disabled" do
+    test "disabled item has pointer-events-none class" do
+      html = render_component(&H.render_disabled_item/1, %{})
+      assert html =~ "pointer-events-none"
+    end
+
+    test "disabled item has opacity-50 class" do
+      html = render_component(&H.render_disabled_item/1, %{})
+      assert html =~ "opacity-50"
+    end
+
+    test "disabled item has aria-disabled=true" do
+      html = render_component(&H.render_disabled_item/1, %{})
+      assert html =~ ~s(aria-disabled="true")
+    end
+
+    test "non-disabled item does not have aria-disabled" do
+      html = render_accordion()
+      refute html =~ "aria-disabled"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # accordion_trigger/1 — open (default_value support)
+  # ---------------------------------------------------------------------------
+
+  describe "accordion_trigger/1 — open attr" do
+    test "open=true sets aria-expanded='true'" do
+      html = render_component(&H.render_open_item/1, %{})
+      assert html =~ ~s(aria-expanded="true")
+    end
+
+    test "open=true adds rotate-180 to chevron" do
+      html = render_component(&H.render_open_item/1, %{})
+      assert html =~ "rotate-180"
+    end
+
+    test "open=false (default) sets aria-expanded='false'" do
+      html = render_trigger()
+      assert html =~ ~s(aria-expanded="false")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # accordion_content/1 — open (default_value support)
+  # ---------------------------------------------------------------------------
+
+  describe "accordion_content/1 — open attr" do
+    test "open=true renders content visible (display: block)" do
+      html = render_component(&H.render_open_item/1, %{})
+      assert html =~ "display: block"
+    end
+
+    test "open=false (default) renders content hidden (display: none)" do
+      html = render_content()
+      assert html =~ "display: none"
+    end
+
+    test "open=true renders content accessible" do
+      html = render_component(&H.render_open_item/1, %{})
+      assert html =~ "Default open content"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # accordion_trigger/1 — collapsible
+  # ---------------------------------------------------------------------------
+
+  describe "accordion_trigger/1 — collapsible" do
+    test "collapsible=true renders trigger without error" do
+      html = render_component(&H.render_collapsible/1, %{})
+      assert html =~ "<button"
+    end
+
+    test "collapsible=true still has phx-click" do
+      html = render_component(&H.render_collapsible/1, %{})
+      assert html =~ "phx-click"
+    end
+
+    test "collapsible=false (default) renders correctly" do
+      html = render_trigger()
+      assert html =~ "<button"
+      assert html =~ "phx-click"
     end
   end
 

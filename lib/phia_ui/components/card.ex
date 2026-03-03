@@ -8,14 +8,15 @@ defmodule PhiaUi.Components.Card do
 
   ## Sub-components
 
-  | Function            | Element | Purpose                        |
-  |---------------------|---------|--------------------------------|
-  | `card/1`            | `<div>` | Outer container with surface   |
-  | `card_header/1`     | `<div>` | Header layout (title + desc)   |
-  | `card_title/1`      | `<h3>`  | Card heading                   |
-  | `card_description/1`| `<p>`   | Subtitle / supporting text     |
-  | `card_content/1`    | `<div>` | Primary content area           |
-  | `card_footer/1`     | `<div>` | Footer row (actions, meta)     |
+  | Function            | Element | Purpose                              |
+  |---------------------|---------|--------------------------------------|
+  | `card/1`            | `<div>` | Outer container with surface         |
+  | `card_header/1`     | `<div>` | Header layout (title + desc)         |
+  | `card_title/1`      | `<h3>`  | Card heading                         |
+  | `card_description/1`| `<p>`   | Subtitle / supporting text           |
+  | `card_action/1`     | `<div>` | Action anchored top-right of header  |
+  | `card_content/1`    | `<div>` | Primary content area                 |
+  | `card_footer/1`     | `<div>` | Footer row (actions, meta)           |
 
   ## Example — full composition
 
@@ -53,14 +54,23 @@ defmodule PhiaUi.Components.Card do
   # card/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the div element"
-  slot :inner_block, required: true, doc: "Card content"
+  attr(:size, :string,
+    values: ~w(default sm),
+    default: "default",
+    doc: "Size variant: 'sm' constrains to max-w-sm"
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the div element")
+  slot(:inner_block, required: true, doc: "Card content")
 
   @doc "Renders the outer Card container."
   def card(assigns) do
     ~H"""
-    <div class={cn(["rounded-lg border bg-card text-card-foreground shadow", @class])} {@rest}>
+    <div
+      class={cn(["rounded-lg border bg-card text-card-foreground shadow", card_size(@size), @class])}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -70,14 +80,14 @@ defmodule PhiaUi.Components.Card do
   # card_header/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the div element"
-  slot :inner_block, required: true, doc: "Header content (title + description)"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the div element")
+  slot(:inner_block, required: true, doc: "Header content (title + description)")
 
-  @doc "Renders the Card header layout area."
+  @doc "Renders the Card header layout area. Uses `relative` positioning so `card_action/1` can anchor absolutely."
   def card_header(assigns) do
     ~H"""
-    <div class={cn(["flex flex-col space-y-1.5 p-6", @class])} {@rest}>
+    <div class={cn(["relative flex flex-col space-y-1.5 p-6", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -87,9 +97,9 @@ defmodule PhiaUi.Components.Card do
   # card_title/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the h3 element"
-  slot :inner_block, required: true, doc: "Title text"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the h3 element")
+  slot(:inner_block, required: true, doc: "Title text")
 
   @doc "Renders the Card title as an `<h3>`."
   def card_title(assigns) do
@@ -104,9 +114,9 @@ defmodule PhiaUi.Components.Card do
   # card_description/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the p element"
-  slot :inner_block, required: true, doc: "Description text"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the p element")
+  slot(:inner_block, required: true, doc: "Description text")
 
   @doc "Renders the Card description as a `<p>`."
   def card_description(assigns) do
@@ -118,12 +128,44 @@ defmodule PhiaUi.Components.Card do
   end
 
   # ---------------------------------------------------------------------------
+  # card_action/1
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the div element")
+  slot(:inner_block, required: true, doc: "Action content (icon button, menu trigger, etc.)")
+
+  @doc """
+  Renders an action area anchored to the top-right corner of `card_header/1`.
+
+  Requires `card_header/1` to be the parent (which provides `relative` positioning).
+
+      <.card>
+        <.card_header>
+          <.card_title>Settings</.card_title>
+          <.card_action>
+            <.button variant={:ghost} size={:icon_sm} aria-label="More options">
+              <.icon name="hero-ellipsis-horizontal" />
+            </.button>
+          </.card_action>
+        </.card_header>
+      </.card>
+  """
+  def card_action(assigns) do
+    ~H"""
+    <div class={cn(["absolute right-6 top-6", @class])} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
   # card_content/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the div element"
-  slot :inner_block, required: true, doc: "Primary content"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the div element")
+  slot(:inner_block, required: true, doc: "Primary content")
 
   @doc "Renders the Card content area."
   def card_content(assigns) do
@@ -138,9 +180,9 @@ defmodule PhiaUi.Components.Card do
   # card_footer/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the div element"
-  slot :inner_block, required: true, doc: "Footer content (actions, metadata)"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the div element")
+  slot(:inner_block, required: true, doc: "Footer content (actions, metadata)")
 
   @doc "Renders the Card footer row."
   def card_footer(assigns) do
@@ -150,4 +192,11 @@ defmodule PhiaUi.Components.Card do
     </div>
     """
   end
+
+  # ---------------------------------------------------------------------------
+  # Private helpers
+  # ---------------------------------------------------------------------------
+
+  defp card_size("sm"), do: "max-w-sm"
+  defp card_size("default"), do: nil
 end

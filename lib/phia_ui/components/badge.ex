@@ -2,7 +2,7 @@ defmodule PhiaUi.Components.Badge do
   @moduledoc """
   Badge component for labels, status indicators and tags.
 
-  Provides 4 semantic variants following the shadcn/ui Badge anatomy.
+  Provides 6 semantic variants following the shadcn/ui Badge anatomy.
   Used internally by `StatCard` for trend indicators.
 
   ## Variants
@@ -13,6 +13,8 @@ defmodule PhiaUi.Components.Badge do
   | `:secondary`  | Neutral / informational label    |
   | `:destructive`| Error / warning label            |
   | `:outline`    | Subtle / ghost label             |
+  | `:ghost`      | Minimal emphasis, hover accent   |
+  | `:link`       | Inline link-style label          |
 
   ## Examples
 
@@ -33,19 +35,20 @@ defmodule PhiaUi.Components.Badge do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :variant, :atom,
-    values: [:default, :secondary, :destructive, :outline],
+  attr(:variant, :atom,
+    values: [:default, :secondary, :destructive, :outline, :ghost, :link],
     default: :default,
     doc: "Visual style variant"
+  )
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes (merged via cn/1)"
+  )
 
-  attr :rest, :global,
-    doc: "HTML attributes forwarded to the div element (data-*, aria-*, etc.)"
+  attr(:rest, :global, doc: "HTML attributes forwarded to the div element (data-*, aria-*, etc.)")
 
-  slot :inner_block, required: true, doc: "Badge label content"
+  slot(:inner_block, required: true, doc: "Badge label content")
 
   @doc """
   Renders an inline `<div>` styled as a badge with one of four semantic variants.
@@ -82,4 +85,10 @@ defmodule PhiaUi.Components.Badge do
 
   defp variant_class(:outline),
     do: "text-foreground"
+
+  defp variant_class(:ghost),
+    do: "hover:bg-accent hover:text-accent-foreground"
+
+  defp variant_class(:link),
+    do: "text-primary underline-offset-4 hover:underline"
 end

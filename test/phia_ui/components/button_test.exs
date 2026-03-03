@@ -13,10 +13,10 @@ defmodule PhiaUi.Components.ButtonTest do
     use Phoenix.Component
     import PhiaUi.Components.Button
 
-    attr :variant, :atom, default: :default
-    attr :size, :atom, default: :default
-    attr :class, :string, default: nil
-    attr :disabled, :boolean, default: false
+    attr(:variant, :atom, default: :default)
+    attr(:size, :atom, default: :default)
+    attr(:class, :string, default: nil)
+    attr(:disabled, :boolean, default: false)
 
     def render_button(assigns) do
       ~H"""
@@ -35,6 +35,58 @@ defmodule PhiaUi.Components.ButtonTest do
     def render_with_data_attr(assigns) do
       ~H"""
       <.button data-testid="my-btn">Click</.button>
+      """
+    end
+
+    def render_xs(assigns) do
+      ~H"""
+      <.button size={:xs}>XS Button</.button>
+      """
+    end
+
+    def render_icon_sm(assigns) do
+      ~H"""
+      <.button size={:icon_sm} aria-label="small icon">✕</.button>
+      """
+    end
+
+    def render_icon_lg(assigns) do
+      ~H"""
+      <.button size={:icon_lg} aria-label="large icon">✕</.button>
+      """
+    end
+
+    def render_left_icon(assigns) do
+      ~H"""
+      <.button>
+        <:left_icon>→</:left_icon>
+        With icon
+      </.button>
+      """
+    end
+
+    def render_right_icon(assigns) do
+      ~H"""
+      <.button>
+        With icon
+        <:right_icon>←</:right_icon>
+      </.button>
+      """
+    end
+
+    def render_both_icons(assigns) do
+      ~H"""
+      <.button>
+        <:left_icon>→</:left_icon>
+        With icons
+        <:right_icon>←</:right_icon>
+      </.button>
+      """
+    end
+
+    def render_loading(assigns) do
+      ~H"""
+      <.button loading={true}>Save</.button>
       """
     end
   end
@@ -229,6 +281,146 @@ defmodule PhiaUi.Components.ButtonTest do
     test "renders text content inside the button" do
       html = render_button()
       assert html =~ "Click me"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # size :xs
+  # ---------------------------------------------------------------------------
+
+  describe "size :xs" do
+    test "has h-7 class" do
+      html = render_component(&H.render_xs/1, %{})
+      assert html =~ "h-7"
+    end
+
+    test "has px-2 class" do
+      html = render_component(&H.render_xs/1, %{})
+      assert html =~ "px-2"
+    end
+
+    test "has text-xs class" do
+      html = render_component(&H.render_xs/1, %{})
+      assert html =~ "text-xs"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # size :icon_sm
+  # ---------------------------------------------------------------------------
+
+  describe "size :icon_sm" do
+    test "has h-8 class" do
+      html = render_component(&H.render_icon_sm/1, %{})
+      assert html =~ "h-8"
+    end
+
+    test "has w-8 class" do
+      html = render_component(&H.render_icon_sm/1, %{})
+      assert html =~ "w-8"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # size :icon_lg
+  # ---------------------------------------------------------------------------
+
+  describe "size :icon_lg" do
+    test "has h-12 class" do
+      html = render_component(&H.render_icon_lg/1, %{})
+      assert html =~ "h-12"
+    end
+
+    test "has w-12 class" do
+      html = render_component(&H.render_icon_lg/1, %{})
+      assert html =~ "w-12"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # left_icon slot
+  # ---------------------------------------------------------------------------
+
+  describe "left_icon slot" do
+    test "renders icon content" do
+      html = render_component(&H.render_left_icon/1, %{})
+      assert html =~ "→"
+    end
+
+    test "renders label content alongside icon" do
+      html = render_component(&H.render_left_icon/1, %{})
+      assert html =~ "With icon"
+    end
+
+    test "adds gap-2 class to button when left_icon is provided" do
+      html = render_component(&H.render_left_icon/1, %{})
+      assert html =~ "gap-2"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # right_icon slot
+  # ---------------------------------------------------------------------------
+
+  describe "right_icon slot" do
+    test "renders icon content" do
+      html = render_component(&H.render_right_icon/1, %{})
+      assert html =~ "←"
+    end
+
+    test "renders label content alongside icon" do
+      html = render_component(&H.render_right_icon/1, %{})
+      assert html =~ "With icon"
+    end
+
+    test "adds gap-2 class to button when right_icon is provided" do
+      html = render_component(&H.render_right_icon/1, %{})
+      assert html =~ "gap-2"
+    end
+  end
+
+  describe "both icon slots" do
+    test "renders both icons and label" do
+      html = render_component(&H.render_both_icons/1, %{})
+      assert html =~ "→"
+      assert html =~ "←"
+      assert html =~ "With icons"
+    end
+
+    test "no gap-2 on button without any icon slot" do
+      html = render_button()
+      refute html =~ "gap-2"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # loading state
+  # ---------------------------------------------------------------------------
+
+  describe "loading state" do
+    test "loading=true renders an animate-spin spinner" do
+      html = render_component(&H.render_loading/1, %{})
+      assert html =~ "animate-spin"
+    end
+
+    test "loading=true adds pointer-events-none" do
+      html = render_component(&H.render_loading/1, %{})
+      assert html =~ "pointer-events-none"
+    end
+
+    test "loading=true sets aria-busy=true" do
+      html = render_component(&H.render_loading/1, %{})
+      assert html =~ ~s(aria-busy="true")
+    end
+
+    test "loading=false (default) has no spinner" do
+      html = render_button()
+      refute html =~ "animate-spin"
+    end
+
+    test "loading=false has no aria-busy" do
+      html = render_button()
+      refute html =~ "aria-busy"
     end
   end
 end

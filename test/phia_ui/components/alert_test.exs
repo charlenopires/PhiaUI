@@ -8,8 +8,8 @@ defmodule PhiaUi.Components.AlertTest do
     use Phoenix.Component
     import PhiaUi.Components.Alert
 
-    attr :variant, :atom, default: :default
-    attr :class, :string, default: nil
+    attr(:variant, :atom, default: :default)
+    attr(:class, :string, default: nil)
 
     def render_alert(assigns) do
       ~H"""
@@ -48,6 +48,31 @@ defmodule PhiaUi.Components.AlertTest do
     def render_with_rest(assigns) do
       ~H"""
       <.alert data-testid="my-alert">Content</.alert>
+      """
+    end
+
+    def render_alert_action(assigns) do
+      ~H"""
+      <.alert>
+        <.alert_title>Session expiring</.alert_title>
+        <.alert_action>Renew</.alert_action>
+      </.alert>
+      """
+    end
+
+    def render_alert_action_with_class(assigns) do
+      ~H"""
+      <.alert>
+        <.alert_action class="my-action-class">Dismiss</.alert_action>
+      </.alert>
+      """
+    end
+
+    def render_alert_action_with_rest(assigns) do
+      ~H"""
+      <.alert>
+        <.alert_action phx-click="dismiss">Dismiss</.alert_action>
+      </.alert>
       """
     end
   end
@@ -204,6 +229,41 @@ defmodule PhiaUi.Components.AlertTest do
     test "passes data-testid to root element" do
       html = render_component(&H.render_with_rest/1, %{})
       assert html =~ ~s(data-testid="my-alert")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # alert_action/1
+  # ---------------------------------------------------------------------------
+
+  describe "alert_action/1" do
+    test "alert_action/1 is exported" do
+      assert function_exported?(PhiaUi.Components.Alert, :alert_action, 1)
+    end
+
+    test "renders a button element" do
+      html = render_component(&H.render_alert_action/1, %{})
+      assert html =~ "<button"
+    end
+
+    test "has type=button" do
+      html = render_component(&H.render_alert_action/1, %{})
+      assert html =~ ~s(type="button")
+    end
+
+    test "renders inner content" do
+      html = render_component(&H.render_alert_action/1, %{})
+      assert html =~ "Renew"
+    end
+
+    test "accepts :class override" do
+      html = render_component(&H.render_alert_action_with_class/1, %{})
+      assert html =~ "my-action-class"
+    end
+
+    test "passes @rest (phx-click) to the button" do
+      html = render_component(&H.render_alert_action_with_rest/1, %{})
+      assert html =~ ~s(phx-click="dismiss")
     end
   end
 end

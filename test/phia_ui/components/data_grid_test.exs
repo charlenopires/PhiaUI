@@ -81,6 +81,96 @@ defmodule PhiaUi.Components.DataGridTest do
       </table>
       """
     end
+
+    def render_pagination_basic(assigns) do
+      ~H"""
+      <.data_grid_pagination current_page={2} total_pages={5} />
+      """
+    end
+
+    def render_pagination_first_page(assigns) do
+      ~H"""
+      <.data_grid_pagination current_page={1} total_pages={5} />
+      """
+    end
+
+    def render_pagination_last_page(assigns) do
+      ~H"""
+      <.data_grid_pagination current_page={5} total_pages={5} />
+      """
+    end
+
+    def render_toolbar(assigns) do
+      ~H"""
+      <.data_grid_toolbar>
+        <input type="text" placeholder="Search..." />
+      </.data_grid_toolbar>
+      """
+    end
+
+    def render_column_toggle(assigns) do
+      ~H"""
+      <.data_grid_column_toggle
+        id="toggle-test"
+        columns={[
+          %{key: "name", label: "Name", visible: true},
+          %{key: "email", label: "Email", visible: false}
+        ]}
+        on_toggle="toggle_col"
+      />
+      """
+    end
+
+    def render_row_checkbox_checked(assigns) do
+      ~H"""
+      <table>
+        <tbody>
+          <tr>
+            <.data_grid_row_checkbox row_id="user-1" checked={true} on_check="select_row" />
+            <.data_grid_cell>Alice</.data_grid_cell>
+          </tr>
+        </tbody>
+      </table>
+      """
+    end
+
+    def render_row_checkbox_unchecked(assigns) do
+      ~H"""
+      <table>
+        <tbody>
+          <tr>
+            <.data_grid_row_checkbox row_id="user-2" checked={false} on_check="select_row" />
+            <.data_grid_cell>Bob</.data_grid_cell>
+          </tr>
+        </tbody>
+      </table>
+      """
+    end
+
+    def render_select_all(assigns) do
+      ~H"""
+      <table>
+        <thead>
+          <tr>
+            <.data_grid_select_all on_check="select_all" />
+            <.data_grid_head>Name</.data_grid_head>
+          </tr>
+        </thead>
+      </table>
+      """
+    end
+
+    def render_select_all_indeterminate(assigns) do
+      ~H"""
+      <table>
+        <thead>
+          <tr>
+            <.data_grid_select_all checked={false} indeterminate={true} on_check="select_all" />
+          </tr>
+        </thead>
+      </table>
+      """
+    end
   end
 
   defp render_grid, do: render_component(&H.render_grid/1, %{})
@@ -89,6 +179,20 @@ defmodule PhiaUi.Components.DataGridTest do
   defp render_sort_asc, do: render_component(&H.render_sort_asc/1, %{})
   defp render_sort_desc, do: render_component(&H.render_sort_desc/1, %{})
   defp render_no_sort, do: render_component(&H.render_no_sort/1, %{})
+  defp render_pagination_basic, do: render_component(&H.render_pagination_basic/1, %{})
+  defp render_pagination_first_page, do: render_component(&H.render_pagination_first_page/1, %{})
+  defp render_pagination_last_page, do: render_component(&H.render_pagination_last_page/1, %{})
+  defp render_toolbar, do: render_component(&H.render_toolbar/1, %{})
+  defp render_column_toggle, do: render_component(&H.render_column_toggle/1, %{})
+  defp render_row_checkbox_checked, do: render_component(&H.render_row_checkbox_checked/1, %{})
+
+  defp render_row_checkbox_unchecked,
+    do: render_component(&H.render_row_checkbox_unchecked/1, %{})
+
+  defp render_select_all, do: render_component(&H.render_select_all/1, %{})
+
+  defp render_select_all_indeterminate,
+    do: render_component(&H.render_select_all_indeterminate/1, %{})
 
   # ---------------------------------------------------------------------------
   # data_grid/1
@@ -225,6 +329,168 @@ defmodule PhiaUi.Components.DataGridTest do
 
     test "renders cell content" do
       assert render_grid() =~ "alice@example.com"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_toolbar/1
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_toolbar/1" do
+    test "renders a div wrapper" do
+      assert render_toolbar() =~ "<div"
+    end
+
+    test "renders slot content" do
+      assert render_toolbar() =~ ~s(placeholder="Search...")
+    end
+
+    test "applies flex layout classes" do
+      assert render_toolbar() =~ "flex"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_pagination/1
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_pagination/1" do
+    test "renders nav element with aria-label" do
+      html = render_pagination_basic()
+      assert html =~ "<nav"
+      assert html =~ ~s(aria-label="Table pagination")
+    end
+
+    test "shows current page and total pages" do
+      assert render_pagination_basic() =~ "Page 2 of 5"
+    end
+
+    test "previous and first buttons are disabled on first page" do
+      html = render_pagination_first_page()
+      assert html =~ "pointer-events-none opacity-50"
+    end
+
+    test "next and last buttons are disabled on last page" do
+      html = render_pagination_last_page()
+      assert html =~ "pointer-events-none opacity-50"
+    end
+
+    test "previous button has correct phx-value-page" do
+      assert render_pagination_basic() =~ ~s(phx-value-page="1")
+    end
+
+    test "next button has correct phx-value-page" do
+      assert render_pagination_basic() =~ ~s(phx-value-page="3")
+    end
+
+    test "fires paginate event by default" do
+      assert render_pagination_basic() =~ ~s(phx-click="paginate")
+    end
+
+    test "renders rows-per-page selector" do
+      html = render_pagination_basic()
+      assert html =~ "Rows per page"
+      assert html =~ "<select"
+    end
+
+    test "default page size options are present" do
+      html = render_pagination_basic()
+      assert html =~ ~s(value="10")
+      assert html =~ ~s(value="20")
+      assert html =~ ~s(value="50")
+      assert html =~ ~s(value="100")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_column_toggle/1
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_column_toggle/1" do
+    test "renders toggle button with label" do
+      html = render_column_toggle()
+      assert html =~ "<button"
+      assert html =~ "Columns"
+    end
+
+    test "renders column names in dropdown" do
+      html = render_column_toggle()
+      assert html =~ "Name"
+      assert html =~ "Email"
+    end
+
+    test "visible column has checked attribute" do
+      assert render_column_toggle() =~ "checked"
+    end
+
+    test "fires on_toggle event on each column checkbox" do
+      assert render_column_toggle() =~ ~s(phx-click="toggle_col")
+    end
+
+    test "phx-value-column matches column keys" do
+      html = render_column_toggle()
+      assert html =~ ~s(phx-value-column="name")
+      assert html =~ ~s(phx-value-column="email")
+    end
+
+    test "has id for JS toggle targeting" do
+      assert render_column_toggle() =~ ~s(id="toggle-test")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_row_checkbox/1
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_row_checkbox/1" do
+    test "renders checkbox input inside td" do
+      html = render_row_checkbox_checked()
+      assert html =~ "<td"
+      assert html =~ ~s(type="checkbox")
+    end
+
+    test "checked=true sets aria-checked='true'" do
+      assert render_row_checkbox_checked() =~ ~s(aria-checked="true")
+    end
+
+    test "checked=false sets aria-checked='false'" do
+      assert render_row_checkbox_unchecked() =~ ~s(aria-checked="false")
+    end
+
+    test "phx-value-id matches row_id" do
+      assert render_row_checkbox_checked() =~ ~s(phx-value-id="user-1")
+    end
+
+    test "fires on_check event" do
+      assert render_row_checkbox_checked() =~ ~s(phx-click="select_row")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_select_all/1
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_select_all/1" do
+    test "renders checkbox inside th" do
+      html = render_select_all()
+      assert html =~ "<th"
+      assert html =~ ~s(type="checkbox")
+    end
+
+    test "has aria-label 'Select all rows'" do
+      assert render_select_all() =~ ~s(aria-label="Select all rows")
+    end
+
+    test "indeterminate=true sets aria-checked='mixed'" do
+      assert render_select_all_indeterminate() =~ ~s(aria-checked="mixed")
+    end
+
+    test "indeterminate=false sets aria-checked='false' by default" do
+      assert render_select_all() =~ ~s(aria-checked="false")
+    end
+
+    test "fires on_check event" do
+      assert render_select_all() =~ ~s(phx-click="select_all")
     end
   end
 end

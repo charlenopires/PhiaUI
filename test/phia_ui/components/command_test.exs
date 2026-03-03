@@ -50,6 +50,28 @@ defmodule PhiaUi.Components.CommandTest do
       </.command>
       """
     end
+
+    def render_command_dialog(assigns) do
+      ~H"""
+      <.command_dialog id="cmd-dlg">
+        <.command_input id="cmd-dlg-input" on_change="search" />
+        <.command_list id="cmd-dlg-list">
+          <.command_item on_click="nav" value="home">Home</.command_item>
+        </.command_list>
+      </.command_dialog>
+      """
+    end
+
+    def render_command_dialog_with_title(assigns) do
+      ~H"""
+      <.command_dialog id="cmd-dlg-2" title="Global Search">
+        <.command_input id="cmd-dlg-2-input" on_change="search" />
+        <.command_list id="cmd-dlg-2-list">
+          <.command_empty>No results.</.command_empty>
+        </.command_list>
+      </.command_dialog>
+      """
+    end
   end
 
   defp render_full, do: render_component(&H.render_full/1, %{})
@@ -202,6 +224,61 @@ defmodule PhiaUi.Components.CommandTest do
   describe "command_shortcut/1" do
     test "renders shortcut text" do
       assert render_full() =~ "⌘,"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # command_dialog/1
+  # ---------------------------------------------------------------------------
+
+  describe "command_dialog/1" do
+    test "command_dialog/1 is exported" do
+      assert function_exported?(PhiaUi.Components.Command, :command_dialog, 1)
+    end
+
+    test "has phx-hook='PhiaCommand'" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ ~s(phx-hook="PhiaCommand")
+    end
+
+    test "has id attribute" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ ~s(id="cmd-dlg")
+    end
+
+    test "has role='dialog'" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ ~s(role="dialog")
+    end
+
+    test "has aria-modal='true'" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ ~s(aria-modal="true")
+    end
+
+    test "is hidden by default" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ "hidden"
+    end
+
+    test "has backdrop-blur overlay" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ "backdrop-blur"
+    end
+
+    test "default title is 'Command Palette'" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ "Command Palette"
+    end
+
+    test "accepts custom :title as aria-label" do
+      html = render_component(&H.render_command_dialog_with_title/1, %{})
+      assert html =~ "Global Search"
+    end
+
+    test "renders inner content (command sub-components)" do
+      html = render_component(&H.render_command_dialog/1, %{})
+      assert html =~ "Home"
     end
   end
 end

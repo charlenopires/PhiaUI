@@ -56,17 +56,18 @@ defmodule PhiaUi.Components.Accordion do
   # accordion/1
   # ---------------------------------------------------------------------------
 
-  attr :id, :string, default: nil, doc: "Unique ID for the root container"
+  attr(:id, :string, default: nil, doc: "Unique ID for the root container")
 
-  attr :type, :atom,
+  attr(:type, :atom,
     values: [:single, :multiple],
     default: :single,
     doc: "Interaction mode: :single allows one open item, :multiple allows many"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the container div"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the container div")
 
-  slot :inner_block, required: true, doc: "accordion_item sub-components"
+  slot(:inner_block, required: true, doc: "accordion_item sub-components")
 
   @doc "Renders the accordion root container."
   def accordion(assigns) do
@@ -81,26 +82,42 @@ defmodule PhiaUi.Components.Accordion do
   # accordion_item/1
   # ---------------------------------------------------------------------------
 
-  attr :value, :string, required: true, doc: "Unique identifier for this item"
+  attr(:value, :string, required: true, doc: "Unique identifier for this item")
 
-  attr :type, :atom,
+  attr(:type, :atom,
     values: [:single, :multiple],
     default: :single,
     doc: "Inherited from the parent accordion — controls toggle behaviour"
+  )
 
-  attr :accordion_id, :string,
+  attr(:accordion_id, :string,
     default: nil,
     doc: "ID of the parent accordion — required for type: :single exclusivity"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the wrapper div"
+  attr(:disabled, :boolean,
+    default: false,
+    doc: "When true, prevents interaction and visually dims the item"
+  )
 
-  slot :inner_block, required: true, doc: "accordion_trigger and accordion_content"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the wrapper div")
 
-  @doc "Renders an accordion item wrapper."
+  slot(:inner_block, required: true, doc: "accordion_trigger and accordion_content")
+
+  @doc """
+  Renders an accordion item wrapper.
+
+  Use `:disabled` to prevent the item from being toggled — it renders with
+  reduced opacity and `pointer-events-none` to block mouse interaction.
+  """
   def accordion_item(assigns) do
     ~H"""
-    <div class={cn(["border-b", @class])} {@rest}>
+    <div
+      aria-disabled={@disabled && "true"}
+      class={cn(["border-b", @disabled && "pointer-events-none opacity-50", @class])}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -110,31 +127,56 @@ defmodule PhiaUi.Components.Accordion do
   # accordion_trigger/1
   # ---------------------------------------------------------------------------
 
-  attr :value, :string, required: true, doc: "Must match the parent accordion_item :value"
+  attr(:value, :string, required: true, doc: "Must match the parent accordion_item :value")
 
-  attr :type, :atom,
+  attr(:type, :atom,
     values: [:single, :multiple],
     default: :single,
     doc: "Inherited from the parent accordion — controls the JS toggle strategy"
+  )
 
-  attr :accordion_id, :string,
+  attr(:accordion_id, :string,
     default: nil,
     doc: "ID of the parent accordion — required for type: :single exclusivity"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the button element"
+  attr(:collapsible, :boolean,
+    default: false,
+    doc: "When true in :single mode, clicking the open item closes it again"
+  )
 
-  slot :inner_block, required: true, doc: "Trigger label or icon"
+  attr(:open, :boolean,
+    default: false,
+    doc: "When true, the item starts in the open state (for default_value support)"
+  )
 
-  @doc "Renders the accordion trigger button with LiveView.JS-powered toggle."
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the button element")
+
+  slot(:inner_block, required: true, doc: "Trigger label or icon")
+
+  @doc """
+  Renders the accordion trigger button with LiveView.JS-powered toggle.
+
+  Pass `collapsible={true}` to allow re-clicking an open item to close it
+  (only effective in `:single` mode with `accordion_id` set).
+
+  Pass `open={true}` when the item should start open — this pairs with
+  `open={true}` on the corresponding `accordion_content/1`.
+  """
   def accordion_trigger(assigns) do
-    assigns = assign(assigns, :on_click, build_toggle_js(assigns.type, assigns.value, assigns.accordion_id))
+    assigns =
+      assign(
+        assigns,
+        :on_click,
+        build_toggle_js(assigns.type, assigns.value, assigns.accordion_id, assigns.collapsible)
+      )
 
     ~H"""
     <button
       id={"accordion-trigger-#{@value}"}
       type="button"
-      aria-expanded="false"
+      aria-expanded={to_string(@open)}
       aria-controls={"accordion-content-#{@value}"}
       phx-click={@on_click}
       data-accordion-trigger
@@ -157,7 +199,10 @@ defmodule PhiaUi.Components.Accordion do
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="h-4 w-4 shrink-0 transition-transform duration-200"
+        class={cn([
+          "h-4 w-4 shrink-0 transition-transform duration-200",
+          @open && "rotate-180"
+        ])}
         data-chevron
         aria-hidden="true"
       >
@@ -171,18 +216,32 @@ defmodule PhiaUi.Components.Accordion do
   # accordion_content/1
   # ---------------------------------------------------------------------------
 
-  attr :value, :string, required: true, doc: "Must match the parent accordion_item :value"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the content div"
+  attr(:value, :string, required: true, doc: "Must match the parent accordion_item :value")
 
-  slot :inner_block, required: true, doc: "Content shown when the item is open"
+  attr(:open, :boolean,
+    default: false,
+    doc: "When true, the content starts visible — pair with open={true} on the trigger"
+  )
 
-  @doc "Renders the collapsible accordion content panel."
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the content div")
+
+  slot(:inner_block, required: true, doc: "Content shown when the item is open")
+
+  @doc """
+  Renders the collapsible accordion content panel.
+
+  By default the panel starts hidden. Pass `open={true}` to have it start
+  visible — this is how you implement `default_value` behaviour:
+
+      <.accordion_trigger value="q1" ... open={"q1" in @default_open}>
+      <.accordion_content value="q1" ... open={"q1" in @default_open}>
+  """
   def accordion_content(assigns) do
     ~H"""
     <div
       id={"accordion-content-#{@value}"}
-      style="display: none;"
+      style={if @open, do: "display: block;", else: "display: none;"}
       class={cn(["overflow-hidden transition-all duration-200", @class])}
       data-accordion-content
       {@rest}
@@ -198,9 +257,9 @@ defmodule PhiaUi.Components.Accordion do
   # Private helpers
   # ---------------------------------------------------------------------------
 
-  # Single mode: collapse all items in the accordion, then expand only the
-  # clicked one. This also resets all chevrons and aria-expanded attributes.
-  defp build_toggle_js(:single, value, accordion_id) when not is_nil(accordion_id) do
+  # Single non-collapsible: hide all, then show only the clicked item.
+  # Resets all chevrons and aria-expanded, then sets the clicked item's state.
+  defp build_toggle_js(:single, value, accordion_id, false) when not is_nil(accordion_id) do
     JS.hide(to: "##{accordion_id} [data-accordion-content]")
     |> JS.show(to: "#accordion-content-#{value}")
     |> JS.set_attribute({"aria-expanded", "false"},
@@ -215,8 +274,22 @@ defmodule PhiaUi.Components.Accordion do
     |> JS.add_class("rotate-180", to: "#chevron-#{value}")
   end
 
+  # Single collapsible: hide all *other* items, then toggle the clicked item.
+  # The clicked item closes if open or opens if closed.
+  defp build_toggle_js(:single, value, accordion_id, true) when not is_nil(accordion_id) do
+    JS.hide(to: "##{accordion_id} [data-accordion-content]:not(#accordion-content-#{value})")
+    |> JS.set_attribute({"aria-expanded", "false"},
+      to: "##{accordion_id} [data-accordion-trigger]:not(#accordion-trigger-#{value})"
+    )
+    |> JS.remove_class("rotate-180",
+      to: "##{accordion_id} [data-chevron]:not(#chevron-#{value})"
+    )
+    |> JS.toggle(to: "#accordion-content-#{value}")
+    |> JS.toggle_class("rotate-180", to: "#chevron-#{value}")
+  end
+
   # Multiple mode (or single without accordion_id): toggle the individual item.
-  defp build_toggle_js(_type, value, _accordion_id) do
+  defp build_toggle_js(_type, value, _accordion_id, _collapsible) do
     JS.toggle(to: "#accordion-content-#{value}")
     |> JS.toggle_class("rotate-180", to: "#chevron-#{value}")
   end
