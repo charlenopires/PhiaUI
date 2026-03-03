@@ -1,8 +1,8 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 31 components, inspired by shadcn/ui.**
 
-Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, and built-in analytics widgets for financial terminals, BI dashboards, and KPI monitors.
+Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets for financial terminals, BI dashboards, and KPI monitors.
 
 [![Hex.pm](https://img.shields.io/hexpm/v/phia_ui.svg)](https://hex.pm/packages/phia_ui)
 [![Elixir](https://img.shields.io/badge/elixir-%3E%3D1.17-purple)](https://elixir-lang.org)
@@ -14,68 +14,82 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 | Feature | PhiaUI | salad_ui |
 |---------|--------|----------|
-| Ejectable architecture | Yes | Partial |
-| Enterprise analytics widgets | Yes | No |
-| Zero npm deps for interactivity | Yes | No |
-| Native ClassMerger (no tw_merge) | Yes | No |
-| TailwindCSS v4 theme system | Yes | No |
-| WAI-ARIA on all interactive | Yes | Partial |
+| Ejectable architecture | ✓ | Partial |
+| Enterprise analytics widgets | ✓ | ✗ |
+| Zero npm deps for interactivity | ✓ | ✗ |
+| Native ClassMerger (no tw_merge) | ✓ | ✗ |
+| TailwindCSS v4 theme system | ✓ | ✗ |
+| WAI-ARIA on all interactive | ✓ | Partial |
+| Dark mode, Ctrl+K search, Date Range | ✓ | ✗ |
 
 ---
 
-## Implemented Components
+## Component Library — 31 Components
 
-### Primitives (Stateless, no JS)
+### Primitives & Feedback — 8 components
 
-| Component | Function | Sub-components |
-|-----------|----------|----------------|
-| Button | `button/1` | — |
-| Card | `card/1` | `card_header`, `card_title`, `card_description`, `card_content`, `card_footer` |
-| Badge | `badge/1` | — |
-| Table | `table/1` | `table_header`, `table_body`, `table_footer`, `table_row`, `table_head`, `table_cell`, `table_caption` |
-| Icon | `icon/1` | — |
-
-### Form Integration
+Stateless HEEx components. No JavaScript. → [Full examples & use cases](docs/components/primitives.md)
 
 | Component | Function | Description |
 |-----------|----------|-------------|
-| Input | `phia_input/1` | Label + input + description + errors, integrated with `Phoenix.HTML.FormField` |
-| Textarea | `phia_textarea/1` | Multi-line textarea with form integration |
-| Select | `phia_select/1` | Native select with FormField integration |
+| Button | `button/1` | 6 variants × 4 sizes, disabled state |
+| Card | `card/1` | Composable header / content / footer slots |
+| Badge | `badge/1` | 4 variants for status labels |
+| Icon | `icon/1` | Lucide SVG sprite, 4 sizes |
+| Alert | `alert/1` | 4 variants with optional icon slot |
+| Skeleton | `skeleton/1` | `animate-pulse` placeholders for loading states |
+| Breadcrumb | `breadcrumb/1` | 7 sub-components, `aria-current="page"` |
+| Pagination | `pagination/1` | Server-side pagination with `phx-click` |
+
+### Form Integration — 7 components
+
+Integrated with `Phoenix.HTML.Form` and Ecto changesets. → [Full examples & use cases](docs/components/forms.md)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Input | `phia_input/1` | Label + input + description + errors |
+| Textarea | `phia_textarea/1` | Multi-line with form integration |
+| Select | `phia_select/1` | Native select with FormField |
 | Form | `form_field/1`, `form_label/1`, `form_message/1` | Composable form primitives |
-| Tags Input | `tags_input/1` | Multi-tag input with deduplication |
-| Image Upload | `image_upload/1` | Drop zone + preview, uses native Phoenix LiveView uploads |
-| Rich Text Editor | `rich_text_editor/1` | WYSIWYG editor, toolbar with 14 commands, zero npm deps |
+| Tags Input | `tags_input/1` | Multi-tag, deduplication, CSV sync — `PhiaTagsInput` |
+| Image Upload | `image_upload/1` | Drop zone + preview, native Phoenix uploads |
+| Rich Text Editor | `rich_text_editor/1` | WYSIWYG, 14 toolbar commands, zero npm — `PhiaRichTextEditor` |
 
-### Interactive (JS Hooks)
+### Interactive Components — 8 components
 
-| Component | Function | Hook |
-|-----------|----------|------|
-| Dialog | `dialog/1` | `PhiaDialog` |
-| Dropdown Menu | `dropdown_menu/1` | `PhiaDropdownMenu` |
-| Accordion | `accordion/1` | `Phoenix.LiveView.JS` only |
+Vanilla JS hooks for accessible behaviors: focus trapping, keyboard navigation, smart positioning. → [Full examples & use cases](docs/components/interactive.md)
 
-### Dashboard Shell
+| Component | Function | Hook | Key features |
+|-----------|----------|------|--------------|
+| Dialog | `dialog/1` | `PhiaDialog` | Focus trap, Escape, scroll lock |
+| Dropdown Menu | `dropdown_menu/1` | `PhiaDropdownMenu` | Smart flip, click-outside, arrow keys |
+| Accordion | `accordion/1` | (LiveView.JS) | Single / multiple mode |
+| Tooltip | `tooltip/1` | `PhiaTooltip` | Hover + focus, 4 positions, smart flip |
+| Popover | `popover/1` | `PhiaPopover` | Click-open, focus trap, click-outside |
+| Toast | `toast/1` | `PhiaToast` | `push_event` driven, auto-dismiss, stacking |
+| Command Menu | `command/1` | `PhiaCommand` | Ctrl+K global, Arrow keys, server-side filter |
+| Date Range Picker | `date_range_picker/1` | `PhiaDateRangePicker` | Dual calendar, range highlight, min/max |
+
+### Dashboard & Analytics — 8 components
+
+Enterprise layout shell, data tables, KPI widgets, and chart integration. → [Full examples & use cases](docs/components/dashboard.md)
 
 | Component | Function | Description |
 |-----------|----------|-------------|
 | Shell | `shell/1` | CSS Grid desktop layout (sidebar 240px + 1fr) |
-| Sidebar | `sidebar/1` | Fixed sidebar with brand, nav, footer slots |
-| Sidebar Item | `sidebar_item/1` | Navigation item with active state |
-| Topbar | `topbar/1` | Full-width header bar |
-| Mobile Sidebar Toggle | `mobile_sidebar_toggle/1` | Hamburger trigger (hidden on md+) |
-
-### Dashboard Widgets
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| Stat Card | `stat_card/1` | KPI card with trend indicator (up/down/neutral) |
-| Metric Grid | `metric_grid/1` | Responsive grid layout (1–4 cols) |
-| Chart Shell | `chart_shell/1` | Titled card wrapper for any chart library |
+| Sidebar | `sidebar/1` + `sidebar_item/1` | Fixed sidebar, brand/nav/footer slots |
+| Topbar | `topbar/1` | Full-width header, actions slot |
+| Dark Mode Toggle | `dark_mode_toggle/1` | `PhiaDarkMode`: localStorage + `prefers-color-scheme` |
+| Table | `table/1` | 8 sub-components, `phx-update="stream"` compatible |
+| DataGrid | `data_grid/1` | Sortable columns, `phx-click` sort events |
+| Stat Card + Metric Grid | `stat_card/1`, `metric_grid/1` | KPI cards with trend indicators, responsive grid |
+| Chart Shell + PhiaChart | `chart_shell/1`, `phia_chart/1` | Any chart library wrapper + ECharts hook |
 
 ---
 
-## Installation
+## Quick Start
+
+### 1. Install
 
 Add to `mix.exs`:
 
@@ -87,43 +101,149 @@ def deps do
 end
 ```
 
-Run the installer:
+Run:
 
 ```bash
+mix deps.get
 mix phia.install
 ```
 
-This copies the TailwindCSS v4 theme and the ClassMerger into your project.
+### 2. Add the theme
 
-### TailwindCSS v4 Theme
-
-In your `assets/css/app.css`:
+In `assets/css/app.css`:
 
 ```css
 @import "tailwindcss";
 @import "../../../deps/phia_ui/priv/static/theme.css";
 ```
 
-Or after ejection:
+### 3. Eject components
 
-```css
-@import "tailwindcss";
-@import "./phia_theme.css";
+```bash
+mix phia.add button card badge dialog
 ```
 
-The theme provides semantic design tokens:
+### 4. Register hooks
 
-```css
-@theme {
-  --color-primary: oklch(0.21 0.006 285.885);
-  --color-primary-foreground: oklch(0.985 0 0);
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  /* ... */
-}
+```javascript
+// assets/js/app.js
+import PhiaDialog        from "./phia_hooks/dialog"
+import PhiaDropdownMenu  from "./phia_hooks/dropdown_menu"
+import PhiaTagsInput     from "./phia_hooks/tags_input"
+import PhiaRichTextEditor from "./phia_hooks/rich_text_editor"
+import PhiaTooltip       from "./phia_hooks/tooltip"
+import PhiaPopover       from "./phia_hooks/popover"
+import PhiaToast         from "./phia_hooks/toast"
+import PhiaDarkMode      from "./phia_hooks/dark_mode"
+import PhiaCommand       from "./phia_hooks/command"
+import PhiaDateRangePicker from "./phia_hooks/date_range_picker"
+import PhiaChart         from "./phia_hooks/chart"
+
+let liveSocket = new LiveSocket("/live", Socket, {
+  params: { _csrf_token: csrfToken },
+  hooks: {
+    PhiaDialog, PhiaDropdownMenu, PhiaTagsInput, PhiaRichTextEditor,
+    PhiaTooltip, PhiaPopover, PhiaToast, PhiaDarkMode,
+    PhiaCommand, PhiaDateRangePicker, PhiaChart
+  }
+})
 ```
+
+> Hook files are copied to `assets/js/phia_hooks/` by `mix phia.install`.
+
+---
+
+## Usage Examples
+
+### Button
+
+```heex
+<.button>Default</.button>
+<.button variant="destructive">Delete</.button>
+<.button variant="outline" size="sm"><.icon name="download" size="sm" /> Export</.button>
+<.button variant="ghost" disabled>Disabled</.button>
+```
+
+→ [Button examples](docs/components/primitives.md#button)
+
+### Alert
+
+```heex
+<.alert variant="destructive">
+  <:icon><.icon name="alert-circle" /></:icon>
+  <.alert_title>Payment failed</.alert_title>
+  <.alert_description>Your card was declined. Please update your billing details.</.alert_description>
+</.alert>
+```
+
+→ [Alert examples](docs/components/primitives.md#alert)
+
+### Form
+
+```heex
+<.form for={@form} phx-change="validate" phx-submit="save">
+  <.phia_input field={@form[:email]} type="email" label="Email" />
+  <.phia_input field={@form[:name]} label="Full name" />
+  <.phia_select field={@form[:role]} options={["admin", "editor", "viewer"]} label="Role" />
+  <.button type="submit">Save</.button>
+</.form>
+```
+
+→ [Form examples](docs/components/forms.md)
+
+### Toast notification
+
+```heex
+<%!-- Mount once in root.html.heex --%>
+<.toast id="toast-viewport" />
+```
+
+```elixir
+# Trigger from any LiveView
+{:noreply, push_event(socket, "phia-toast", %{
+  title: "Saved", description: "Changes saved.", variant: "success"
+})}
+```
+
+→ [Toast examples](docs/components/interactive.md#toast)
+
+### Command Menu (Ctrl+K)
+
+```heex
+<.command id="cmd">
+  <.command_input id="cmd-input" on_change="search" placeholder="Search…" />
+  <.command_list id="cmd-results">
+    <.command_empty>No results.</.command_empty>
+    <.command_group label="Navigation">
+      <.command_item on_click="go" value="/dashboard">Dashboard</.command_item>
+    </.command_group>
+  </.command_list>
+</.command>
+```
+
+→ [Command Menu examples](docs/components/interactive.md#command-menu-ctrlk)
+
+### Dashboard with charts
+
+```heex
+<.metric_grid cols={4}>
+  <.stat_card title="MRR" value="$48,290" trend="up" trend_value="+12.5%" />
+  <.stat_card title="Users" value="2,840" trend="up" trend_value="+8.2%" />
+  <.stat_card title="Churn" value="3.1%" trend="down" trend_value="-0.4%" />
+  <.stat_card title="NPS" value="67" trend="neutral" trend_value="0" />
+</.metric_grid>
+
+<.phia_chart
+  id="revenue-chart"
+  type={:area}
+  title="Monthly Revenue"
+  series={[%{name: "MRR", data: @mrr_data}]}
+  labels={@month_labels}
+  height="320px"
+/>
+```
+
+→ [Dashboard examples](docs/components/dashboard.md)
 
 ---
 
@@ -137,7 +257,7 @@ mix phia.install
 mix phia.list
 
 # Eject specific components into your codebase
-mix phia.add button card badge
+mix phia.add button card badge dialog
 
 # Generate the Lucide SVG sprite
 mix phia.icons
@@ -145,267 +265,19 @@ mix phia.icons
 
 ---
 
-## Usage Examples
+## Ejectable Architecture
 
-### Button
+PhiaUI is not a traditional runtime dependency — components are **source code you own**:
 
-```heex
-<.button>Click me</.button>
-<.button variant="destructive">Delete</.button>
-<.button variant="outline" size="sm">Small outline</.button>
-<.button variant="ghost" disabled>Disabled</.button>
+```bash
+mix phia.add button card dialog toast command
 ```
 
-Variants: `default`, `destructive`, `outline`, `secondary`, `ghost`, `link`
-Sizes: `default`, `sm`, `lg`, `icon`
+This copies Elixir modules and JS hooks directly into your project. After ejection, **you own the code**: read it, modify it, delete parts you don't need. PhiaUI has no opinion on your code after the copy.
 
-### Card Composition
-
-```heex
-<.card>
-  <.card_header>
-    <.card_title>Revenue</.card_title>
-    <.card_description>Last 30 days</.card_description>
-  </.card_header>
-  <.card_content>
-    <p class="text-3xl font-bold">$48,290</p>
-  </.card_content>
-  <.card_footer>
-    <.badge variant="secondary">+12.5%</.badge>
-  </.card_footer>
-</.card>
 ```
-
-### Badge
-
-```heex
-<.badge>Default</.badge>
-<.badge variant="destructive">Error</.badge>
-<.badge variant="outline">Pending</.badge>
-```
-
-### Icon
-
-```heex
-<.icon name="check" />
-<.icon name="alert-triangle" size="lg" class="text-destructive" />
-```
-
-Requires the Lucide sprite at `/priv/static/icons/lucide-sprite.svg`. Generate with `mix phia.icons`.
-
-### Table with LiveView Streams
-
-```heex
-<.table>
-  <.table_header>
-    <.table_row>
-      <.table_head>Name</.table_head>
-      <.table_head>Status</.table_head>
-      <.table_head class="text-right">Amount</.table_head>
-    </.table_row>
-  </.table_header>
-  <.table_body>
-    <.table_row :for={{dom_id, row} <- @streams.rows} id={dom_id}>
-      <.table_cell><%= row.name %></.table_cell>
-      <.table_cell><.badge><%= row.status %></.badge></.table_cell>
-      <.table_cell class="text-right"><%= row.amount %></.table_cell>
-    </.table_row>
-  </.table_body>
-</.table>
-```
-
-### Form with Changeset
-
-```heex
-<.form for={@form} phx-change="validate" phx-submit="save">
-  <.phia_input field={@form[:name]} label="Full Name" />
-  <.phia_input field={@form[:email]} type="email" label="Email" description="We won't spam you." />
-  <.phia_textarea field={@form[:bio]} label="Bio" rows={4} />
-  <.phia_select field={@form[:role]} options={["admin", "editor", "viewer"]} label="Role" />
-  <.button type="submit">Save</.button>
-</.form>
-```
-
-### Tags Input
-
-```heex
-<.tags_input
-  field={@form[:tags]}
-  label="Tags"
-  placeholder="Add a tag..."
-  separator=","
-/>
-```
-
-Tags are stored as a comma-separated string in the hidden input. Requires the `PhiaTagsInput` JS hook.
-
-### Image Upload
-
-```heex
-<.live_file_input upload={@uploads.avatar} class="sr-only" />
-<.image_upload upload={@uploads.avatar} label="Profile photo" />
-```
-
-In your LiveView:
-
-```elixir
-def mount(_params, _session, socket) do
-  {:ok, allow_upload(socket, :avatar, accept: ~w(.jpg .jpeg .png), max_entries: 1)}
-end
-```
-
-### Rich Text Editor
-
-```heex
-<.rich_text_editor
-  field={@form[:content]}
-  label="Content"
-  placeholder="Start writing..."
-  min_height="200px"
-/>
-```
-
-Requires the `PhiaRichTextEditor` JS hook. Toolbar includes: bold, italic, underline, strikethrough, H1–H3, paragraph, bullet list, ordered list, blockquote, inline code, code block, link.
-
-### Dialog
-
-```heex
-<.dialog id="confirm-dialog">
-  <.dialog_trigger>
-    <.button variant="outline">Open dialog</.button>
-  </.dialog_trigger>
-  <.dialog_content>
-    <.dialog_header>
-      <.dialog_title>Confirm action</.dialog_title>
-      <.dialog_description>This cannot be undone.</.dialog_description>
-    </.dialog_header>
-    <.dialog_footer>
-      <.dialog_close><.button variant="outline">Cancel</.button></.dialog_close>
-      <.button phx-click="confirm">Confirm</.button>
-    </.dialog_footer>
-  </.dialog_content>
-</.dialog>
-```
-
-Requires the `PhiaDialog` JS hook. Features: focus trap, Escape key, scroll locking, auto-focus.
-
-### Dropdown Menu
-
-```heex
-<.dropdown_menu id="actions-menu">
-  <.dropdown_menu_trigger>
-    <.button variant="ghost" size="icon"><.icon name="more-horizontal" /></.button>
-  </.dropdown_menu_trigger>
-  <.dropdown_menu_content>
-    <.dropdown_menu_label>Actions</.dropdown_menu_label>
-    <.dropdown_menu_separator />
-    <.dropdown_menu_item phx-click="edit">Edit</.dropdown_menu_item>
-    <.dropdown_menu_item phx-click="delete" class="text-destructive">Delete</.dropdown_menu_item>
-  </.dropdown_menu_content>
-</.dropdown_menu>
-```
-
-Requires the `PhiaDropdownMenu` JS hook. Features: smart auto-flip positioning, click-outside detection, keyboard navigation.
-
-### Accordion
-
-```heex
-<.accordion type="single">
-  <.accordion_item accordion_id="item-1">
-    <.accordion_trigger accordion_id="item-1">What is PhiaUI?</.accordion_trigger>
-    <.accordion_content accordion_id="item-1">
-      A Phoenix LiveView component library for enterprise dashboards.
-    </.accordion_content>
-  </.accordion_item>
-  <.accordion_item accordion_id="item-2">
-    <.accordion_trigger accordion_id="item-2">Is it ejectable?</.accordion_trigger>
-    <.accordion_content accordion_id="item-2">
-      Yes. Use <code>mix phia.add</code> to copy components into your project.
-    </.accordion_content>
-  </.accordion_item>
-</.accordion>
-```
-
-Uses `Phoenix.LiveView.JS` only — no external hook required.
-
-### Dashboard Shell
-
-```heex
-<.shell>
-  <:topbar>
-    <.topbar>
-      <:brand>MyApp</:brand>
-      <.mobile_sidebar_toggle />
-    </.topbar>
-  </:topbar>
-  <:sidebar>
-    <.sidebar>
-      <:brand><span class="font-bold">MyApp</span></:brand>
-      <:nav_items>
-        <.sidebar_item href="/dashboard" active={@current_path == "/dashboard"}>
-          <.icon name="layout-dashboard" /> Dashboard
-        </.sidebar_item>
-        <.sidebar_item href="/reports">
-          <.icon name="bar-chart" /> Reports
-        </.sidebar_item>
-      </:nav_items>
-    </.sidebar>
-  </:sidebar>
-  <main class="p-6">
-    <%= @inner_content %>
-  </main>
-</.shell>
-```
-
-Desktop: CSS Grid `grid-cols-[240px_1fr] h-screen`. Mobile: Flexbox drawer toggled via `Phoenix.LiveView.JS` (no Alpine.js).
-
-### Stat Card + Metric Grid
-
-```heex
-<.metric_grid cols={4}>
-  <.stat_card
-    title="Revenue"
-    value="$48,290"
-    trend="up"
-    trend_value="+12.5%"
-    description="vs last month"
-  >
-    <:icon><.icon name="dollar-sign" size="lg" /></:icon>
-  </.stat_card>
-  <.stat_card
-    title="Active Users"
-    value="2,840"
-    trend="up"
-    trend_value="+8.2%"
-    description="daily active"
-  />
-  <.stat_card
-    title="Churn Rate"
-    value="3.1%"
-    trend="down"
-    trend_value="-0.4%"
-    description="this month"
-  />
-  <.stat_card
-    title="Avg Session"
-    value="4m 32s"
-    trend="neutral"
-    trend_value="0%"
-    description="no change"
-  />
-</.metric_grid>
-```
-
-### Chart Shell
-
-```heex
-<.chart_shell title="Monthly Revenue" description="Jan–Dec 2024" period="2024">
-  <:actions>
-    <.button variant="outline" size="sm">Export</.button>
-  </:actions>
-  <%!-- Drop in any chart library: VegaLite, Chart.js, D3, etc. --%>
-  <canvas id="revenue-chart" phx-hook="RevenueChart" />
-</.chart_shell>
+lib/your_app_web/components/ui/button.ex      ← yours to edit
+assets/js/phia_hooks/dialog.js                ← yours to edit
 ```
 
 ---
@@ -417,86 +289,58 @@ The `cn/1` function merges Tailwind classes with conflict resolution (last wins 
 ```elixir
 import PhiaUi.ClassMerger, only: [cn: 1]
 
-cn(["px-4 py-2", @class])
-# => "px-4 py-2 mt-4" (if @class = "mt-4")
-
-cn(["px-4", "px-8"])
-# => "px-8"  (conflict resolved: last wins)
-
-cn(["text-red-500", @error && "text-destructive", @class])
-# => falsy values are filtered out
+cn(["px-4 py-2", @class])           # => "px-4 py-2 mt-4" (if @class = "mt-4")
+cn(["px-4", "px-8"])                # => "px-8"  (conflict resolved)
+cn(["text-red-500", @error && "text-destructive", nil])  # nil filtered out
 ```
 
-Backed by an ETS-cached GenServer (`PhiaUi.ClassMerger.Cache`) for zero-overhead repeated calls.
+Backed by an ETS-cached GenServer (`ClassMerger.Cache`) — zero overhead on repeated calls.
 
 ---
 
-## JS Hooks Setup
+## TailwindCSS v4 Theme
 
-Register the four hooks in `assets/js/app.js`:
+The theme provides semantic OKLCH design tokens. Always use tokens, never hardcoded colors:
 
-```javascript
-import PhiaDialog from "./phia_hooks/dialog.js"
-import PhiaDropdownMenu from "./phia_hooks/dropdown_menu.js"
-import PhiaTagsInput from "./phia_hooks/tags_input.js"
-import PhiaRichTextEditor from "./phia_hooks/rich_text_editor.js"
+```css
+/* ✓ Use semantic tokens */
+bg-primary text-muted-foreground border-border bg-accent
 
-let liveSocket = new LiveSocket("/live", Socket, {
-  params: { _csrf_token: csrfToken },
-  hooks: { PhiaDialog, PhiaDropdownMenu, PhiaTagsInput, PhiaRichTextEditor }
-})
+/* ✗ Never hardcode */
+bg-gray-900 text-[#333]
 ```
 
-Hook files are copied to your project by `mix phia.install` or `mix phia.add <component>`.
-
-| Hook | Component | Lines | Features |
-|------|-----------|-------|----------|
-| `PhiaDialog` | Dialog | 152 | Focus trap, Escape, scroll lock, auto-focus |
-| `PhiaDropdownMenu` | Dropdown Menu | 174 | Smart positioning, click-outside, arrow key nav |
-| `PhiaTagsInput` | Tags Input | 202 | Add/remove tags, deduplication, CSV sync |
-| `PhiaRichTextEditor` | Rich Text Editor | 300+ | 14 toolbar commands, active state detection |
-
----
-
-## Ejectable Architecture
-
-PhiaUI is not a traditional runtime dependency. Components are source code you own:
-
-```bash
-# Eject button and card into your project
-mix phia.add button card
-```
-
-This copies:
-- `lib/your_app/components/button.ex`
-- `lib/your_app/components/card.ex`
-- `assets/js/phia_hooks/` (any required hooks)
-
-After ejection, modify components freely — PhiaUI has no opinion on your code after the copy.
-
-This contrasts with Tailwind UI or shadcn/ui's copy-paste model by automating the copy via Mix tasks and keeping component metadata in a registry.
+Dark mode support via `@custom-variant dark (&:where(.dark, .dark *))` — toggle the `.dark` class on `<html>` with `PhiaDarkMode`.
 
 ---
 
 ## Use Cases
 
-- **Financial terminals** — StatCard + MetricGrid for live P&L, position tracking, risk dashboards
-- **BI dashboards** — ChartShell wrapping VegaLite/Chart.js/D3 with consistent chrome
-- **KPI monitors** — Metric grids with real-time trend indicators
-- **Admin panels** — Shell + Sidebar + Table + Dialog for CRUD interfaces
-- **Internal tools** — Form components with Ecto changeset integration for data entry workflows
+- **Financial terminals** — StatCard + MetricGrid + PhiaChart for live P&L, position tracking, risk dashboards
+- **BI dashboards** — ChartShell + PhiaChart wrapping ECharts with consistent card chrome and real-time push_event updates
+- **SaaS admin panels** — Shell + Sidebar + DataGrid + Dialog + Toast for full CRUD interfaces
+- **KPI monitors** — Metric grids with real-time trend indicators and Ctrl+K command palette
+- **Booking and scheduling** — DateRangePicker for reservation flows with min/max constraints
+- **Internal tools** — Form components with Ecto changeset integration and rich text content editing
 
 ---
 
 ## Documentation
 
-Generate docs locally:
+Detailed examples and use cases:
+
+| Section | Contents |
+|---------|----------|
+| [Primitives & Feedback](docs/components/primitives.md) | Button, Card, Badge, Icon, Alert, Skeleton, Breadcrumb, Pagination |
+| [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Tags Input, Image Upload, Rich Text Editor |
+| [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker |
+| [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts |
+
+Generate API docs locally:
 
 ```bash
 mix docs
 ```
-
-Full documentation will be published to [HexDocs](https://hexdocs.pm/phia_ui) on release.
 
 ---
 
@@ -506,7 +350,7 @@ We value **Clarity**, **Simplicity**, and **Testability**.
 
 - All features require a specification with acceptance criteria before implementation
 - TDD: write failing tests first (red → green)
-- No Alpine.js, no npm deps for interactivity
+- No Alpine.js, no npm deps for interactivity — vanilla JS hooks only
 - `cn/1` implemented natively — no tw_merge or similar
+- All interactive components require WAI-ARIA roles, states, and keyboard support
 - All code passes `mix credo --strict` without warnings
-
