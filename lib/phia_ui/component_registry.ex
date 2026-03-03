@@ -515,11 +515,11 @@ defmodule PhiaUi.ComponentRegistry do
       name: "toast",
       module: PhiaUi.Components.Toast,
       template_file: "priv/templates/components/toast.ex",
-      js_hooks: ["Toast"],
+      js_hooks: ["PhiaToast"],
       dependencies: [],
       tier: :navigation,
       shadcn_equivalent: "Toast",
-      status: :planned
+      status: :implemented
     },
     sonner: %{
       name: "sonner",
@@ -572,6 +572,27 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :shell,
       shadcn_equivalent: nil,
       status: :planned
+    },
+    dark_mode_toggle: %{
+      name: "dark_mode_toggle",
+      module: PhiaUi.Components.DarkModeToggle,
+      template_file: "priv/templates/components/dark_mode_toggle.ex",
+      js_hooks: ["PhiaDarkMode"],
+      dependencies: [:icon],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    data_grid: %{
+      name: "data_grid",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
     },
 
     # ── Dashboard Widgets ─────────────────────────────────────────────────────

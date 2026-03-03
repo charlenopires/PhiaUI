@@ -6,10 +6,15 @@
  *
  * Light mode is the default. Dark mode overrides are applied automatically
  * via the prefers-color-scheme media query — no JavaScript required.
+ * When PhiaDarkMode hook is used, the .dark class on <html> also activates
+ * dark mode via @custom-variant below.
  *
  * Generated utilities examples:
  *   bg-primary, text-foreground, border-border, ring-ring, bg-muted, etc.
  */
+
+/* Dark mode via .dark class (PhiaDarkMode hook) */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* ── Spacing & Shape ────────────────────────────────────────────────────── */

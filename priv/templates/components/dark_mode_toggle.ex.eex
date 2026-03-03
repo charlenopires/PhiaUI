@@ -1,0 +1,66 @@
+defmodule <%= @module_name %>.Components.UI.DarkModeToggle do
+  @moduledoc """
+  Dark mode toggle component with PhiaDarkMode vanilla JS hook.
+
+  Ejected from PhiaUI — you own this copy. Customise freely.
+
+  ## Example
+
+      <.dark_mode_toggle id="theme-toggle" />
+
+  ## Anti-FOUC (add to <head> before stylesheets)
+
+      <script>
+        (function() {
+          var t = localStorage.getItem('phia-theme');
+          if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          }
+        })();
+      </script>
+
+  ## Hook setup
+
+      import PhiaDarkMode from "./hooks/dark_mode"
+      let liveSocket = new LiveSocket("/live", Socket, {
+        hooks: { PhiaDarkMode }
+      })
+  """
+
+  use Phoenix.Component
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+  import <%= @module_name %>.Components.UI.Icon, only: [icon: 1]
+
+  attr :id, :string, required: true, doc: "Unique ID for the toggle button"
+  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr :rest, :global
+
+  def dark_mode_toggle(assigns) do
+    ~H"""
+    <button
+      id={@id}
+      type="button"
+      phx-hook="PhiaDarkMode"
+      aria-label="Switch to dark mode"
+      class={cn([
+        "inline-flex h-9 w-9 items-center justify-center rounded-md",
+        "border border-transparent text-sm transition-colors",
+        "hover:bg-accent hover:text-accent-foreground",
+        "focus:outline-none focus:ring-1 focus:ring-ring",
+        @class
+      ])}
+      {@rest}
+    >
+      <%!-- Sun icon — visible in light mode, hidden in dark mode --%>
+      <span class="block dark:hidden" aria-hidden="true">
+        <.icon name="sun" size={:sm} />
+      </span>
+      <%!-- Moon icon — hidden in light mode, visible in dark mode --%>
+      <span class="hidden dark:block" aria-hidden="true">
+        <.icon name="moon" size={:sm} />
+      </span>
+      <span class="sr-only">Toggle theme</span>
+    </button>
+    """
+  end
+end
