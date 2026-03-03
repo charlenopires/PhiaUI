@@ -26,15 +26,16 @@ defmodule PhiaUi.Components.Textarea do
   # phia_textarea/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+  )
 
-  attr :label, :string, default: nil, doc: "Label text rendered above the textarea"
-  attr :description, :string, default: nil, doc: "Helper text rendered below the textarea"
-  attr :rows, :integer, default: 4, doc: "Number of visible text rows"
-  attr :placeholder, :string, default: nil, doc: "Placeholder text for the textarea"
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the textarea element"
+  attr(:label, :string, default: nil, doc: "Label text rendered above the textarea")
+  attr(:description, :string, default: nil, doc: "Helper text rendered below the textarea")
+  attr(:rows, :integer, default: 4, doc: "Number of visible text rows")
+  attr(:placeholder, :string, default: nil, doc: "Placeholder text for the textarea")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the textarea element")
 
   @doc """
   Renders a multi-line `<textarea>` integrated with `Phoenix.HTML.FormField`.

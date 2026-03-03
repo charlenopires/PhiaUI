@@ -3,9 +3,9 @@ defmodule PhiaUi.Components.ShellModuledocTest do
 
   # Fetch the compiled @moduledoc string from the module.
   @moduledoc_text (case Code.fetch_docs(PhiaUi.Components.Shell) do
-    {:docs_v1, _, _, _, %{"en" => text}, _, _} -> text
-    _ -> ""
-  end)
+                     {:docs_v1, _, _, _, %{"en" => text}, _, _} -> text
+                     _ -> ""
+                   end)
 
   describe "@moduledoc exists" do
     test "module has a non-empty @moduledoc" do

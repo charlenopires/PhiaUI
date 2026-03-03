@@ -43,18 +43,20 @@ defmodule PhiaUi.Components.Form do
   # phia_input/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+  )
 
-  attr :type, :string, default: "text", doc: "HTML input type"
-  attr :label, :string, default: nil, doc: "Label text rendered above the input"
-  attr :description, :string, default: nil, doc: "Helper text rendered below the input"
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the input element"
+  attr(:type, :string, default: "text", doc: "HTML input type")
+  attr(:label, :string, default: nil, doc: "Label text rendered above the input")
+  attr(:description, :string, default: nil, doc: "Helper text rendered below the input")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the input element")
 
-  attr :rest, :global,
+  attr(:rest, :global,
     include: ~w(autocomplete placeholder readonly required disabled),
     doc: "HTML attributes forwarded to the input element"
+  )
 
   @doc """
   Renders a form input integrated with `Phoenix.HTML.FormField`.
@@ -104,14 +106,18 @@ defmodule PhiaUi.Components.Form do
   # form_field/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+  )
 
-  attr :label, :string, default: nil, doc: "Label text"
-  attr :description, :string, default: nil, doc: "Helper text below the input slot"
+  attr(:label, :string, default: nil, doc: "Label text")
+  attr(:description, :string, default: nil, doc: "Helper text below the input slot")
 
-  slot :inner_block, required: true, doc: "The input component (e.g. a native input or phia_input)"
+  slot(:inner_block,
+    required: true,
+    doc: "The input component (e.g. a native input or phia_input)"
+  )
 
   @doc """
   Composable form field wrapper.
@@ -136,11 +142,11 @@ defmodule PhiaUi.Components.Form do
   # form_label/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField, required: true, doc: "FormField to link the label to"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the label element"
+  attr(:field, Phoenix.HTML.FormField, required: true, doc: "FormField to link the label to")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the label element")
 
-  slot :inner_block, required: true, doc: "Label text or content"
+  slot(:inner_block, required: true, doc: "Label text or content")
 
   @doc """
   Renders an accessible `<label>` linked to the input via `for={@field.id}`.
@@ -166,8 +172,8 @@ defmodule PhiaUi.Components.Form do
   # form_message/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField, required: true, doc: "FormField to read errors from"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
+  attr(:field, Phoenix.HTML.FormField, required: true, doc: "FormField to read errors from")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
 
   @doc """
   Renders changeset error messages for a field. Renders nothing when there are no errors.

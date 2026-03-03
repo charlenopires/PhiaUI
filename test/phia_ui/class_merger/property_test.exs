@@ -11,8 +11,10 @@ defmodule PhiaUi.ClassMerger.PropertyTest do
   # Simple alphanumeric tokens — Groups.group_for/1 returns nil for these,
   # so they dedup by exact-match only, making membership assertions safe.
   defp simple_token do
-    gen all prefix <- string(:alphanumeric, min_length: 2, max_length: 4),
-            suffix <- string(:alphanumeric, min_length: 1, max_length: 4) do
+    gen all(
+          prefix <- string(:alphanumeric, min_length: 2, max_length: 4),
+          suffix <- string(:alphanumeric, min_length: 1, max_length: 4)
+        ) do
       "#{prefix}-#{suffix}"
     end
   end
@@ -31,21 +33,21 @@ defmodule PhiaUi.ClassMerger.PropertyTest do
   # ---------------------------------------------------------------------------
 
   property "output has no leading or trailing whitespace" do
-    check all classes <- class_list() do
+    check all(classes <- class_list()) do
       result = ClassMerger.cn(classes)
       assert result == String.trim(result)
     end
   end
 
   property "output has no consecutive whitespace" do
-    check all classes <- class_list() do
+    check all(classes <- class_list()) do
       result = ClassMerger.cn(classes)
       refute result =~ ~r/\s{2,}/
     end
   end
 
   property "nil and false entries do not affect the result" do
-    check all classes <- class_list() do
+    check all(classes <- class_list()) do
       base = ClassMerger.cn(classes)
       assert ClassMerger.cn([nil | classes]) == base
       assert ClassMerger.cn([false | classes]) == base
@@ -55,14 +57,14 @@ defmodule PhiaUi.ClassMerger.PropertyTest do
   end
 
   property "cn is idempotent: cn([cn(classes)]) == cn(classes)" do
-    check all classes <- class_list() do
+    check all(classes <- class_list()) do
       result = ClassMerger.cn(classes)
       assert ClassMerger.cn([result]) == result
     end
   end
 
   property "all unique tokens from the input appear in the result" do
-    check all tokens <- uniq_list_of(simple_token(), min_length: 1, max_length: 6) do
+    check all(tokens <- uniq_list_of(simple_token(), min_length: 1, max_length: 6)) do
       result = ClassMerger.cn(tokens)
 
       Enum.each(tokens, fn token ->
@@ -73,7 +75,7 @@ defmodule PhiaUi.ClassMerger.PropertyTest do
   end
 
   property "output is a subset of input tokens (no tokens invented)" do
-    check all classes <- class_list() do
+    check all(classes <- class_list()) do
       result = ClassMerger.cn(classes)
 
       input_tokens =

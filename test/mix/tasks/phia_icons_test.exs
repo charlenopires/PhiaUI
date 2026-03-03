@@ -124,7 +124,15 @@ defmodule Mix.Tasks.Phia.IconsTest do
     test "creates nested output directories if they don't exist" do
       src = tmp_source()
       write_all_minimum_icons(src)
-      nested = Path.join([@tmp_dir, "phia_icons_nested_#{:erlang.unique_integer([:positive])}", "static", "icons", "lucide-sprite.svg"])
+
+      nested =
+        Path.join([
+          @tmp_dir,
+          "phia_icons_nested_#{:erlang.unique_integer([:positive])}",
+          "static",
+          "icons",
+          "lucide-sprite.svg"
+        ])
 
       Icons.generate(src, nested)
       assert File.exists?(nested)

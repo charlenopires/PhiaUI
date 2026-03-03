@@ -42,11 +42,11 @@ defmodule PhiaUi.Components.Tooltip do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :id, :string, required: true, doc: "Unique ID for aria coordination"
-  attr :delay_ms, :integer, default: 200, doc: "Hover delay before showing tooltip (ms)"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:id, :string, required: true, doc: "Unique ID for aria coordination")
+  attr(:delay_ms, :integer, default: 200, doc: "Hover delay before showing tooltip (ms)")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the tooltip wrapper with PhiaTooltip hook."
   def tooltip(assigns) do
@@ -63,10 +63,10 @@ defmodule PhiaUi.Components.Tooltip do
     """
   end
 
-  attr :tooltip_id, :string, required: true, doc: "ID of the parent tooltip wrapper"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:tooltip_id, :string, required: true, doc: "ID of the parent tooltip wrapper")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the tooltip trigger element."
   def tooltip_trigger(assigns) do
@@ -82,14 +82,17 @@ defmodule PhiaUi.Components.Tooltip do
     """
   end
 
-  attr :tooltip_id, :string, required: true, doc: "ID of the parent tooltip wrapper"
-  attr :position, :atom,
+  attr(:tooltip_id, :string, required: true, doc: "ID of the parent tooltip wrapper")
+
+  attr(:position, :atom,
     default: :top,
     values: [:top, :bottom, :left, :right],
     doc: "Preferred position of the tooltip panel"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc """
   Renders the floating tooltip content panel.

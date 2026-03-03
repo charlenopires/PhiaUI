@@ -12,9 +12,9 @@ defmodule PhiaUi.Components.ImageUploadTest do
     use Phoenix.Component
     import PhiaUi.Components.ImageUpload
 
-    attr :upload, :any
-    attr :label, :string, default: nil
-    attr :class, :string, default: nil
+    attr(:upload, :any)
+    attr(:label, :string, default: nil)
+    attr(:class, :string, default: nil)
 
     def render_image_upload(assigns) do
       ~H"""
@@ -109,7 +109,10 @@ defmodule PhiaUi.Components.ImageUploadTest do
 
     test "renders custom label when :label is set" do
       upload = build_upload()
-      html = render_component(&H.render_image_upload/1, %{upload: upload, label: "Upload de foto"})
+
+      html =
+        render_component(&H.render_image_upload/1, %{upload: upload, label: "Upload de foto"})
+
       assert html =~ "Upload de foto"
     end
   end

@@ -12,12 +12,12 @@ defmodule PhiaUi.Components.SelectTest do
     use Phoenix.Component
     import PhiaUi.Components.Select
 
-    attr :field, :any
-    attr :options, :list, default: []
-    attr :prompt, :string, default: nil
-    attr :label, :string, default: nil
-    attr :description, :string, default: nil
-    attr :class, :string, default: nil
+    attr(:field, :any)
+    attr(:options, :list, default: [])
+    attr(:prompt, :string, default: nil)
+    attr(:label, :string, default: nil)
+    attr(:description, :string, default: nil)
+    attr(:class, :string, default: nil)
 
     def render_phia_select(assigns) do
       ~H"""
@@ -106,7 +106,14 @@ defmodule PhiaUi.Components.SelectTest do
   describe "phia_select/1 - :prompt attr" do
     test "renders prompt as <option value=\"\"> at top when set" do
       field = build_field()
-      html = render_component(&H.render_phia_select/1, %{field: field, options: [], prompt: "Choose a category"})
+
+      html =
+        render_component(&H.render_phia_select/1, %{
+          field: field,
+          options: [],
+          prompt: "Choose a category"
+        })
+
       assert html =~ ~s(value="")
       assert html =~ "Choose a category"
     end
@@ -126,7 +133,10 @@ defmodule PhiaUi.Components.SelectTest do
   describe "phia_select/1 - :label attr" do
     test "renders label element when :label is set" do
       field = build_field()
-      html = render_component(&H.render_phia_select/1, %{field: field, options: [], label: "Category"})
+
+      html =
+        render_component(&H.render_phia_select/1, %{field: field, options: [], label: "Category"})
+
       assert html =~ "<label"
       assert html =~ "Category"
     end
@@ -139,7 +149,10 @@ defmodule PhiaUi.Components.SelectTest do
 
     test "label for attribute links to field.id" do
       field = build_field(id: "post_category")
-      html = render_component(&H.render_phia_select/1, %{field: field, options: [], label: "Category"})
+
+      html =
+        render_component(&H.render_phia_select/1, %{field: field, options: [], label: "Category"})
+
       assert html =~ ~s(for="post_category")
     end
   end

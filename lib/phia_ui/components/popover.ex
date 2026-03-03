@@ -36,10 +36,10 @@ defmodule PhiaUi.Components.Popover do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :id, :string, required: true, doc: "Unique ID for aria coordination"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:id, :string, required: true, doc: "Unique ID for aria coordination")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the popover wrapper with PhiaPopover hook."
   def popover(assigns) do
@@ -55,10 +55,10 @@ defmodule PhiaUi.Components.Popover do
     """
   end
 
-  attr :popover_id, :string, required: true, doc: "ID of the parent popover wrapper"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:popover_id, :string, required: true, doc: "ID of the parent popover wrapper")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the trigger button that opens/closes the popover."
   def popover_trigger(assigns) do
@@ -76,14 +76,17 @@ defmodule PhiaUi.Components.Popover do
     """
   end
 
-  attr :popover_id, :string, required: true, doc: "ID of the parent popover wrapper"
-  attr :position, :atom,
+  attr(:popover_id, :string, required: true, doc: "ID of the parent popover wrapper")
+
+  attr(:position, :atom,
     default: :bottom,
     values: [:top, :bottom, :left, :right],
     doc: "Preferred position of the floating panel"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc """
   Renders the floating popover content panel.

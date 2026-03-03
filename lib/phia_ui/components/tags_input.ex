@@ -49,21 +49,24 @@ defmodule PhiaUi.Components.TagsInput do
   # tags_input/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+  )
 
-  attr :label, :string, default: nil, doc: "Label text rendered above the input"
+  attr(:label, :string, default: nil, doc: "Label text rendered above the input")
 
-  attr :placeholder, :string,
+  attr(:placeholder, :string,
     default: "Adicionar tag...",
     doc: "Placeholder text for the tag text input"
+  )
 
-  attr :separator, :string,
+  attr(:separator, :string,
     default: ",",
     doc: "Character that confirms a new tag (in addition to Enter)"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper")
 
   @doc """
   Renders a multi-tag input integrated with `Phoenix.HTML.FormField`.

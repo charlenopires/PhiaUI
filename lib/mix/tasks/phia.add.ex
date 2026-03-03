@@ -125,7 +125,8 @@ defmodule Mix.Tasks.Phia.Add do
     app_web_dir = app_web_name() |> Macro.underscore()
     module = app_web_name()
 
-    class_merger_files() |> Enum.each(fn {tpl_file, target_rel} ->
+    class_merger_files()
+    |> Enum.each(fn {tpl_file, target_rel} ->
       target = Path.join([root, "lib", app_web_dir, target_rel])
 
       unless File.exists?(target) do

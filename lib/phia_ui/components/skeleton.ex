@@ -35,25 +35,28 @@ defmodule PhiaUi.Components.Skeleton do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :shape, :atom,
+  attr(:shape, :atom,
     values: [:rectangle, :circle],
     default: :rectangle,
     doc: "Shape of the skeleton: :rectangle (default) or :circle"
+  )
 
-  attr :width, :string,
+  attr(:width, :string,
     default: nil,
     doc: "CSS width value applied as inline style (e.g. '200px', '100%')"
+  )
 
-  attr :height, :string,
+  attr(:height, :string,
     default: nil,
     doc: "CSS height value applied as inline style (e.g. '48px', '2rem')"
+  )
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes (merged via cn/1)"
+  )
 
-  attr :rest, :global,
-    doc: "HTML attributes forwarded to the root element"
+  attr(:rest, :global, doc: "HTML attributes forwarded to the root element")
 
   @doc """
   Renders a single animated skeleton placeholder.
@@ -72,13 +75,15 @@ defmodule PhiaUi.Components.Skeleton do
     """
   end
 
-  attr :lines, :integer,
+  attr(:lines, :integer,
     default: 3,
     doc: "Number of text lines to render (default 3)"
+  )
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes applied to the wrapper div"
+  )
 
   @doc """
   Renders a stack of skeleton lines simulating a paragraph of text.
@@ -95,13 +100,15 @@ defmodule PhiaUi.Components.Skeleton do
     """
   end
 
-  attr :size, :string,
+  attr(:size, :string,
     default: "10",
     doc: "Tailwind size number for width and height (e.g. '10' → w-10 h-10)"
+  )
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes"
+  )
 
   @doc """
   Renders a circular skeleton placeholder for avatar images.
@@ -117,9 +124,10 @@ defmodule PhiaUi.Components.Skeleton do
     """
   end
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes applied to the card wrapper"
+  )
 
   @doc """
   Renders a composite card-shaped skeleton with a header image area and text lines.

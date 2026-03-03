@@ -12,12 +12,12 @@ defmodule PhiaUi.Components.TextareaTest do
     use Phoenix.Component
     import PhiaUi.Components.Textarea
 
-    attr :field, :any
-    attr :label, :string, default: nil
-    attr :description, :string, default: nil
-    attr :rows, :integer, default: 4
-    attr :placeholder, :string, default: nil
-    attr :class, :string, default: nil
+    attr(:field, :any)
+    attr(:label, :string, default: nil)
+    attr(:description, :string, default: nil)
+    attr(:rows, :integer, default: 4)
+    attr(:placeholder, :string, default: nil)
+    attr(:class, :string, default: nil)
 
     def render_phia_textarea(assigns) do
       ~H"""
@@ -172,7 +172,10 @@ defmodule PhiaUi.Components.TextareaTest do
   describe "phia_textarea/1 - :class attr" do
     test "applies additional class when :class is set" do
       field = build_field()
-      html = render_component(&H.render_phia_textarea/1, %{field: field, class: "my-custom-class"})
+
+      html =
+        render_component(&H.render_phia_textarea/1, %{field: field, class: "my-custom-class"})
+
       assert html =~ "my-custom-class"
     end
   end

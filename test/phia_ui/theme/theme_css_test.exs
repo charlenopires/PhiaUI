@@ -37,8 +37,8 @@ defmodule PhiaUi.Theme.ThemeCSSTest do
       assert css =~ "@theme {"
     end
 
-    test "contains dark mode media query", %{css: css} do
-      assert css =~ "@media (prefers-color-scheme: dark)"
+    test "contains .dark class for dark mode override", %{css: css} do
+      assert css =~ ".dark {"
     end
   end
 
@@ -63,17 +63,17 @@ defmodule PhiaUi.Theme.ThemeCSSTest do
 
   describe "dark mode tokens (task #3)" do
     test "dark mode block redefines background token", %{css: css} do
-      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+      [_light, dark_section] = String.split(css, ".dark {", parts: 2)
       assert dark_section =~ "--color-background:"
     end
 
     test "dark mode block redefines foreground token", %{css: css} do
-      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+      [_light, dark_section] = String.split(css, ".dark {", parts: 2)
       assert dark_section =~ "--color-foreground:"
     end
 
     test "dark mode block uses oklch() values", %{css: css} do
-      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+      [_light, dark_section] = String.split(css, ".dark {", parts: 2)
       assert dark_section =~ "oklch("
     end
   end
@@ -94,7 +94,7 @@ defmodule PhiaUi.Theme.ThemeCSSTest do
     end
 
     test "sidebar token is present in dark mode too", %{css: css} do
-      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+      [_light, dark_section] = String.split(css, ".dark {", parts: 2)
       assert dark_section =~ "--color-sidebar-background:"
     end
   end
@@ -117,14 +117,14 @@ defmodule PhiaUi.Theme.ThemeCSSTest do
     end
   end
 
-  describe "dark mode is automatic (no JS required)" do
-    test "dark mode uses @theme block (not .dark class)", %{css: css} do
-      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
-      assert dark_section =~ "@theme {"
+  describe "dark mode via .dark class (JS-controlled)" do
+    test "dark mode uses .dark class (not @media query)", %{css: css} do
+      assert css =~ ".dark {"
+      refute css =~ "@media (prefers-color-scheme: dark)"
     end
 
-    test "dark mode redefines sidebar-background via @theme", %{css: css} do
-      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+    test "dark mode redefines sidebar-background in .dark block", %{css: css} do
+      [_light, dark_section] = String.split(css, ".dark {", parts: 2)
       assert dark_section =~ "--color-sidebar-background:"
     end
   end

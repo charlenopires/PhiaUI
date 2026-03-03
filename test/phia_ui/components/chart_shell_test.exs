@@ -8,11 +8,11 @@ defmodule PhiaUi.Components.ChartShellTest do
     use Phoenix.Component
     import PhiaUi.Components.ChartShell
 
-    attr :title, :string, default: "Revenue Over Time"
-    attr :description, :string, default: nil
-    attr :period, :string, default: nil
-    attr :min_height, :string, default: "300px"
-    attr :class, :string, default: nil
+    attr(:title, :string, default: "Revenue Over Time")
+    attr(:description, :string, default: nil)
+    attr(:period, :string, default: nil)
+    attr(:min_height, :string, default: "300px")
+    attr(:class, :string, default: nil)
 
     def render_chart_shell(assigns) do
       ~H"""

@@ -130,7 +130,11 @@ defmodule Mix.Tasks.Phia.InstallTest do
       dir = Path.join(@tmp_dir, "appjs_skip_#{:erlang.unique_integer([:positive])}")
       js_path = Path.join([dir, "assets", "js", "app.js"])
       File.mkdir_p!(Path.dirname(js_path))
-      File.write!(js_path, "// phia_hooks_registered\nimport PhiaHooks from './phia_hooks/index.js'\n")
+
+      File.write!(
+        js_path,
+        "// phia_hooks_registered\nimport PhiaHooks from './phia_hooks/index.js'\n"
+      )
 
       result = Install.inject_app_js(dir)
       assert result == :already_installed
@@ -153,7 +157,7 @@ defmodule Mix.Tasks.Phia.InstallTest do
 
     test "injected block contains dark mode override" do
       result = run_install("")
-      assert result =~ "@media (prefers-color-scheme: dark)"
+      assert result =~ ".dark {"
     end
 
     test "injected block contains --radius token" do

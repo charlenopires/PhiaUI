@@ -8,12 +8,12 @@ defmodule PhiaUi.Components.StatCardTest do
     use Phoenix.Component
     import PhiaUi.Components.StatCard
 
-    attr :title, :string, default: "Revenue"
-    attr :value, :string, default: "$12,345"
-    attr :trend, :atom, default: :neutral
-    attr :trend_value, :string, default: nil
-    attr :description, :string, default: nil
-    attr :class, :string, default: nil
+    attr(:title, :string, default: "Revenue")
+    attr(:value, :string, default: "$12,345")
+    attr(:trend, :atom, default: :neutral)
+    attr(:trend_value, :string, default: nil)
+    attr(:description, :string, default: nil)
+    attr(:class, :string, default: nil)
 
     def render_stat_card(assigns) do
       ~H"""
@@ -28,8 +28,8 @@ defmodule PhiaUi.Components.StatCardTest do
       """
     end
 
-    attr :title, :string, default: "Revenue"
-    attr :value, :string, default: "$12,345"
+    attr(:title, :string, default: "Revenue")
+    attr(:value, :string, default: "$12,345")
 
     def render_with_footer(assigns) do
       ~H"""
@@ -39,8 +39,8 @@ defmodule PhiaUi.Components.StatCardTest do
       """
     end
 
-    attr :title, :string, default: "Revenue"
-    attr :value, :string, default: "$12,345"
+    attr(:title, :string, default: "Revenue")
+    attr(:value, :string, default: "$12,345")
 
     def render_with_icon(assigns) do
       ~H"""

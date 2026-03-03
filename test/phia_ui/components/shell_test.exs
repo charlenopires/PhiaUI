@@ -9,7 +9,7 @@ defmodule PhiaUi.Components.ShellTest do
     import PhiaUi.Components.Shell
 
     # shell/1 — with topbar
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
 
     def render_shell(assigns) do
       ~H"""
@@ -38,9 +38,9 @@ defmodule PhiaUi.Components.ShellTest do
     end
 
     # sidebar/1 standalone
-    attr :class, :string, default: nil
-    attr :id, :string, default: "sidebar-drawer"
-    attr :collapsed, :boolean, default: false
+    attr(:class, :string, default: nil)
+    attr(:id, :string, default: "sidebar-drawer")
+    attr(:collapsed, :boolean, default: false)
 
     def render_sidebar(assigns) do
       ~H"""
@@ -62,7 +62,7 @@ defmodule PhiaUi.Components.ShellTest do
     end
 
     # topbar/1 standalone
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
 
     def render_topbar(assigns) do
       ~H"""
@@ -73,8 +73,8 @@ defmodule PhiaUi.Components.ShellTest do
     end
 
     # mobile_sidebar_toggle/1
-    attr :target, :string, default: "#sidebar-drawer"
-    attr :class, :string, default: nil
+    attr(:target, :string, default: "#sidebar-drawer")
+    attr(:class, :string, default: nil)
 
     def render_toggle(assigns) do
       ~H"""

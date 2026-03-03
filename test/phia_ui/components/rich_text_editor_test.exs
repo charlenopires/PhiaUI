@@ -12,11 +12,11 @@ defmodule PhiaUi.Components.RichTextEditorTest do
     use Phoenix.Component
     import PhiaUi.Components.RichTextEditor
 
-    attr :field, :any
-    attr :label, :string, default: nil
-    attr :placeholder, :string, default: nil
-    attr :min_height, :string, default: "200px"
-    attr :class, :string, default: nil
+    attr(:field, :any)
+    attr(:label, :string, default: nil)
+    attr(:placeholder, :string, default: nil)
+    attr(:min_height, :string, default: "200px")
+    attr(:class, :string, default: nil)
 
     def render_rich_text_editor(assigns) do
       ~H"""

@@ -26,21 +26,24 @@ defmodule PhiaUi.Components.Select do
   # phia_select/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+  )
 
-  attr :options, :list,
+  attr(:options, :list,
     required: true,
     doc: ~s(Options list — accepts [{"Label", value}], ["value"], or [value])
+  )
 
-  attr :prompt, :string,
+  attr(:prompt, :string,
     default: nil,
     doc: "Placeholder option rendered as <option value=\"\"> at the top"
+  )
 
-  attr :label, :string, default: nil, doc: "Label text rendered above the select"
-  attr :description, :string, default: nil, doc: "Helper text rendered below the select"
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the select element"
+  attr(:label, :string, default: nil, doc: "Label text rendered above the select")
+  attr(:description, :string, default: nil, doc: "Helper text rendered below the select")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the select element")
 
   @doc """
   Renders a native `<select>` element integrated with `Phoenix.HTML.FormField`.

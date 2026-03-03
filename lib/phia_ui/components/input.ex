@@ -26,23 +26,26 @@ defmodule PhiaUi.Components.Input do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` struct (e.g., `@form[:email]`)"
+  )
 
-  attr :label, :string, default: nil, doc: "Label text displayed above the input"
+  attr(:label, :string, default: nil, doc: "Label text displayed above the input")
 
-  attr :description, :string,
+  attr(:description, :string,
     default: nil,
     doc: "Helper text displayed below the label"
+  )
 
-  attr :type, :string, default: "text", doc: "HTML input type"
+  attr(:type, :string, default: "text", doc: "HTML input type")
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the input element"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the input element")
 
-  attr :rest, :global,
+  attr(:rest, :global,
     include: ~w(autocomplete readonly disabled step max min placeholder phx-debounce),
     doc: "HTML attributes forwarded to the input element"
+  )
 
   @doc """
   Renders a labeled text input integrated with `Phoenix.HTML.FormField`.

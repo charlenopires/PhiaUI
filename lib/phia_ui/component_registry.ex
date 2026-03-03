@@ -583,7 +583,6 @@ defmodule PhiaUi.ComponentRegistry do
       shadcn_equivalent: nil,
       status: :implemented
     },
-
     date_range_picker: %{
       name: "date_range_picker",
       module: PhiaUi.Components.DateRangePicker,

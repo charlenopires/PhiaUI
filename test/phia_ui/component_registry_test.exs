@@ -3,7 +3,16 @@ defmodule PhiaUi.ComponentRegistryTest do
 
   alias PhiaUi.ComponentRegistry
 
-  @required_fields [:name, :module, :template_file, :js_hooks, :dependencies, :tier, :shadcn_equivalent, :status]
+  @required_fields [
+    :name,
+    :module,
+    :template_file,
+    :js_hooks,
+    :dependencies,
+    :tier,
+    :shadcn_equivalent,
+    :status
+  ]
   @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget]
   @valid_statuses [:planned, :implemented]
 

@@ -50,7 +50,8 @@ defmodule PhiaUi.MixProject do
         "docs/components/interactive.md",
         "docs/components/dashboard.md",
         "docs/components/utilities.md",
-        "docs/guides/tutorial-dashboard.md"
+        "docs/guides/tutorial-dashboard.md",
+        "docs/guides/theme-system.md"
       ],
       main: "readme",
       source_url: "https://github.com/phiaui/phia_ui",
@@ -66,7 +67,7 @@ defmodule PhiaUi.MixProject do
     [
       name: "phia_ui",
       description:
-        "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. Optimised for enterprise dashboards.",
+        "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. CSS-first theme system, 48 components, enterprise analytics widgets.",
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phiaui/phia_ui"},
       files: ~w(lib priv docs mix.exs README.md CHANGELOG.md LICENSE)

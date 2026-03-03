@@ -28,16 +28,17 @@ defmodule PhiaUi.Components.MetricGrid do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :cols, :integer,
+  attr(:cols, :integer,
     values: [1, 2, 3, 4],
     default: 4,
     doc: "Number of columns in the grid (1–4). Responsive breakpoints applied automatically."
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the grid wrapper"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the grid wrapper")
 
-  attr :rest, :global, doc: "HTML attributes forwarded to the wrapper div"
+  attr(:rest, :global, doc: "HTML attributes forwarded to the wrapper div")
 
-  slot :inner_block, required: true, doc: "stat_card children to render inside the grid"
+  slot(:inner_block, required: true, doc: "stat_card children to render inside the grid")
 
   @doc "Renders a responsive CSS Grid wrapper for dashboard stat cards."
   def metric_grid(assigns) do

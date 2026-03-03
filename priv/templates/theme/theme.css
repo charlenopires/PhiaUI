@@ -4,10 +4,10 @@
  * CSS custom properties registered via @theme for automatic utility generation.
  * All color values use the oklch() color space for wide-gamut support.
  *
- * Light mode is the default. Dark mode overrides are applied automatically
- * via the prefers-color-scheme media query — no JavaScript required.
- * When PhiaDarkMode hook is used, the .dark class on <html> also activates
- * dark mode via @custom-variant below.
+ * Light mode is the default. Dark mode is controlled EXCLUSIVELY via the
+ * `.dark` class applied to <html> by the PhiaDarkMode hook. The hook also
+ * detects `prefers-color-scheme` on first load and persists the preference
+ * to localStorage.
  *
  * Generated utilities examples:
  *   bg-primary, text-foreground, border-border, ring-ring, bg-muted, etc.
@@ -17,10 +17,34 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* ── Spacing & Shape ────────────────────────────────────────────────────── */
-  --radius: 0.625rem;
+  /* ── Typography ──────────────────────────────────────────────────────────── */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Fira Code", "Cascadia Code", Menlo, Monaco, monospace;
 
-  /* ── Semantic Color Tokens — Light Mode ─────────────────────────────────── */
+  --font-size-xs:   0.75rem;
+  --font-size-sm:   0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg:   1.125rem;
+  --font-size-xl:   1.25rem;
+  --font-size-2xl:  1.5rem;
+  --font-size-3xl:  1.875rem;
+  --font-size-4xl:  2.25rem;
+
+  /* ── Spacing & Shape ─────────────────────────────────────────────────────── */
+  --radius: 0.625rem;
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  /* ── Shadow Scale ────────────────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* ── Semantic Color Tokens — Light Mode ──────────────────────────────────── */
 
   /* Page surface */
   --color-background:             oklch(1 0 0);
@@ -43,7 +67,7 @@
   --color-secondary-foreground:   oklch(0.211 0.005 285.82);
 
   /* Muted / disabled */
-  --color-muted:                  oklch(0.967 0.001 286.38);
+  --color-muted:                  oklch(0.97 0 0);
   --color-muted-foreground:       oklch(0.552 0.016 286.07);
 
   /* Accent / hover highlight */
@@ -55,68 +79,96 @@
   --color-destructive-foreground: oklch(0.985 0 0);
 
   /* Structural */
-  --color-border:                 oklch(0.929 0.004 286.32);
-  --color-input:                  oklch(0.929 0.004 286.32);
+  --color-border:                 oklch(0.922 0 0);
+  --color-input:                  oklch(0.922 0 0);
   --color-ring:                   oklch(0.141 0.004 285.82);
 
-  /* ── Dashboard Shell ────────────────────────────────────────────────────── */
+  /* ── Dashboard Shell — Light Mode ────────────────────────────────────────── */
   --color-sidebar-background:     oklch(0.985 0.001 286.38);
+  --color-sidebar-foreground:     oklch(0.141 0.004 285.82);
+  --color-sidebar-primary:        oklch(0.211 0.005 285.82);
+  --color-sidebar-primary-foreground: oklch(0.985 0 0);
+  --color-sidebar-accent:         oklch(0.967 0.001 286.38);
+  --color-sidebar-accent-foreground: oklch(0.211 0.005 285.82);
+  --color-sidebar-border:         oklch(0.922 0 0);
 }
 
 /* ── CSS Variable Aliases ─────────────────────────────────────────────────── */
 /*
  * Short-form aliases for direct CSS custom property references in components
  * (e.g. bg-[--background], bg-[--sidebar-background]).
- * These always resolve to the @theme-managed --color-* tokens, so they
- * automatically pick up dark mode values without any extra overrides.
  */
 :root {
   --background: var(--color-background);
   --sidebar-background: var(--color-sidebar-background);
 }
 
-/* ── Dark Mode Overrides ──────────────────────────────────────────────────── */
+/* ── Dark Mode Overrides — controlled by .dark class on <html> ────────────── */
+/*
+ * PhiaDarkMode hook applies .dark to <html> based on:
+ *   1. localStorage['phia-theme'] (persisted preference)
+ *   2. prefers-color-scheme (system default on first visit)
+ *
+ * Anti-FOUC: add this inline script to <head> BEFORE any stylesheet:
+ *
+ *   <script>
+ *     (function() {
+ *       var t = localStorage.getItem('phia-theme');
+ *       if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+ *         document.documentElement.classList.add('dark');
+ *       }
+ *     })();
+ *   </script>
+ */
+.dark {
+  --color-background:             oklch(0.141 0.004 285.82);
+  --color-foreground:             oklch(0.985 0 0);
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    /* Page surface */
-    --color-background:             oklch(0.141 0.004 285.82);
-    --color-foreground:             oklch(0.985 0 0);
+  --color-card:                   oklch(0.211 0.005 285.82);
+  --color-card-foreground:        oklch(0.985 0 0);
 
-    /* Card surface */
-    --color-card:                   oklch(0.211 0.005 285.82);
-    --color-card-foreground:        oklch(0.985 0 0);
+  --color-popover:                oklch(0.211 0.005 285.82);
+  --color-popover-foreground:     oklch(0.985 0 0);
 
-    /* Popover / dropdown surface */
-    --color-popover:                oklch(0.211 0.005 285.82);
-    --color-popover-foreground:     oklch(0.985 0 0);
+  --color-primary:                oklch(0.985 0 0);
+  --color-primary-foreground:     oklch(0.211 0.005 285.82);
 
-    /* Primary action */
-    --color-primary:                oklch(0.985 0 0);
-    --color-primary-foreground:     oklch(0.211 0.005 285.82);
+  --color-secondary:              oklch(0.279 0.007 285.82);
+  --color-secondary-foreground:   oklch(0.985 0 0);
 
-    /* Secondary / ghost */
-    --color-secondary:              oklch(0.279 0.007 285.82);
-    --color-secondary-foreground:   oklch(0.985 0 0);
+  --color-muted:                  oklch(0.279 0.007 285.82);
+  --color-muted-foreground:       oklch(0.71 0.01 286.07);
 
-    /* Muted / disabled */
-    --color-muted:                  oklch(0.279 0.007 285.82);
-    --color-muted-foreground:       oklch(0.71 0.01 286.07);
+  --color-accent:                 oklch(0.279 0.007 285.82);
+  --color-accent-foreground:      oklch(0.985 0 0);
 
-    /* Accent / hover highlight */
-    --color-accent:                 oklch(0.279 0.007 285.82);
-    --color-accent-foreground:      oklch(0.985 0 0);
+  --color-destructive:            oklch(0.704 0.191 22.216);
+  --color-destructive-foreground: oklch(0.985 0 0);
 
-    /* Destructive / error */
-    --color-destructive:            oklch(0.704 0.191 22.216);
-    --color-destructive-foreground: oklch(0.985 0 0);
+  --color-border:                 oklch(1 0 0 / 10%);
+  --color-input:                  oklch(1 0 0 / 15%);
+  --color-ring:                   oklch(0.552 0.016 286.07);
 
-    /* Structural */
-    --color-border:                 oklch(1 0 0 / 10%);
-    --color-input:                  oklch(1 0 0 / 15%);
-    --color-ring:                   oklch(0.552 0.016 286.07);
+  --color-sidebar-background:     oklch(0.211 0.005 285.82);
+  --color-sidebar-foreground:     oklch(0.985 0 0);
+  --color-sidebar-primary:        oklch(0.985 0 0);
+  --color-sidebar-primary-foreground: oklch(0.211 0.005 285.82);
+  --color-sidebar-accent:         oklch(0.279 0.007 285.82);
+  --color-sidebar-accent-foreground: oklch(0.985 0 0);
+  --color-sidebar-border:         oklch(1 0 0 / 10%);
+}
 
-    /* ── Dashboard Shell ──────────────────────────────────────────────────── */
-    --color-sidebar-background:     oklch(0.211 0.005 285.82);
+/* ── Base Layer ───────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

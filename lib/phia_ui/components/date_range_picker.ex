@@ -48,17 +48,26 @@ defmodule PhiaUi.Components.DateRangePicker do
   import PhiaUi.ClassMerger, only: [cn: 1]
   import PhiaUi.Components.Icon, only: [icon: 1]
 
-  attr :id, :string, required: true, doc: "Unique ID"
-  attr :view_month, :any, required: true, doc: "Date for the first displayed month"
-  attr :from, :any, default: nil, doc: "Selected range start (Date or nil)"
-  attr :to, :any, default: nil, doc: "Selected range end (Date or nil)"
-  attr :on_change, :string, default: "date-range-changed", doc: "phx-click event for day selection"
-  attr :on_month_change, :string, default: "date-range-month", doc: "phx-click event for month nav"
-  attr :min_date, :any, default: nil, doc: "Minimum selectable date (Date or nil)"
-  attr :max_date, :any, default: nil, doc: "Maximum selectable date (Date or nil)"
-  attr :locale, :string, default: "en", doc: "Locale for month/day labels"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:id, :string, required: true, doc: "Unique ID")
+  attr(:view_month, :any, required: true, doc: "Date for the first displayed month")
+  attr(:from, :any, default: nil, doc: "Selected range start (Date or nil)")
+  attr(:to, :any, default: nil, doc: "Selected range end (Date or nil)")
+
+  attr(:on_change, :string,
+    default: "date-range-changed",
+    doc: "phx-click event for day selection"
+  )
+
+  attr(:on_month_change, :string,
+    default: "date-range-month",
+    doc: "phx-click event for month nav"
+  )
+
+  attr(:min_date, :any, default: nil, doc: "Minimum selectable date (Date or nil)")
+  attr(:max_date, :any, default: nil, doc: "Maximum selectable date (Date or nil)")
+  attr(:locale, :string, default: "en", doc: "Locale for month/day labels")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc "Renders a dual-calendar date range picker."
   def date_range_picker(assigns) do
@@ -132,12 +141,12 @@ defmodule PhiaUi.Components.DateRangePicker do
   # Private: calendar_month sub-component
   # ---------------------------------------------------------------------------
 
-  attr :month, :any, required: true
-  attr :from, :any, default: nil
-  attr :to, :any, default: nil
-  attr :min_date, :any, default: nil
-  attr :max_date, :any, default: nil
-  attr :on_change, :string, required: true
+  attr(:month, :any, required: true)
+  attr(:from, :any, default: nil)
+  attr(:to, :any, default: nil)
+  attr(:min_date, :any, default: nil)
+  attr(:max_date, :any, default: nil)
+  attr(:on_change, :string, required: true)
 
   defp calendar_month(assigns) do
     assigns = assign(assigns, :weeks, calendar_weeks(assigns.month))
@@ -222,6 +231,7 @@ defmodule PhiaUi.Components.DateRangePicker do
     days = Date.range(first_of_month, last) |> Enum.to_list()
     all = leading ++ days
     chunked = Enum.chunk_every(all, 7)
+
     Enum.map(chunked, fn week ->
       week ++ List.duplicate(nil, 7 - length(week))
     end)
@@ -269,9 +279,18 @@ defmodule PhiaUi.Components.DateRangePicker do
   defp format_date(date) do
     month_abbr =
       case date.month do
-        1 -> "Jan"; 2 -> "Feb"; 3 -> "Mar"; 4 -> "Apr"
-        5 -> "May"; 6 -> "Jun"; 7 -> "Jul"; 8 -> "Aug"
-        9 -> "Sep"; 10 -> "Oct"; 11 -> "Nov"; 12 -> "Dec"
+        1 -> "Jan"
+        2 -> "Feb"
+        3 -> "Mar"
+        4 -> "Apr"
+        5 -> "May"
+        6 -> "Jun"
+        7 -> "Jul"
+        8 -> "Aug"
+        9 -> "Sep"
+        10 -> "Oct"
+        11 -> "Nov"
+        12 -> "Dec"
       end
 
     "#{month_abbr} #{date.day}, #{date.year}"

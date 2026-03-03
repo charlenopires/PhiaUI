@@ -3,9 +3,9 @@ defmodule PhiaUi.Components.DarkModeToggle do
   Dark mode toggle component with PhiaDarkMode vanilla JS hook.
 
   Toggles the `.dark` class on the `<html>` element, persists preference
-  in `localStorage['phia-theme']`, and respects `prefers-color-scheme` on
-  first visit. Fires `phia:theme-changed` custom event for integration with
-  other hooks (e.g. PhiaChart dark mode re-render).
+  in `localStorage['phia-mode']` (and `phia-theme` for backward compatibility),
+  and respects `prefers-color-scheme` on first visit. Fires `phia:theme-changed`
+  custom event for integration with other hooks (e.g. PhiaChart dark mode re-render).
 
   ## Example
 
@@ -17,12 +17,24 @@ defmodule PhiaUi.Components.DarkModeToggle do
 
       <script>
         (function() {
-          var theme = localStorage.getItem('phia-theme');
-          if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          var mode = localStorage.getItem('phia-mode') || localStorage.getItem('phia-theme');
+          if (mode === 'dark' || (!mode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
           }
+          var ct = localStorage.getItem('phia-color-theme');
+          if (ct) document.documentElement.setAttribute('data-phia-theme', ct);
         })();
       </script>
+
+  ## Color theme switching
+
+  For runtime color preset switching, use the `PhiaTheme` hook (installed via
+  `mix phia.theme install`):
+
+      <select phx-hook="PhiaTheme" id="theme-select">
+        <option value="zinc">Zinc</option>
+        <option value="blue">Blue</option>
+      </select>
 
   ## Hook setup
 
@@ -44,9 +56,9 @@ defmodule PhiaUi.Components.DarkModeToggle do
   import PhiaUi.ClassMerger, only: [cn: 1]
   import PhiaUi.Components.Icon, only: [icon: 1]
 
-  attr :id, :string, required: true, doc: "Unique ID for the toggle button"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:id, :string, required: true, doc: "Unique ID for the toggle button")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc """
   Renders the dark mode toggle button.

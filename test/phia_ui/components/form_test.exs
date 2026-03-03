@@ -12,10 +12,10 @@ defmodule PhiaUi.Components.FormTest do
     use Phoenix.Component
     import PhiaUi.Components.Form
 
-    attr :field, :any
-    attr :type, :string, default: "text"
-    attr :label, :string, default: nil
-    attr :description, :string, default: nil
+    attr(:field, :any)
+    attr(:type, :string, default: "text")
+    attr(:label, :string, default: nil)
+    attr(:description, :string, default: nil)
 
     def render_phia_input(assigns) do
       ~H"""
@@ -23,7 +23,7 @@ defmodule PhiaUi.Components.FormTest do
       """
     end
 
-    attr :field, :any
+    attr(:field, :any)
 
     def render_form_label(assigns) do
       ~H"""
@@ -31,7 +31,7 @@ defmodule PhiaUi.Components.FormTest do
       """
     end
 
-    attr :field, :any
+    attr(:field, :any)
 
     def render_form_message(assigns) do
       ~H"""
@@ -39,9 +39,9 @@ defmodule PhiaUi.Components.FormTest do
       """
     end
 
-    attr :field, :any
-    attr :label, :string, default: nil
-    attr :description, :string, default: nil
+    attr(:field, :any)
+    attr(:label, :string, default: nil)
+    attr(:description, :string, default: nil)
 
     def render_form_field(assigns) do
       ~H"""
@@ -225,7 +225,9 @@ defmodule PhiaUi.Components.FormTest do
 
     test "interpolates %{key} placeholders" do
       result =
-        PhiaUi.Components.Form.translate_error({"must be at least %{count} characters", [count: 8]})
+        PhiaUi.Components.Form.translate_error(
+          {"must be at least %{count} characters", [count: 8]}
+        )
 
       assert result == "must be at least 8 characters"
     end
@@ -277,7 +279,10 @@ defmodule PhiaUi.Components.FormTest do
 
     test "renders description when provided" do
       field = build_field()
-      html = render_component(&H.render_form_field/1, %{field: field, description: "Helpful hint"})
+
+      html =
+        render_component(&H.render_form_field/1, %{field: field, description: "Helpful hint"})
+
       assert html =~ "Helpful hint"
     end
 

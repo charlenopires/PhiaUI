@@ -226,7 +226,8 @@ defmodule PhiaUi.Components.ChartTest do
     test "renders a noscript or placeholder message in HTML" do
       html = render_basic()
       # Should have some placeholder for when no chart library is detected
-      assert html =~ "data-chart-placeholder" or html =~ "noscript" or html =~ "chart" or html =~ "PhiaChart"
+      assert html =~ "data-chart-placeholder" or html =~ "noscript" or html =~ "chart" or
+               html =~ "PhiaChart"
     end
   end
 end

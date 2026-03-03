@@ -12,9 +12,9 @@ defmodule PhiaUi.Components.IconTest do
     use Phoenix.Component
     import PhiaUi.Components.Icon
 
-    attr :name, :string, default: "menu"
-    attr :size, :atom, default: :md
-    attr :class, :string, default: nil
+    attr(:name, :string, default: "menu")
+    attr(:size, :atom, default: :md)
+    attr(:class, :string, default: nil)
 
     def render_icon(assigns) do
       ~H"""

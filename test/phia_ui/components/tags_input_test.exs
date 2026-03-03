@@ -12,11 +12,11 @@ defmodule PhiaUi.Components.TagsInputTest do
     use Phoenix.Component
     import PhiaUi.Components.TagsInput
 
-    attr :field, :any
-    attr :label, :string, default: nil
-    attr :placeholder, :string, default: nil
-    attr :separator, :string, default: nil
-    attr :class, :string, default: nil
+    attr(:field, :any)
+    attr(:label, :string, default: nil)
+    attr(:placeholder, :string, default: nil)
+    attr(:separator, :string, default: nil)
+    attr(:class, :string, default: nil)
 
     def render_tags_input(assigns) do
       ~H"""

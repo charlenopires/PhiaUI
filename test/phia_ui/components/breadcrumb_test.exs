@@ -53,7 +53,8 @@ defmodule PhiaUi.Components.BreadcrumbTest do
     end
 
     # Class override
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_with_class(assigns) do
       ~H"""
       <.breadcrumb class={@class}>

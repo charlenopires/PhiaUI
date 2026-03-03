@@ -1,6 +1,6 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library — 46 components, inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 48 components, inspired by shadcn/ui.**
 
 Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets for financial terminals, BI dashboards, and KPI monitors.
 
@@ -19,12 +19,13 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 | Zero npm deps for interactivity | ✓ | ✗ |
 | Native ClassMerger (no tw_merge) | ✓ | ✗ |
 | TailwindCSS v4 theme system | ✓ | ✗ |
+| CSS-first theme system (8 presets, runtime switching) | ✓ | ✗ |
 | WAI-ARIA on all interactive | ✓ | Partial |
 | Dark mode, Ctrl+K, Date Pickers, Carousels | ✓ | ✗ |
 
 ---
 
-## Component Library — 46 Components
+## Component Library — 48 Components
 
 ### Primitives & Feedback — 8 components
 
@@ -79,7 +80,7 @@ Vanilla JS hooks for accessible behaviors. → [Full examples & use cases](docs/
 | Combobox | `combobox/1` | — | Server-side search filter, FormField |
 | Date Picker | `date_picker/1` | — | Calendar + Popover compose, format attr |
 
-### Utilities & Composed — 6 components
+### Utilities & Composed — 8 components
 
 CSS-only utilities and composed display patterns. → [Full examples & use cases](docs/components/utilities.md)
 
@@ -91,6 +92,8 @@ CSS-only utilities and composed display patterns. → [Full examples & use cases
 | Field | `field/1` | Standalone form field layout without FormField |
 | Button Group | `button_group/1` | Unified button toolbar, H/V orientation |
 | Avatar | `avatar/1` | Circular profile image with initials fallback, avatar_group |
+| Tabs Nav | `tabs_nav/1`, `tabs_nav_item/1` | Navigation tabs with 3 variants: underline, pills, segment |
+| Theme Provider | `theme_provider/1` | Scoped CSS theme wrapper using `data-phia-theme` attribute |
 
 ### Dashboard & Analytics — 8 components
 
@@ -149,6 +152,14 @@ In `assets/css/app.css`:
 @import "../../../deps/phia_ui/priv/static/theme.css";
 ```
 
+For runtime color theme switching (optional), generate the multi-theme CSS:
+
+```bash
+mix phia.theme install
+```
+
+This creates `assets/css/phia-themes.css` and auto-imports it in `app.css`. Then set `data-phia-theme="blue"` on any ancestor element to activate that theme.
+
 ### 3. Eject components
 
 ```bash
@@ -174,6 +185,7 @@ import PhiaCalendar        from "./phia_hooks/calendar"
 import PhiaCarousel        from "./phia_hooks/carousel"
 import PhiaContextMenu     from "./phia_hooks/context_menu"
 import PhiaDrawer          from "./phia_hooks/drawer"
+import PhiaTheme           from "./phia_hooks/theme"
 
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
@@ -181,7 +193,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
     PhiaDialog, PhiaDropdownMenu, PhiaTagsInput, PhiaRichTextEditor,
     PhiaTooltip, PhiaPopover, PhiaToast, PhiaDarkMode,
     PhiaCommand, PhiaDateRangePicker, PhiaChart,
-    PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer
+    PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer,
+    PhiaTheme
   }
 })
 ```
@@ -363,6 +376,13 @@ mix phia.add button card badge dialog
 
 # Generate the Lucide SVG sprite
 mix phia.icons
+
+# Theme management
+mix phia.theme list                    # list all 8 color presets
+mix phia.theme install                 # generate assets/css/phia-themes.css
+mix phia.theme apply zinc              # write theme vars to your theme.css
+mix phia.theme export blue             # print JSON (or --format css for CSS)
+mix phia.theme import ./my-brand.json  # apply custom theme
 ```
 
 ---
@@ -415,6 +435,57 @@ bg-gray-900 text-[#333]
 
 Dark mode support via `@custom-variant dark (&:where(.dark, .dark *))` — toggle the `.dark` class on `<html>` with `PhiaDarkMode`.
 
+### Color presets & runtime theme switching
+
+PhiaUI ships 8 OKLCH color presets: `zinc`, `slate`, `blue`, `rose`, `orange`, `green`, `violet`, `neutral`.
+
+Generate the multi-theme CSS file:
+
+```bash
+mix phia.theme install
+# → writes assets/css/phia-themes.css with all 8 [data-phia-theme] selectors
+# → injects @import into app.css automatically
+```
+
+Activate a preset at the HTML level:
+
+```html
+<html class="dark" data-phia-theme="blue">
+```
+
+Scoped per section via ThemeProvider:
+
+```heex
+<.theme_provider theme={:blue}>
+  <.button>Blue button</.button>
+</.theme_provider>
+```
+
+Runtime switching via the PhiaTheme hook:
+
+```heex
+<select phx-hook="PhiaTheme" id="color-picker">
+  <option value="zinc">Zinc</option>
+  <option value="blue">Blue</option>
+  <option value="rose">Rose</option>
+</select>
+```
+
+**Anti-FOUC** — add to `<head>` before any stylesheet:
+
+```html
+<script>
+  (function() {
+    var mode = localStorage.getItem('phia-mode') || localStorage.getItem('phia-theme');
+    if (mode === 'dark' || (!mode && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+    var ct = localStorage.getItem('phia-color-theme');
+    if (ct) document.documentElement.setAttribute('data-phia-theme', ct);
+  })();
+</script>
+```
+
 ---
 
 ## Use Cases
@@ -439,7 +510,8 @@ Detailed examples and use cases:
 | [Primitives & Feedback](docs/components/primitives.md) | Button, Card, Badge, Icon, Alert, Skeleton, Breadcrumb, Pagination |
 | [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Checkbox, Calendar, Tags Input, Image Upload, Rich Text Editor |
 | [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker, Collapsible, AlertDialog, Carousel, ContextMenu, Drawer, Combobox, DatePicker |
-| [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar |
+| [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar, Tabs Nav, Theme Provider |
+| [Theme System](docs/guides/theme-system.md) | CSS-first themes, color presets, runtime switching, ThemeProvider, PhiaTheme hook |
 | [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts |
 | [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette |
 

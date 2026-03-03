@@ -8,10 +8,10 @@ defmodule PhiaUi.Components.SkeletonTest do
     use Phoenix.Component
     import PhiaUi.Components.Skeleton
 
-    attr :shape, :atom, default: :rectangle
-    attr :width, :string, default: nil
-    attr :height, :string, default: nil
-    attr :class, :string, default: nil
+    attr(:shape, :atom, default: :rectangle)
+    attr(:width, :string, default: nil)
+    attr(:height, :string, default: nil)
+    attr(:class, :string, default: nil)
 
     def render_skeleton(assigns) do
       ~H"""
@@ -19,8 +19,8 @@ defmodule PhiaUi.Components.SkeletonTest do
       """
     end
 
-    attr :lines, :integer, default: 3
-    attr :class, :string, default: nil
+    attr(:lines, :integer, default: 3)
+    attr(:class, :string, default: nil)
 
     def render_skeleton_text(assigns) do
       ~H"""
@@ -28,8 +28,8 @@ defmodule PhiaUi.Components.SkeletonTest do
       """
     end
 
-    attr :size, :string, default: "10"
-    attr :class, :string, default: nil
+    attr(:size, :string, default: "10")
+    attr(:class, :string, default: nil)
 
     def render_skeleton_avatar(assigns) do
       ~H"""
@@ -37,7 +37,7 @@ defmodule PhiaUi.Components.SkeletonTest do
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
 
     def render_skeleton_card(assigns) do
       ~H"""

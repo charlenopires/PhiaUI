@@ -8,7 +8,8 @@ defmodule PhiaUi.Components.TableTest do
     use Phoenix.Component
     import PhiaUi.Components.Table
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table(assigns) do
       ~H"""
       <.table class={@class}>
@@ -19,50 +20,57 @@ defmodule PhiaUi.Components.TableTest do
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table_header(assigns) do
       ~H"""
       <table><.table_header class={@class}><tr><th>H</th></tr></.table_header></table>
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table_body(assigns) do
       ~H"""
       <table><.table_body class={@class}><tr><td>B</td></tr></.table_body></table>
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table_footer(assigns) do
       ~H"""
       <table><.table_footer class={@class}>Total</.table_footer></table>
       """
     end
 
-    attr :class, :string, default: nil
-    attr :selected, :boolean, default: false
+    attr(:class, :string, default: nil)
+    attr(:selected, :boolean, default: false)
+
     def render_table_row(assigns) do
       ~H"""
       <table><tbody><.table_row selected={@selected} class={@class}>Row</.table_row></tbody></table>
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table_head(assigns) do
       ~H"""
       <table><thead><tr><.table_head class={@class}>Name</.table_head></tr></thead></table>
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table_cell(assigns) do
       ~H"""
       <table><tbody><tr><.table_cell class={@class}>Value</.table_cell></tr></tbody></table>
       """
     end
 
-    attr :class, :string, default: nil
+    attr(:class, :string, default: nil)
+
     def render_table_caption(assigns) do
       ~H"""
       <table><.table_caption class={@class}>Caption</.table_caption></table>
@@ -248,14 +256,17 @@ defmodule PhiaUi.Components.TableTest do
       assert html =~ "<th"
     end
 
-    test "has h-10 px-2 text-left align-middle font-medium text-muted-foreground" do
+    test "has h-11 px-4 text-left align-middle text-xs font-medium text-muted-foreground uppercase tracking-wider" do
       html = render_component(&H.render_table_head/1, %{})
-      assert html =~ "h-10"
-      assert html =~ "px-2"
+      assert html =~ "h-11"
+      assert html =~ "px-4"
       assert html =~ "text-left"
       assert html =~ "align-middle"
+      assert html =~ "text-xs"
       assert html =~ "font-medium"
       assert html =~ "text-muted-foreground"
+      assert html =~ "uppercase"
+      assert html =~ "tracking-wider"
     end
 
     test "accepts custom class" do
@@ -274,9 +285,10 @@ defmodule PhiaUi.Components.TableTest do
       assert html =~ "<td"
     end
 
-    test "has p-2 align-middle" do
+    test "has px-4 py-3 align-middle" do
       html = render_component(&H.render_table_cell/1, %{})
-      assert html =~ "p-2"
+      assert html =~ "px-4"
+      assert html =~ "py-3"
       assert html =~ "align-middle"
     end
 

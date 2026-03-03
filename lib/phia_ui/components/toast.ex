@@ -47,14 +47,17 @@ defmodule PhiaUi.Components.Toast do
   import PhiaUi.ClassMerger, only: [cn: 1]
   import PhiaUi.Components.Icon, only: [icon: 1]
 
-  attr :id, :string, required: true, doc: "Unique ID for the toast viewport"
-  attr :max_toasts, :integer, default: 5, doc: "Maximum number of toasts displayed at once"
-  attr :variant, :atom,
+  attr(:id, :string, required: true, doc: "Unique ID for the toast viewport")
+  attr(:max_toasts, :integer, default: 5, doc: "Maximum number of toasts displayed at once")
+
+  attr(:variant, :atom,
     default: :default,
     values: [:default, :success, :destructive, :warning],
     doc: "Default variant applied to toasts (hook can override per-toast)"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc """
   Renders the toast viewport container.
@@ -83,9 +86,9 @@ defmodule PhiaUi.Components.Toast do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the toast title (heading)."
   def toast_title(assigns) do
@@ -96,9 +99,9 @@ defmodule PhiaUi.Components.Toast do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the toast description (body text)."
   def toast_description(assigns) do
@@ -109,10 +112,10 @@ defmodule PhiaUi.Components.Toast do
     """
   end
 
-  attr :on_click, :string, required: true, doc: "phx-click event name for the action"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:on_click, :string, required: true, doc: "phx-click event name for the action")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders an action button inside a toast."
   def toast_action(assigns) do
@@ -133,8 +136,8 @@ defmodule PhiaUi.Components.Toast do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc "Renders a dismiss (close) button for a toast."
   def toast_close(assigns) do

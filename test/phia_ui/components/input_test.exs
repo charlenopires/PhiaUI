@@ -12,11 +12,11 @@ defmodule PhiaUi.Components.InputTest do
     use Phoenix.Component
     import PhiaUi.Components.Input
 
-    attr :field, Phoenix.HTML.FormField
-    attr :label, :string, default: nil
-    attr :description, :string, default: nil
-    attr :class, :string, default: nil
-    attr :type, :string, default: "text"
+    attr(:field, Phoenix.HTML.FormField)
+    attr(:label, :string, default: nil)
+    attr(:description, :string, default: nil)
+    attr(:class, :string, default: nil)
+    attr(:type, :string, default: "text")
 
     def render_input(assigns) do
       ~H"""
@@ -24,8 +24,8 @@ defmodule PhiaUi.Components.InputTest do
       """
     end
 
-    attr :field, Phoenix.HTML.FormField
-    attr :label, :string, default: nil
+    attr(:field, Phoenix.HTML.FormField)
+    attr(:label, :string, default: nil)
 
     def render_debounce(assigns) do
       ~H"""

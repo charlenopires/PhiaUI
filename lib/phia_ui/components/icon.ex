@@ -36,18 +36,21 @@ defmodule PhiaUi.Components.Icon do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :name, :string,
+  attr(:name, :string,
     required: true,
     doc: "Lucide icon name (e.g. \"menu\", \"chevron-down\", \"trending-up\")"
+  )
 
-  attr :size, :atom,
+  attr(:size, :atom,
     values: [:xs, :sm, :md, :lg],
     default: :md,
     doc: "Icon size — xs: w-3 h-3 · sm: w-4 h-4 · md: w-5 h-5 · lg: w-6 h-6"
+  )
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes (merged via cn/1, last wins)"
+  )
 
   @doc """
   Renders an inline SVG icon from the Lucide sprite.

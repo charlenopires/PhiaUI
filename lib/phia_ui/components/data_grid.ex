@@ -117,7 +117,7 @@ defmodule PhiaUi.Components.DataGrid do
     <th
       aria-sort={if @sort_key, do: aria_sort(@sort_dir)}
       class={cn([
-        "h-10 px-2 text-left align-middle font-medium text-muted-foreground",
+        "h-11 px-4 text-left align-middle text-xs font-medium text-muted-foreground uppercase tracking-wider",
         "[&:has([role=checkbox])]:pr-0",
         @class
       ])}
@@ -181,7 +181,7 @@ defmodule PhiaUi.Components.DataGrid do
   def data_grid_cell(assigns) do
     ~H"""
     <td
-      class={cn(["p-2 align-middle [&:has([role=checkbox])]:pr-0", @class])}
+      class={cn(["px-4 py-3 align-middle [&:has([role=checkbox])]:pr-0", @class])}
       {@rest}
     >
       <%= render_slot(@inner_block) %>

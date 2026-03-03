@@ -158,5 +158,4 @@ defmodule Mix.Tasks.Phia.Install do
       Application.app_dir(:phia_ui, "priv/templates/theme/theme.css")
     end
   end
-
 end

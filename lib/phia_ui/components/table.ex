@@ -72,9 +72,9 @@ defmodule PhiaUi.Components.Table do
   # table/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper"
-  attr :rest, :global, doc: "HTML attributes forwarded to the outer div"
-  slot :inner_block, required: true, doc: "Table content (thead, tbody, tfoot, caption)"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the outer div")
+  slot(:inner_block, required: true, doc: "Table content (thead, tbody, tfoot, caption)")
 
   @doc "Renders a scrollable table container."
   def table(assigns) do
@@ -91,9 +91,9 @@ defmodule PhiaUi.Components.Table do
   # table_header/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to thead"
-  slot :inner_block, required: true, doc: "Header rows"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to thead")
+  slot(:inner_block, required: true, doc: "Header rows")
 
   @doc "Renders the `<thead>` section."
   def table_header(assigns) do
@@ -108,9 +108,9 @@ defmodule PhiaUi.Components.Table do
   # table_body/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to tbody (use phx-update for streams)"
-  slot :inner_block, required: true, doc: "Data rows"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to tbody (use phx-update for streams)")
+  slot(:inner_block, required: true, doc: "Data rows")
 
   @doc "Renders the `<tbody>` section. Supports LiveView Streams via `phx-update`."
   def table_body(assigns) do
@@ -125,9 +125,9 @@ defmodule PhiaUi.Components.Table do
   # table_footer/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to tfoot"
-  slot :inner_block, required: true, doc: "Footer rows (totals, summaries)"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to tfoot")
+  slot(:inner_block, required: true, doc: "Footer rows (totals, summaries)")
 
   @doc "Renders the `<tfoot>` section."
   def table_footer(assigns) do
@@ -142,10 +142,15 @@ defmodule PhiaUi.Components.Table do
   # table_row/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :selected, :boolean, default: false, doc: "Marks row as selected (adds data-state=selected)"
-  attr :rest, :global, doc: "HTML attributes forwarded to tr"
-  slot :inner_block, required: true, doc: "Row cells"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+
+  attr(:selected, :boolean,
+    default: false,
+    doc: "Marks row as selected (adds data-state=selected)"
+  )
+
+  attr(:rest, :global, doc: "HTML attributes forwarded to tr")
+  slot(:inner_block, required: true, doc: "Row cells")
 
   @doc "Renders a `<tr>` row with optional selected state."
   def table_row(assigns) do
@@ -164,15 +169,15 @@ defmodule PhiaUi.Components.Table do
   # table_head/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to th"
-  slot :inner_block, required: true, doc: "Header cell content"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to th")
+  slot(:inner_block, required: true, doc: "Header cell content")
 
   @doc "Renders a `<th>` column header cell."
   def table_head(assigns) do
     ~H"""
     <th
-      class={cn(["h-10 px-2 text-left align-middle font-medium text-muted-foreground", @class])}
+      class={cn(["h-11 px-4 text-left align-middle text-xs font-medium text-muted-foreground uppercase tracking-wider", @class])}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
@@ -184,14 +189,14 @@ defmodule PhiaUi.Components.Table do
   # table_cell/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to td"
-  slot :inner_block, required: true, doc: "Cell content"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to td")
+  slot(:inner_block, required: true, doc: "Cell content")
 
   @doc "Renders a `<td>` data cell."
   def table_cell(assigns) do
     ~H"""
-    <td class={cn(["p-2 align-middle", @class])} {@rest}>
+    <td class={cn(["px-4 py-3 align-middle", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </td>
     """
@@ -201,9 +206,9 @@ defmodule PhiaUi.Components.Table do
   # table_caption/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to caption"
-  slot :inner_block, required: true, doc: "Caption text"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to caption")
+  slot(:inner_block, required: true, doc: "Caption text")
 
   @doc "Renders a `<caption>` for accessible table labelling."
   def table_caption(assigns) do

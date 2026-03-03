@@ -37,35 +37,38 @@ defmodule PhiaUi.Components.StatCard do
   import PhiaUi.Components.Icon, only: [icon: 1]
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :title, :string, required: true, doc: "Metric label displayed above the value"
+  attr(:title, :string, required: true, doc: "Metric label displayed above the value")
 
-  attr :value, :string, required: true, doc: "Main metric value (e.g., \"$12,345\" or \"1,024\")"
+  attr(:value, :string, required: true, doc: "Main metric value (e.g., \"$12,345\" or \"1,024\")")
 
-  attr :trend, :atom,
+  attr(:trend, :atom,
     values: [:up, :down, :neutral],
     default: :neutral,
     doc: "Trend direction — controls badge colour and icon"
+  )
 
-  attr :trend_value, :string,
+  attr(:trend_value, :string,
     default: nil,
     doc: "Trend text displayed in the badge (e.g., \"+12%\"). Omit to hide the badge."
+  )
 
-  attr :description, :string,
+  attr(:description, :string,
     default: nil,
     doc: "Secondary text below the value (e.g., \"vs. last month\")"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer card"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer card")
 
-  attr :rest, :global, doc: "HTML attributes forwarded to the outer card element"
+  attr(:rest, :global, doc: "HTML attributes forwarded to the outer card element")
 
-  slot :icon, doc: "Optional icon displayed in the card header (top-right)"
-  slot :footer, doc: "Optional footer content (e.g., timestamps, sparklines)"
+  slot(:icon, doc: "Optional icon displayed in the card header (top-right)")
+  slot(:footer, doc: "Optional footer content (e.g., timestamps, sparklines)")
 
   def stat_card(assigns) do
     ~H"""
-    <.card class={cn([@class])} {@rest}>
+    <.card class={cn(["shadow-sm", @class])} {@rest}>
       <.card_header class="flex flex-row items-center justify-between space-y-0 pb-2">
-        <.card_title class="text-sm font-medium tracking-tight">
+        <.card_title class="text-sm font-medium text-muted-foreground">
           <%= @title %>
         </.card_title>
         <div class="flex items-center gap-2">
@@ -78,7 +81,7 @@ defmodule PhiaUi.Components.StatCard do
         </div>
       </.card_header>
       <.card_content>
-        <div class="text-2xl font-bold"><%= @value %></div>
+        <div class="text-2xl font-bold tracking-tight"><%= @value %></div>
         <p :if={@description} class="mt-1 text-xs text-muted-foreground">
           <%= @description %>
         </p>

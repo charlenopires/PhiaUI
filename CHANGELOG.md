@@ -2,6 +2,95 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.3 — 2026-03-03
+
+### Theme System v2 — CSS-first Architecture
+
+Complete architectural refactoring of the theme system inspired by DaisyUI's data-attribute pattern,
+eliminating runtime `<style>` injection in favour of a static pre-generated CSS file.
+
+#### New: `mix phia.theme install`
+
+Generates `assets/css/phia-themes.css` with all 8 built-in themes, each under its own
+`[data-phia-theme="name"]` CSS attribute selector. Automatically injects `@import "./phia-themes.css"`
+into `assets/css/app.css` (idempotent). Options:
+
+- `--output PATH` — custom output path (default: `assets/css/phia-themes.css`)
+- `--themes a,b,c` — generate only a subset of presets
+
+#### Improved: `mix phia.theme list`
+
+Added PRIMARY (light) column showing the OKLCH primary color value for each preset.
+
+#### Improved: `mix phia.theme export`
+
+New `--format css` option: exports a theme as `[data-phia-theme="name"]` CSS selectors instead of JSON.
+
+#### New: `ThemeCSS.generate/2` with opts
+
+Extended `generate/2` with keyword options:
+- `selector:` — override `:root` (default)
+- `dark_selector:` — override `.dark` (default)
+- `include_theme_block:` — include/exclude `@theme {}` block (default: `true`)
+
+Backward-compatible: `generate(theme)` still works identically.
+
+#### New: `ThemeCSS.generate_for_selector/1`
+
+Generates CSS using `[data-phia-theme="name"]` and `.dark [data-phia-theme="name"]` selectors.
+No `@theme` block — designed for the multi-theme file.
+
+#### New: `ThemeCSS.generate_all/1`
+
+Generates a complete CSS file with all themes as attribute selectors. Accepts a list of atoms
+(`:zinc`, `:blue`), `%Theme{}` structs, or `nil` (defaults to all presets).
+
+#### Refactored: `ThemeProvider` component
+
+**Breaking change (minor):** `<.theme_provider theme={:blue}>` no longer injects a `<style>` tag.
+Instead, it sets `data-phia-theme="blue"` on the wrapper div. CSS custom properties cascade
+automatically from `phia-themes.css`.
+
+**Migration:** Run `mix phia.theme install` to generate the CSS file, then import it in `app.css`.
+Existing templates using `<.theme_provider theme={:blue}>` work without modification.
+
+#### New: `PhiaTheme` JS Hook
+
+New hook in `priv/templates/js/hooks/theme.js` for runtime color preset switching.
+
+- Supports `<button phx-hook="PhiaTheme" data-theme="blue">` (click event)
+- Supports `<select phx-hook="PhiaTheme">` (change event)
+- Persists preference in `localStorage['phia-color-theme']`
+- Sets `data-phia-theme` attribute on `<html>` element
+- Dispatches `phia:color-theme-changed` CustomEvent
+
+#### Updated: `PhiaDarkMode` JS Hook
+
+- Now writes `phia-mode` (new canonical key) and `phia-theme` (retained for backward compatibility)
+- `phia:theme-changed` event detail now includes `mode` field alongside existing `theme` field
+- Anti-FOUC snippet updated to restore both dark mode and color preset on page load
+
+#### New components
+
+- **TabsNav** (`tabs_nav/1`, `tabs_nav_item/1`) — Navigation tabs with 3 visual variants:
+  `underline` (default, bottom border), `pills` (filled background), `segment` (segmented control).
+  Fully accessible with `aria-current`, keyboard support. No JS hooks.
+
+#### localStorage keys (updated)
+
+| Key | Written by | Value |
+|-----|-----------|-------|
+| `phia-mode` | `PhiaDarkMode` | `"dark"` \| `"light"` (new canonical key) |
+| `phia-theme` | `PhiaDarkMode` | same as `phia-mode` (legacy, retained for compat) |
+| `phia-color-theme` | `PhiaTheme` | preset name (e.g., `"blue"`, `"zinc"`) |
+
+#### Test coverage
+
+- 113 new tests for theme system (ThemeCSS, ThemeProvider, mix phia.theme)
+- All tests pass: `mix test`
+- `mix format --check-formatted` ✅
+- `mix credo --strict` — no new issues
+
 ## 0.1.2 — 2026-03-03
 
 ### Added — 15 new components (5 agents × 3 parallel cycles)

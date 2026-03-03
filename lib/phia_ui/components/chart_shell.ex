@@ -28,27 +28,30 @@ defmodule PhiaUi.Components.ChartShell do
   import PhiaUi.Components.Card
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :title, :string, required: true, doc: "Chart heading — always visible"
+  attr(:title, :string, required: true, doc: "Chart heading — always visible")
 
-  attr :description, :string,
+  attr(:description, :string,
     default: nil,
     doc: "Supporting text below the title (omitted when nil)"
+  )
 
-  attr :period, :string,
+  attr(:period, :string,
     default: nil,
     doc: "Time-range label displayed in the header (e.g. \"Last 30 days\")"
+  )
 
-  attr :min_height, :string,
+  attr(:min_height, :string,
     default: "300px",
     doc: "Minimum height of the chart content area as a CSS value (e.g. \"300px\", \"20rem\")"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer card"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer card")
 
-  attr :rest, :global, doc: "HTML attributes forwarded to the card element"
+  attr(:rest, :global, doc: "HTML attributes forwarded to the card element")
 
-  slot :actions, doc: "Optional header actions (download, filter buttons, etc.)"
+  slot(:actions, doc: "Optional header actions (download, filter buttons, etc.)")
 
-  slot :inner_block, required: true, doc: "Chart content — any library output"
+  slot(:inner_block, required: true, doc: "Chart content — any library output")
 
   @doc "Renders a titled card shell around chart or visualisation content."
   def chart_shell(assigns) do

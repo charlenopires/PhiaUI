@@ -4,6 +4,7 @@ Components for building enterprise dashboards: layout shell, navigation, data ta
 
 - [Dashboard Shell](#dashboard-shell)
 - [Dark Mode Toggle](#dark-mode-toggle)
+- [Color Theme Switching](#color-theme-switching)
 - [Table](#table)
 - [DataGrid with Sorting](#datagrid-with-sorting)
 - [Stat Card](#stat-card)
@@ -133,11 +134,12 @@ Add this script **before** `</head>` in your `root.html.heex`:
 ```html
 <script>
   (function() {
-    var theme = localStorage.getItem('phia-theme');
-    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (theme === 'dark' || (!theme && prefersDark)) {
+    var mode = localStorage.getItem('phia-mode') || localStorage.getItem('phia-theme');
+    if (mode === 'dark' || (!mode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     }
+    var ct = localStorage.getItem('phia-color-theme');
+    if (ct) document.documentElement.setAttribute('data-phia-theme', ct);
   })();
 </script>
 ```
@@ -160,6 +162,93 @@ Then use `dark:` utilities in your components:
 
 ```javascript
 import PhiaDarkMode from "./phia_hooks/dark_mode"
+```
+
+---
+
+## Color Theme Switching
+
+PhiaUI includes 8 built-in OKLCH color presets. The CSS-first theme system uses `data-phia-theme`
+attribute selectors — activating a theme is a single `setAttribute` call with zero runtime overhead.
+
+### Setup
+
+Generate the multi-theme CSS file and auto-import it:
+
+```bash
+mix phia.theme install
+```
+
+This creates `assets/css/phia-themes.css` and injects `@import "./phia-themes.css";` into your `app.css`.
+
+### Available presets
+
+| Preset | `data-phia-theme` |
+|--------|------------------|
+| Zinc (default) | `zinc` |
+| Slate | `slate` |
+| Blue | `blue` |
+| Rose | `rose` |
+| Orange | `orange` |
+| Green | `green` |
+| Violet | `violet` |
+| Neutral | `neutral` |
+
+### Activate a preset in HTML
+
+```heex
+<%!-- Entire app uses blue theme --%>
+<html lang="en" data-phia-theme="blue" class="dark">
+```
+
+### Scoped to a section via ThemeProvider
+
+```heex
+<%!-- Only this section uses the rose preset --%>
+<.theme_provider theme={:rose} class="p-4 rounded-lg border">
+  <.button>Rose Button</.button>
+  <.badge variant="default">Active</.badge>
+</.theme_provider>
+```
+
+### Runtime switching with PhiaTheme hook
+
+The `PhiaTheme` hook lets users switch presets without a page reload. Works with buttons and selects.
+
+**Select dropdown:**
+
+```heex
+<select phx-hook="PhiaTheme" id="theme-picker" class="...">
+  <option value="zinc">Zinc</option>
+  <option value="blue">Blue</option>
+  <option value="rose">Rose</option>
+  <option value="orange">Orange</option>
+  <option value="green">Green</option>
+  <option value="violet">Violet</option>
+</select>
+```
+
+**Button group:**
+
+```heex
+<.button_group>
+  <.button phx-hook="PhiaTheme" id="t-zinc" data-theme="zinc" variant="outline" size="sm">Zinc</.button>
+  <.button phx-hook="PhiaTheme" id="t-blue" data-theme="blue" variant="outline" size="sm">Blue</.button>
+  <.button phx-hook="PhiaTheme" id="t-rose" data-theme="rose" variant="outline" size="sm">Rose</.button>
+</.button_group>
+```
+
+The hook persists the selection to `localStorage['phia-color-theme']` and dispatches a
+`phia:color-theme-changed` CustomEvent so other hooks (e.g. `PhiaChart`) can re-render with new colors.
+
+### Required hook
+
+```javascript
+import PhiaTheme from "./phia_hooks/theme"
+
+let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: { PhiaTheme, PhiaDarkMode, /* ... */ }
+})
 ```
 
 ---

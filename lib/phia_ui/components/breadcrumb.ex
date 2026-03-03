@@ -39,9 +39,9 @@ defmodule PhiaUi.Components.Breadcrumb do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to <nav>"
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to <nav>")
+  slot(:inner_block, required: true)
 
   @doc "Renders the `<nav aria-label='breadcrumb'>` wrapper."
   def breadcrumb(assigns) do
@@ -52,9 +52,9 @@ defmodule PhiaUi.Components.Breadcrumb do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the `<ol>` flex container for breadcrumb items."
   def breadcrumb_list(assigns) do
@@ -68,9 +68,9 @@ defmodule PhiaUi.Components.Breadcrumb do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders a `<li>` breadcrumb item wrapper."
   def breadcrumb_item(assigns) do
@@ -81,11 +81,11 @@ defmodule PhiaUi.Components.Breadcrumb do
     """
   end
 
-  attr :href, :string, default: nil, doc: "Link URL"
-  attr :navigate, :string, default: nil, doc: "LiveView navigate path"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:href, :string, default: nil, doc: "Link URL")
+  attr(:navigate, :string, default: nil, doc: "LiveView navigate path")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders a navigable `<a>` breadcrumb link with hover underline."
   def breadcrumb_link(assigns) do
@@ -100,9 +100,9 @@ defmodule PhiaUi.Components.Breadcrumb do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc """
   Renders the current page label (non-link).
@@ -122,8 +122,8 @@ defmodule PhiaUi.Components.Breadcrumb do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  slot :inner_block, doc: "Custom separator content (overrides default '/')"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  slot(:inner_block, doc: "Custom separator content (overrides default '/')")
 
   @doc """
   Renders a breadcrumb separator.
@@ -143,8 +143,8 @@ defmodule PhiaUi.Components.Breadcrumb do
     """
   end
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc "Renders a `…` ellipsis to indicate collapsed path segments."
   def breadcrumb_ellipsis(assigns) do

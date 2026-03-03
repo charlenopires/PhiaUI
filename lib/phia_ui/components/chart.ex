@@ -40,20 +40,21 @@ defmodule PhiaUi.Components.Chart do
   import PhiaUi.ClassMerger, only: [cn: 1]
   import PhiaUi.Components.ChartShell, only: [chart_shell: 1]
 
-  attr :id, :string, required: true, doc: "Unique ID — also used for push_event targeting"
+  attr(:id, :string, required: true, doc: "Unique ID — also used for push_event targeting")
 
-  attr :type, :atom,
+  attr(:type, :atom,
     default: :line,
     values: [:line, :bar, :pie, :area],
     doc: "Chart type"
+  )
 
-  attr :series, :list, default: [], doc: "List of series maps, e.g. [%{name: ..., data: [...]}]"
-  attr :labels, :list, default: [], doc: "X-axis category labels"
-  attr :height, :string, default: "300px", doc: "CSS height of the chart container"
-  attr :title, :string, default: nil, doc: "When set, wraps the chart in a ChartShell card"
-  attr :description, :string, default: nil, doc: "Description shown in ChartShell header"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:series, :list, default: [], doc: "List of series maps, e.g. [%{name: ..., data: [...]}]")
+  attr(:labels, :list, default: [], doc: "X-axis category labels")
+  attr(:height, :string, default: "300px", doc: "CSS height of the chart container")
+  attr(:title, :string, default: nil, doc: "When set, wraps the chart in a ChartShell card")
+  attr(:description, :string, default: nil, doc: "Description shown in ChartShell header")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc "Renders a chart container wired to the PhiaChart hook."
   def phia_chart(assigns) do
@@ -77,12 +78,12 @@ defmodule PhiaUi.Components.Chart do
   # Private: chart canvas sub-component
   # ---------------------------------------------------------------------------
 
-  attr :id, :string, required: true
-  attr :config_json, :string, required: true
-  attr :series_json, :string, required: true
-  attr :height, :string, required: true
-  attr :class, :string, default: nil
-  attr :rest, :global
+  attr(:id, :string, required: true)
+  attr(:config_json, :string, required: true)
+  attr(:series_json, :string, required: true)
+  attr(:height, :string, required: true)
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
 
   defp chart_canvas(assigns) do
     ~H"""

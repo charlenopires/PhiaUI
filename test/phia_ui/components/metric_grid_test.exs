@@ -9,8 +9,8 @@ defmodule PhiaUi.Components.MetricGridTest do
     import PhiaUi.Components.MetricGrid
     import PhiaUi.Components.StatCard
 
-    attr :cols, :integer, default: 4
-    attr :class, :string, default: nil
+    attr(:cols, :integer, default: 4)
+    attr(:class, :string, default: nil)
 
     def render_grid(assigns) do
       ~H"""
@@ -28,7 +28,6 @@ defmodule PhiaUi.Components.MetricGridTest do
       </.metric_grid>
       """
     end
-
   end
 
   defp render_grid(attrs \\ %{}) do

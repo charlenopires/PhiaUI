@@ -48,9 +48,9 @@ defmodule PhiaUi.Components.Pagination do
   import PhiaUi.ClassMerger, only: [cn: 1]
   import PhiaUi.Components.Icon, only: [icon: 1]
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the `<nav aria-label='pagination'>` wrapper."
   def pagination(assigns) do
@@ -61,9 +61,9 @@ defmodule PhiaUi.Components.Pagination do
     """
   end
 
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders the `<ul>` flex container for pagination items."
   def pagination_content(assigns) do
@@ -74,9 +74,9 @@ defmodule PhiaUi.Components.Pagination do
     """
   end
 
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc "Renders a `<li>` pagination item wrapper."
   def pagination_item(assigns) do
@@ -87,12 +87,12 @@ defmodule PhiaUi.Components.Pagination do
     """
   end
 
-  attr :page, :integer, required: true, doc: "The page number this link represents"
-  attr :current_page, :integer, required: true, doc: "The currently active page"
-  attr :on_change, :string, default: "page-changed", doc: "phx-click event name"
-  attr :class, :string, default: nil
-  attr :rest, :global
-  slot :inner_block, required: true
+  attr(:page, :integer, required: true, doc: "The page number this link represents")
+  attr(:current_page, :integer, required: true, doc: "The currently active page")
+  attr(:on_change, :string, default: "page-changed", doc: "phx-click event name")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
 
   @doc """
   Renders a page number button.
@@ -122,11 +122,11 @@ defmodule PhiaUi.Components.Pagination do
     """
   end
 
-  attr :current_page, :integer, required: true
-  attr :total_pages, :integer, required: true
-  attr :on_change, :string, default: "page-changed"
-  attr :class, :string, default: nil
-  attr :rest, :global
+  attr(:current_page, :integer, required: true)
+  attr(:total_pages, :integer, required: true)
+  attr(:on_change, :string, default: "page-changed")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
 
   @doc """
   Renders a previous-page button with a chevron-left icon.
@@ -153,11 +153,11 @@ defmodule PhiaUi.Components.Pagination do
     """
   end
 
-  attr :current_page, :integer, required: true
-  attr :total_pages, :integer, required: true
-  attr :on_change, :string, default: "page-changed"
-  attr :class, :string, default: nil
-  attr :rest, :global
+  attr(:current_page, :integer, required: true)
+  attr(:total_pages, :integer, required: true)
+  attr(:on_change, :string, default: "page-changed")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
 
   @doc """
   Renders a next-page button with a chevron-right icon.
@@ -184,8 +184,8 @@ defmodule PhiaUi.Components.Pagination do
     """
   end
 
-  attr :class, :string, default: nil
-  attr :rest, :global
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
 
   @doc "Renders a `…` ellipsis to indicate skipped page ranges."
   def pagination_ellipsis(assigns) do

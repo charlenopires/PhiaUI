@@ -13,8 +13,9 @@ defmodule PhiaUi.Components.Shell do
   ## Sub-components
 
   - `shell/1` — outer CSS Grid wrapper with named slots
-  - `sidebar/1` — collapsible sidebar with `:brand`, `:nav_items`, `:footer_items` slots
-  - `sidebar_item/1` — navigation item with active state
+  - `sidebar/1` — collapsible sidebar with `:brand`, `:nav_items`, `:footer_items` slots; supports `:default` and `:dark` variants
+  - `sidebar_item/1` — navigation item with active state, optional icon slot, and badge count
+  - `sidebar_section/1` — groups sidebar items under a labelled section
   - `topbar/1` — standalone sticky top navigation bar
   - `mobile_sidebar_toggle/1` — hamburger button that calls `JS.toggle/1`
 
@@ -99,12 +100,16 @@ defmodule PhiaUi.Components.Shell do
   # shell/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper"
-  attr :rest, :global, doc: "HTML attributes forwarded to the wrapper div"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the wrapper div")
 
-  slot :sidebar, required: true, doc: "Sidebar content (required) — rendered in aside on desktop, drawer on mobile"
-  slot :topbar, doc: "Top navigation bar (optional) — spans full width above the grid"
-  slot :inner_block, required: true, doc: "Main content area"
+  slot(:sidebar,
+    required: true,
+    doc: "Sidebar content (required) — rendered in aside on desktop, drawer on mobile"
+  )
+
+  slot(:topbar, doc: "Top navigation bar (optional) — spans full width above the grid")
+  slot(:inner_block, required: true, doc: "Main content area")
 
   @doc """
   Full-height application shell using CSS Grid on desktop.
@@ -144,19 +149,28 @@ defmodule PhiaUi.Components.Shell do
   # sidebar/1
   # ---------------------------------------------------------------------------
 
-  attr :id, :string, default: "sidebar-drawer", doc: "Element id used by JS.toggle"
+  attr(:id, :string, default: "sidebar-drawer", doc: "Element id used by JS.toggle")
 
-  attr :collapsed, :boolean,
+  attr(:collapsed, :boolean,
     default: false,
     doc: "Collapses the sidebar (translates off-screen)"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the aside element"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
 
-  slot :brand, doc: "Logo / application name area at the top of the sidebar"
-  slot :nav_items, doc: "Primary navigation items"
-  slot :footer_items, doc: "Secondary items at the bottom of the sidebar"
-  slot :inner_block, doc: "Fallback slot for custom sidebar content"
+  attr(:variant, :atom,
+    values: [:default, :dark],
+    default: :default,
+    doc:
+      "Visual variant — :default uses sidebar-background tokens, :dark forces dark enterprise look"
+  )
+
+  attr(:rest, :global, doc: "HTML attributes forwarded to the aside element")
+
+  slot(:brand, doc: "Logo / application name area at the top of the sidebar")
+  slot(:nav_items, doc: "Primary navigation items")
+  slot(:footer_items, doc: "Secondary items at the bottom of the sidebar")
+  slot(:inner_block, doc: "Fallback slot for custom sidebar content")
 
   @doc """
   Responsive sidebar.
@@ -177,6 +191,7 @@ defmodule PhiaUi.Components.Shell do
       id={@id}
       class={cn([
         "flex w-60 flex-col border-r",
+        sidebar_variant_class(@variant),
         @collapsed && "-translate-x-full",
         @class
       ])}
@@ -207,14 +222,16 @@ defmodule PhiaUi.Components.Shell do
   # sidebar_item/1
   # ---------------------------------------------------------------------------
 
-  attr :href, :string, default: "#", doc: "Navigation href"
-  attr :active, :boolean, default: false, doc: "Highlights the item as the current route"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the anchor element"
+  attr(:href, :string, default: "#", doc: "Navigation href")
+  attr(:active, :boolean, default: false, doc: "Highlights the item as the current route")
+  attr(:badge, :integer, default: nil, doc: "Optional notification count badge")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the anchor element")
 
-  slot :inner_block, required: true, doc: "Item label"
+  slot(:icon, doc: "Optional icon displayed before the label")
+  slot(:inner_block, required: true, doc: "Item label")
 
-  @doc "A navigation item inside the sidebar, with active-state highlighting."
+  @doc "A navigation item inside the sidebar, with active-state highlighting, optional icon and badge."
   def sidebar_item(assigns) do
     ~H"""
     <a
@@ -227,8 +244,55 @@ defmodule PhiaUi.Components.Shell do
       ])}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      <span :if={@icon != []} class="shrink-0">
+        <%= render_slot(@icon) %>
+      </span>
+      <span class="flex-1"><%= render_slot(@inner_block) %></span>
+      <span
+        :if={@badge}
+        class="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs font-medium text-primary-foreground"
+      >
+        <%= @badge %>
+      </span>
     </a>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # sidebar_section/1
+  # ---------------------------------------------------------------------------
+
+  attr(:label, :string, default: nil, doc: "Section label displayed above the items")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
+
+  slot(:inner_block, required: true, doc: "Section navigation items")
+
+  @doc """
+  Groups sidebar items under a labelled section.
+
+  Renders a section label in small uppercase muted text above the items.
+
+  ## Example
+
+      <.sidebar_section label="MAIN MENU">
+        <.sidebar_item href="/dashboard" active>Dashboard</.sidebar_item>
+        <.sidebar_item href="/analytics">Analytics</.sidebar_item>
+      </.sidebar_section>
+  """
+  def sidebar_section(assigns) do
+    ~H"""
+    <div class={cn(["mb-4", @class])} {@rest}>
+      <p
+        :if={@label}
+        class="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70"
+      >
+        <%= @label %>
+      </p>
+      <div class="space-y-0.5">
+        <%= render_slot(@inner_block) %>
+      </div>
+    </div>
     """
   end
 
@@ -236,10 +300,10 @@ defmodule PhiaUi.Components.Shell do
   # topbar/1
   # ---------------------------------------------------------------------------
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
-  slot :inner_block, required: true
+  slot(:inner_block, required: true)
 
   @doc "Horizontal top navigation bar (h-14, border-b). Use inside shell's :topbar slot or standalone."
   def topbar(assigns) do
@@ -254,12 +318,13 @@ defmodule PhiaUi.Components.Shell do
   # mobile_sidebar_toggle/1
   # ---------------------------------------------------------------------------
 
-  attr :target, :string,
+  attr(:target, :string,
     default: "#mobile-sidebar",
     doc: "CSS selector for the element to toggle (defaults to #mobile-sidebar on shell)"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global)
 
   @doc """
   Hamburger button that toggles the mobile sidebar via `Phoenix.LiveView.JS`.
@@ -290,4 +355,13 @@ defmodule PhiaUi.Components.Shell do
     </button>
     """
   end
+
+  # ---------------------------------------------------------------------------
+  # Private helpers
+  # ---------------------------------------------------------------------------
+
+  defp sidebar_variant_class(:default), do: nil
+
+  defp sidebar_variant_class(:dark),
+    do: "dark bg-sidebar-background text-sidebar-foreground border-sidebar-border"
 end

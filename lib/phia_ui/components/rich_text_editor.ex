@@ -37,18 +37,24 @@ defmodule PhiaUi.Components.RichTextEditor do
   # rich_text_editor/1
   # ---------------------------------------------------------------------------
 
-  attr :field, Phoenix.HTML.FormField,
+  attr(:field, Phoenix.HTML.FormField,
     required: true,
     doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+  )
 
-  attr :label, :string, default: nil, doc: "Label text rendered above the editor"
-  attr :placeholder, :string, default: nil, doc: "Placeholder text shown when the editor is empty"
+  attr(:label, :string, default: nil, doc: "Label text rendered above the editor")
 
-  attr :min_height, :string,
+  attr(:placeholder, :string,
+    default: nil,
+    doc: "Placeholder text shown when the editor is empty"
+  )
+
+  attr(:min_height, :string,
     default: "200px",
     doc: "Minimum height of the editable area (CSS value)"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper")
 
   @doc """
   Renders a rich text editor integrated with `Phoenix.HTML.FormField`.

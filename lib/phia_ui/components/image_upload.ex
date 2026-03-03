@@ -60,17 +60,20 @@ defmodule PhiaUi.Components.ImageUpload do
   # image_upload/1
   # ---------------------------------------------------------------------------
 
-  attr :upload, :any,
+  attr(:upload, :any,
     required: true,
     doc: "A `Phoenix.LiveView.UploadConfig` returned by `allow_upload/3`"
+  )
 
-  attr :label, :string,
+  attr(:label, :string,
     default: "Imagem de capa",
     doc: "Instructional text displayed inside the drop zone"
+  )
 
-  attr :class, :string,
+  attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes for the outer wrapper"
+  )
 
   @doc """
   Renders an image upload zone integrated with Phoenix LiveView's upload system.
