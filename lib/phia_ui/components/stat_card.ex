@@ -23,17 +23,18 @@ defmodule PhiaUi.Components.StatCard do
 
   ## Trend variants
 
-  | `:trend` | Badge variant | Icon |
-  |----------|--------------|------|
-  | `:up`    | `:default`   | ↑    |
-  | `:down`  | `:destructive` | ↓  |
-  | `:neutral` | `:secondary` | → |
+  | `:trend`   | Badge variant  | Icon           |
+  |------------|----------------|----------------|
+  | `:up`      | `:default`     | trending-up    |
+  | `:down`    | `:destructive` | trending-down  |
+  | `:neutral` | `:secondary`   | minus          |
   """
 
   use Phoenix.Component
 
   import PhiaUi.Components.Card
   import PhiaUi.Components.Badge
+  import PhiaUi.Components.Icon, only: [icon: 1]
   import PhiaUi.ClassMerger, only: [cn: 1]
 
   attr :title, :string, required: true, doc: "Metric label displayed above the value"
@@ -72,7 +73,7 @@ defmodule PhiaUi.Components.StatCard do
             <%= render_slot(@icon) %>
           </span>
           <.badge :if={@trend_value} variant={trend_badge_variant(@trend)}>
-            <%= trend_icon(@trend) %> <%= @trend_value %>
+            <.icon name={trend_icon_name(@trend)} size={:xs} /> <%= @trend_value %>
           </.badge>
         </div>
       </.card_header>
@@ -97,7 +98,7 @@ defmodule PhiaUi.Components.StatCard do
   defp trend_badge_variant(:down), do: :destructive
   defp trend_badge_variant(:neutral), do: :secondary
 
-  defp trend_icon(:up), do: "↑"
-  defp trend_icon(:down), do: "↓"
-  defp trend_icon(:neutral), do: "→"
+  defp trend_icon_name(:up), do: "trending-up"
+  defp trend_icon_name(:down), do: "trending-down"
+  defp trend_icon_name(:neutral), do: "minus"
 end

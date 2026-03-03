@@ -108,9 +108,10 @@ defmodule PhiaUi.Components.StatCardTest do
       assert html =~ "bg-primary"
     end
 
-    test "up trend shows up arrow icon" do
+    test "up trend shows trending-up svg icon instead of Unicode ↑" do
       html = render_stat_card(%{trend: :up, trend_value: "+5%"})
-      assert html =~ "↑"
+      assert html =~ ~s(href="/icons/lucide-sprite.svg#icon-trending-up")
+      refute html =~ "↑"
     end
   end
 
@@ -129,9 +130,10 @@ defmodule PhiaUi.Components.StatCardTest do
       assert html =~ "bg-destructive"
     end
 
-    test "down trend shows down arrow icon" do
+    test "down trend shows trending-down svg icon instead of Unicode ↓" do
       html = render_stat_card(%{trend: :down, trend_value: "-3%"})
-      assert html =~ "↓"
+      assert html =~ ~s(href="/icons/lucide-sprite.svg#icon-trending-down")
+      refute html =~ "↓"
     end
   end
 
@@ -150,9 +152,10 @@ defmodule PhiaUi.Components.StatCardTest do
       assert html =~ "bg-secondary"
     end
 
-    test "neutral trend shows neutral arrow icon" do
+    test "neutral trend shows minus svg icon instead of Unicode →" do
       html = render_stat_card(%{trend: :neutral, trend_value: "0%"})
-      assert html =~ "→"
+      assert html =~ ~s(href="/icons/lucide-sprite.svg#icon-minus")
+      refute html =~ "→"
     end
 
     test "no badge rendered when trend_value is nil" do

@@ -429,6 +429,17 @@ defmodule PhiaUi.Components.ShellTest do
       html = render_component(&H.render_toggle/1, %{})
       assert html =~ "-translate-x-full"
     end
+
+    test "renders icon/1 svg instead of Unicode ☰" do
+      html = render_component(&H.render_toggle/1, %{})
+      assert html =~ "<svg"
+      refute html =~ "☰"
+    end
+
+    test "icon uses name=\"menu\"" do
+      html = render_component(&H.render_toggle/1, %{})
+      assert html =~ ~s(href="/icons/lucide-sprite.svg#icon-menu")
+    end
   end
 
   # ---------------------------------------------------------------------------

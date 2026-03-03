@@ -93,6 +93,7 @@ defmodule PhiaUi.Components.Shell do
   alias Phoenix.LiveView.JS
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.Components.Icon, only: [icon: 1]
 
   # ---------------------------------------------------------------------------
   # shell/1
@@ -285,7 +286,7 @@ defmodule PhiaUi.Components.Shell do
       aria-label="Toggle sidebar"
       {@rest}
     >
-      ☰
+      <.icon name="menu" />
     </button>
     """
   end
