@@ -87,6 +87,22 @@ Enterprise layout shell, data tables, KPI widgets, and chart integration. → [F
 
 ---
 
+## Live Sample — PhiaUI Dashboard
+
+See PhiaUI in action with a full enterprise dashboard built entirely from library components:
+
+**[github.com/charlenopires/PhiaUI-samples](https://github.com/charlenopires/PhiaUI-samples)**
+
+The sample application demonstrates:
+- **Shell + Sidebar + Topbar** — full desktop/mobile layout with drawer navigation
+- **StatCard + MetricGrid** — KPI cards with live trend indicators
+- **PhiaChart** — area, bar, and line charts via ECharts
+- **DataGrid** — sortable columns with `phx-update="stream"`
+- **Toast + Command Menu** — `push_event`-driven notifications and Ctrl+K palette
+- **Dark mode toggle** — `PhiaDarkMode` with `localStorage` persistence
+
+---
+
 ## Quick Start
 
 ### 1. Install
@@ -96,7 +112,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.0"}
+    {:phia_ui, "~> 0.1.1"}
   ]
 end
 ```

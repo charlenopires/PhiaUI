@@ -1,10 +1,12 @@
 defmodule PhiaUi.MixProject do
   use Mix.Project
 
+  @version "0.1.1"
+
   def project do
     [
       app: :phia_ui,
-      version: "0.1.1",
+      version: @version,
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -39,8 +41,21 @@ defmodule PhiaUi.MixProject do
 
   defp docs do
     [
-      extras: ["README.md", "CHANGELOG.md"],
-      main: "readme"
+      extras: [
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "docs/components/primitives.md",
+        "docs/components/forms.md",
+        "docs/components/interactive.md",
+        "docs/components/dashboard.md"
+      ],
+      main: "readme",
+      source_url: "https://github.com/phiaui/phia_ui",
+      source_ref: "v#{@version}",
+      groups_for_extras: [
+        "Components": ~r/docs\/components\/.*/
+      ]
     ]
   end
 
@@ -50,7 +65,7 @@ defmodule PhiaUi.MixProject do
       description: "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. Optimised for enterprise dashboards.",
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phiaui/phia_ui"},
-      files: ~w(lib priv mix.exs README.md CHANGELOG.md LICENSE)
+      files: ~w(lib priv docs mix.exs README.md CHANGELOG.md LICENSE)
     ]
   end
 
