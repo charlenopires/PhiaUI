@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 55 PhiaUI components.
+  Source of truth for all 59 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -321,11 +321,11 @@ defmodule PhiaUi.ComponentRegistry do
       name: "command",
       module: PhiaUi.Components.Command,
       template_file: "priv/templates/components/command.ex",
-      js_hooks: ["Command"],
+      js_hooks: ["PhiaCommand"],
       dependencies: [],
       tier: :interactive,
       shadcn_equivalent: "Command",
-      status: :planned
+      status: :implemented
     },
     calendar: %{
       name: "calendar",
@@ -584,6 +584,16 @@ defmodule PhiaUi.ComponentRegistry do
       status: :implemented
     },
 
+    date_range_picker: %{
+      name: "date_range_picker",
+      module: PhiaUi.Components.DateRangePicker,
+      template_file: "priv/templates/components/date_range_picker.ex",
+      js_hooks: ["PhiaDateRangePicker"],
+      dependencies: [:icon],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
     data_grid: %{
       name: "data_grid",
       module: PhiaUi.Components.DataGrid,
@@ -624,7 +634,17 @@ defmodule PhiaUi.ComponentRegistry do
       dependencies: [:card],
       tier: :widget,
       shadcn_equivalent: nil,
-      status: :planned
+      status: :implemented
+    },
+    chart: %{
+      name: "chart",
+      module: PhiaUi.Components.Chart,
+      template_file: "priv/templates/components/chart.ex",
+      js_hooks: ["PhiaChart"],
+      dependencies: [:chart_shell],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -632,7 +652,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 55 component metadata entries."
+  @doc "Returns the full registry map — all 59 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

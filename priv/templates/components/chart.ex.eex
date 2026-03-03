@@ -1,0 +1,113 @@
+defmodule <%= @module_name %>.Components.UI.Chart do
+  @moduledoc """
+  Chart integration component with PhiaChart vanilla JS hook.
+
+  Ejected from PhiaUI — you own this copy. Customise freely.
+
+  ## Example
+
+      <.phia_chart
+        id="revenue-chart"
+        type={:area}
+        title="Revenue"
+        description="Last 12 months"
+        series={[%{name: "MRR", data: [10, 20, 30]}]}
+        labels={["Jan", "Feb", "Mar"]}
+        height="350px"
+      />
+
+  ## LiveView update
+
+      push_event(socket, "update-chart-revenue-chart", %{
+        series: [%{name: "MRR", data: [50, 60, 70]}]
+      })
+  """
+
+  use Phoenix.Component
+
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+  import <%= @module_name %>.Components.UI.ChartShell, only: [chart_shell: 1]
+
+  attr :id, :string, required: true
+  attr :type, :atom, default: :line, values: [:line, :bar, :pie, :area]
+  attr :series, :list, default: []
+  attr :labels, :list, default: []
+  attr :height, :string, default: "300px"
+  attr :title, :string, default: nil
+  attr :description, :string, default: nil
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  def phia_chart(assigns) do
+    assigns =
+      assigns
+      |> assign(:config_json, Jason.encode!(build_config(assigns.type, assigns.labels)))
+      |> assign(:series_json, Jason.encode!(assigns.series))
+
+    ~H"""
+    <%%= if @title do %>
+      <.chart_shell title={@title} description={@description} min_height={@height} class={@class} {@rest}>
+        <.chart_canvas id={@id} config_json={@config_json} series_json={@series_json} height={@height} />
+      </.chart_shell>
+    <%% else %>
+      <.chart_canvas id={@id} config_json={@config_json} series_json={@series_json} height={@height} class={@class} {@rest} />
+    <%% end %>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :config_json, :string, required: true
+  attr :series_json, :string, required: true
+  attr :height, :string, required: true
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  defp chart_canvas(assigns) do
+    ~H"""
+    <div
+      id={@id}
+      phx-hook="PhiaChart"
+      data-config={@config_json}
+      data-series={@series_json}
+      data-chart-placeholder="Loading chart…"
+      class={cn(["w-full", @class])}
+      style={"height: #{@height}"}
+      {@rest}
+    >
+    </div>
+    """
+  end
+
+  defp build_config(:pie, labels) do
+    %{
+      "tooltip" => %{"trigger" => "item"},
+      "legend" => %{"orient" => "horizontal", "bottom" => "bottom"},
+      "series" => [
+        %{
+          "type" => "pie",
+          "radius" => "60%",
+          "data" => Enum.map(labels, &%{"name" => &1, "value" => 0})
+        }
+      ]
+    }
+  end
+
+  defp build_config(type, labels) do
+    series_type = chart_type_str(type)
+    series_config =
+      case type do
+        :area -> %{"type" => series_type, "areaStyle" => %{}}
+        _ -> %{"type" => series_type}
+      end
+    %{
+      "tooltip" => %{"trigger" => "axis"},
+      "xAxis" => %{"type" => "category", "data" => labels},
+      "yAxis" => %{"type" => "value"},
+      "series" => [series_config]
+    }
+  end
+
+  defp chart_type_str(:line), do: "line"
+  defp chart_type_str(:bar), do: "bar"
+  defp chart_type_str(:area), do: "line"
+end

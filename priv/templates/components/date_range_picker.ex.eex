@@ -1,0 +1,184 @@
+defmodule <%= @module_name %>.Components.UI.DateRangePicker do
+  @moduledoc """
+  Date range picker with dual-calendar server-side rendering.
+
+  Ejected from PhiaUI — you own this copy. Customise freely.
+
+  ## Example
+
+      <.date_range_picker
+        id="booking-range"
+        view_month={@view_month}
+        from={@date_from}
+        to={@date_to}
+        on_change="select-date"
+        on_month_change="change-month"
+        min_date={Date.utc_today()}
+      />
+
+  ## LiveView handlers
+
+      def handle_event("select-date", %{"date" => date_str}, socket) do
+        date = Date.from_iso8601!(date_str)
+        socket = cond do
+          is_nil(socket.assigns.date_from) ->
+            assign(socket, date_from: date, date_to: nil)
+          is_nil(socket.assigns.date_to) and Date.compare(date, socket.assigns.date_from) != :lt ->
+            assign(socket, date_to: date)
+          true ->
+            assign(socket, date_from: date, date_to: nil)
+        end
+        {:noreply, socket}
+      end
+
+      def handle_event("change-month", %{"dir" => "next"}, socket) do
+        {:noreply, assign(socket, view_month: Date.shift(socket.assigns.view_month, month: 1))}
+      end
+
+      def handle_event("change-month", %{"dir" => "prev"}, socket) do
+        {:noreply, assign(socket, view_month: Date.shift(socket.assigns.view_month, month: -1))}
+      end
+  """
+
+  use Phoenix.Component
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+  import <%= @module_name %>.Components.UI.Icon, only: [icon: 1]
+
+  attr :id, :string, required: true
+  attr :view_month, :any, required: true
+  attr :from, :any, default: nil
+  attr :to, :any, default: nil
+  attr :on_change, :string, default: "date-range-changed"
+  attr :on_month_change, :string, default: "date-range-month"
+  attr :min_date, :any, default: nil
+  attr :max_date, :any, default: nil
+  attr :locale, :string, default: "en"
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  def date_range_picker(assigns) do
+    assigns =
+      assigns
+      |> assign(:month1, assigns.view_month)
+      |> assign(:month2, shift_month(assigns.view_month, 1))
+
+    ~H"""
+    <div id={@id} class={cn(["inline-flex flex-col gap-2", @class])} {@rest}>
+      <button type="button"
+        class="inline-flex h-10 items-center justify-start gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm text-left hover:bg-accent hover:text-accent-foreground">
+        <.icon name="calendar" size={:sm} />
+        <span><%%= format_range(@from, @to) %></span>
+      </button>
+
+      <div class="rounded-md border border-border bg-background p-4 shadow-md">
+        <div class="flex items-center justify-between mb-4">
+          <button type="button" phx-click={@on_month_change} phx-value-dir="prev"
+            class="inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent" aria-label="Previous month">
+            <.icon name="chevron-left" size={:sm} />
+          </button>
+          <button type="button" phx-click={@on_month_change} phx-value-dir="next"
+            class="inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-accent" aria-label="Next month">
+            <.icon name="chevron-right" size={:sm} />
+          </button>
+        </div>
+        <div class="flex gap-8">
+          <.calendar_month month={@month1} from={@from} to={@to} min_date={@min_date} max_date={@max_date} on_change={@on_change} />
+          <.calendar_month month={@month2} from={@from} to={@to} min_date={@min_date} max_date={@max_date} on_change={@on_change} />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  attr :month, :any, required: true
+  attr :from, :any, default: nil
+  attr :to, :any, default: nil
+  attr :min_date, :any, default: nil
+  attr :max_date, :any, default: nil
+  attr :on_change, :string, required: true
+
+  defp calendar_month(assigns) do
+    assigns = assign(assigns, :weeks, calendar_weeks(assigns.month))
+    ~H"""
+    <div class="calendar-month">
+      <div class="mb-2 text-center text-sm font-medium"><%%= month_label(@month) %></div>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <%%= for day_name <- ~w[Su Mo Tu We Th Fr Sa] do %>
+              <th class="h-8 w-8 text-center text-xs text-muted-foreground font-normal"><%%= day_name %></th>
+            <%% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <%%= for week <- @weeks do %>
+            <tr>
+              <%%= for day <- week do %>
+                <%%= if day do %>
+                  <%% disabled = day_disabled?(day, @min_date, @max_date) %>
+                  <%% is_from = @from && Date.compare(day, @from) == :eq %>
+                  <%% is_to = @to && Date.compare(day, @to) == :eq %>
+                  <%% in_range = in_range?(day, @from, @to) %>
+                  <td class={cn(["relative h-8 w-8 p-0 text-center text-sm", if(in_range && !is_from && !is_to, do: "bg-accent", else: nil)])}>
+                    <button type="button"
+                      phx-click={if !disabled, do: @on_change}
+                      phx-value-date={Date.to_iso8601(day)}
+                      disabled={disabled}
+                      class={cn(["inline-flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors",
+                        if(disabled, do: "opacity-50 pointer-events-none", else: "hover:bg-accent hover:text-accent-foreground"),
+                        if(is_from || is_to, do: "bg-primary text-primary-foreground hover:bg-primary/90", else: nil),
+                        if(is_from && @to, do: "rounded-r-none", else: nil),
+                        if(is_to && @from, do: "rounded-l-none", else: nil)])}>
+                      <%%= day.day %>
+                    </button>
+                  </td>
+                <%% else %>
+                  <td class="h-8 w-8" />
+                <%% end %>
+              <%% end %>
+            </tr>
+          <%% end %>
+        </tbody>
+      </table>
+    </div>
+    """
+  end
+
+  defp shift_month(date, months) do
+    Date.new!(date.year, date.month, 1)
+    |> then(fn d ->
+      total = d.year * 12 + d.month - 1 + months
+      Date.new!(div(total, 12), rem(total, 12) + 1, 1)
+    end)
+  end
+
+  defp calendar_weeks(first) do
+    last = Date.end_of_month(first)
+    dow = rem(Date.day_of_week(first), 7)
+    all = List.duplicate(nil, dow) ++ (Date.range(first, last) |> Enum.to_list())
+    Enum.map(Enum.chunk_every(all, 7), fn w -> w ++ List.duplicate(nil, 7 - length(w)) end)
+  end
+
+  defp in_range?(_day, nil, _to), do: false
+  defp in_range?(_day, _from, nil), do: false
+  defp in_range?(day, from, to), do: Date.compare(day, from) != :lt and Date.compare(day, to) != :gt
+
+  defp day_disabled?(_day, nil, nil), do: false
+  defp day_disabled?(day, min, nil), do: Date.compare(day, min) == :lt
+  defp day_disabled?(day, nil, max), do: Date.compare(day, max) == :gt
+  defp day_disabled?(day, min, max), do: Date.compare(day, min) == :lt or Date.compare(day, max) == :gt
+
+  defp month_label(date) do
+    names = ~w[January February March April May June July August September October November December]
+    "#{Enum.at(names, date.month - 1)} #{date.year}"
+  end
+
+  defp format_range(nil, _), do: "Select date range"
+  defp format_range(from, nil), do: "#{format_date(from)} –"
+  defp format_range(from, to), do: "#{format_date(from)} – #{format_date(to)}"
+
+  defp format_date(date) do
+    abbrs = ~w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec]
+    "#{Enum.at(abbrs, date.month - 1)} #{date.day}, #{date.year}"
+  end
+end
