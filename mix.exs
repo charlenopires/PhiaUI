@@ -50,7 +50,7 @@ defmodule PhiaUi.MixProject do
       description: "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. Optimised for enterprise dashboards.",
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phiaui/phia_ui"},
-      files: ~w(lib priv assets mix.exs README.md CHANGELOG.md LICENSE)
+      files: ~w(lib priv mix.exs README.md CHANGELOG.md LICENSE)
     ]
   end
 

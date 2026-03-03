@@ -509,3 +509,22 @@ We value **Clarity**, **Simplicity**, and **Testability**.
 - No Alpine.js, no npm deps for interactivity
 - `cn/1` implemented natively — no tw_merge or similar
 - All code passes `mix credo --strict` without warnings
+
+---
+
+## Dashboard Sample — TODO
+
+Features identified as missing while building the [PhiaUI-samples dashboard](../PhiaUI-samples):
+
+1. **Paginação** — componente `pagination/1` para tabelas de pedidos e usuários
+2. **Toast/Notificação** — componente `toast/1` para feedback de ações (ex: "Pedido cancelado")
+3. **Breadcrumb** — navegação hierárquica no topbar de cada página
+4. **Alert** — banners de aviso (ex: "Sistema em manutenção às 22h")
+5. **DateRangePicker** — filtro de período para gráficos e tabelas
+6. **CommandMenu (Ctrl+K)** — busca global com atalho de teclado
+7. **DataGrid com sorting** — tabela com ordenação por coluna clicável
+8. **Tooltip** — dicas ao passar o mouse nos stat cards
+9. **Popover** — detalhes de um pedido/usuário ao clicar num ícone
+10. **Dark Mode Toggle** — botão no topbar para alternar tema claro/escuro
+11. **Integração nativa com Chart.js** — hook `PhiaChart` para gráficos interativos
+12. **Skeleton Loader** — placeholder de loading para cada widget
