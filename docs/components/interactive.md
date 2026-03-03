@@ -523,4 +523,388 @@ import PhiaDateRangePicker from "./phia_hooks/date_range_picker"
 
 ---
 
+## Collapsible
+
+Expand/collapse section using only `Phoenix.LiveView.JS` — no external hook required.
+
+```heex
+<%!-- Basic collapsible --%>
+<.collapsible id="info-panel" open={@panel_open}>
+  <.collapsible_trigger collapsible_id="info-panel" open={@panel_open}>
+    <div class="flex items-center justify-between w-full py-2">
+      <span class="font-medium">More information</span>
+      <.icon name={if @panel_open, do: "chevron-up", else: "chevron-down"} size="sm" />
+    </div>
+  </.collapsible_trigger>
+  <.collapsible_content id="info-panel-content" open={@panel_open}>
+    <div class="pt-2 pb-4 text-sm text-muted-foreground">
+      <p>This content is hidden by default and revealed when triggered.</p>
+    </div>
+  </.collapsible_content>
+</.collapsible>
+
+<%!-- Server-controlled state (LiveView assign) --%>
+def handle_event("toggle-panel", _, socket) do
+  {:noreply, assign(socket, :panel_open, !socket.assigns.panel_open)}
+end
+```
+
+### LiveView integration
+
+The collapsible state lives in the LiveView. Pass the current `:open` assign to both trigger and content:
+
+```elixir
+# mount/3
+assign(conn, :panel_open, false)
+
+# handle_event
+def handle_event("toggle-" <> id, _, socket) do
+  key = String.to_existing_atom("#{id}_open")
+  {:noreply, assign(socket, key, !socket.assigns[key])}
+end
+```
+
+---
+
+## Alert Dialog
+
+Confirmation modal for destructive or irreversible actions. Uses `role="alertdialog"` and reuses the `PhiaDialog` JS hook.
+
+```heex
+<%!-- Delete confirmation --%>
+<.alert_dialog id="delete-confirm" open={@show_delete_confirm}
+  aria-labelledby="delete-title" aria-describedby="delete-desc">
+  <.alert_dialog_header>
+    <.alert_dialog_title id="delete-title">Delete project?</.alert_dialog_title>
+    <.alert_dialog_description id="delete-desc">
+      This will permanently delete <strong>{@project.name}</strong> and all its data.
+      This action cannot be undone.
+    </.alert_dialog_description>
+  </.alert_dialog_header>
+  <.alert_dialog_footer>
+    <.alert_dialog_cancel phx-click="cancel-delete">Cancel</.alert_dialog_cancel>
+    <.alert_dialog_action variant="destructive" phx-click="confirm-delete" phx-value-id={@project.id}>
+      Delete Project
+    </.alert_dialog_action>
+  </.alert_dialog_footer>
+</.alert_dialog>
+
+<%!-- Trigger button --%>
+<.button variant="destructive" phx-click="open-delete-confirm">
+  Delete Project
+</.button>
+```
+
+```elixir
+# LiveView handlers
+def handle_event("open-delete-confirm", _, socket) do
+  {:noreply, assign(socket, :show_delete_confirm, true)}
+end
+
+def handle_event("cancel-delete", _, socket) do
+  {:noreply, assign(socket, :show_delete_confirm, false)}
+end
+
+def handle_event("confirm-delete", %{"id" => id}, socket) do
+  Projects.delete_project!(id)
+  {:noreply, socket
+    |> assign(:show_delete_confirm, false)
+    |> put_flash(:info, "Project deleted.")}
+end
+```
+
+### Variants
+
+The action button supports `:variant` attr:
+
+- `"default"` — primary action (e.g. "Confirm", "Yes, proceed")
+- `"destructive"` — destructive action (e.g. "Delete", "Remove", "Clear all")
+
+---
+
+## Carousel
+
+Multi-slide carousel with touch swipe, keyboard navigation, and optional loop.
+
+```heex
+<%!-- Basic carousel --%>
+<.carousel id="hero-carousel" class="w-full max-w-2xl mx-auto">
+  <.carousel_content>
+    <.carousel_item>
+      <.card>
+        <.card_content class="p-6">
+          <h3 class="text-xl font-bold">Slide 1</h3>
+          <p class="text-muted-foreground mt-2">Content for the first slide.</p>
+        </.card_content>
+      </.card>
+    </.carousel_item>
+    <.carousel_item>
+      <.card>
+        <.card_content class="p-6">
+          <h3 class="text-xl font-bold">Slide 2</h3>
+          <p class="text-muted-foreground mt-2">Content for the second slide.</p>
+        </.card_content>
+      </.card>
+    </.carousel_item>
+    <.carousel_item>
+      <img src="/banner-3.jpg" alt="Slide 3" class="w-full h-64 object-cover rounded-lg" />
+    </.carousel_item>
+  </.carousel_content>
+  <.carousel_previous />
+  <.carousel_next />
+</.carousel>
+
+<%!-- Loop mode with vertical orientation --%>
+<.carousel id="vert" orientation="vertical" loop={true} class="h-80">
+  <.carousel_content>
+    <.carousel_item :for={item <- @items}>
+      <div class="p-4">{item.title}</div>
+    </.carousel_item>
+  </.carousel_content>
+</.carousel>
+
+<%!-- With dot indicators --%>
+<.carousel id="dots-carousel">
+  <.carousel_content>
+    <.carousel_item :for={slide <- @slides}>
+      <img src={slide.url} alt={slide.title} class="w-full h-48 object-cover" />
+    </.carousel_item>
+  </.carousel_content>
+  <.carousel_previous />
+  <.carousel_next />
+  <:indicators>
+    <span :for={_i <- @slides} class="w-2 h-2 rounded-full bg-muted-foreground/50" />
+  </:indicators>
+</.carousel>
+```
+
+### Hook registration
+
+```javascript
+import PhiaCarousel from "./phia_hooks/carousel"
+// Add to your hooks object
+```
+
+---
+
+## Context Menu
+
+Right-click context menu with smart viewport-aware positioning.
+
+```heex
+<.context_menu id="file-ctx">
+  <.context_menu_trigger context_menu_id="file-ctx">
+    <div class="p-8 border-2 border-dashed rounded-lg text-center text-muted-foreground">
+      Right-click anywhere in this area
+    </div>
+  </.context_menu_trigger>
+  <.context_menu_content id="file-ctx-content">
+    <.context_menu_label>File Actions</.context_menu_label>
+    <.context_menu_separator />
+    <.context_menu_item phx-click="open-file">Open</.context_menu_item>
+    <.context_menu_item phx-click="rename-file">Rename</.context_menu_item>
+    <.context_menu_separator />
+    <.context_menu_checkbox_item checked={@show_preview} phx-click="toggle-preview">
+      Show Preview
+    </.context_menu_checkbox_item>
+    <.context_menu_separator />
+    <.context_menu_item phx-click="delete-file" class="text-destructive">
+      Delete
+    </.context_menu_item>
+  </.context_menu_content>
+</.context_menu>
+```
+
+### Hook registration
+
+```javascript
+import PhiaContextMenu from "./phia_hooks/context_menu"
+```
+
+---
+
+## Drawer
+
+Slide-in modal panel from any edge of the screen. Bottom sheet on mobile, side panel on desktop.
+
+```heex
+<%!-- Bottom sheet (mobile-first) --%>
+<.drawer id="filters-drawer">
+  <.drawer_trigger drawer_id="filters-drawer">
+    <.button variant="outline"><.icon name="sliders" size="sm" class="mr-2" />Filters</.button>
+  </.drawer_trigger>
+</drawer>
+
+<.drawer_content id="filters-drawer-content" open={@drawer_open} direction="bottom">
+  <.drawer_header>
+    <h2 class="text-lg font-semibold" id="filters-title">Filters</h2>
+    <p class="text-sm text-muted-foreground">Adjust your search filters.</p>
+  </.drawer_header>
+  <.drawer_close />
+  <div class="px-6 pb-6 space-y-4">
+    <.field>
+      <.field_label>Category</.field_label>
+      <.phia_select field={@form[:category]} options={@categories} />
+    </.field>
+    <.field>
+      <.field_label>Price Range</.field_label>
+      <!-- range slider -->
+    </.field>
+  </div>
+  <.drawer_footer>
+    <.button phx-click="apply-filters">Apply Filters</.button>
+    <.button variant="outline" phx-click="reset-filters">Reset</.button>
+  </.drawer_footer>
+</.drawer_content>
+
+<%!-- Side panel (right) --%>
+<.drawer_content id="details-panel" open={@panel_open} direction="right">
+  <.drawer_header>
+    <h2 class="text-lg font-semibold">Order Details</h2>
+  </.drawer_header>
+  <.drawer_close />
+  <div class="px-6 pb-6">
+    <!-- order details content -->
+  </div>
+</.drawer_content>
+```
+
+### Directions
+
+| Value | Description | Use case |
+|-------|-------------|----------|
+| `"bottom"` | Slides up from bottom | Mobile sheets, filters |
+| `"top"` | Slides down from top | Notifications, alerts |
+| `"left"` | Slides from left | Navigation drawer |
+| `"right"` | Slides from right | Detail panels, carts |
+
+### Hook registration
+
+```javascript
+import PhiaDrawer from "./phia_hooks/drawer"
+```
+
+---
+
+## Combobox
+
+Search-filtered dropdown select with keyboard navigation.
+
+```heex
+<%!-- Standalone combobox --%>
+<.combobox
+  id="framework-picker"
+  options={[
+    %{value: "phoenix", label: "Phoenix"},
+    %{value: "rails", label: "Ruby on Rails"},
+    %{value: "django", label: "Django"},
+    %{value: "laravel", label: "Laravel"}
+  ]}
+  value={@selected_framework}
+  open={@combobox_open}
+  search={@combobox_search}
+  on_toggle="toggle-framework-picker"
+  on_change="select-framework"
+  on_search="search-framework"
+  placeholder="Select a framework..."
+/>
+
+<%!-- With FormField integration --%>
+<.form for={@form} phx-submit="save">
+  <.form_combobox
+    field={@form[:country]}
+    id="country-picker"
+    options={@countries}
+    value={@selected_country}
+    open={@country_open}
+    search={@country_search}
+    placeholder="Select country..."
+    on_toggle="toggle-country"
+    on_change="select-country"
+    on_search="search-country"
+  />
+  <.button type="submit">Save</.button>
+</.form>
+```
+
+```elixir
+# LiveView assigns and handlers
+def mount(_, _, socket) do
+  {:ok, assign(socket,
+    combobox_open: false,
+    combobox_search: "",
+    selected_framework: nil
+  )}
+end
+
+def handle_event("toggle-framework-picker", _, socket) do
+  {:noreply, assign(socket, combobox_open: !socket.assigns.combobox_open)}
+end
+
+def handle_event("search-framework", %{"query" => q}, socket) do
+  {:noreply, assign(socket, combobox_search: q)}
+end
+
+def handle_event("select-framework", %{"value" => v}, socket) do
+  {:noreply, assign(socket, selected_framework: v, combobox_open: false, combobox_search: "")}
+end
+```
+
+---
+
+## Date Picker
+
+Calendar dropdown for single date selection with form integration.
+
+```heex
+<%!-- Standalone --%>
+<.date_picker
+  id="start-date"
+  value={@start_date}
+  open={@date_picker_open}
+  current_month={@current_month}
+  on_toggle="toggle-date-picker"
+  on_change="calendar-change"
+  on_prev_month="calendar-prev-month"
+  on_next_month="calendar-next-month"
+  placeholder="Select a date"
+  format="%B %d, %Y"
+/>
+
+<%!-- With FormField --%>
+<.form for={@form} phx-submit="save">
+  <.form_date_picker
+    field={@form[:birth_date]}
+    id="birth-date-picker"
+    value={@selected_date}
+    open={@picker_open}
+    current_month={@current_month}
+  />
+  <.button type="submit">Save</.button>
+</.form>
+```
+
+```elixir
+def handle_event("toggle-date-picker", _, socket) do
+  {:noreply, assign(socket, date_picker_open: !socket.assigns.date_picker_open)}
+end
+
+def handle_event("calendar-change", %{"date" => iso}, socket) do
+  date = Date.from_iso8601!(iso)
+  {:noreply, assign(socket,
+    selected_date: date,
+    date_picker_open: false,
+    current_month: Date.beginning_of_month(date)
+  )}
+end
+
+def handle_event("calendar-prev-month", %{"month" => iso}, socket) do
+  {:noreply, assign(socket, current_month: Date.from_iso8601!(iso))}
+end
+
+def handle_event("calendar-next-month", %{"month" => iso}, socket) do
+  {:noreply, assign(socket, current_month: Date.from_iso8601!(iso))}
+end
+```
+
 ← [Back to README](../../README.md)

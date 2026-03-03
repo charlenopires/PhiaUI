@@ -296,4 +296,122 @@ end
 
 ---
 
+## Checkbox
+
+Native HTML checkbox styled with Tailwind, with `indeterminate` state support and FormField integration.
+
+```heex
+<%!-- Standalone --%>
+<.checkbox id="agree" name="agree" />
+<.checkbox id="agree" name="agree" checked={true} />
+<.checkbox id="partials" name="partials" indeterminate={true} />
+<.checkbox id="disabled" name="disabled" disabled={true} />
+
+<%!-- With Field wrapper (no Ecto) --%>
+<.field>
+  <div class="flex items-center gap-2">
+    <.checkbox id="terms" name="terms" phx-change="toggle-terms" />
+    <.field_label for="terms" required={true}>
+      I agree to the <a href="/terms" class="underline">Terms of Service</a>
+    </.field_label>
+  </div>
+  <.field_message error={@terms_error} />
+</.field>
+
+<%!-- With FormField (Ecto changeset) --%>
+<.form for={@form} phx-change="validate" phx-submit="save">
+  <.form_checkbox
+    field={@form[:newsletter]}
+    label="Subscribe to newsletter"
+  />
+  <.form_checkbox
+    field={@form[:terms_accepted]}
+    label="I accept the terms"
+    required
+  />
+  <.button type="submit">Register</.button>
+</.form>
+
+<%!-- Select all / indeterminate pattern --%>
+<.field>
+  <div class="flex items-center gap-2">
+    <.checkbox
+      id="select-all"
+      indeterminate={@some_selected}
+      checked={@all_selected}
+      phx-click="toggle-all"
+    />
+    <.field_label for="select-all">Select All</.field_label>
+  </div>
+</.field>
+<.field :for={item <- @items}>
+  <div class="flex items-center gap-2">
+    <.checkbox
+      id={"item-#{item.id}"}
+      name="items[]"
+      value={item.id}
+      checked={item.id in @selected_ids}
+      phx-click="toggle-item"
+      phx-value-id={item.id}
+    />
+    <.field_label for={"item-#{item.id}"}>{item.name}</.field_label>
+  </div>
+</.field>
+```
+
+### ARIA states
+
+| State | `data-state` | `aria-checked` |
+|-------|-------------|----------------|
+| Unchecked | `"unchecked"` | `"false"` |
+| Checked | `"checked"` | `"true"` |
+| Indeterminate | `"indeterminate"` | `"mixed"` |
+
+---
+
+## Calendar
+
+Server-rendered monthly calendar grid for date selection.
+
+```heex
+<%!-- Single mode --%>
+<.calendar
+  id="booking-cal"
+  value={@selected_date}
+  current_month={@current_month}
+  on_change="pick-date"
+/>
+
+<%!-- With constraints --%>
+<.calendar
+  id="delivery-cal"
+  value={@delivery_date}
+  current_month={@current_month}
+  min={Date.utc_today()}
+  max={Date.add(Date.utc_today(), 30)}
+  disabled_dates={@unavailable_dates}
+  on_change="pick-delivery"
+/>
+```
+
+```elixir
+def handle_event("pick-date", %{"date" => iso}, socket) do
+  {:noreply, assign(socket, selected_date: Date.from_iso8601!(iso))}
+end
+
+def handle_event("calendar-prev-month", %{"month" => iso}, socket) do
+  {:noreply, assign(socket, current_month: Date.from_iso8601!(iso))}
+end
+
+def handle_event("calendar-next-month", %{"month" => iso}, socket) do
+  {:noreply, assign(socket, current_month: Date.from_iso8601!(iso))}
+end
+```
+
+### Hook registration
+
+```javascript
+import PhiaCalendar from "./phia_hooks/calendar"
+```
+
 ← [Back to README](../../README.md)

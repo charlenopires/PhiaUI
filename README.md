@@ -1,6 +1,6 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library — 31 components, inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 46 components, inspired by shadcn/ui.**
 
 Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets for financial terminals, BI dashboards, and KPI monitors.
 
@@ -20,11 +20,11 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 | Native ClassMerger (no tw_merge) | ✓ | ✗ |
 | TailwindCSS v4 theme system | ✓ | ✗ |
 | WAI-ARIA on all interactive | ✓ | Partial |
-| Dark mode, Ctrl+K search, Date Range | ✓ | ✗ |
+| Dark mode, Ctrl+K, Date Pickers, Carousels | ✓ | ✗ |
 
 ---
 
-## Component Library — 31 Components
+## Component Library — 46 Components
 
 ### Primitives & Feedback — 8 components
 
@@ -41,7 +41,7 @@ Stateless HEEx components. No JavaScript. → [Full examples & use cases](docs/c
 | Breadcrumb | `breadcrumb/1` | 7 sub-components, `aria-current="page"` |
 | Pagination | `pagination/1` | Server-side pagination with `phx-click` |
 
-### Form Integration — 7 components
+### Form Integration — 9 components
 
 Integrated with `Phoenix.HTML.Form` and Ecto changesets. → [Full examples & use cases](docs/components/forms.md)
 
@@ -54,10 +54,12 @@ Integrated with `Phoenix.HTML.Form` and Ecto changesets. → [Full examples & us
 | Tags Input | `tags_input/1` | Multi-tag, deduplication, CSV sync — `PhiaTagsInput` |
 | Image Upload | `image_upload/1` | Drop zone + preview, native Phoenix uploads |
 | Rich Text Editor | `rich_text_editor/1` | WYSIWYG, 14 toolbar commands, zero npm — `PhiaRichTextEditor` |
+| Checkbox | `checkbox/1` | Native checkbox, indeterminate state, FormField integration |
+| Calendar | `calendar/1` | Server-rendered monthly grid, single/range mode, keyboard nav |
 
-### Interactive Components — 8 components
+### Interactive Components — 15 components
 
-Vanilla JS hooks for accessible behaviors: focus trapping, keyboard navigation, smart positioning. → [Full examples & use cases](docs/components/interactive.md)
+Vanilla JS hooks for accessible behaviors. → [Full examples & use cases](docs/components/interactive.md)
 
 | Component | Function | Hook | Key features |
 |-----------|----------|------|--------------|
@@ -69,6 +71,26 @@ Vanilla JS hooks for accessible behaviors: focus trapping, keyboard navigation, 
 | Toast | `toast/1` | `PhiaToast` | `push_event` driven, auto-dismiss, stacking |
 | Command Menu | `command/1` | `PhiaCommand` | Ctrl+K global, Arrow keys, server-side filter |
 | Date Range Picker | `date_range_picker/1` | `PhiaDateRangePicker` | Dual calendar, range highlight, min/max |
+| Collapsible | `collapsible/1` | (LiveView.JS) | Zero hooks, server-controlled open state |
+| Alert Dialog | `alert_dialog/1` | `PhiaDialog` | `role="alertdialog"`, destructive variant |
+| Carousel | `carousel/1` | `PhiaCarousel` | Touch swipe, keyboard, loop, indicators |
+| Context Menu | `context_menu/1` | `PhiaContextMenu` | Right-click, smart positioning, WAI-ARIA |
+| Drawer | `drawer/1` | `PhiaDrawer` | 4 directions, focus trap, backdrop click |
+| Combobox | `combobox/1` | — | Server-side search filter, FormField |
+| Date Picker | `date_picker/1` | — | Calendar + Popover compose, format attr |
+
+### Utilities & Composed — 6 components
+
+CSS-only utilities and composed display patterns. → [Full examples & use cases](docs/components/utilities.md)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Aspect Ratio | `aspect_ratio/1` | CSS padding-top trick, any ratio (16:9, 4:3, 1:1…) |
+| Direction | `direction/1` | LTR/RTL wrapper for multilingual content |
+| Empty State | `empty/1` | Centered placeholder with icon/title/description/action slots |
+| Field | `field/1` | Standalone form field layout without FormField |
+| Button Group | `button_group/1` | Unified button toolbar, H/V orientation |
+| Avatar | `avatar/1` | Circular profile image with initials fallback, avatar_group |
 
 ### Dashboard & Analytics — 8 components
 
@@ -93,13 +115,7 @@ See PhiaUI in action with a full enterprise dashboard built entirely from librar
 
 **[github.com/charlenopires/PhiaUI-samples](https://github.com/charlenopires/PhiaUI-samples)**
 
-The sample application demonstrates:
-- **Shell + Sidebar + Topbar** — full desktop/mobile layout with drawer navigation
-- **StatCard + MetricGrid** — KPI cards with live trend indicators
-- **PhiaChart** — area, bar, and line charts via ECharts
-- **DataGrid** — sortable columns with `phx-update="stream"`
-- **Toast + Command Menu** — `push_event`-driven notifications and Ctrl+K palette
-- **Dark mode toggle** — `PhiaDarkMode` with `localStorage` persistence
+Or follow the step-by-step **[Dashboard Tutorial](docs/guides/tutorial-dashboard.md)** to build one from scratch.
 
 ---
 
@@ -112,7 +128,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.1"}
+    {:phia_ui, "~> 0.1.2"}
   ]
 end
 ```
@@ -143,24 +159,29 @@ mix phia.add button card badge dialog
 
 ```javascript
 // assets/js/app.js
-import PhiaDialog        from "./phia_hooks/dialog"
-import PhiaDropdownMenu  from "./phia_hooks/dropdown_menu"
-import PhiaTagsInput     from "./phia_hooks/tags_input"
-import PhiaRichTextEditor from "./phia_hooks/rich_text_editor"
-import PhiaTooltip       from "./phia_hooks/tooltip"
-import PhiaPopover       from "./phia_hooks/popover"
-import PhiaToast         from "./phia_hooks/toast"
-import PhiaDarkMode      from "./phia_hooks/dark_mode"
-import PhiaCommand       from "./phia_hooks/command"
+import PhiaDialog          from "./phia_hooks/dialog"
+import PhiaDropdownMenu    from "./phia_hooks/dropdown_menu"
+import PhiaTagsInput       from "./phia_hooks/tags_input"
+import PhiaRichTextEditor  from "./phia_hooks/rich_text_editor"
+import PhiaTooltip         from "./phia_hooks/tooltip"
+import PhiaPopover         from "./phia_hooks/popover"
+import PhiaToast           from "./phia_hooks/toast"
+import PhiaDarkMode        from "./phia_hooks/dark_mode"
+import PhiaCommand         from "./phia_hooks/command"
 import PhiaDateRangePicker from "./phia_hooks/date_range_picker"
-import PhiaChart         from "./phia_hooks/chart"
+import PhiaChart           from "./phia_hooks/chart"
+import PhiaCalendar        from "./phia_hooks/calendar"
+import PhiaCarousel        from "./phia_hooks/carousel"
+import PhiaContextMenu     from "./phia_hooks/context_menu"
+import PhiaDrawer          from "./phia_hooks/drawer"
 
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: {
     PhiaDialog, PhiaDropdownMenu, PhiaTagsInput, PhiaRichTextEditor,
     PhiaTooltip, PhiaPopover, PhiaToast, PhiaDarkMode,
-    PhiaCommand, PhiaDateRangePicker, PhiaChart
+    PhiaCommand, PhiaDateRangePicker, PhiaChart,
+    PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer
   }
 })
 ```
@@ -171,41 +192,122 @@ let liveSocket = new LiveSocket("/live", Socket, {
 
 ## Usage Examples
 
-### Button
+### Button & Button Group
 
 ```heex
 <.button>Default</.button>
 <.button variant="destructive">Delete</.button>
 <.button variant="outline" size="sm"><.icon name="download" size="sm" /> Export</.button>
-<.button variant="ghost" disabled>Disabled</.button>
+
+<%!-- Button Group toolbar --%>
+<.button_group>
+  <.button variant="outline" size="icon"><.icon name="bold" size="sm" /></.button>
+  <.button variant="outline" size="icon"><.icon name="italic" size="sm" /></.button>
+  <.button variant="outline" size="icon"><.icon name="underline" size="sm" /></.button>
+</.button_group>
 ```
 
-→ [Button examples](docs/components/primitives.md#button)
+→ [Button examples](docs/components/primitives.md#button) | [Button Group examples](docs/components/utilities.md#button-group)
 
-### Alert
-
-```heex
-<.alert variant="destructive">
-  <:icon><.icon name="alert-circle" /></:icon>
-  <.alert_title>Payment failed</.alert_title>
-  <.alert_description>Your card was declined. Please update your billing details.</.alert_description>
-</.alert>
-```
-
-→ [Alert examples](docs/components/primitives.md#alert)
-
-### Form
+### Form with Checkbox
 
 ```heex
 <.form for={@form} phx-change="validate" phx-submit="save">
   <.phia_input field={@form[:email]} type="email" label="Email" />
-  <.phia_input field={@form[:name]} label="Full name" />
-  <.phia_select field={@form[:role]} options={["admin", "editor", "viewer"]} label="Role" />
-  <.button type="submit">Save</.button>
+  <.field>
+    <div class="flex items-center gap-2">
+      <.checkbox id="terms" name="terms" checked={@terms_checked} phx-click="toggle-terms" />
+      <.field_label for="terms">I agree to the Terms of Service</.field_label>
+    </div>
+    <.field_message error={@terms_error} />
+  </.field>
+  <.button type="submit">Register</.button>
 </.form>
 ```
 
-→ [Form examples](docs/components/forms.md)
+→ [Form examples](docs/components/forms.md) | [Checkbox examples](docs/components/forms.md#checkbox)
+
+### Alert Dialog (confirmation)
+
+```heex
+<.alert_dialog id="delete-confirm" open={@show_confirm}>
+  <.alert_dialog_header>
+    <.alert_dialog_title>Delete item?</.alert_dialog_title>
+    <.alert_dialog_description>
+      This action cannot be undone.
+    </.alert_dialog_description>
+  </.alert_dialog_header>
+  <.alert_dialog_footer>
+    <.alert_dialog_cancel phx-click="cancel">Cancel</.alert_dialog_cancel>
+    <.alert_dialog_action variant="destructive" phx-click="confirm-delete">
+      Delete
+    </.alert_dialog_action>
+  </.alert_dialog_footer>
+</.alert_dialog>
+```
+
+→ [Alert Dialog examples](docs/components/interactive.md#alert-dialog)
+
+### Drawer (side panel / bottom sheet)
+
+```heex
+<.drawer_content id="filters-panel" open={@filters_open} direction="right">
+  <.drawer_header>
+    <h2 class="text-lg font-semibold">Filters</h2>
+  </.drawer_header>
+  <.drawer_close />
+  <div class="px-6 pb-6">
+    <!-- filter controls -->
+  </div>
+  <.drawer_footer>
+    <.button phx-click="apply-filters">Apply</.button>
+  </.drawer_footer>
+</.drawer_content>
+```
+
+→ [Drawer examples](docs/components/interactive.md#drawer)
+
+### Avatar with group
+
+```heex
+<.avatar_group>
+  <.avatar :for={user <- @team_members}>
+    <.avatar_image src={user.avatar_url} alt={user.name} />
+    <.avatar_fallback name={user.name} />
+  </.avatar>
+</.avatar_group>
+```
+
+→ [Avatar examples](docs/components/utilities.md#avatar)
+
+### Carousel
+
+```heex
+<.carousel id="hero" loop={true} class="w-full">
+  <.carousel_content>
+    <.carousel_item :for={slide <- @slides}>
+      <img src={slide.image} alt={slide.title} class="w-full h-64 object-cover rounded-lg" />
+    </.carousel_item>
+  </.carousel_content>
+  <.carousel_previous />
+  <.carousel_next />
+</.carousel>
+```
+
+→ [Carousel examples](docs/components/interactive.md#carousel)
+
+### Empty State
+
+```heex
+<.empty>
+  <:icon><.icon name="inbox" size="lg" class="text-muted-foreground" /></:icon>
+  <:title>No invoices found</:title>
+  <:description>Create your first invoice to get started.</:description>
+  <:action><.button phx-click="new-invoice">Create Invoice</.button></:action>
+</.empty>
+```
+
+→ [Empty State examples](docs/components/utilities.md#empty-state)
 
 ### Toast notification
 
@@ -222,22 +324,6 @@ let liveSocket = new LiveSocket("/live", Socket, {
 ```
 
 → [Toast examples](docs/components/interactive.md#toast)
-
-### Command Menu (Ctrl+K)
-
-```heex
-<.command id="cmd">
-  <.command_input id="cmd-input" on_change="search" placeholder="Search…" />
-  <.command_list id="cmd-results">
-    <.command_empty>No results.</.command_empty>
-    <.command_group label="Navigation">
-      <.command_item on_click="go" value="/dashboard">Dashboard</.command_item>
-    </.command_group>
-  </.command_list>
-</.command>
-```
-
-→ [Command Menu examples](docs/components/interactive.md#command-menu-ctrlk)
 
 ### Dashboard with charts
 
@@ -259,7 +345,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
 />
 ```
 
-→ [Dashboard examples](docs/components/dashboard.md)
+→ [Dashboard examples](docs/components/dashboard.md) | [Full tutorial](docs/guides/tutorial-dashboard.md)
 
 ---
 
@@ -286,14 +372,15 @@ mix phia.icons
 PhiaUI is not a traditional runtime dependency — components are **source code you own**:
 
 ```bash
-mix phia.add button card dialog toast command
+mix phia.add button card dialog toast command carousel drawer
 ```
 
-This copies Elixir modules and JS hooks directly into your project. After ejection, **you own the code**: read it, modify it, delete parts you don't need. PhiaUI has no opinion on your code after the copy.
+This copies Elixir modules and JS hooks directly into your project. After ejection, **you own the code**: read it, modify it, delete parts you don't need.
 
 ```
 lib/your_app_web/components/ui/button.ex      ← yours to edit
 assets/js/phia_hooks/dialog.js                ← yours to edit
+assets/js/phia_hooks/carousel.js              ← yours to edit
 ```
 
 ---
@@ -336,8 +423,10 @@ Dark mode support via `@custom-variant dark (&:where(.dark, .dark *))` — toggl
 - **BI dashboards** — ChartShell + PhiaChart wrapping ECharts with consistent card chrome and real-time push_event updates
 - **SaaS admin panels** — Shell + Sidebar + DataGrid + Dialog + Toast for full CRUD interfaces
 - **KPI monitors** — Metric grids with real-time trend indicators and Ctrl+K command palette
-- **Booking and scheduling** — DateRangePicker for reservation flows with min/max constraints
+- **Booking and scheduling** — DatePicker + DateRangePicker for reservation flows with min/max constraints
 - **Internal tools** — Form components with Ecto changeset integration and rich text content editing
+- **Mobile-first apps** — Drawer (bottom sheet) + Carousel for mobile UX patterns
+- **Multilingual apps** — Direction wrapper for RTL content (Arabic, Hebrew)
 
 ---
 
@@ -348,9 +437,11 @@ Detailed examples and use cases:
 | Section | Contents |
 |---------|----------|
 | [Primitives & Feedback](docs/components/primitives.md) | Button, Card, Badge, Icon, Alert, Skeleton, Breadcrumb, Pagination |
-| [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Tags Input, Image Upload, Rich Text Editor |
-| [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker |
+| [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Checkbox, Calendar, Tags Input, Image Upload, Rich Text Editor |
+| [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker, Collapsible, AlertDialog, Carousel, ContextMenu, Drawer, Combobox, DatePicker |
+| [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar |
 | [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts |
+| [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette |
 
 Generate API docs locally:
 

@@ -2,6 +2,55 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.2 — 2026-03-03
+
+### Added — 15 new components (5 agents × 3 parallel cycles)
+
+#### Utilities & Layout — 5 components
+
+- **AspectRatio** (`aspect_ratio/1`) — CSS padding-top trick maintains any aspect ratio (16:9, 4:3, 1:1, 21:9, 9:16) for images, videos, and arbitrary HTML. Zero JS. Attr `:ratio` accepts any float.
+- **Direction** (`direction/1`) — Minimal LTR/RTL wrapper. Sets `dir` attribute on a `<div>` for multilingual applications. Useful for Arabic, Hebrew, and RTL content.
+- **EmptyState** (`empty/1`) — Centered empty state with 4 optional named slots: `:icon`, `:title`, `:description`, `:action`. Works inside `<td colspan>` in tables.
+- **Field** (`field/1`, `field_label/1`, `field_description/1`, `field_message/1`) — Standalone form field layout components that do NOT require `Phoenix.HTML.FormField`. Accept `:error` string directly. Ideal wrapper for Checkbox, Radio, Switch.
+- **ButtonGroup** (`button_group/1`) — Groups multiple Button components into a unified toolbar bar. Orientation `:horizontal` (default) or `:vertical`. Uses CSS `[&>*]` selectors to remove duplicate borders and manage border-radius on first/last children.
+
+#### Form Integration — 2 components
+
+- **Checkbox** (`checkbox/1`, `form_checkbox/1`) — Native HTML `<input type="checkbox">` styled with Tailwind. Supports `:checked`, `:indeterminate` (data-state + `aria-checked="mixed"`), `:disabled`. `form_checkbox/1` integrates with `Phoenix.HTML.FormField` and displays Ecto errors. No custom JS hook.
+- **Calendar** (`calendar/1`) — Server-rendered monthly grid with 7-column layout. Attrs: `:value` (`Date.t`), `:mode` (`"single"` | `"range"`), `:min`, `:max`, `:disabled_dates`. Navigation via `phx-click`. Range highlight with `bg-accent`. PhiaCalendar JS hook for keyboard navigation only (Arrow keys, Home, End, Enter). WAI-ARIA: `role="grid"`, `role="gridcell"`, `aria-selected`.
+
+#### Interactive Components — 5 components
+
+- **Collapsible** (`collapsible/1`, `collapsible_trigger/1`, `collapsible_content/1`) — Expand/collapse section using only `Phoenix.LiveView.JS`. Zero external hooks. State controlled by `:open` boolean. `aria-expanded`, `aria-controls` wired between trigger and content.
+- **AlertDialog** (`alert_dialog/1`, `alert_dialog_header/1`, `alert_dialog_title/1`, `alert_dialog_description/1`, `alert_dialog_footer/1`, `alert_dialog_action/1`, `alert_dialog_cancel/1`) — Critical action confirmation modal. Uses `role="alertdialog"` and reuses `PhiaDialog` hook for focus trap. Destructive action variant applies `bg-destructive`.
+- **Carousel** (`carousel/1`, `carousel_content/1`, `carousel_item/1`, `carousel_previous/1`, `carousel_next/1`) — CSS transform-based slide carousel with touch swipe, keyboard (`ArrowLeft`/`ArrowRight`), and loop mode. PhiaCarousel JS hook. WAI-ARIA: `role="region"`, `aria-roledescription="slide"`.
+- **ContextMenu** (`context_menu/1`, `context_menu_trigger/1`, `context_menu_content/1`, `context_menu_item/1`, `context_menu_separator/1`, `context_menu_checkbox_item/1`, `context_menu_label/1`) — Right-click contextmenu event menu. PhiaContextMenu JS hook: smart viewport-aware positioning, click-outside close, `ArrowUp/Down/Enter/Escape` keyboard navigation. WAI-ARIA: `role="menu"`, `role="menuitem"`.
+- **Drawer** (`drawer/1`, `drawer_trigger/1`, `drawer_content/1`, `drawer_header/1`, `drawer_footer/1`, `drawer_close/1`) — Slide-in modal panel from any edge. Directions: `"bottom"` (default, mobile sheet), `"top"`, `"left"`, `"right"`. PhiaDrawer JS hook: CSS transform animation, complete focus trap, Escape to close, backdrop click to close. WAI-ARIA: `role="dialog"`, `aria-modal="true"`.
+
+#### Composed Components — 3 components
+
+- **Avatar** (`avatar/1`, `avatar_image/1`, `avatar_fallback/1`, `avatar_group/1`) — Circular profile image with automatic fallback to initials on image load error (inline `onerror` JS, no external hook). 4 sizes (`sm`, `default`, `lg`, `xl`). `avatar_group/1` stacks avatars with negative spacing.
+- **Combobox** (`combobox/1`, `form_combobox/1`) — Search-filtered select dropdown. Server-rendered options list filtered in real-time by search query. Check icon (✓) on selected item. `form_combobox/1` integrates with `Phoenix.HTML.FormField` via hidden input. ARIA: `aria-haspopup="listbox"`, `role="option"`.
+- **DatePicker** (`date_picker/1`, `form_date_picker/1`) — Composing `calendar/1` inside a popover dropdown. Calendar SVG icon trigger, formatted date display via `Calendar.strftime/2`. `:format` attr customises display (default `"%d/%m/%Y"`). `form_date_picker/1` emits ISO 8601 via hidden input. Integrates with `Phoenix.HTML.FormField`.
+
+### New JS Hooks
+
+- `PhiaCalendar` — keyboard navigation for calendar grids
+- `PhiaCarousel` — CSS transform slides, touch swipe, keyboard navigation
+- `PhiaContextMenu` — right-click positioning, smart flip, keyboard menu navigation
+- `PhiaDrawer` — slide animation, focus trap, Escape/backdrop handlers
+
+### Documentation
+
+- Added `docs/components/utilities.md` — Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar
+- Added `docs/guides/tutorial-dashboard.md` — Step-by-step tutorial: build a complete dashboard with PhiaUI
+
+### Test Coverage
+
+- 1574 tests total (+358 new tests from 15 components)
+- All 15 new components: 0 failures
+- `mix credo --strict` — 0 issues on all new components
+
 ## 0.1.1 — 2026-03-03
 
 ### Added

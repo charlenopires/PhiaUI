@@ -123,7 +123,7 @@ defmodule PhiaUi.ComponentRegistry do
       dependencies: [],
       tier: :primitive,
       shadcn_equivalent: "Avatar",
-      status: :planned
+      status: :implemented
     },
     progress: %{
       name: "progress",
