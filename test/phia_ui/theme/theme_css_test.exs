@@ -104,4 +104,28 @@ defmodule PhiaUi.Theme.ThemeCSSTest do
       refute css =~ ~r/#[0-9a-fA-F]{3,6}\b/
     end
   end
+
+  describe "CSS variable aliases for shell component references" do
+    test "defines --background alias pointing to --color-background", %{css: css} do
+      assert css =~ "--background: var(--color-background)",
+             "Expected '--background: var(--color-background)' alias for direct CSS var references in components"
+    end
+
+    test "defines --sidebar-background alias pointing to --color-sidebar-background", %{css: css} do
+      assert css =~ "--sidebar-background: var(--color-sidebar-background)",
+             "Expected '--sidebar-background: var(--color-sidebar-background)' alias for direct CSS var references in components"
+    end
+  end
+
+  describe "dark mode is automatic (no JS required)" do
+    test "dark mode uses @theme block (not .dark class)", %{css: css} do
+      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+      assert dark_section =~ "@theme {"
+    end
+
+    test "dark mode redefines sidebar-background via @theme", %{css: css} do
+      [_light, dark_section] = String.split(css, "@media (prefers-color-scheme: dark)", parts: 2)
+      assert dark_section =~ "--color-sidebar-background:"
+    end
+  end
 end

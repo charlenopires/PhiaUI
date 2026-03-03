@@ -58,6 +58,18 @@
   --color-sidebar-background:     oklch(0.985 0.001 286.38);
 }
 
+/* ── CSS Variable Aliases ─────────────────────────────────────────────────── */
+/*
+ * Short-form aliases for direct CSS custom property references in components
+ * (e.g. bg-[--background], bg-[--sidebar-background]).
+ * These always resolve to the @theme-managed --color-* tokens, so they
+ * automatically pick up dark mode values without any extra overrides.
+ */
+:root {
+  --background: var(--color-background);
+  --sidebar-background: var(--color-sidebar-background);
+}
+
 /* ── Dark Mode Overrides ──────────────────────────────────────────────────── */
 
 @media (prefers-color-scheme: dark) {
