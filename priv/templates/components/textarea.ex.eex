@@ -1,0 +1,101 @@
+defmodule <%= @module_name %>.Components.UI.Textarea do
+  @moduledoc """
+  Form-aware Textarea component for multiline text input.
+
+  Ejected from PhiaUI — owns this copy of the source. Customise freely.
+
+  Renders a labeled textarea with optional description text and inline
+  error messages derived from the changeset. Applies `phx-debounce="blur"`
+  by default for real-time validation.
+
+  ## Example
+
+      <.phia_textarea field={@form[:bio]} label="Bio" rows={6} />
+
+      <.phia_textarea
+        field={@form[:description]}
+        label="Description"
+        description="Markdown is supported."
+        placeholder="Write something..."
+      />
+
+  ## Error handling
+
+  Errors are read directly from `field.errors`. For Gettext translations,
+  replace `translate_error/1` with:
+
+      defp translate_error({msg, opts}) do
+        if count = opts[:count] do
+          Gettext.dngettext(<%= @module_name %>.Gettext, "errors", msg, msg, count, opts)
+        else
+          Gettext.dgettext(<%= @module_name %>.Gettext, "errors", msg, opts)
+        end
+      end
+  """
+
+  use Phoenix.Component
+
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+
+  attr :field, Phoenix.HTML.FormField,
+    required: true,
+    doc: "A `Phoenix.HTML.FormField` struct (e.g., `@form[:bio]`)"
+
+  attr :label, :string, default: nil, doc: "Label text displayed above the textarea"
+
+  attr :description, :string,
+    default: nil,
+    doc: "Helper text displayed below the textarea"
+
+  attr :rows, :integer, default: 4, doc: "Number of visible text rows"
+
+  attr :placeholder, :string, default: nil, doc: "Placeholder text for the textarea"
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes for the textarea element"
+
+  def phia_textarea(assigns) do
+    assigns = assign(assigns, :errors, Enum.map(assigns.field.errors, &translate_error/1))
+
+    ~H"""
+    <div class="space-y-2">
+      <label
+        :if={@label}
+        for={@field.id}
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        {@label}
+      </label>
+      <textarea
+        id={@field.id}
+        name={@field.name}
+        rows={@rows}
+        placeholder={@placeholder}
+        class={
+          cn([
+            "border rounded-md bg-background px-3 py-2 text-sm w-full resize-y min-h-[80px]",
+            @errors != [] && "border-destructive focus-visible:ring-destructive",
+            @class
+          ])
+        }
+        phx-debounce="blur"
+      >{@field.value}</textarea>
+      <p :if={@description} class="text-sm text-muted-foreground">
+        {@description}
+      </p>
+      <p :for={error <- @errors} class="text-sm font-medium text-destructive">
+        {error}
+      </p>
+    </div>
+    """
+  end
+
+  defp translate_error({msg, opts}) do
+    Enum.reduce(opts, msg, fn
+      {key, value}, acc when is_binary(acc) ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+
+      _other, acc ->
+        acc
+    end)
+  end
+end
