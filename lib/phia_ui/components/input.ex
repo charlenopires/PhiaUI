@@ -44,6 +44,21 @@ defmodule PhiaUi.Components.Input do
     include: ~w(autocomplete readonly disabled step max min placeholder phx-debounce),
     doc: "HTML attributes forwarded to the input element"
 
+  @doc """
+  Renders a labeled text input integrated with `Phoenix.HTML.FormField`.
+
+  Produces a `<div>` containing an optional `<label>`, optional description
+  `<p>`, the `<input>` element, and one `<p>` per error sourced from
+  `field.errors`. Changeset validation errors are interpolated automatically
+  via the built-in `translate_error/1`; after ejection you can replace that
+  function with a Gettext-aware version for i18n support.
+
+  Pass any standard HTML input attributes (including `phx-debounce`) through
+  the `:rest` global:
+
+      <.phia_input field={@form[:email]} label="Email" phx-debounce="blur" />
+      <.phia_input field={@form[:age]}   label="Age"   type="number" min="0" />
+  """
   def phia_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     assigns =
       assigns

@@ -43,10 +43,21 @@ defmodule PhiaUi.Components.Select do
   attr :class, :string, default: nil, doc: "Additional CSS classes for the select element"
 
   @doc """
-  Renders a native `<select>` integrated with `Phoenix.HTML.FormField`.
+  Renders a native `<select>` element integrated with `Phoenix.HTML.FormField`.
 
-  Uses `form_field/1` from `PhiaUi.Components.Form` for label, description,
-  and error display. Overlays a `chevron-down` icon on the right side.
+  No JavaScript is required — the browser's native dropdown handles interaction.
+  A `chevron-down` icon is positioned absolutely on the right with
+  `pointer-events-none` so it overlays the select without interfering with
+  clicks. The `:options` list is rendered via `Phoenix.HTML.Form.options_for_select/2`,
+  which accepts tuples `{"Label", value}`, plain strings, or integers. An
+  optional `:prompt` renders a leading `<option value="">` placeholder.
+
+      <.phia_select
+        field={@form[:role]}
+        options={[{"Admin", "admin"}, {"Member", "member"}]}
+        label="Role"
+        prompt="Select a role…"
+      />
   """
   def phia_select(assigns) do
     ~H"""

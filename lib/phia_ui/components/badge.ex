@@ -47,7 +47,14 @@ defmodule PhiaUi.Components.Badge do
 
   slot :inner_block, required: true, doc: "Badge label content"
 
-  @doc "Renders a Badge element."
+  @doc """
+  Renders an inline `<div>` styled as a badge with one of four semantic variants.
+
+  Badges are used for status labels (active / draft / error), version tags,
+  counts, and trend indicators. The `:outline` variant provides a subtle ghost
+  style suitable for low-emphasis metadata, while `:destructive` draws attention
+  to error or warning states.
+  """
   def badge(assigns) do
     ~H"""
     <div class={cn([base_class(), variant_class(@variant), @class])} {@rest}>

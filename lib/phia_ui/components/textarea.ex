@@ -37,10 +37,17 @@ defmodule PhiaUi.Components.Textarea do
   attr :class, :string, default: nil, doc: "Additional CSS classes for the textarea element"
 
   @doc """
-  Renders a multiline textarea integrated with `Phoenix.HTML.FormField`.
+  Renders a multi-line `<textarea>` integrated with `Phoenix.HTML.FormField`.
 
-  Uses `form_field/1` and `form_label/1` from `PhiaUi.Components.Form` internally.
-  Applies `phx-debounce="blur"` by default and displays changeset errors via `form_message/1`.
+  Wraps the native `<textarea>` in `form_field/1` to provide a consistent
+  label, description, and automatic changeset error display via `form_message/1`.
+  The element is resizable vertically (`resize-y`) and defaults to 4 visible
+  rows; control height with the `:rows` attribute. `phx-debounce="blur"` is
+  applied automatically so validation fires on focus-out rather than on every
+  keystroke.
+
+      <.phia_textarea field={@form[:bio]} label="Bio" rows={6} />
+      <.phia_textarea field={@form[:notes]} label="Notes" placeholder="Optional…" />
   """
   def phia_textarea(assigns) do
     ~H"""
