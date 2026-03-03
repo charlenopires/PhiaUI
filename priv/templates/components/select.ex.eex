@@ -1,0 +1,131 @@
+defmodule <%= @module_name %>.Components.UI.Select do
+  @moduledoc """
+  Native HTML Select form component with Phoenix.HTML.Form integration.
+
+  Ejected from PhiaUI — owns this copy of the source. Customise freely.
+
+  Renders a `<select>` element with optional label, description, and inline
+  changeset error messages. Overlays a chevron-down SVG icon on the right side.
+
+  ## Example
+
+      <.phia_select
+        field={@form[:category]}
+        options={[{"Technology", "tech"}, {"Sports", "sports"}]}
+        label="Category"
+        prompt="Choose a category"
+      />
+
+  ## Options formats
+
+  All of the following are accepted:
+
+      options={[{"Label", "value"}, {"Other", "other"}]}   # keyword pairs
+      options={["tech", "sports"]}                          # plain list
+      options={[:tech, :sports]}                            # atom list
+
+  ## Error handling
+
+  Errors are read directly from `field.errors`. For Gettext translations,
+  replace `translate_error/1` with:
+
+      defp translate_error({msg, opts}) do
+        if count = opts[:count] do
+          Gettext.dngettext(<%= @module_name %>.Gettext, "errors", msg, msg, count, opts)
+        else
+          Gettext.dgettext(<%= @module_name %>.Gettext, "errors", msg, opts)
+        end
+      end
+  """
+
+  use Phoenix.Component
+
+  import <%= @module_name %>.ClassMerger, only: [cn: 1]
+
+  attr :field, Phoenix.HTML.FormField,
+    required: true,
+    doc: "A `Phoenix.HTML.FormField` struct (e.g., `@form[:category]`)"
+
+  attr :options, :list,
+    required: true,
+    doc: ~s(Options — accepts [{"Label", value}], ["value"], or [value])
+
+  attr :prompt, :string,
+    default: nil,
+    doc: ~s(Placeholder option rendered as <option value=""> at the top)
+
+  attr :label, :string, default: nil, doc: "Label text displayed above the select"
+
+  attr :description, :string,
+    default: nil,
+    doc: "Helper text displayed below the select"
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes for the select element"
+
+  def phia_select(assigns) do
+    assigns = assign(assigns, :errors, Enum.map(assigns.field.errors, &translate_error/1))
+
+    ~H"""
+    <div class="space-y-2">
+      <label
+        :if={@label}
+        for={@field.id}
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        {@label}
+      </label>
+      <div class="relative">
+        <select
+          id={@field.id}
+          name={@field.name}
+          class={
+            cn([
+              "h-10 w-full rounded-md border bg-background px-3 py-2 text-sm",
+              "appearance-none pr-8 cursor-pointer",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "disabled:cursor-not-allowed disabled:opacity-50",
+              @errors != [] && "border-destructive focus-visible:ring-destructive",
+              @class
+            ])
+          }
+        >
+          <option :if={@prompt} value="">{@prompt}</option>
+          {Phoenix.HTML.Form.options_for_select(@options, @field.value)}
+        </select>
+        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+          <svg
+            class="w-4 h-4"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </div>
+      </div>
+      <p :if={@description} class="text-sm text-muted-foreground">
+        {@description}
+      </p>
+      <p :for={error <- @errors} class="text-sm font-medium text-destructive">
+        {error}
+      </p>
+    </div>
+    """
+  end
+
+  defp translate_error({msg, opts}) do
+    Enum.reduce(opts, msg, fn
+      {key, value}, acc when is_binary(acc) ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+
+      _other, acc ->
+        acc
+    end)
+  end
+end

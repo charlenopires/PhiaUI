@@ -1,0 +1,273 @@
+defmodule <%= @module_name %>.Components.UI.RichTextEditor do
+  @moduledoc """
+  Rich Text Editor Component for Phoenix LiveView.
+
+  Ejected from PhiaUI — owns this copy of the source. Customise freely.
+
+  Provides `rich_text_editor/1` — a contenteditable-based rich text editor
+  with a full toolbar, Phoenix.HTML.Form integration, and changeset error display.
+
+  Powered by the `PhiaRichTextEditor` JS hook (zero npm dependencies).
+
+  ## Registration
+
+  Register the hook in `app.js`:
+
+      import PhiaRichTextEditor from "./phia_hooks/rich_text_editor.js"
+      let liveSocket = new LiveSocket("/live", Socket, { hooks: { PhiaRichTextEditor } })
+
+  ## Example
+
+      <.rich_text_editor field={@form[:body]} label="Content" placeholder="Write something..." />
+
+  ## Error handling
+
+  Errors are read directly from `field.errors`. For Gettext translations,
+  replace `translate_error/1` with:
+
+      defp translate_error({msg, opts}) do
+        if count = opts[:count] do
+          Gettext.dngettext(<%= @module_name %>.Gettext, "errors", msg, msg, count, opts)
+        else
+          Gettext.dgettext(<%= @module_name %>.Gettext, "errors", msg, opts)
+        end
+      end
+  """
+
+  use Phoenix.Component
+
+  # ---------------------------------------------------------------------------
+  # rich_text_editor/1
+  # ---------------------------------------------------------------------------
+
+  attr :field, Phoenix.HTML.FormField,
+    required: true,
+    doc: "A `Phoenix.HTML.FormField` struct (e.g., `@form[:body]`)"
+
+  attr :label, :string, default: nil, doc: "Label text rendered above the editor"
+  attr :placeholder, :string, default: nil, doc: "Placeholder text shown when the editor is empty"
+
+  attr :min_height, :string,
+    default: "200px",
+    doc: "Minimum height of the editable area (CSS value)"
+
+  attr :class, :string, default: nil, doc: "Additional CSS classes for the outer wrapper"
+
+  def rich_text_editor(assigns) do
+    assigns = assign(assigns, :errors, Enum.map(assigns.field.errors, &translate_error/1))
+
+    ~H"""
+    <div class={["space-y-2", @class]}>
+      <label
+        :if={@label}
+        for={@field.id}
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        {@label}
+      </label>
+
+      <div class="rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+        <%!-- Toolbar --%>
+        <div class="flex flex-wrap items-center gap-0.5 border-b border-input p-1">
+          <%!-- Group 1: Inline marks --%>
+          <button
+            type="button"
+            data-action="bold"
+            aria-label="Bold"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="italic"
+            aria-label="Italic"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="underline"
+            aria-label="Underline"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="strike"
+            aria-label="Strikethrough"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/></svg>
+          </button>
+
+          <div class="mx-1 h-5 w-px bg-border" aria-hidden="true"></div>
+
+          <%!-- Group 2: Headings + paragraph --%>
+          <button
+            type="button"
+            data-action="h1"
+            aria-label="Heading 1"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M4 12h8"/><path d="M4 18V6"/><path d="M12 18V6"/><path d="m17 12 3-2v8"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="h2"
+            aria-label="Heading 2"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M4 12h8"/><path d="M4 18V6"/><path d="M12 18V6"/><path d="M17 18v-4a2 2 0 0 1 4 0v4"/><path d="M15 18h6"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="h3"
+            aria-label="Heading 3"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M4 12h8"/><path d="M4 18V6"/><path d="M12 18V6"/><path d="M17.5 10.5c1.7-1 3.5 0 3.5 1.5a2 2 0 0 1-2 2"/><path d="M17 17.5c2 1.5 4 .3 4-1.5a2 2 0 0 0-2-2"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="paragraph"
+            aria-label="Paragraph"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M13 4v16"/><path d="M17 4v16"/><path d="M19 4H9.5a4.5 4.5 0 0 0 0 9H13"/></svg>
+          </button>
+
+          <div class="mx-1 h-5 w-px bg-border" aria-hidden="true"></div>
+
+          <%!-- Group 3: Lists --%>
+          <button
+            type="button"
+            data-action="bulletList"
+            aria-label="Bullet List"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="orderedList"
+            aria-label="Ordered List"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+          </button>
+
+          <div class="mx-1 h-5 w-px bg-border" aria-hidden="true"></div>
+
+          <%!-- Group 4: Blockquote + code --%>
+          <button
+            type="button"
+            data-action="blockquote"
+            aria-label="Blockquote"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M17 6H3"/><path d="M21 12H8"/><path d="M21 18H8"/><path d="M3 12v6"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="code"
+            aria-label="Inline Code"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="codeBlock"
+            aria-label="Code Block"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <rect width="18" height="18" x="3" y="3" rx="2"/><path d="m10 10-2 2 2 2"/><path d="m14 14 2-2-2-2"/></svg>
+          </button>
+
+          <div class="mx-1 h-5 w-px bg-border" aria-hidden="true"></div>
+
+          <%!-- Group 5: Link --%>
+          <button
+            type="button"
+            data-action="link"
+            aria-label="Add Link"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground is-active:bg-accent is-active:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          </button>
+          <button
+            type="button"
+            data-action="unlink"
+            aria-label="Remove Link"
+            aria-pressed="false"
+            class="inline-flex items-center justify-center rounded p-1.5 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground"
+          >
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="m18.84 12.25 1.72-1.71h-.02a5.004 5.004 0 0 0-.12-7.07 5.006 5.006 0 0 0-6.95 0l-1.72 1.71"/><path d="m5.17 11.75-1.71 1.71a5.004 5.004 0 0 0 .12 7.07 5.006 5.006 0 0 0 6.95 0l1.71-1.71"/><line x1="8" x2="8" y1="2" y2="5"/><line x1="2" x2="5" y1="8" y2="8"/><line x1="16" x2="16" y1="19" y2="22"/><line x1="19" x2="22" y1="16" y2="16"/></svg>
+          </button>
+        </div>
+
+        <%!-- Editable area --%>
+        <div
+          phx-hook="PhiaRichTextEditor"
+          data-phia-editor
+          data-content={@field.value}
+          {if @placeholder, do: ["data-placeholder": @placeholder], else: []}
+          style={"min-height: #{@min_height}"}
+          class="prose prose-sm max-w-none px-3 py-2 text-sm focus:outline-none [&.is-empty]:before:pointer-events-none [&.is-empty]:before:float-left [&.is-empty]:before:h-0 [&.is-empty]:before:text-muted-foreground [&.is-empty]:before:content-[attr(data-placeholder)]"
+        >
+        </div>
+      </div>
+
+      <%!-- Hidden input for changeset integration --%>
+      <input type="hidden" id={@field.id} name={@field.name} />
+
+      <%!-- Changeset errors --%>
+      <p :for={error <- @errors} class="text-sm font-medium text-destructive">
+        {error}
+      </p>
+    </div>
+    """
+  end
+
+  defp translate_error({msg, opts}) do
+    Enum.reduce(opts, msg, fn
+      {key, value}, acc when is_binary(acc) ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+
+      _other, acc ->
+        acc
+    end)
+  end
+end
