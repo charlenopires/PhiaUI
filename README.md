@@ -12,18 +12,30 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 ## Why PhiaUI?
 
-| Feature | PhiaUI | salad_ui |
-|---------|--------|----------|
-| Ejectable architecture | ✓ | Partial |
-| Enterprise analytics widgets | ✓ | ✗ |
-| AI / chat components | ✓ | ✗ |
-| Kanban, filter builder, activity feed | ✓ | ✗ |
-| Zero npm deps for interactivity | ✓ | ✗ |
-| Native ClassMerger (no tw_merge) | ✓ | ✗ |
-| TailwindCSS v4 theme system | ✓ | ✗ |
-| CSS-first theme system (8 presets, runtime switching) | ✓ | ✗ |
-| WAI-ARIA on all interactive | ✓ | Partial |
-| Dark mode, Ctrl+K, Date Pickers, Carousels | ✓ | ✗ |
+| Feature | **PhiaUI** | [DaisyUI](https://github.com/saadeghi/daisyui) | [Salad UI](https://github.com/bluzky/salad_ui) | [ShadCN/ui](https://github.com/shadcn-ui/ui) | [Doggo](https://github.com/woylie/doggo) | [Mishka Chelekom](https://github.com/mishka-group/mishka_chelekom) | [Primer Live](https://github.com/ArthurClemens/primer_live) |
+|---------|:----------:|:-------:|:--------:|:---------:|:-----:|:---------------:|:-----------:|
+| **Platform** | Phoenix LiveView | CSS / Any | Phoenix LiveView | React | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView |
+| **Components** | **75** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
+| Copy-paste ownership | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ |
+| LiveView-native (`phx-*`, streams) | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ | ✓ |
+| Zero npm runtime deps | ✓ | ✓ | Partial | ✗ | ✓ | ✓ | Partial |
+| Full WAI-ARIA on all interactive | ✓ | Partial | Partial | ✓ | ✓ | Partial | Partial |
+| Tailwind CSS v4 | ✓ | ✓ | Partial | Partial | ✗ | ✓ | ✗ |
+| Dark mode | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| CSS-first theming & color presets | ✓ (8) | ✓ (20+) | ✗ | Partial | ✗ | Partial | ✗ |
+| Ecto / FormField integration | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ | ✓ |
+| Enterprise dashboard shell | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| KPI / analytics widgets | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| AI / chat components | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Kanban + filter builder | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| Ctrl+K command palette | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+
+> **DaisyUI** — CSS-only Tailwind plugin, framework-agnostic, ideal for rapid prototyping.
+> **Salad UI** — shadcn/ui patterns for Phoenix LiveView, copy-paste via `mix salad.install`.
+> **ShadCN/ui** — React/Next.js, Radix UI primitives, the inspiration behind PhiaUI's copy-paste model.
+> **Doggo** — headless, unstyled, strict WAI-ARIA; bring your own CSS.
+> **Mishka Chelekom** — feature-rich Phoenix LiveView kit, CLI-generated components, Tailwind v4.
+> **Primer Live** — GitHub Primer design system for Phoenix LiveView, library dependency model.
 
 ---
 
