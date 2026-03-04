@@ -217,6 +217,13 @@ defmodule PhiaUi.Components.DataGrid do
   # data_grid/1
   # ---------------------------------------------------------------------------
 
+  attr(:id, :string, default: nil, doc: "Optional ID for the outer wrapper div; used to build the aria-live status region ID")
+
+  attr(:status_message, :string,
+    default: "",
+    doc: "Screen reader announcement for sort/filter/page changes. E.g.: 'Sorted by Name, ascending'"
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the outer overflow wrapper")
 
   attr(:rest, :global,
@@ -243,7 +250,16 @@ defmodule PhiaUi.Components.DataGrid do
   """
   def data_grid(assigns) do
     ~H"""
-    <div class={cn(["w-full overflow-auto", @class])}>
+    <div id={@id} class={cn(["w-full overflow-auto", @class])}>
+      <span
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="sr-only"
+        id={if @id, do: "#{@id}-status"}
+      >
+        {@status_message}
+      </span>
       <table class="w-full caption-bottom text-sm" {@rest}>
         <%= render_slot(@inner_block) %>
       </table>
@@ -324,8 +340,8 @@ defmodule PhiaUi.Components.DataGrid do
       {@rest}
     >
       <%= if @sort_key do %>
-        <%# Sort button sends the NEXT direction so the LiveView just assigns
-            what it receives — no direction-toggle logic needed server-side %>
+        <%!-- Sort button sends the NEXT direction so the LiveView just assigns
+            what it receives — no direction-toggle logic needed server-side --%>
         <button
           type="button"
           phx-click={@on_sort}
@@ -613,7 +629,7 @@ defmodule PhiaUi.Components.DataGrid do
       class={cn(["flex items-center justify-between gap-4 px-2 py-4", @class])}
       {@rest}
     >
-      <%# Left side: rows-per-page selector %>
+      <%!-- Left side: rows-per-page selector --%>
       <div class="flex items-center gap-2">
         <span class="text-sm text-muted-foreground">Rows per page</span>
         <select
@@ -626,7 +642,7 @@ defmodule PhiaUi.Components.DataGrid do
           </option>
         </select>
       </div>
-      <%# Right side: page counter + navigation buttons %>
+      <%!-- Right side: page counter + navigation buttons --%>
       <div class="flex items-center gap-3">
         <span class="text-sm text-muted-foreground">
           Page {@current_page} of {@total_pages}
@@ -751,7 +767,7 @@ defmodule PhiaUi.Components.DataGrid do
         <.icon name="settings-2" size={:sm} />
         Columns
       </button>
-      <%# Dropdown starts hidden; JS.toggle flips between hidden/block %>
+      <%!-- Dropdown starts hidden; JS.toggle flips between hidden/block --%>
       <div
         id={"#{@id}-menu"}
         class="absolute right-0 top-10 z-50 hidden min-w-[150px] rounded-md border border-border bg-popover p-1 shadow-md"
@@ -917,7 +933,7 @@ defmodule PhiaUi.Components.DataGrid do
   # in the template. This is a plain string (not cn/1) since it never needs
   # conditional merging — conditional classes are added at the call site.
   defp pagination_btn_class do
-    "inline-flex h-8 w-8 items-center justify-center rounded-md border border-input " <>
+    "inline-flex h-9 w-9 items-center justify-center rounded-md border border-input " <>
       "bg-background hover:bg-accent hover:text-accent-foreground transition-colors"
   end
 

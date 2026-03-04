@@ -207,8 +207,8 @@ defmodule PhiaUi.Components.DateRangePicker do
           </button>
         </div>
 
-        <%!-- Dual calendar grid — two months side by side --%>
-        <div class="flex gap-8">
+        <%!-- Dual calendar grid — two months side by side, stacked on mobile --%>
+        <div class="flex flex-col gap-4 sm:flex-row sm:gap-8">
           <.calendar_month
             month={@month1}
             from={@from}
@@ -260,7 +260,7 @@ defmodule PhiaUi.Components.DateRangePicker do
         <thead>
           <tr>
             <%= for day_name <- ~w[Su Mo Tu We Th Fr Sa] do %>
-              <th class="h-8 w-8 text-center text-xs text-muted-foreground font-normal">
+              <th class="h-9 w-9 text-center text-xs text-muted-foreground font-normal">
                 <%= day_name %>
               </th>
             <% end %>
@@ -271,14 +271,14 @@ defmodule PhiaUi.Components.DateRangePicker do
             <tr>
               <%= for day <- week do %>
                 <%= if day do %>
-                  <%# Compute per-cell state inline (private component, no pre-computation) %>
+                  <%!-- Compute per-cell state inline (private component, no pre-computation) --%>
                   <% disabled = day_disabled?(day, @min_date, @max_date) %>
                   <% is_from = @from && Date.compare(day, @from) == :eq %>
                   <% is_to = @to && Date.compare(day, @to) == :eq %>
                   <% in_range = in_range?(day, @from, @to) %>
-                  <%# Range interior cells get a full-width accent background --%>
+                  <%!-- Range interior cells get a full-width accent background --%>
                   <td class={cn([
-                    "relative h-8 w-8 p-0 text-center text-sm",
+                    "relative h-9 w-9 p-0 text-center text-sm",
                     if(in_range && !is_from && !is_to, do: "bg-accent", else: nil)
                   ])}>
                     <button
@@ -287,7 +287,7 @@ defmodule PhiaUi.Components.DateRangePicker do
                       phx-value-date={Date.to_iso8601(day)}
                       disabled={disabled}
                       class={cn([
-                        "inline-flex h-8 w-8 items-center justify-center rounded-full text-sm transition-colors",
+                        "inline-flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors",
                         "focus:outline-none focus:ring-1 focus:ring-ring",
                         if(disabled,
                           do: "opacity-50 pointer-events-none",
@@ -309,7 +309,7 @@ defmodule PhiaUi.Components.DateRangePicker do
                   </td>
                 <% else %>
                   <%!-- Nil day = leading/trailing padding cell from adjacent month --%>
-                  <td class="h-8 w-8" />
+                  <td class="h-9 w-9" />
                 <% end %>
               <% end %>
             </tr>

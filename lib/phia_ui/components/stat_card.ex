@@ -172,19 +172,19 @@ defmodule PhiaUi.Components.StatCard do
           <%= @title %>
         </.card_title>
         <div class="flex items-center gap-2">
-          <%# Icon is optional; wrap in shrink-0 container to prevent compression %>
+          <%!-- Icon is optional; wrap in shrink-0 container to prevent compression --%>
           <span :if={@icon != []} class="text-muted-foreground">
             <%= render_slot(@icon) %>
           </span>
-          <%# Trend badge: only rendered when trend_value is provided %>
+          <%!-- Trend badge: only rendered when trend_value is provided --%>
           <.badge :if={@trend_value} variant={trend_badge_variant(@trend)}>
             <.icon name={trend_icon_name(@trend)} size={:xs} /> <%= @trend_value %>
           </.badge>
         </div>
       </.card_header>
       <.card_content>
-        <%# tracking-tight on large values improves readability of long numbers %>
-        <div class="text-2xl font-bold tracking-tight"><%= @value %></div>
+        <%!-- tracking-tight on large values improves readability of long numbers --%>
+        <div class="text-xl sm:text-2xl font-bold tracking-tight" aria-label={"#{@value} #{@title}"}><%= @value %></div>
         <p :if={@description} class="mt-1 text-xs text-muted-foreground">
           <%= @description %>
         </p>

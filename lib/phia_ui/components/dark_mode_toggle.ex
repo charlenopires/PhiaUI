@@ -162,17 +162,17 @@ defmodule PhiaUi.Components.DarkModeToggle do
       ])}
       {@rest}
     >
-      <%# Sun icon — rendered in light mode (no .dark ancestor on <html>).
-          aria-hidden because the button's aria-label describes the action. %>
+      <%!-- Sun icon — rendered in light mode (no .dark ancestor on <html>).
+          aria-hidden because the button's aria-label describes the action. --%>
       <span class="block dark:hidden" aria-hidden="true">
         <.icon name="sun" size={:sm} />
       </span>
-      <%# Moon icon — rendered when .dark class is present on <html>.
-          Hidden by default; dark: variant makes it visible in dark mode. %>
+      <%!-- Moon icon — rendered when .dark class is present on <html>.
+          Hidden by default; dark: variant makes it visible in dark mode. --%>
       <span class="hidden dark:block" aria-hidden="true">
         <.icon name="moon" size={:sm} />
       </span>
-      <%# Screen-reader label — provides context when the button lacks visible text %>
+      <%!-- Screen-reader label — provides context when the button lacks visible text --%>
       <span class="sr-only">Toggle theme</span>
     </button>
     """

@@ -156,13 +156,13 @@ defmodule PhiaUi.Components.Alert do
       class={cn([base_class(), variant_class(@variant), @class])}
       {@rest}
     >
-      <%!-- Icon is absolutely positioned at top-left via [&>svg]:absolute selectors --%>
-      <%= if @icon != [] do %>
-        <span class="[&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:size-4">
-          <%= render_slot(@icon) %>
-        </span>
-      <% end %>
-      <%= render_slot(@inner_block) %>
+      <%!-- Icon sits in a flex row, shrink-0 so it never compresses --%>
+      <span :if={@icon != []} class="shrink-0 mt-0.5 [&>svg]:size-4 [&>svg]:text-current">
+        <%= render_slot(@icon) %>
+      </span>
+      <div class="flex-1 min-w-0">
+        <%= render_slot(@inner_block) %>
+      </div>
     </div>
     """
   end
@@ -273,27 +273,24 @@ defmodule PhiaUi.Components.Alert do
   # Private helpers — pattern matching only, no case/cond
   # ---------------------------------------------------------------------------
 
-  # Shared layout: relative positioning enables the icon's absolute placement;
-  # CSS child selectors shift body content right when an icon is present.
+  # Flex row layout: icon (shrink-0) + content (flex-1). No absolute positioning needed.
   defp base_class do
-    "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:size-4 [&>svg]:text-current"
+    "w-full rounded-lg border p-4 flex items-start gap-3 text-sm"
   end
 
   # Default: neutral bg, no tint — general info / announcements
   defp variant_class(:default),
-    do: "bg-background text-foreground"
+    do: "bg-background text-foreground border-border"
 
   # Destructive: red tint — errors, critical failures
   defp variant_class(:destructive),
-    do: "border-destructive/50 bg-destructive/10 text-destructive [&>svg]:text-destructive"
+    do: "border-destructive/40 bg-destructive/10 text-destructive"
 
-  # Warning: yellow tint with dark mode support — caution notices
+  # Warning: amber tint using theme warning tokens
   defp variant_class(:warning),
-    do:
-      "border-yellow-200 bg-yellow-50 text-yellow-800 [&>svg]:text-yellow-600 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400"
+    do: "border-warning/40 bg-warning/10 text-warning dark:border-warning/30 dark:bg-warning/15"
 
-  # Success: green tint with dark mode support — confirmations, completed actions
+  # Success: green tint using theme success tokens
   defp variant_class(:success),
-    do:
-      "border-green-200 bg-green-50 text-green-800 [&>svg]:text-green-600 dark:border-green-800 dark:bg-green-950 dark:text-green-400"
+    do: "border-success/40 bg-success/10 text-success dark:border-success/30 dark:bg-success/15"
 end

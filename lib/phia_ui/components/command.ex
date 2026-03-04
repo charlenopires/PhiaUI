@@ -315,6 +315,7 @@ defmodule PhiaUi.Components.Command do
       role="combobox"
       aria-expanded="false"
       aria-autocomplete="list"
+      aria-controls={"#{@id}-list"}
       autocomplete="off"
       spellcheck="false"
       placeholder={@placeholder}
@@ -400,6 +401,9 @@ defmodule PhiaUi.Components.Command do
   def command_empty(assigns) do
     ~H"""
     <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
       class={cn(["py-6 text-center text-sm text-muted-foreground", @class])}
       {@rest}
     >

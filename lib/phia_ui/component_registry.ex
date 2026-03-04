@@ -367,16 +367,6 @@ defmodule PhiaUi.ComponentRegistry do
       shadcn_equivalent: "Drawer",
       status: :planned
     },
-    menubar: %{
-      name: "menubar",
-      module: PhiaUi.Components.Menubar,
-      template_file: "priv/templates/components/menubar.ex",
-      js_hooks: ["Menubar"],
-      dependencies: [],
-      tier: :interactive,
-      shadcn_equivalent: "Menubar",
-      status: :planned
-    },
     navigation_menu: %{
       name: "navigation_menu",
       module: PhiaUi.Components.NavigationMenu,
@@ -449,17 +439,6 @@ defmodule PhiaUi.ComponentRegistry do
       shadcn_equivalent: "Textarea",
       status: :planned
     },
-    input_otp: %{
-      name: "input_otp",
-      module: PhiaUi.Components.InputOTP,
-      template_file: "priv/templates/components/input_otp.ex",
-      js_hooks: ["InputOTP"],
-      dependencies: [],
-      tier: :form,
-      shadcn_equivalent: "InputOTP",
-      status: :planned
-    },
-
     # ── Navigation & Feedback ─────────────────────────────────────────────────
     breadcrumb: %{
       name: "breadcrumb",
@@ -674,6 +653,168 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # -------------------------------------------------------------------------
+    # Wave 1 — High Priority Gap Components (2026-03-04)
+    # -------------------------------------------------------------------------
+    input_otp: %{
+      name: "input_otp",
+      module: PhiaUi.Components.InputOtp,
+      template_file: "priv/templates/components/input_otp.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: "InputOTP",
+      status: :implemented
+    },
+    spinner: %{
+      name: "spinner",
+      module: PhiaUi.Components.Spinner,
+      template_file: "priv/templates/components/spinner.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    number_input: %{
+      name: "number_input",
+      module: PhiaUi.Components.NumberInput,
+      template_file: "priv/templates/components/number_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    password_input: %{
+      name: "password_input",
+      module: PhiaUi.Components.PasswordInput,
+      template_file: "priv/templates/components/password_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    copy_button: %{
+      name: "copy_button",
+      module: PhiaUi.Components.CopyButton,
+      template_file: "priv/templates/components/copy_button.ex",
+      js_hooks: ["PhiaCopyButton"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # -------------------------------------------------------------------------
+    # Wave 2 — Medium Priority Gap Components (2026-03-04)
+    # -------------------------------------------------------------------------
+    segmented_control: %{
+      name: "segmented_control",
+      module: PhiaUi.Components.SegmentedControl,
+      template_file: "priv/templates/components/segmented_control.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chip: %{
+      name: "chip",
+      module: PhiaUi.Components.Chip,
+      template_file: "priv/templates/components/chip.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editable: %{
+      name: "editable",
+      module: PhiaUi.Components.Editable,
+      template_file: "priv/templates/components/editable.ex",
+      js_hooks: ["PhiaEditable"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    file_upload: %{
+      name: "file_upload",
+      module: PhiaUi.Components.FileUpload,
+      template_file: "priv/templates/components/file_upload.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    menubar: %{
+      name: "menubar",
+      module: PhiaUi.Components.Menubar,
+      template_file: "priv/templates/components/menubar.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: "Menubar",
+      status: :implemented
+    },
+
+    # -------------------------------------------------------------------------
+    # Wave 3 — Lower Priority Gap Components (2026-03-04)
+    # -------------------------------------------------------------------------
+    color_picker: %{
+      name: "color_picker",
+      module: PhiaUi.Components.ColorPicker,
+      template_file: "priv/templates/components/color_picker.ex",
+      js_hooks: ["PhiaColorPicker"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    float_button: %{
+      name: "float_button",
+      module: PhiaUi.Components.FloatButton,
+      template_file: "priv/templates/components/float_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    multi_select: %{
+      name: "multi_select",
+      module: PhiaUi.Components.MultiSelect,
+      template_file: "priv/templates/components/multi_select.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tree: %{
+      name: "tree",
+      module: PhiaUi.Components.Tree,
+      template_file: "priv/templates/components/tree.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    back_top: %{
+      name: "back_top",
+      module: PhiaUi.Components.BackTop,
+      template_file: "priv/templates/components/back_top.ex",
+      js_hooks: ["PhiaBackTop"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -681,7 +822,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 62 component metadata entries."
+  @doc "Returns the full registry map — all 77 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

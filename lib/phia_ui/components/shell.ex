@@ -218,26 +218,26 @@ defmodule PhiaUi.Components.Shell do
       class={cn([
         "h-screen overflow-hidden flex flex-col",
         # CSS Grid kicks in at the md breakpoint: fixed 240 px sidebar + flexible main
-        "md:grid md:grid-cols-[240px_1fr]",
+        "md:grid md:grid-cols-[240px_1fr] md:grid-rows-[auto_1fr]",
         @class
       ])}
       {@rest}
     >
-      <%# Topbar spans both columns via col-span-full; only rendered when the slot is used %>
+      <%!-- Topbar spans both columns via col-span-full; only rendered when the slot is used --%>
       <%= if @topbar != [] do %>
-        <header class="col-span-full flex h-14 shrink-0 items-center border-b bg-[--background] px-4">
+        <header class="col-span-full flex h-14 shrink-0 items-center border-b bg-(--background) px-4">
           <%= render_slot(@topbar) %>
         </header>
       <% end %>
-      <%# On desktop: static flex column in the first grid cell.
-          On mobile:  position: fixed, full height, z-50 overlay (toggled by JS). %>
+      <%!-- On desktop: static flex column in the first grid cell.
+          On mobile:  position: fixed, full height, z-50 overlay (toggled by JS). --%>
       <aside
         id="mobile-sidebar"
-        class="hidden fixed inset-y-0 left-0 z-50 w-60 flex-col border-r bg-[--sidebar-background] md:static md:inset-auto md:z-auto md:flex md:w-auto md:flex-col"
+        class="hidden fixed inset-y-0 left-0 z-50 w-60 flex-col bg-(--sidebar-background) md:static md:inset-auto md:z-auto md:flex md:w-auto md:flex-col"
       >
         <%= render_slot(@sidebar) %>
       </aside>
-      <main class="flex-1 overflow-y-auto bg-[--background]">
+      <main class="flex-1 overflow-y-auto bg-(--background)">
         <%= render_slot(@inner_block) %>
       </main>
     </div>
@@ -362,7 +362,7 @@ defmodule PhiaUi.Components.Shell do
       {@rest}
     >
       <%= if @brand != [] do %>
-        <%# h-14 matches the topbar height so the horizontal grid lines align perfectly %>
+        <%!-- h-14 matches the topbar height so the horizontal grid lines align perfectly --%>
         <div class="flex h-14 shrink-0 items-center border-b px-4">
           <%= render_slot(@brand) %>
         </div>
@@ -371,7 +371,7 @@ defmodule PhiaUi.Components.Shell do
         <%= if @nav_items != [] do %>
           <%= render_slot(@nav_items) %>
         <% else %>
-          <%# Fallback: render raw inner_block when no structured nav_items are provided %>
+          <%!-- Fallback: render raw inner_block when no structured nav_items are provided --%>
           <%= render_slot(@inner_block) %>
         <% end %>
       </nav>
@@ -460,7 +460,7 @@ defmodule PhiaUi.Components.Shell do
         <%= render_slot(@icon) %>
       </span>
       <span class="flex-1"><%= render_slot(@inner_block) %></span>
-      <%# Badge: circular pill anchored to the right edge of the item row %>
+      <%!-- Badge: circular pill anchored to the right edge of the item row --%>
       <span
         :if={@badge}
         class="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs font-medium text-primary-foreground"
@@ -561,7 +561,7 @@ defmodule PhiaUi.Components.Shell do
   """
   def topbar(assigns) do
     ~H"""
-    <header class={cn(["flex h-14 items-center border-b bg-[--background] px-4", @class])} {@rest}>
+    <header class={cn(["flex h-14 items-center border-b bg-(--background) px-4", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </header>
     """
@@ -618,7 +618,7 @@ defmodule PhiaUi.Components.Shell do
         )
       }
       class={cn([
-        "inline-flex items-center justify-center rounded-md p-2",
+        "inline-flex h-10 w-10 items-center justify-center rounded-md",
         "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
         # Hidden on desktop where the sidebar is always present in the grid layout
         "md:hidden",

@@ -247,13 +247,13 @@ defmodule PhiaUi.Components.Chart do
 
     ~H"""
     <%= if @title do %>
-      <%# Wrap in ChartShell card when a title is provided %>
+      <%!-- Wrap in ChartShell card when a title is provided --%>
       <.chart_shell title={@title} description={@description} min_height={@height} class={@class} {@rest}>
         <.chart_canvas id={@id} config_json={@config_json} series_json={@series_json} height={@height} />
       </.chart_shell>
     <% else %>
-      <%# No title = raw canvas only, no card wrapper — useful for sparklines or embedded charts %>
-      <.chart_canvas id={@id} config_json={@config_json} series_json={@series_json} height={@height} class={@class} {@rest} />
+      <%!-- No title = raw canvas only, no card wrapper — useful for sparklines or embedded charts --%>
+      <.chart_canvas id={@id} config_json={@config_json} series_json={@series_json} height={@height} description={@description} class={@class} {@rest} />
     <% end %>
     """
   end
@@ -266,6 +266,7 @@ defmodule PhiaUi.Components.Chart do
   attr(:config_json, :string, required: true)
   attr(:series_json, :string, required: true)
   attr(:height, :string, required: true)
+  attr(:description, :string, default: nil)
   attr(:class, :string, default: nil)
   attr(:rest, :global)
 
@@ -282,10 +283,12 @@ defmodule PhiaUi.Components.Chart do
       data-config={@config_json}
       data-series={@series_json}
       data-chart-placeholder="Loading chart…"
+      role="img"
       class={cn(["w-full", @class])}
       style={"height: #{@height}"}
       {@rest}
     >
+      <p :if={@description} class="sr-only">{@description}</p>
     </div>
     """
   end

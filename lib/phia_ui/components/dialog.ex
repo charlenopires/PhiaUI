@@ -41,13 +41,13 @@ defmodule PhiaUi.Components.Dialog do
   | Function              | Purpose                                      |
   |-----------------------|----------------------------------------------|
   | `dialog/1`            | Hook anchor, outer container                 |
-  | `dialog_trigger/1`    | Opens the dialog via JS.show                 |
+  | `dialog_trigger/1`    | Opens the dialog via JS.remove_class         |
   | `dialog_content/1`    | Overlay + panel (hidden by default)          |
   | `dialog_header/1`     | Title + description layout container         |
   | `dialog_title/1`      | `<h2>` heading (set id for ARIA linkage)     |
   | `dialog_description/1`| `<p>` supporting text (set id for ARIA)      |
   | `dialog_footer/1`     | Action row (close button, confirmations)     |
-  | `dialog_close/1`      | Closes the dialog via JS.hide                |
+  | `dialog_close/1`      | Closes the dialog via JS.add_class           |
   """
 
   use Phoenix.Component
@@ -82,7 +82,7 @@ defmodule PhiaUi.Components.Dialog do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Opens the dialog by calling `JS.show/1` on `#dialog-{for}`.
+  Opens the dialog by calling `JS.remove_class("hidden")` on `#dialog-{for}`.
   """
   attr(:for, :string, required: true, doc: "ID of the dialog to open (matches dialog/1's :id)")
   attr(:class, :string, default: nil)
@@ -92,7 +92,10 @@ defmodule PhiaUi.Components.Dialog do
   def dialog_trigger(assigns) do
     ~H"""
     <div
-      phx-click={JS.show(to: "#dialog-#{@for}")}
+      phx-click={
+        JS.remove_class("hidden", to: "#dialog-#{@for}")
+        |> JS.add_class("opacity-100 scale-100", to: "#dialog-#{@for} [data-dialog-panel]")
+      }
       class={cn(["cursor-pointer inline-block", @class])}
       {@rest}
     >
@@ -108,7 +111,7 @@ defmodule PhiaUi.Components.Dialog do
   @doc """
   The dialog surface: renders the overlay backdrop and the modal panel.
 
-  Hidden by default. Shown by `dialog_trigger/1` via `JS.show/1`.
+  Hidden by default. Shown by `dialog_trigger/1` via `JS.remove_class("hidden")`.
 
   The outer container id is `"dialog-{id}"` (prefixed) so that
   `dialog_trigger/1` and `dialog_close/1` can target it.
@@ -173,8 +176,12 @@ defmodule PhiaUi.Components.Dialog do
           <button
             type="button"
             aria-label="Close dialog"
-            phx-click={JS.hide(to: "#dialog-#{@id}")}
-            class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            phx-click={
+              JS.remove_class("opacity-100 scale-100", to: "#dialog-#{@id} [data-dialog-panel]")
+              |> JS.add_class("opacity-0 scale-95", to: "#dialog-#{@id} [data-dialog-panel]")
+              |> JS.add_class("hidden", to: "#dialog-#{@id}")
+            }
+            class="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             <svg
               class="h-4 w-4"
@@ -331,7 +338,7 @@ defmodule PhiaUi.Components.Dialog do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Closes the dialog via `JS.hide/1` on `#dialog-{for}`.
+  Closes the dialog via `JS.add_class("hidden")` on `#dialog-{for}`.
   The Escape key is also handled by the `PhiaDialog` JS Hook.
   """
   attr(:for, :string, required: true, doc: "ID of the dialog to close (matches dialog/1's :id)")
@@ -343,7 +350,11 @@ defmodule PhiaUi.Components.Dialog do
     ~H"""
     <button
       type="button"
-      phx-click={JS.hide(to: "#dialog-#{@for}")}
+      phx-click={
+        JS.remove_class("opacity-100 scale-100", to: "#dialog-#{@for} [data-dialog-panel]")
+        |> JS.add_class("opacity-0 scale-95", to: "#dialog-#{@for} [data-dialog-panel]")
+        |> JS.add_class("hidden", to: "#dialog-#{@for}")
+      }
       class={cn([
         "inline-flex items-center justify-center rounded-md text-sm font-medium",
         "ring-offset-background transition-colors focus-visible:outline-none",

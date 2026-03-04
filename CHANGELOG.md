@@ -2,6 +2,64 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.4 — 2026-03-04
+
+### Added — 15 gap-analysis components (vs shadcn/ui, Mantine, Ant Design, Chakra UI, MUI)
+
+Gap analysis identified 15 high-demand components present in major UI libraries but missing from PhiaUI.
+All components follow TDD (tests first), use semantic Tailwind v4 tokens, WAI-ARIA, and zero npm dependencies.
+
+#### Wave 1 — High Priority: Input Primitives
+
+- **InputOTP** (`input_otp/1`, `input_otp_group/1`, `input_otp_slot/1`, `input_otp_separator/1`) — Multi-slot OTP/PIN field. Each slot is `<input type="text" maxlength="1" inputmode="numeric">`. Auto-advances focus on input; Backspace returns to previous slot. `autocomplete="one-time-code"` on slot 0. `aria-label="Digit N"`. Inline JS (no hook) for focus traversal. Supports separator between slot groups. **25 tests**.
+
+- **Spinner** (`spinner/1`) — Animated SVG loading indicator. 5 sizes (`:xs` h-3, `:sm` h-4, `:default` h-6, `:lg` h-8, `:xl` h-12). Uses `animate-spin` and `currentColor` — inherits text color. `role="status"` + `aria-label` + `aria-live="polite"` + `<span class="sr-only">`. **15 tests**.
+
+- **NumberInput** (`number_input/1`, `form_number_input/1`) — Stepper input with `[−] [value] [+]` layout. Native `<input type="number">` with `min`, `max`, `step`. Optional `prefix` and `suffix` slots. `aria-valuemin/max/now`. FormField integration for Ecto changesets. **28 tests**.
+
+- **PasswordInput** (`password_input/1`, `form_password_input/1`) — Password field with toggle button. Uses `Phoenix.LiveView.JS.toggle_attribute({"type", "password", "text"})` — zero JS hook needed. `autocomplete="current-password"` by default. Eye SVG icon inline. `aria-label="Show password"`. Disables toggle button when `disabled`. FormField integration. **20 tests**.
+
+- **CopyButton** (`copy_button/1`) + `PhiaCopyButton` hook — Copy-to-clipboard button. `navigator.clipboard.writeText` with `execCommand` fallback. Copy icon → check icon feedback for `timeout` ms. `aria-live="polite"` on hidden span for screen reader announcement. **18 tests**.
+
+#### Wave 2 — Medium Priority: Selection & Interaction
+
+- **SegmentedControl** (`segmented_control/1`) — Horizontal selector using hidden radio inputs + styled labels. Active state applied server-side (`bg-background shadow-sm`). 3 sizes (`:sm`, `:default`, `:lg`). `phx-click` on labels for `on_change` event. `role="group"` on container. **29 tests**.
+
+- **Chip** (`chip/1`, `chip_group/1`) — Interactive pill component. When `on_click` present, renders as `<button>` with `aria-pressed={to_string(@selected)}`. When `dismissible`, shows × button with `aria-label="Remove"`. 3 variants (`:default`, `:outline`, `:filled`), 3 sizes. `chip_group/1` wraps in flex-wrap container. **20 tests**.
+
+- **Editable** (`editable/1`) + `PhiaEditable` hook — Inline edit field with preview/edit state. Renders preview `div` (role=button, tabindex=0) and hidden input wrapper. Hook: click/Enter/Space → startEdit (focus+select), Enter → submit (pushEvent), Escape/click-outside → cancel. **25 tests**.
+
+- **FileUpload** (`file_upload/1`, `file_upload_entry/1`) — Generic file drop zone. Accepts `Phoenix.LiveView.UploadConfig` or plain map. `phx-drop-target={upload.ref}` for drag-and-drop. `:empty` slot for drop zone content. `:file` slot with `:let={entry}` for file list. `file_upload_entry/1`: filename, progress bar (`width: #{progress}%`), error messages, cancel button with `phx-value-ref`. **22 tests**.
+
+- **Menubar** (`menubar/1`, `menubar_menu/1`, `menubar_trigger/1`, `menubar_content/1`, `menubar_item/1`, `menubar_separator/1`) — Desktop app-style horizontal menu bar. `role="menubar"` on container, `role="menubutton"` + `aria-haspopup="menu"` on triggers, `role="menu"` on content panels (hidden by default, JS toggles). `menubar_item/1` supports `shortcut` attr for keyboard shortcut display, `disabled` state. **31 tests**.
+
+#### Wave 3 — Lower Priority: Utility & Navigation
+
+- **ColorPicker** (`color_picker/1`) + `PhiaColorPicker` hook — Color selector built on native `<input type="color">`. Swatch buttons update the input; hook syncs value display span and pushes `on_change` event. `data-color-input`, `data-color-value`, `data-swatch-value` data attributes for hook targeting. **20 tests**.
+
+- **FloatButton** (`float_button/1`) — Fixed circular action button (FAB). Position variants: `:bottom_right`, `:bottom_left`, `:top_right`, `:top_left`. Two function heads: simple button (with `on_click`) or speed-dial (with `:main` + `:item` slots showing expandable action items). `h-14 w-14 rounded-full bg-primary`. **18 tests**.
+
+- **MultiSelect** (`multi_select/1`, `form_multi_select/1`) — Multiple-value select with `<select multiple>`. Selected values shown as chip row above the select. Chips have `phx-value-deselect` for individual removal. `name="field[]"` for multi-value form submission. `aria-label` on select for accessibility. FormField integration. **25 tests**.
+
+- **Tree** (`tree/1`, `tree_item/1`) — Hierarchical tree view using native `<details>/<summary>` (zero JavaScript). `role="tree"` on root `<ul>`. Expandable items: `<details open={@expanded}>` + `<summary>` with chevron SVG + `<ul role="group" class="ml-4">` for nesting. Leaf items: `phx-click` + `phx-value-value`. `aria-expanded` on each `<li>`. **25 tests**.
+
+- **BackTop** (`back_top/1`) + `PhiaBackTop` hook — Scroll-to-top button. Fixed positioned, starts `opacity-0`. Hook listens to `scroll` event (passive), toggles `opacity-100` beyond threshold. Click: `window.scrollTo({top:0, behavior: "smooth"})`. Cleanup in `destroyed()`. **15 tests**.
+
+### New JS Hooks
+
+- `priv/templates/js/hooks/copy_button.js` — `PhiaCopyButton`
+- `priv/templates/js/hooks/editable.js` — `PhiaEditable`
+- `priv/templates/js/hooks/color_picker.js` — `PhiaColorPicker`
+- `priv/templates/js/hooks/back_top.js` — `PhiaBackTop`
+
+### Test Coverage
+
+- **336 new tests** for 15 new components — **0 failures**
+- **2945 total tests** — **0 failures**
+- Component registry: **75 entries** (62 → 75, replacing 2 planned entries with implemented)
+
+---
+
 ## 0.1.3 — 2026-03-03
 
 ### Added — 25 new components across 3 sessions (image-analysis driven gap analysis)

@@ -213,7 +213,7 @@ defmodule PhiaUi.Components.Tabs do
   def tabs(assigns) do
     ~H"""
     <div class={cn(["w-full", @class])} {@rest}>
-      <%# Pass active tab value as context so sub-components can receive it via :let %>
+      <%!-- Pass active tab value as context so sub-components can receive it via :let --%>
       {render_slot(@inner_block, %{active: @default_value})}
     </div>
     """

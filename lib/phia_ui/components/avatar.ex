@@ -127,6 +127,11 @@ defmodule PhiaUi.Components.Avatar do
     doc: "Avatar size. One of `\"sm\"` (24px), `\"default\"` (40px), `\"lg\"` (56px), `\"xl\"` (72px)."
   )
 
+  attr(:label, :string,
+    default: nil,
+    doc: "Accessible label (aria-label). Use for standalone avatars that convey meaning."
+  )
+
   attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes merged via `cn/1`. Useful for adding `ring-2 ring-background` in avatar groups."
@@ -154,6 +159,8 @@ defmodule PhiaUi.Components.Avatar do
     ~H"""
     <span
       class={cn(["relative flex shrink-0 overflow-hidden rounded-full", size_class(@size), @class])}
+      aria-label={@label}
+      role={if @label, do: "img", else: nil}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -289,8 +296,10 @@ defmodule PhiaUi.Components.Avatar do
   """
   def avatar_group(assigns) do
     ~H"""
-    <div class={cn(["flex -space-x-2", @class])} {@rest}>
-      {render_slot(@inner_block)}
+    <div role="list" class={cn(["flex -space-x-2", @class])} {@rest}>
+      <div :for={item <- @inner_block} role="listitem">
+        {render_slot(item)}
+      </div>
     </div>
     """
   end

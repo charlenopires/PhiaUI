@@ -171,6 +171,28 @@ defmodule PhiaUi.Components.DataGridTest do
       </table>
       """
     end
+
+    def render_grid_with_status(assigns) do
+      ~H"""
+      <.data_grid id="my-grid" status_message="Sorted by Name, ascending">
+        <thead><tr><th>Name</th></tr></thead>
+        <.data_grid_body id="body">
+          <.data_grid_row id="r1"><.data_grid_cell>Alice</.data_grid_cell></.data_grid_row>
+        </.data_grid_body>
+      </.data_grid>
+      """
+    end
+
+    def render_grid_with_empty_status(assigns) do
+      ~H"""
+      <.data_grid id="empty-grid">
+        <thead><tr><th>Name</th></tr></thead>
+        <.data_grid_body id="body2">
+          <.data_grid_row id="r2"><.data_grid_cell>Bob</.data_grid_cell></.data_grid_row>
+        </.data_grid_body>
+      </.data_grid>
+      """
+    end
   end
 
   defp render_grid, do: render_component(&H.render_grid/1, %{})
@@ -193,6 +215,12 @@ defmodule PhiaUi.Components.DataGridTest do
 
   defp render_select_all_indeterminate,
     do: render_component(&H.render_select_all_indeterminate/1, %{})
+
+  defp render_grid_with_status,
+    do: render_component(&H.render_grid_with_status/1, %{})
+
+  defp render_grid_with_empty_status,
+    do: render_component(&H.render_grid_with_empty_status/1, %{})
 
   # ---------------------------------------------------------------------------
   # data_grid/1
@@ -491,6 +519,63 @@ defmodule PhiaUi.Components.DataGridTest do
 
     test "fires on_check event" do
       assert render_select_all() =~ ~s(phx-click="select_all")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid/1 — aria-live status region
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid/1 — aria-live status region" do
+    test "renders a visually hidden aria-live region with role=status" do
+      html = render_grid_with_status()
+      assert html =~ ~s(role="status")
+      assert html =~ ~s(aria-live="polite")
+      assert html =~ ~s(aria-atomic="true")
+      assert html =~ ~s(class="sr-only")
+    end
+
+    test "aria-live region contains the status_message text" do
+      assert render_grid_with_status() =~ "Sorted by Name, ascending"
+    end
+
+    test "aria-live region id is derived from component id" do
+      assert render_grid_with_status() =~ ~s(id="my-grid-status")
+    end
+
+    test "status_message defaults to empty string when not provided" do
+      html = render_grid_with_empty_status()
+      assert html =~ ~s(role="status")
+      assert html =~ ~s(aria-live="polite")
+    end
+
+    test "outer wrapper div receives the id attribute" do
+      assert render_grid_with_status() =~ ~s(id="my-grid")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_pagination/1 — touch target size
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_pagination/1 — touch target size" do
+    test "pagination buttons use h-9 w-9 for 36px touch targets" do
+      html = render_pagination_basic()
+      assert html =~ "h-9 w-9"
+    end
+
+    test "pagination buttons do not use the old h-8 w-8 size" do
+      refute render_pagination_basic() =~ "h-8 w-8"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_row_checkbox/1 — aria-label
+  # ---------------------------------------------------------------------------
+
+  describe "data_grid_row_checkbox/1 — aria-label" do
+    test "row checkbox has aria-label identifying the row" do
+      assert render_row_checkbox_checked() =~ ~s(aria-label="Select row")
     end
   end
 end

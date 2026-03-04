@@ -187,8 +187,8 @@ defmodule PhiaUi.Components.ChartShell do
     ~H"""
     <.card class={cn([@class])} {@rest}>
       <.card_header>
-        <%# Two-column flex: title/description on the left (truncatable),
-            period + actions on the right (never shrink, never truncate) %>
+        <%!-- Two-column flex: title/description on the left (truncatable),
+            period + actions on the right (never shrink, never truncate) --%>
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <.card_title><%= @title %></.card_title>
@@ -209,9 +209,10 @@ defmodule PhiaUi.Components.ChartShell do
         </div>
       </.card_header>
       <.card_content>
-        <%# min-height via inline style so any CSS length value is accepted,
-            not just the ones in Tailwind's static safelist %>
-        <div style={"min-height: #{@min_height}"}>
+        <%!-- min-height via inline style so any CSS length value is accepted,
+            not just the ones in Tailwind's static safelist --%>
+        <div role="img" style={"min-height: #{@min_height}"}>
+          <p :if={@description} class="sr-only">{@description}</p>
           <%= render_slot(@inner_block) %>
         </div>
       </.card_content>

@@ -134,30 +134,30 @@ defmodule PhiaUi.Components.AlertTest do
   end
 
   describe "variant :warning" do
-    test "renders yellow background token" do
-      assert render_alert(%{variant: :warning}) =~ "bg-yellow"
+    test "renders warning background token" do
+      assert render_alert(%{variant: :warning}) =~ "bg-warning"
     end
 
-    test "renders yellow text token" do
-      assert render_alert(%{variant: :warning}) =~ "text-yellow"
+    test "renders warning text token" do
+      assert render_alert(%{variant: :warning}) =~ "text-warning"
     end
 
-    test "renders yellow border token" do
-      assert render_alert(%{variant: :warning}) =~ "border-yellow"
+    test "renders warning border token" do
+      assert render_alert(%{variant: :warning}) =~ "border-warning"
     end
   end
 
   describe "variant :success" do
-    test "renders green background token" do
-      assert render_alert(%{variant: :success}) =~ "bg-green"
+    test "renders success background token" do
+      assert render_alert(%{variant: :success}) =~ "bg-success"
     end
 
-    test "renders green text token" do
-      assert render_alert(%{variant: :success}) =~ "text-green"
+    test "renders success text token" do
+      assert render_alert(%{variant: :success}) =~ "text-success"
     end
 
-    test "renders green border token" do
-      assert render_alert(%{variant: :success}) =~ "border-green"
+    test "renders success border token" do
+      assert render_alert(%{variant: :success}) =~ "border-success"
     end
   end
 

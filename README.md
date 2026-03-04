@@ -1,6 +1,6 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library — 75 components, inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 90 components, inspired by shadcn/ui.**
 
 Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets, enterprise data components, and AI-ready chat UI for financial terminals, BI dashboards, and KPI monitors.
 
@@ -15,7 +15,7 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 | Feature | **PhiaUI** | [DaisyUI](https://github.com/saadeghi/daisyui) | [Salad UI](https://github.com/bluzky/salad_ui) | [ShadCN/ui](https://github.com/shadcn-ui/ui) | [Doggo](https://github.com/woylie/doggo) | [Mishka Chelekom](https://github.com/mishka-group/mishka_chelekom) | [Primer Live](https://github.com/ArthurClemens/primer_live) |
 |---------|:----------:|:-------:|:--------:|:---------:|:-----:|:---------------:|:-----------:|
 | **Platform** | Phoenix LiveView | CSS / Any | Phoenix LiveView | React | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView |
-| **Components** | **75** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
+| **Components** | **90** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
 | Copy-paste ownership | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ |
 | LiveView-native (`phx-*`, streams) | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ | ✓ |
 | Zero npm runtime deps | ✓ | ✓ | Partial | ✗ | ✓ | ✓ | Partial |
@@ -39,7 +39,7 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 ---
 
-## Component Library — 75 Components
+## Component Library — 90 Components
 
 ### Primitives & Feedback — 9 components
 
@@ -156,6 +156,45 @@ Advanced data management and collaboration UI. → [Full examples & use cases](d
 | Step Tracker | `step_tracker/1` | Multi-step wizard progress (horizontal/vertical) |
 | Navigation Menu | `navigation_menu/1` | Horizontal nav with links and dropdown content panels |
 
+### Gap Analysis Components — 15 components
+
+Newly added components identified by gap analysis vs shadcn/ui, Mantine, Ant Design, Chakra UI v3, and MUI. → [Full examples & use cases](docs/components/gap.md)
+
+#### Input Primitives
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| InputOTP | `input_otp/1`, `input_otp_group/1`, `input_otp_slot/1`, `input_otp_separator/1` | N-slot OTP/PIN input with auto-advance focus, paste distribution, `inputmode="numeric"` |
+| Spinner | `spinner/1` | CSS SVG animated loading indicator, 5 sizes, `role="status"` + `aria-live` |
+| NumberInput | `number_input/1`, `form_number_input/1` | Native `<input type="number">` with ± stepper buttons, prefix/suffix slots, FormField integration |
+| PasswordInput | `password_input/1`, `form_password_input/1` | Password field with show/hide toggle via `JS.toggle_attribute`, `autocomplete="current-password"` |
+| CopyButton | `copy_button/1` | Clipboard copy button — `PhiaCopyButton` hook, check icon feedback, `aria-live` announcement |
+
+#### Selection & Interaction
+
+| Component | Function | Hook | Description |
+|-----------|----------|------|-------------|
+| SegmentedControl | `segmented_control/1` | — | Radio-based segment selector, CSS active state, 3 sizes |
+| Chip | `chip/1`, `chip_group/1` | — | Interactive pill: toggle (`aria-pressed`), dismissible (×), 3 variants, 3 sizes |
+| Editable | `editable/1` | `PhiaEditable` | Click-to-edit inline field — preview/edit toggle, Enter confirm, Escape cancel, click-outside cancel |
+| Menubar | `menubar/1`, `menubar_trigger/1`, `menubar_content/1`, `menubar_item/1`, `menubar_separator/1` | — | Desktop app-style menu bar, `role="menubar"` + `role="menu"` + keyboard navigation |
+
+#### Upload & File
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| FileUpload | `file_upload/1`, `file_upload_entry/1` | Drag-and-drop zone, `phx-drop-target`, progress bar per entry, error display, cancel button |
+
+#### Utility & Navigation
+
+| Component | Function | Hook | Description |
+|-----------|----------|------|-------------|
+| ColorPicker | `color_picker/1` | `PhiaColorPicker` | Native `<input type="color">` + swatches + hex display, hook syncs all three |
+| FloatButton | `float_button/1` | — | Fixed circular action button; speed-dial variant with expandable item buttons |
+| MultiSelect | `multi_select/1`, `form_multi_select/1` | — | `<select multiple>` with selected-chip row, `find_label/2`, FormField integration |
+| Tree | `tree/1`, `tree_item/1` | — | Hierarchical tree view using native `<details>/<summary>` (zero JS), `role="tree"` + `aria-expanded` |
+| BackTop | `back_top/1` | `PhiaBackTop` | Fixed scroll-to-top button — appears after threshold px, smooth scroll, fade transition |
+
 ---
 
 ## Live Sample — PhiaUI Dashboard
@@ -177,7 +216,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.3"}
+    {:phia_ui, "~> 0.1.4"}
   ]
 end
 ```
@@ -234,6 +273,10 @@ import PhiaDrawer          from "./phia_hooks/drawer"
 import PhiaTheme           from "./phia_hooks/theme"
 import PhiaResizable       from "./phia_hooks/resizable"
 import PhiaMentionInput    from "./phia_hooks/mention_input"
+import PhiaCopyButton   from "./phia_hooks/copy_button"
+import PhiaEditable     from "./phia_hooks/editable"
+import PhiaColorPicker  from "./phia_hooks/color_picker"
+import PhiaBackTop      from "./phia_hooks/back_top"
 
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
@@ -242,7 +285,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
     PhiaTooltip, PhiaPopover, PhiaToast, PhiaDarkMode,
     PhiaCommand, PhiaDateRangePicker, PhiaChart,
     PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer,
-    PhiaTheme, PhiaResizable, PhiaMentionInput
+    PhiaTheme, PhiaResizable, PhiaMentionInput,
+    PhiaCopyButton, PhiaEditable, PhiaColorPicker, PhiaBackTop
   }
 })
 ```
@@ -627,6 +671,199 @@ end
 
 → [Heatmap Calendar examples](docs/components/enterprise.md#heatmap-calendar)
 
+### InputOTP
+
+```heex
+<%!-- Simple: --%>
+<.input_otp id="verify-code" name="code" length={6} value={@otp_code} />
+
+<%!-- Composable with separator: --%>
+<.input_otp_group id="token-group">
+  <.input_otp_slot index={0} name="token[0]" value={String.at(@token, 0) || ""} />
+  <.input_otp_slot index={1} name="token[1]" value={String.at(@token, 1) || ""} />
+  <.input_otp_slot index={2} name="token[2]" value={String.at(@token, 2) || ""} />
+  <.input_otp_separator />
+  <.input_otp_slot index={3} name="token[3]" value={String.at(@token, 3) || ""} />
+  <.input_otp_slot index={4} name="token[4]" value={String.at(@token, 4) || ""} />
+  <.input_otp_slot index={5} name="token[5]" value={String.at(@token, 5) || ""} />
+</.input_otp_group>
+```
+
+### Spinner
+
+```heex
+<.spinner />
+<.spinner size={:lg} class="text-primary" />
+<.spinner label="Loading data..." size={:sm} />
+```
+
+### NumberInput & PasswordInput
+
+```heex
+<.form_number_input field={@form[:quantity]} label="Quantity" min={1} max={999} step={1} />
+<.form_number_input field={@form[:price]} label="Price" prefix="$" suffix="USD" />
+
+<.form_password_input field={@form[:password]} label="Password" />
+<.form_password_input field={@form[:confirm]} label="Confirm Password" autocomplete="new-password" />
+```
+
+### CopyButton
+
+```heex
+<div class="flex items-center gap-2">
+  <code class="text-sm bg-muted px-2 py-1 rounded font-mono">{@api_key}</code>
+  <.copy_button value={@api_key} label="Copy API key" />
+</div>
+```
+
+### SegmentedControl
+
+```heex
+<.segmented_control
+  id="view-mode"
+  name="view"
+  value={@view}
+  on_change="change_view"
+  segments={[
+    %{value: "list",   label: "List"},
+    %{value: "grid",   label: "Grid"},
+    %{value: "kanban", label: "Kanban"}
+  ]}
+/>
+```
+
+### Chip & ChipGroup
+
+```heex
+<.chip_group>
+  <.chip :for={tech <- @selected_stack}
+    value={tech}
+    dismissible={true}
+    on_dismiss="remove_tech"
+    variant={:outline}>
+    {tech}
+  </.chip>
+</.chip_group>
+
+<%!-- Toggle chip --%>
+<.chip selected={@dark_mode} on_click="toggle_dark" value="dark">
+  Dark Mode
+</.chip>
+```
+
+### Editable (inline edit)
+
+```heex
+<.editable id="project-title" value={@project.name} on_submit="update_name">
+  <:preview>
+    <h1 class="text-2xl font-bold">{@project.name}</h1>
+  </:preview>
+  <:input>
+    <.phia_input id="project-title-input" name="name" value={@project.name} />
+  </:input>
+</.editable>
+```
+
+### FileUpload
+
+```heex
+<.file_upload upload={@uploads.attachments} label="Attach Files" accept=".pdf,.docx,.xlsx">
+  <:empty>
+    <.icon name="upload-cloud" class="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+    <p class="text-sm text-muted-foreground">
+      Drag & drop files here or <span class="text-primary underline">browse</span>
+    </p>
+  </:empty>
+  <:file :let={entry}>
+    <.file_upload_entry entry={entry} on_cancel="cancel_upload" />
+  </:file>
+</.file_upload>
+```
+
+### Menubar
+
+```heex
+<.menubar id="app-menubar">
+  <.menubar_menu>
+    <.menubar_trigger>File</.menubar_trigger>
+    <.menubar_content>
+      <.menubar_item on_click="new_file">New File</.menubar_item>
+      <.menubar_item on_click="open_file">Open…</.menubar_item>
+      <.menubar_separator />
+      <.menubar_item on_click="save" shortcut="⌘S">Save</.menubar_item>
+    </.menubar_content>
+  </.menubar_menu>
+  <.menubar_menu>
+    <.menubar_trigger>Edit</.menubar_trigger>
+    <.menubar_content>
+      <.menubar_item on_click="undo" shortcut="⌘Z">Undo</.menubar_item>
+      <.menubar_item on_click="redo" shortcut="⌘⇧Z">Redo</.menubar_item>
+    </.menubar_content>
+  </.menubar_menu>
+</.menubar>
+```
+
+### MultiSelect
+
+```heex
+<.form_multi_select
+  field={@form[:tags]}
+  label="Tags"
+  options={[{"Elixir", "elixir"}, {"Phoenix", "phoenix"}, {"LiveView", "liveview"}, {"Ecto", "ecto"}]}
+/>
+```
+
+### Tree
+
+```heex
+<.tree id="file-explorer">
+  <.tree_item label="lib" expandable={true} expanded={true}>
+    <.tree_item label="phia_ui" expandable={true}>
+      <.tree_item label="components" expandable={true}>
+        <.tree_item label="button.ex" on_click="open_file" value="button.ex" />
+        <.tree_item label="card.ex" on_click="open_file" value="card.ex" />
+      </.tree_item>
+    </.tree_item>
+  </.tree_item>
+  <.tree_item label="mix.exs" on_click="open_file" value="mix.exs" />
+</.tree>
+```
+
+### ColorPicker
+
+```heex
+<.color_picker
+  id="brand-color"
+  value={@brand_color}
+  on_change="update_brand_color"
+  swatches={["#1e40af", "#7c3aed", "#dc2626", "#16a34a", "#ea580c"]}
+/>
+```
+
+### FloatButton
+
+```heex
+<%!-- Simple --%>
+<.float_button icon="plus" on_click="new_item" aria_label="Create new item" />
+
+<%!-- Speed dial --%>
+<.float_button position={:bottom_right}>
+  <:main icon="menu" aria_label="Actions" />
+  <:item icon="edit" on_click="edit" label="Edit" />
+  <:item icon="share" on_click="share" label="Share" />
+  <:item icon="trash" on_click="delete" label="Delete" />
+</.float_button>
+```
+
+### BackTop
+
+```heex
+<%!-- Mount once per page that needs it --%>
+<.back_top threshold={300} smooth={true} aria_label="Back to top" />
+```
+
+→ [Gap analysis component examples](docs/components/gap.md)
+
 ---
 
 ## Mix Tasks
@@ -785,6 +1022,7 @@ Detailed examples and use cases:
 | [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar, Tabs Nav, Theme Provider, Scroll Area, Progress, Separator, Toggle, Tabs, Timeline, Resizable |
 | [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts, HeatmapCalendar |
 | [Enterprise Components](docs/components/enterprise.md) | ActivityFeed, KanbanBoard, ChatMessage, MentionInput, FilterBar, FilterBuilder, BulkActionBar, StepTracker, NavigationMenu |
+| [Gap Analysis Components](docs/components/gap.md) | InputOTP, Spinner, NumberInput, PasswordInput, CopyButton, SegmentedControl, Chip, Editable, FileUpload, Menubar, ColorPicker, FloatButton, MultiSelect, Tree, BackTop |
 | [Theme System](docs/guides/theme-system.md) | CSS-first themes, color presets, runtime switching, ThemeProvider, PhiaTheme hook |
 | [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette, enterprise widgets |
 

@@ -280,9 +280,10 @@ defmodule PhiaUi.Components.Card do
   @doc """
   Renders the Card content area.
 
-  Applies `p-6 pt-0`. The `pt-0` removes the top padding so the content
-  sits flush beneath `card_header/1` without double-padding. When used
-  without a header, add `pt-6` via `:class` to restore the full padding.
+  Applies `p-6` on all sides. When used after `card_header/1`, override with
+  `class="pt-0"` to avoid double-padding (the header already provides bottom
+  padding). When used standalone (no header), the default `p-6` gives full
+  uniform padding including the top.
 
   This is the primary slot for the card's main payload — metrics, lists,
   forms, charts, or any structured content.
