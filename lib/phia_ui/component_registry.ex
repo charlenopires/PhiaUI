@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 59 PhiaUI components.
+  Source of truth for all 62 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -281,11 +281,11 @@ defmodule PhiaUi.ComponentRegistry do
       name: "slider",
       module: PhiaUi.Components.Slider,
       template_file: "priv/templates/components/slider.ex",
-      js_hooks: ["Slider"],
+      js_hooks: [],
       dependencies: [],
       tier: :interactive,
       shadcn_equivalent: "Slider",
-      status: :planned
+      status: :implemented
     },
     radio_group: %{
       name: "radio_group",
@@ -391,11 +391,11 @@ defmodule PhiaUi.ComponentRegistry do
       name: "resizable",
       module: PhiaUi.Components.Resizable,
       template_file: "priv/templates/components/resizable.ex",
-      js_hooks: ["Resizable"],
+      js_hooks: ["PhiaResizable"],
       dependencies: [],
       tier: :interactive,
       shadcn_equivalent: "Resizable",
-      status: :planned
+      status: :implemented
     },
     date_picker: %{
       name: "date_picker",
@@ -531,6 +531,36 @@ defmodule PhiaUi.ComponentRegistry do
       shadcn_equivalent: "Sonner",
       status: :planned
     },
+    timeline: %{
+      name: "timeline",
+      module: PhiaUi.Components.Timeline,
+      template_file: "priv/templates/components/timeline.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    rating: %{
+      name: "rating",
+      module: PhiaUi.Components.Rating,
+      template_file: "priv/templates/components/rating.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    kbd: %{
+      name: "kbd",
+      module: PhiaUi.Components.Kbd,
+      template_file: "priv/templates/components/kbd.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
 
     # ── Dashboard Shell ───────────────────────────────────────────────────────
     shell: %{
@@ -651,7 +681,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 59 component metadata entries."
+  @doc "Returns the full registry map — all 62 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
