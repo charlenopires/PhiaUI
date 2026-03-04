@@ -148,4 +148,7 @@ defmodule PhiaUi do
   independent of the PhiaUI package. You can modify them freely without
   upgrading or forking.
   """
+
+  @doc false
+  def hello, do: :world
 end

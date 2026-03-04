@@ -7,8 +7,8 @@ defmodule PhiaUi.MixProjectTest do
     assert @config[:app] == :phia_ui
   end
 
-  test "version is 0.1.0" do
-    assert @config[:version] == "0.1.0"
+  test "version is 0.1.2" do
+    assert @config[:version] == "0.1.2"
   end
 
   test "elixir requirement is ~> 1.17" do
@@ -52,11 +52,11 @@ defmodule PhiaUi.MixProjectTest do
       assert String.starts_with?(pkg[:links]["GitHub"], "https://github.com/")
     end
 
-    test "files include priv/ and assets/", %{pkg: pkg} do
+    test "files include priv/ and lib/", %{pkg: pkg} do
       files = pkg[:files]
       assert is_list(files)
       assert Enum.any?(files, &String.starts_with?(&1, "priv"))
-      assert Enum.any?(files, &String.starts_with?(&1, "assets"))
+      assert Enum.any?(files, &String.starts_with?(&1, "lib"))
     end
   end
 end
