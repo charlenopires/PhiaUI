@@ -1,8 +1,8 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library — 48 components, inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 75 components, inspired by shadcn/ui.**
 
-Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets for financial terminals, BI dashboards, and KPI monitors.
+Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets, enterprise data components, and AI-ready chat UI for financial terminals, BI dashboards, and KPI monitors.
 
 [![Hex.pm](https://img.shields.io/hexpm/v/phia_ui.svg)](https://hex.pm/packages/phia_ui)
 [![Elixir](https://img.shields.io/badge/elixir-%3E%3D1.17-purple)](https://elixir-lang.org)
@@ -16,6 +16,8 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 |---------|--------|----------|
 | Ejectable architecture | ✓ | Partial |
 | Enterprise analytics widgets | ✓ | ✗ |
+| AI / chat components | ✓ | ✗ |
+| Kanban, filter builder, activity feed | ✓ | ✗ |
 | Zero npm deps for interactivity | ✓ | ✗ |
 | Native ClassMerger (no tw_merge) | ✓ | ✗ |
 | TailwindCSS v4 theme system | ✓ | ✗ |
@@ -25,9 +27,9 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 ---
 
-## Component Library — 48 Components
+## Component Library — 75 Components
 
-### Primitives & Feedback — 8 components
+### Primitives & Feedback — 9 components
 
 Stateless HEEx components. No JavaScript. → [Full examples & use cases](docs/components/primitives.md)
 
@@ -36,13 +38,14 @@ Stateless HEEx components. No JavaScript. → [Full examples & use cases](docs/c
 | Button | `button/1` | 6 variants × 4 sizes, disabled state |
 | Card | `card/1` | Composable header / content / footer slots |
 | Badge | `badge/1` | 4 variants for status labels |
-| Icon | `icon/1` | Lucide SVG sprite, 4 sizes |
-| Alert | `alert/1` | 4 variants with optional icon slot |
+| Icon | `icon/1` | Lucide SVG sprite, 4 sizes (`xs`, `sm`, `md`, `lg`) |
+| Alert | `alert/1` | 2 variants with title and description sub-components |
 | Skeleton | `skeleton/1` | `animate-pulse` placeholders for loading states |
 | Breadcrumb | `breadcrumb/1` | 7 sub-components, `aria-current="page"` |
 | Pagination | `pagination/1` | Server-side pagination with `phx-click` |
+| Kbd | `kbd/1` | Semantic `<kbd>` keyboard shortcut display |
 
-### Form Integration — 9 components
+### Form Integration — 12 components
 
 Integrated with `Phoenix.HTML.Form` and Ecto changesets. → [Full examples & use cases](docs/components/forms.md)
 
@@ -52,13 +55,17 @@ Integrated with `Phoenix.HTML.Form` and Ecto changesets. → [Full examples & us
 | Textarea | `phia_textarea/1` | Multi-line with form integration |
 | Select | `phia_select/1` | Native select with FormField |
 | Form | `form_field/1`, `form_label/1`, `form_message/1` | Composable form primitives |
+| Checkbox | `checkbox/1`, `form_checkbox/1` | Native checkbox, indeterminate state, FormField |
+| Radio Group | `radio_group/1`, `form_radio_group/1` | Native radio inputs, `:let` context |
+| Switch | `switch/1`, `form_switch/1` | Toggle switch, CSS animation, FormField |
+| Slider | `slider/1`, `form_slider/1` | CSS `input[type=range]`, WAI-ARIA, FormField |
+| Rating | `rating/1`, `form_rating/1` | CSS-only star rating, radiogroup ARIA |
 | Tags Input | `tags_input/1` | Multi-tag, deduplication, CSV sync — `PhiaTagsInput` |
 | Image Upload | `image_upload/1` | Drop zone + preview, native Phoenix uploads |
 | Rich Text Editor | `rich_text_editor/1` | WYSIWYG, 14 toolbar commands, zero npm — `PhiaRichTextEditor` |
-| Checkbox | `checkbox/1` | Native checkbox, indeterminate state, FormField integration |
 | Calendar | `calendar/1` | Server-rendered monthly grid, single/range mode, keyboard nav |
 
-### Interactive Components — 15 components
+### Interactive Components — 17 components
 
 Vanilla JS hooks for accessible behaviors. → [Full examples & use cases](docs/components/interactive.md)
 
@@ -79,10 +86,12 @@ Vanilla JS hooks for accessible behaviors. → [Full examples & use cases](docs/
 | Drawer | `drawer/1` | `PhiaDrawer` | 4 directions, focus trap, backdrop click |
 | Combobox | `combobox/1` | — | Server-side search filter, FormField |
 | Date Picker | `date_picker/1` | — | Calendar + Popover compose, format attr |
+| Sheet | `sheet/1` | `PhiaDialog` | 4 sides, 5 sizes, modal panel |
+| Hover Card | `hover_card/1` | — | `role="tooltip"`, hover preview card |
 
-### Utilities & Composed — 8 components
+### Utilities & Composed — 16 components
 
-CSS-only utilities and composed display patterns. → [Full examples & use cases](docs/components/utilities.md)
+CSS-only utilities, display patterns, and data viz primitives. → [Full examples & use cases](docs/components/utilities.md)
 
 | Component | Function | Description |
 |-----------|----------|-------------|
@@ -91,11 +100,19 @@ CSS-only utilities and composed display patterns. → [Full examples & use cases
 | Empty State | `empty/1` | Centered placeholder with icon/title/description/action slots |
 | Field | `field/1` | Standalone form field layout without FormField |
 | Button Group | `button_group/1` | Unified button toolbar, H/V orientation |
-| Avatar | `avatar/1` | Circular profile image with initials fallback, avatar_group |
-| Tabs Nav | `tabs_nav/1`, `tabs_nav_item/1` | Navigation tabs with 3 variants: underline, pills, segment |
+| Avatar | `avatar/1` | Circular profile image with initials fallback, `avatar_group/1` |
+| Tabs Nav | `tabs_nav/1` | Navigation tabs: underline, pills, segment variants |
 | Theme Provider | `theme_provider/1` | Scoped CSS theme wrapper using `data-phia-theme` attribute |
+| Scroll Area | `scroll_area/1` | Custom scrollbar overlay, H/V/both orientations |
+| Progress | `progress/1` | `role="progressbar"`, `aria-valuenow`, indeterminate mode |
+| Separator | `separator/1` | Horizontal / vertical divider, `role="separator"` |
+| Toggle | `toggle/1` | `aria-pressed`, 2 variants, 3 sizes |
+| Toggle Group | `toggle_group/1` | Single / multiple selection, `:let` context |
+| Tabs | `tabs/1` | `tabs/list/trigger/content`, server-rendered, `:let` context |
+| Timeline | `timeline/1` | Vertical activity timeline, CSS-only connector |
+| Resizable | `resizable/1` | Drag-to-resize panels — `PhiaResizable` |
 
-### Dashboard & Analytics — 8 components
+### Dashboard & Analytics — 9 components
 
 Enterprise layout shell, data tables, KPI widgets, and chart integration. → [Full examples & use cases](docs/components/dashboard.md)
 
@@ -109,6 +126,23 @@ Enterprise layout shell, data tables, KPI widgets, and chart integration. → [F
 | DataGrid | `data_grid/1` | Sortable columns, `phx-click` sort events |
 | Stat Card + Metric Grid | `stat_card/1`, `metric_grid/1` | KPI cards with trend indicators, responsive grid |
 | Chart Shell + PhiaChart | `chart_shell/1`, `phia_chart/1` | Any chart library wrapper + ECharts hook |
+| Heatmap Calendar | `heatmap_calendar/1` | Contribution grid, intensity buckets, WAI-ARIA grid |
+
+### Enterprise Components — 10 components
+
+Advanced data management and collaboration UI. → [Full examples & use cases](docs/components/enterprise.md)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Activity Feed | `activity_feed/1` | Chronological event log with 6 activity types and avatar slot |
+| Kanban Board | `kanban_board/1` | Drag-ready column + card layout with priority indicators |
+| Chat Message | `chat_message/1` | Full AI/human chat UI: container, bubbles, suggestions, input |
+| Mention Input | `mention_input/1` | `@mention` textarea with server-side autocomplete — `PhiaMentionInput` |
+| Filter Bar | `filter_bar/1` | Horizontal filter toolbar: search, select, toggle, reset |
+| Filter Builder | `filter_builder/1` | Dynamic query builder with field/operator/value rules |
+| Bulk Action Bar | `bulk_action_bar/1` | Contextual toolbar for table row selection |
+| Step Tracker | `step_tracker/1` | Multi-step wizard progress (horizontal/vertical) |
+| Navigation Menu | `navigation_menu/1` | Horizontal nav with links and dropdown content panels |
 
 ---
 
@@ -131,7 +165,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.2"}
+    {:phia_ui, "~> 0.1.3"}
   ]
 end
 ```
@@ -186,6 +220,8 @@ import PhiaCarousel        from "./phia_hooks/carousel"
 import PhiaContextMenu     from "./phia_hooks/context_menu"
 import PhiaDrawer          from "./phia_hooks/drawer"
 import PhiaTheme           from "./phia_hooks/theme"
+import PhiaResizable       from "./phia_hooks/resizable"
+import PhiaMentionInput    from "./phia_hooks/mention_input"
 
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
@@ -194,7 +230,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
     PhiaTooltip, PhiaPopover, PhiaToast, PhiaDarkMode,
     PhiaCommand, PhiaDateRangePicker, PhiaChart,
     PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer,
-    PhiaTheme
+    PhiaTheme, PhiaResizable, PhiaMentionInput
   }
 })
 ```
@@ -210,23 +246,24 @@ let liveSocket = new LiveSocket("/live", Socket, {
 ```heex
 <.button>Default</.button>
 <.button variant="destructive">Delete</.button>
-<.button variant="outline" size="sm"><.icon name="download" size="sm" /> Export</.button>
+<.button variant="outline" size="sm"><.icon name="download" size={:sm} /> Export</.button>
 
 <%!-- Button Group toolbar --%>
 <.button_group>
-  <.button variant="outline" size="icon"><.icon name="bold" size="sm" /></.button>
-  <.button variant="outline" size="icon"><.icon name="italic" size="sm" /></.button>
-  <.button variant="outline" size="icon"><.icon name="underline" size="sm" /></.button>
+  <.button variant="outline" size="icon"><.icon name="bold" size={:sm} /></.button>
+  <.button variant="outline" size="icon"><.icon name="italic" size={:sm} /></.button>
+  <.button variant="outline" size="icon"><.icon name="underline" size={:sm} /></.button>
 </.button_group>
 ```
 
 → [Button examples](docs/components/primitives.md#button) | [Button Group examples](docs/components/utilities.md#button-group)
 
-### Form with Checkbox
+### Form with Validation
 
 ```heex
 <.form for={@form} phx-change="validate" phx-submit="save">
-  <.phia_input field={@form[:email]} type="email" label="Email" />
+  <.phia_input field={@form[:email]} type="email" label="Email" phx-debounce="blur" />
+  <.phia_input field={@form[:name]} label="Name" />
   <.field>
     <div class="flex items-center gap-2">
       <.checkbox id="terms" name="terms" checked={@terms_checked} phx-click="toggle-terms" />
@@ -238,7 +275,202 @@ let liveSocket = new LiveSocket("/live", Socket, {
 </.form>
 ```
 
-→ [Form examples](docs/components/forms.md) | [Checkbox examples](docs/components/forms.md#checkbox)
+→ [Form examples](docs/components/forms.md)
+
+### Tabs
+
+```heex
+<.tabs active="overview">
+  <:tab_list>
+    <.tabs_trigger tab="overview">Overview</.tabs_trigger>
+    <.tabs_trigger tab="analytics">Analytics</.tabs_trigger>
+    <.tabs_trigger tab="settings">Settings</.tabs_trigger>
+  </:tab_list>
+  <.tabs_content tab="overview">
+    <p>Overview content here</p>
+  </.tabs_content>
+  <.tabs_content tab="analytics">
+    <p>Analytics content here</p>
+  </.tabs_content>
+</.tabs>
+```
+
+### Step Tracker / Wizard
+
+```heex
+<.step_tracker>
+  <.step status="complete" label="Account" step={1} />
+  <.step status="active"   label="Profile"  step={2} description="Fill in your details" />
+  <.step status="upcoming" label="Confirm"  step={3} />
+</.step_tracker>
+```
+
+→ [Step Tracker examples](docs/components/enterprise.md#step-tracker)
+
+### Navigation Menu
+
+```heex
+<.navigation_menu>
+  <.navigation_menu_list>
+    <.navigation_menu_item>
+      <.navigation_menu_link href="/" active={@path == "/"}>Home</.navigation_menu_link>
+    </.navigation_menu_item>
+    <.navigation_menu_item>
+      <.navigation_menu_trigger label="Products" />
+      <.navigation_menu_content>
+        <ul class="grid grid-cols-2 gap-2 p-4">
+          <li><a href="/products/web">Web</a></li>
+          <li><a href="/products/mobile">Mobile</a></li>
+        </ul>
+      </.navigation_menu_content>
+    </.navigation_menu_item>
+  </.navigation_menu_list>
+</.navigation_menu>
+```
+
+→ [Navigation Menu examples](docs/components/enterprise.md#navigation-menu)
+
+### Filter Bar + Filter Builder
+
+```heex
+<%!-- Simple filter bar for a table --%>
+<.filter_bar>
+  <.filter_search placeholder="Search users…" on_search="search_users" />
+  <.filter_select label="Status" name="status"
+    options={[{"All", ""}, {"Active", "active"}, {"Inactive", "inactive"}]}
+    value={@filter_status} on_change="filter_status" />
+  <.filter_toggle label="Archived" name="archived"
+    checked={@show_archived} on_change="toggle_archived" />
+  <.filter_reset on_click="reset_filters" />
+</.filter_bar>
+
+<%!-- Advanced query builder --%>
+<.filter_builder
+  fields={[
+    %{name: "status", label: "Status", type: "select",
+      options: [{"Active", "active"}, {"Inactive", "inactive"}]},
+    %{name: "name",       label: "Name",       type: "text"},
+    %{name: "created_at", label: "Created At", type: "date"}
+  ]}
+  rules={@filter_rules}
+  on_add="add_filter_rule"
+  on_remove="remove_filter_rule"
+  on_change="update_filter_rule"
+/>
+```
+
+→ [Filter Bar examples](docs/components/enterprise.md#filter-bar) | [Filter Builder examples](docs/components/enterprise.md#filter-builder)
+
+### Bulk Action Bar
+
+```heex
+<.bulk_action_bar count={@selected_count} label="items selected" on_clear="clear_selection">
+  <.bulk_action label="Delete"  on_click="bulk_delete"  variant="destructive" icon="trash" />
+  <.bulk_action label="Archive" on_click="bulk_archive" icon="archive" />
+  <.bulk_action label="Export"  on_click="bulk_export"  icon="download" />
+</.bulk_action_bar>
+```
+
+→ [Bulk Action Bar examples](docs/components/enterprise.md#bulk-action-bar)
+
+### Activity Feed
+
+```heex
+<.activity_feed>
+  <.activity_group label="Today">
+    <.activity_item
+      type="mention"
+      name="Alice Martin"
+      description="mentioned you in Project Alpha"
+      timestamp="2m ago"
+    >
+      <:avatar><.avatar><.avatar_fallback name="Alice Martin" /></.avatar></:avatar>
+    </.activity_item>
+    <.activity_item
+      type="task"
+      name="Bob Chen"
+      description="completed task: Deploy to staging"
+      timestamp="15m ago"
+    />
+  </.activity_group>
+  <:footer>
+    <.button variant="ghost" size="sm" phx-click="load_more">Load more</.button>
+  </:footer>
+</.activity_feed>
+```
+
+→ [Activity Feed examples](docs/components/enterprise.md#activity-feed)
+
+### Kanban Board
+
+```heex
+<.kanban_board>
+  <.kanban_column label="To Do" count={3}>
+    <.kanban_card id="card-1" title="Design review" priority="high">
+      <:tags><.badge variant="secondary">Design</.badge></:tags>
+    </.kanban_card>
+  </.kanban_column>
+  <.kanban_column label="In Progress" count={1}>
+    <.kanban_card id="card-2" title="API integration" priority="critical">
+      <:avatar><.avatar size="sm"><.avatar_fallback name="Dev Team" /></.avatar></:avatar>
+    </.kanban_card>
+  </.kanban_column>
+  <.kanban_column label="Done" count={5} />
+</.kanban_board>
+```
+
+→ [Kanban Board examples](docs/components/enterprise.md#kanban-board)
+
+### Chat (AI/Human UI)
+
+```heex
+<.chat_container id="ai-chat">
+  <.chat_message role="assistant" id="msg-0">
+    <.chat_bubble role="assistant" timestamp="2:30 PM">
+      <:avatar><.avatar size="sm"><.avatar_fallback name="AI" /></.avatar></:avatar>
+      Welcome! How can I help you today?
+    </.chat_bubble>
+    <.chat_suggestions
+      suggestions={["What are key features?", "Show me an example"]}
+      on_select="select_suggestion"
+    />
+  </.chat_message>
+  <.chat_message role="user" id="msg-1">
+    <.chat_bubble role="user" timestamp="2:31 PM">
+      What are key features?
+    </.chat_bubble>
+  </.chat_message>
+</.chat_container>
+
+<.chat_input id="chat-compose" on_submit="send_message" placeholder="Ask anything…" />
+```
+
+→ [Chat examples](docs/components/enterprise.md#chat-message)
+
+### Mention Input
+
+```heex
+<.mention_input
+  id="comment-field"
+  name="comment"
+  suggestions={@mention_suggestions}
+  open={@mention_open}
+  search={@mention_search}
+  mentioned_ids={@mentioned_ids}
+  on_mention="mention_search"
+  on_select="mention_select"
+  placeholder="Leave a comment… type @ to mention"
+/>
+```
+
+```elixir
+def handle_event("mention_search", %{"query" => q}, socket) do
+  suggestions = filter_users(q)
+  {:noreply, assign(socket, mention_suggestions: suggestions, mention_open: true)}
+end
+```
+
+→ [Mention Input examples](docs/components/enterprise.md#mention-input)
 
 ### Alert Dialog (confirmation)
 
@@ -246,9 +478,7 @@ let liveSocket = new LiveSocket("/live", Socket, {
 <.alert_dialog id="delete-confirm" open={@show_confirm}>
   <.alert_dialog_header>
     <.alert_dialog_title>Delete item?</.alert_dialog_title>
-    <.alert_dialog_description>
-      This action cannot be undone.
-    </.alert_dialog_description>
+    <.alert_dialog_description>This action cannot be undone.</.alert_dialog_description>
   </.alert_dialog_header>
   <.alert_dialog_footer>
     <.alert_dialog_cancel phx-click="cancel">Cancel</.alert_dialog_cancel>
@@ -270,7 +500,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
   </.drawer_header>
   <.drawer_close />
   <div class="px-6 pb-6">
-    <!-- filter controls -->
+    <.filter_builder fields={@fields} rules={@rules}
+      on_add="add_rule" on_remove="remove_rule" on_change="update_rule" />
   </div>
   <.drawer_footer>
     <.button phx-click="apply-filters">Apply</.button>
@@ -279,6 +510,43 @@ let liveSocket = new LiveSocket("/live", Socket, {
 ```
 
 → [Drawer examples](docs/components/interactive.md#drawer)
+
+### Progress & Slider
+
+```heex
+<%!-- Progress bar --%>
+<.progress value={75} max={100} aria-label="Upload progress" />
+
+<%!-- Range slider (form-integrated) --%>
+<.form_slider field={@form[:volume]} label="Volume" min={0} max={100} step={1} />
+```
+
+### Timeline
+
+```heex
+<.timeline>
+  <.timeline_item status="complete">
+    <:icon><.icon name="check-circle" size={:sm} /></:icon>
+    <:content>
+      <p class="font-medium">Order placed</p>
+      <p class="text-sm text-muted-foreground">March 1 at 10:00 AM</p>
+    </:content>
+  </.timeline_item>
+  <.timeline_item status="active">
+    <:icon><.icon name="package" size={:sm} /></:icon>
+    <:content>
+      <p class="font-medium">In transit</p>
+      <p class="text-sm text-muted-foreground">Estimated: March 5</p>
+    </:content>
+  </.timeline_item>
+  <.timeline_item status="upcoming">
+    <:icon><.icon name="home" size={:sm} /></:icon>
+    <:content>
+      <p class="font-medium text-muted-foreground">Delivered</p>
+    </:content>
+  </.timeline_item>
+</.timeline>
+```
 
 ### Avatar with group
 
@@ -292,35 +560,6 @@ let liveSocket = new LiveSocket("/live", Socket, {
 ```
 
 → [Avatar examples](docs/components/utilities.md#avatar)
-
-### Carousel
-
-```heex
-<.carousel id="hero" loop={true} class="w-full">
-  <.carousel_content>
-    <.carousel_item :for={slide <- @slides}>
-      <img src={slide.image} alt={slide.title} class="w-full h-64 object-cover rounded-lg" />
-    </.carousel_item>
-  </.carousel_content>
-  <.carousel_previous />
-  <.carousel_next />
-</.carousel>
-```
-
-→ [Carousel examples](docs/components/interactive.md#carousel)
-
-### Empty State
-
-```heex
-<.empty>
-  <:icon><.icon name="inbox" size="lg" class="text-muted-foreground" /></:icon>
-  <:title>No invoices found</:title>
-  <:description>Create your first invoice to get started.</:description>
-  <:action><.button phx-click="new-invoice">Create Invoice</.button></:action>
-</.empty>
-```
-
-→ [Empty State examples](docs/components/utilities.md#empty-state)
 
 ### Toast notification
 
@@ -342,10 +581,10 @@ let liveSocket = new LiveSocket("/live", Socket, {
 
 ```heex
 <.metric_grid cols={4}>
-  <.stat_card title="MRR" value="$48,290" trend="up" trend_value="+12.5%" />
-  <.stat_card title="Users" value="2,840" trend="up" trend_value="+8.2%" />
-  <.stat_card title="Churn" value="3.1%" trend="down" trend_value="-0.4%" />
-  <.stat_card title="NPS" value="67" trend="neutral" trend_value="0" />
+  <.stat_card title="MRR"   value="$48,290" trend="up"      trend_value="+12.5%" />
+  <.stat_card title="Users" value="2,840"   trend="up"      trend_value="+8.2%" />
+  <.stat_card title="Churn" value="3.1%"    trend="down"    trend_value="-0.4%" />
+  <.stat_card title="NPS"   value="67"      trend="neutral" trend_value="0" />
 </.metric_grid>
 
 <.phia_chart
@@ -359,6 +598,22 @@ let liveSocket = new LiveSocket("/live", Socket, {
 ```
 
 → [Dashboard examples](docs/components/dashboard.md) | [Full tutorial](docs/guides/tutorial-dashboard.md)
+
+### Heatmap Calendar
+
+```heex
+<.heatmap_calendar
+  data={@contribution_data}
+  rows={7}
+  cols={52}
+  max_value={10}
+  col_labels={@week_labels}
+  row_labels={~w(Mon Tue Wed Thu Fri Sat Sun)}
+  show_legend={true}
+/>
+```
+
+→ [Heatmap Calendar examples](docs/components/enterprise.md#heatmap-calendar)
 
 ---
 
@@ -486,6 +741,8 @@ Runtime switching via the PhiaTheme hook:
 </script>
 ```
 
+→ [Full theme guide](docs/guides/theme-system.md)
+
 ---
 
 ## Use Cases
@@ -494,7 +751,10 @@ Runtime switching via the PhiaTheme hook:
 - **BI dashboards** — ChartShell + PhiaChart wrapping ECharts with consistent card chrome and real-time push_event updates
 - **SaaS admin panels** — Shell + Sidebar + DataGrid + Dialog + Toast for full CRUD interfaces
 - **KPI monitors** — Metric grids with real-time trend indicators and Ctrl+K command palette
-- **Booking and scheduling** — DatePicker + DateRangePicker for reservation flows with min/max constraints
+- **Project management** — KanbanBoard + ActivityFeed + BulkActionBar + StepTracker for work tracking
+- **Data exploration** — FilterBar + FilterBuilder + DataGrid for ad-hoc query interfaces
+- **Team collaboration** — MentionInput + ChatMessage for AI-augmented comment threads
+- **Booking and scheduling** — DatePicker + DateRangePicker + HeatmapCalendar for reservation flows
 - **Internal tools** — Form components with Ecto changeset integration and rich text content editing
 - **Mobile-first apps** — Drawer (bottom sheet) + Carousel for mobile UX patterns
 - **Multilingual apps** — Direction wrapper for RTL content (Arabic, Hebrew)
@@ -507,13 +767,14 @@ Detailed examples and use cases:
 
 | Section | Contents |
 |---------|----------|
-| [Primitives & Feedback](docs/components/primitives.md) | Button, Card, Badge, Icon, Alert, Skeleton, Breadcrumb, Pagination |
-| [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Checkbox, Calendar, Tags Input, Image Upload, Rich Text Editor |
-| [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker, Collapsible, AlertDialog, Carousel, ContextMenu, Drawer, Combobox, DatePicker |
-| [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar, Tabs Nav, Theme Provider |
+| [Primitives & Feedback](docs/components/primitives.md) | Button, Card, Badge, Icon, Alert, Skeleton, Breadcrumb, Pagination, Kbd |
+| [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Checkbox, Switch, Slider, Rating, Calendar, Tags Input, Image Upload, Rich Text Editor |
+| [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker, Collapsible, AlertDialog, Carousel, ContextMenu, Drawer, Combobox, DatePicker, Sheet, HoverCard |
+| [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar, Tabs Nav, Theme Provider, Scroll Area, Progress, Separator, Toggle, Tabs, Timeline, Resizable |
+| [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts, HeatmapCalendar |
+| [Enterprise Components](docs/components/enterprise.md) | ActivityFeed, KanbanBoard, ChatMessage, MentionInput, FilterBar, FilterBuilder, BulkActionBar, StepTracker, NavigationMenu |
 | [Theme System](docs/guides/theme-system.md) | CSS-first themes, color presets, runtime switching, ThemeProvider, PhiaTheme hook |
-| [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts |
-| [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette |
+| [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette, enterprise widgets |
 
 Generate API docs locally:
 

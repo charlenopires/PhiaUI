@@ -4,6 +4,157 @@ All notable changes to PhiaUI are documented here.
 
 ## 0.1.3 — 2026-03-03
 
+### Added — 25 new components across 3 sessions (image-analysis driven gap analysis)
+
+#### Enterprise Components — 10 components
+
+- **ActivityFeed** (`activity_feed/1`, `activity_group/1`, `activity_item/1`) — Chronological event log with 6 activity types (`mention`, `file`, `call`, `task`, `reaction`, `system`), optional `:avatar` slot, `data-activity-type` attribute, `role="log"` container, `:footer` slot. 41 tests.
+
+- **HeatmapCalendar** (`heatmap_calendar/1`) — GitHub-style contribution heatmap. Accepts raw `data` map `%{{col, row} => integer}`, `max_value`, configurable `rows`/`cols`, axis labels, and optional legend. Intensity classes `heatmap-0` through `heatmap-4`. `role="grid"` + `role="gridcell"` + `aria-label` per cell. 21 tests.
+
+- **KanbanBoard** (`kanban_board/1`, `kanban_column/1`, `kanban_card/1`) — Multi-column project board. Cards support `priority` (`critical`, `high`, `medium`, `low`) with color-coded left border. Slots: `:avatar`, `:tags`, `:footer`. `data-priority` attribute on each card. 38 tests.
+
+- **ChatMessage** (`chat_container/1`, `chat_message/1`, `chat_bubble/1`, `chat_suggestions/1`, `chat_input/1`) — Full AI/human chat UI. `role="log"` + `aria-live="polite"` on container. Roles: `user` (right, `bg-primary`), `assistant` (left, `bg-muted`), `system` (centered). Avatar slot, thumbs up/down feedback buttons (`phx-value-message-id`), timestamp, suggestion chips, compose form with `:attachments` slot and `max_chars` counter. 49 tests.
+
+- **MentionInput** (`mention_input/1`, `mention_dropdown/1`, `mention_chip/1`) — `@mention` textarea with `PhiaMentionInput` JS hook. `role="combobox"` + `aria-expanded` on textarea. Dropdown uses `role="listbox"` / `role="option"`. Hidden `_ids` CSV input for form submission. Server-side suggestions driven by `pushEvent`. `mention_chip/1` for static server-rendered previews. 35 tests + JS hook.
+
+- **FilterBar** (`filter_bar/1`, `filter_search/1`, `filter_select/1`, `filter_toggle/1`, `filter_reset/1`) — Horizontal filter toolbar for tables. Search input with magnifier icon (`phx-change`), labelled native select (`phx-change`), checkbox toggle (`phx-change`), reset button (`phx-click`). CSS-only, no JS hook. 38 tests.
+
+- **FilterBuilder** (`filter_builder/1`, `filter_rule/1`) — Dynamic query builder. Each rule row: field selector + operator selector + value input + remove button. Operators and value input type adapt automatically to field type (`text`, `select`, `date`, `number`). Entirely server-driven — no JS hook. 26 tests.
+
+- **BulkActionBar** (`bulk_action_bar/1`, `bulk_action/1`) — Contextual action toolbar for table row selection. Hidden when `count == 0` (two function heads). Shows "N label" + clear button + action slot. `role="toolbar"` + `aria-label`. `bulk_action/1` has `default` and `destructive` variants, optional icon. 25 tests.
+
+- **StepTracker** (`step_tracker/1`, `step/1`) — Multi-step wizard progress indicator. Status variants: `complete` (bg-primary + check icon), `active` (bg-primary + ring + `aria-current="step"`), `upcoming` (outlined border, muted text). Horizontal and vertical orientations. Optional step number, description. CSS-only. 26 tests.
+
+- **NavigationMenu** (`navigation_menu/1`, `navigation_menu_list/1`, `navigation_menu_item/1`, `navigation_menu_link/1`, `navigation_menu_trigger/1`, `navigation_menu_content/1`) — Horizontal nav bar. Links use `aria-current="page"` when active. Trigger button has `aria-haspopup="true"` + chevron icon. Content is an absolute-positioned dropdown panel. CSS-only layout. 32 tests.
+
+#### Form Primitives — 8 components
+
+- **Progress** (`progress/1`) — `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`. Indeterminate mode (no value). CSS-only. 22 tests.
+- **Separator** (`separator/1`) — Horizontal / vertical `<hr>` divider. `role="separator"`, `aria-orientation`. `decorative` attr removes from accessibility tree. 16 tests.
+- **Toggle** (`toggle/1`) — `aria-pressed` toggle button. Variants: `default`, `outline`. Sizes: `default`, `sm`, `lg`. 19 tests.
+- **Switch** (`switch/1`, `form_switch/1`) — CSS-animated toggle switch. `role="switch"`. `form_switch/1` integrates with `Phoenix.HTML.FormField`. 22 tests.
+- **ToggleGroup** (`toggle_group/1`, `toggle_group_item/1`) — Single/multiple selection group. `:let` context passes `{group}` to items for spread. 17 tests.
+- **RadioGroup** (`radio_group/1`, `radio_group_item/1`, `form_radio_group/1`) — Native radio inputs with label. `:let` context. FormField integration. 23 tests.
+- **Tabs** (`tabs/1`, `tabs_list/1`, `tabs_trigger/1`, `tabs_content/1`) — Server-rendered tabbed interface. `:let` context passes `active` to triggers and content panels. `aria-selected` on active trigger. 24 tests.
+- **Sheet** (`sheet/1`, `sheet_trigger/1`, `sheet_content/1`, `sheet_header/1`, `sheet_footer/1`, `sheet_close/1`) — Modal panel with 4 directions (`top`, `bottom`, `left`, `right`) and 5 sizes. Reuses `PhiaDialog` hook. 56 tests.
+- **HoverCard** (`hover_card/1`, `hover_card_trigger/1`, `hover_card_content/1`) — `role="tooltip"` preview card on hover/focus. CSS-only positioning. 22 tests.
+- **ScrollArea** (`scroll_area/1`) — Custom scrollbar overlay. Three orientations: `vertical`, `horizontal`, `both`. CSS-only. 18 tests.
+
+#### Visual Primitives — 5 components
+
+- **Slider** (`slider/1`, `form_slider/1`) — CSS-styled `<input type="range">` using `accent-primary`. WAI-ARIA `role="slider"`. FormField integration. 45 tests.
+- **Resizable** (`resizable/1`, `resizable_panel/1`, `resizable_handle/1`) — Drag-to-resize panel pairs. `PhiaResizable` JS hook (drag, touch, keyboard ← →). Horizontal/vertical split. 35 tests.
+- **Timeline** (`timeline/1`, `timeline_item/1`) — Vertical activity timeline with CSS connector line. Status variants: `complete`, `active`, `upcoming`. Icon slot. 32 tests.
+- **Rating** (`rating/1`, `form_rating/1`) — CSS-only star rating using hidden radio inputs + `checked` boolean attr. `role="radiogroup"`. FormField integration. 40 tests.
+- **Kbd** (`kbd/1`) — Semantic `<kbd>` element for keyboard shortcut display. 9 tests.
+
+#### New JS Hooks
+
+- `PhiaResizable` — drag-to-resize panel handles, touch support, keyboard nudge
+- `PhiaMentionInput` — `@` detection, `pushEvent(onMention, {query})`, `insertMention(id, name)`
+
+### Bug Fixes
+
+- Fixed 3 pre-existing test failures: version test (0.1.0 → current), package files (assets → lib), `PhiaUi.hello/0` undefined
+
+### Test Coverage
+
+- **2564 tests total** — 0 failures
+- All 25 new components: 0 failures
+- `mix credo --strict` — 0 issues
+- `mix format --check-formatted` ✅
+
+---
+
+### Theme System v2 — CSS-first Architecture (also 0.1.3)
+
+Complete architectural refactoring of the theme system inspired by DaisyUI's data-attribute pattern,
+eliminating runtime `<style>` injection in favour of a static pre-generated CSS file.
+
+#### New: `mix phia.theme install`
+
+Generates `assets/css/phia-themes.css` with all 8 built-in themes, each under its own
+`[data-phia-theme="name"]` CSS attribute selector. Automatically injects `@import "./phia-themes.css"`
+into `assets/css/app.css` (idempotent). Options:
+
+- `--output PATH` — custom output path (default: `assets/css/phia-themes.css`)
+- `--themes a,b,c` — generate only a subset of presets
+
+#### Improved: `mix phia.theme list`
+
+Added PRIMARY (light) column showing the OKLCH primary color value for each preset.
+
+#### Improved: `mix phia.theme export`
+
+New `--format css` option: exports a theme as `[data-phia-theme="name"]` CSS selectors instead of JSON.
+
+#### New: `ThemeCSS.generate/2` with opts
+
+Extended `generate/2` with keyword options:
+- `selector:` — override `:root` (default)
+- `dark_selector:` — override `.dark` (default)
+- `include_theme_block:` — include/exclude `@theme {}` block (default: `true`)
+
+Backward-compatible: `generate(theme)` still works identically.
+
+#### New: `ThemeCSS.generate_for_selector/1`
+
+Generates CSS using `[data-phia-theme="name"]` and `.dark [data-phia-theme="name"]` selectors.
+No `@theme` block — designed for the multi-theme file.
+
+#### New: `ThemeCSS.generate_all/1`
+
+Generates a complete CSS file with all themes as attribute selectors. Accepts a list of atoms
+(`:zinc`, `:blue`), `%Theme{}` structs, or `nil` (defaults to all presets).
+
+#### Refactored: `ThemeProvider` component
+
+**Breaking change (minor):** `<.theme_provider theme={:blue}>` no longer injects a `<style>` tag.
+Instead, it sets `data-phia-theme="blue"` on the wrapper div. CSS custom properties cascade
+automatically from `phia-themes.css`.
+
+**Migration:** Run `mix phia.theme install` to generate the CSS file, then import it in `app.css`.
+Existing templates using `<.theme_provider theme={:blue}>` work without modification.
+
+#### New: `PhiaTheme` JS Hook
+
+New hook in `priv/templates/js/hooks/theme.js` for runtime color preset switching.
+
+- Supports `<button phx-hook="PhiaTheme" data-theme="blue">` (click event)
+- Supports `<select phx-hook="PhiaTheme">` (change event)
+- Persists preference in `localStorage['phia-color-theme']`
+- Sets `data-phia-theme` attribute on `<html>` element
+- Dispatches `phia:color-theme-changed` CustomEvent
+
+#### Updated: `PhiaDarkMode` JS Hook
+
+- Now writes `phia-mode` (new canonical key) and `phia-theme` (retained for backward compatibility)
+- `phia:theme-changed` event detail now includes `mode` field alongside existing `theme` field
+- Anti-FOUC snippet updated to restore both dark mode and color preset on page load
+
+#### New components
+
+- **TabsNav** (`tabs_nav/1`, `tabs_nav_item/1`) — Navigation tabs with 3 visual variants:
+  `underline` (default, bottom border), `pills` (filled background), `segment` (segmented control).
+  Fully accessible with `aria-current`, keyboard support. No JS hooks.
+
+#### localStorage keys (updated)
+
+| Key | Written by | Value |
+|-----|-----------|-------|
+| `phia-mode` | `PhiaDarkMode` | `"dark"` \| `"light"` (new canonical key) |
+| `phia-theme` | `PhiaDarkMode` | same as `phia-mode` (legacy, retained for compat) |
+| `phia-color-theme` | `PhiaTheme` | preset name (e.g., `"blue"`, `"zinc"`) |
+
+#### Test coverage (theme)
+
+- 113 new tests for theme system (ThemeCSS, ThemeProvider, mix phia.theme)
+
+---
+
+## 0.1.2 — 2026-03-03
+
 ### Theme System v2 — CSS-first Architecture
 
 Complete architectural refactoring of the theme system inspired by DaisyUI's data-attribute pattern,

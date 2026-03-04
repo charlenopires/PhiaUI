@@ -30,7 +30,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.2"}
+    {:phia_ui, "~> 0.1.3"}
   ]
 end
 ```
@@ -468,6 +468,75 @@ end
 </.alert_dialog>
 ```
 
+### Enterprise components — FilterBar + BulkActionBar
+
+For a more powerful data management interface, add filtering and bulk operations:
+
+```bash
+mix phia.add filter_bar bulk_action_bar step_tracker activity_feed
+```
+
+```elixir
+# In your LiveView mount/3:
+|> assign(:selected_ids, [])
+|> assign(:filters, %{search: "", status: "all"})
+|> assign(:active_filters, [])
+
+# Handle filter changes:
+def handle_event("filter-search", %{"value" => q}, socket) do
+  {:noreply, put_in(socket.assigns.filters.search, q) |> apply_filters()}
+end
+
+def handle_event("bulk-delete", _, socket) do
+  ids = socket.assigns.selected_ids
+  MyApp.delete_orders(ids)
+  {:noreply, assign(socket, selected_ids: [])}
+end
+```
+
+```heex
+<%!-- Bulk action bar — hides when count = 0 --%>
+<.bulk_action_bar count={length(@selected_ids)} label="orders selected">
+  <.bulk_action icon="download" on_click="bulk-export">Export</.bulk_action>
+  <.bulk_action icon="trash-2" variant="destructive" on_click="bulk-delete">Delete</.bulk_action>
+</.bulk_action_bar>
+
+<%!-- FilterBar above the data grid --%>
+<.filter_bar>
+  <.filter_search placeholder="Search orders…" on_search="filter-search" />
+  <.filter_select label="Status" options={[{"All", "all"}, {"Paid", "paid"}, {"Pending", "pending"}]}
+    value={@filters.status} on_change="filter-status" />
+  <.filter_reset on_click="reset-filters" />
+</.filter_bar>
+```
+
+### Activity Feed for audit logs
+
+```heex
+<.activity_feed>
+  <%= for event <- @audit_log do %>
+    <.activity_item
+      actor={event.user}
+      action={event.action}
+      target={event.resource}
+      timestamp={event.inserted_at}
+      icon={activity_icon(event.type)}
+    />
+  <% end %>
+</.activity_feed>
+```
+
+### StepTracker for onboarding flows
+
+```heex
+<.step_tracker>
+  <.step status="complete" title="Account" />
+  <.step status="active" title="Profile" description="Add your photo and bio" />
+  <.step status="upcoming" title="Billing" />
+  <.step status="upcoming" title="Done" />
+</.step_tracker>
+```
+
 ### Adding filters with a Drawer
 
 ```heex
@@ -509,19 +578,20 @@ end
 
 ---
 
-## Complete component reference
+## Complete component reference (75 components)
 
 | Category | Components |
 |----------|-----------|
-| Layout | `shell/1`, `sidebar/1`, `sidebar_item/1`, `topbar/1` |
-| KPI | `stat_card/1`, `metric_grid/1` |
-| Charts | `phia_chart/1`, `chart_shell/1` |
+| Layout | `shell/1`, `sidebar/1`, `sidebar_item/1`, `sidebar_section/1`, `topbar/1`, `mobile_sidebar_toggle/1` |
+| KPI | `stat_card/1`, `metric_grid/1`, `chart_shell/1` |
+| Charts | `phia_chart/1` |
 | Data | `table/1`, `data_grid/1` |
-| Feedback | `toast/1`, `alert/1`, `badge/1`, `skeleton/1` |
-| Inputs | `phia_input/1`, `phia_select/1`, `checkbox/1`, `combobox/1`, `date_picker/1` |
-| Navigation | `breadcrumb/1`, `pagination/1`, `command/1` |
-| Overlay | `dialog/1`, `alert_dialog/1`, `drawer/1`, `popover/1`, `tooltip/1` |
-| Utility | `aspect_ratio/1`, `direction/1`, `empty/1`, `field/1`, `button_group/1` |
-| Display | `avatar/1`, `avatar_group/1`, `carousel/1`, `collapsible/1` |
+| Feedback | `toast/1`, `alert/1`, `badge/1`, `skeleton/1`, `progress/1` |
+| Inputs | `phia_input/1`, `phia_textarea/1`, `phia_select/1`, `checkbox/1`, `form_checkbox/1`, `switch/1`, `slider/1`, `form_slider/1`, `rating/1`, `form_rating/1`, `radio_group/1`, `tags_input/1`, `combobox/1`, `date_picker/1`, `date_range_picker/1`, `calendar/1`, `rich_text_editor/1`, `image_upload/1` |
+| Navigation | `breadcrumb/1`, `pagination/1`, `command/1`, `navigation_menu/1`, `tabs_nav/1` |
+| Overlay | `dialog/1`, `alert_dialog/1`, `drawer/1`, `popover/1`, `tooltip/1`, `hover_card/1`, `context_menu/1` |
+| Display | `accordion/1`, `tabs/1`, `collapsible/1`, `carousel/1`, `toggle/1`, `toggle_group/1` |
+| Utility | `aspect_ratio/1`, `direction/1`, `empty/1`, `field/1`, `button_group/1`, `avatar/1`, `avatar_group/1`, `scroll_area/1`, `separator/1`, `resizable/1`, `timeline/1`, `kbd/1`, `theme_provider/1`, `dark_mode_toggle/1` |
+| Enterprise | `activity_feed/1`, `heatmap_calendar/1`, `kanban_board/1`, `chat_message/1`, `mention_input/1`, `filter_bar/1`, `filter_builder/1`, `bulk_action_bar/1`, `step_tracker/1`, `navigation_menu/1` |
 
 ← [Back to README](../../README.md)
