@@ -2,47 +2,108 @@ defmodule PhiaUi.ThemeCSS do
   @moduledoc """
   Generates CSS custom property declarations from a `%PhiaUi.Theme{}` struct.
 
-  The output is a valid CSS string that can be injected as a `<style>` tag
-  in a Phoenix template to apply a custom theme at runtime.
+  This module is responsible for converting PhiaUI theme data into valid CSS
+  strings. It supports three output modes that cover the most common scenarios:
 
-  ## Usage
+  ## 1. Root-scoped CSS (single active theme)
+
+  Use `generate/2` when you want one theme to apply globally to your
+  application. The output uses `:root` and `.dark` selectors.
 
       theme = PhiaUi.Theme.get!(:blue)
       css = PhiaUi.ThemeCSS.generate(theme)
-      # => ":root { --color-primary: oklch(...); ... } .dark { ... }"
+      # => "/* PhiaUI Theme: Blue */\\n@theme { ... }\\n:root { ... }\\n.dark { ... }"
 
-  ## Scoped themes (data attribute selectors)
+  Inject the output as a `<style>` tag or write it to `assets/css/theme.css`
+  via `mix phia.theme apply blue`.
+
+  ## 2. Attribute-scoped CSS (multi-theme, one theme per block)
+
+  Use `generate_for_selector/1` to scope a theme to a `[data-phia-theme]`
+  attribute selector instead of `:root`. This is the format used by
+  `mix phia.theme install`.
 
       css = PhiaUi.ThemeCSS.generate_for_selector(theme)
-      # => ~s([data-phia-theme="blue"] { ... } .dark [data-phia-theme="blue"] { ... })
+      # => ~s([data-phia-theme="blue"] { ... }\\n.dark [data-phia-theme="blue"] { ... })
 
-  ## All themes in one file
+  The resulting CSS is activated by setting the `data-phia-theme` attribute on
+  any ancestor element:
+
+      <html data-phia-theme="blue" class="dark">
+
+  ## 3. All themes in one file
+
+  Use `generate_all/1` to combine every preset into a single CSS file, each
+  scoped to its own `[data-phia-theme]` selector. This is the output of
+  `mix phia.theme install`.
 
       css = PhiaUi.ThemeCSS.generate_all()
-      # => one CSS block per theme, each scoped to its [data-phia-theme] selector
+      # => one block per theme, sorted alphabetically
+
+      # Or for a subset of presets:
+      css = PhiaUi.ThemeCSS.generate_all([:zinc, :blue])
 
   ## JSON round-trip
 
-      json = PhiaUi.ThemeCSS.to_json(theme)
-      theme2 = PhiaUi.ThemeCSS.from_json(json)
+  Themes can be serialised to JSON and back for storage, sharing, or editing:
+
+      json  = PhiaUi.ThemeCSS.to_json(theme)
+      theme = PhiaUi.ThemeCSS.from_json(json)
+
+  ## CSS custom property naming convention
+
+  Color tokens use `--color-{name}` with underscores replaced by hyphens:
+
+  - `:card_foreground` → `--color-card-foreground`
+  - `:primary` → `--color-primary`
+  - `:sidebar_background` → `--color-sidebar-background`
+
+  Non-color tokens (radius, typography) are emitted inside an `@theme { }`
+  block using the `--radius` and `--font-*` naming scheme.
   """
 
   alias PhiaUi.Theme
 
   @doc """
-  Generates a CSS string from a `%PhiaUi.Theme{}`.
+  Generates a CSS string from a `%PhiaUi.Theme{}` struct.
 
-  Produces `:root { ... }` for light mode and `.dark { ... }` for dark mode,
-  plus a `@theme { ... }` block with radius and typography tokens.
+  Produces:
 
-  Accepts an optional keyword list of opts:
+  - An optional `@theme { }` block with radius and typography tokens (controlled
+    by the `:include_theme_block` option).
+  - A light-mode block using the `:selector` (default `":root"`).
+  - A dark-mode block using the `:dark_selector` (default `".dark"`).
 
-  - `:selector` — override the light-mode selector (default: `":root"`)
-  - `:dark_selector` — override the dark-mode selector (default: `".dark"`)
-  - `:include_theme_block` — whether to emit the `@theme { }` block (default: `true`)
+  ## Options
 
-  The output is designed to be injected as a `<style>` tag to override the
-  default PhiaUI theme tokens.
+  - `:selector` — CSS selector for light-mode variables (default: `":root"`)
+  - `:dark_selector` — CSS selector for dark-mode variables (default: `".dark"`)
+  - `:include_theme_block` — emit the `@theme { }` block (default: `true`)
+
+  ## Examples
+
+      iex> theme = PhiaUi.Theme.get!(:zinc)
+      iex> css = PhiaUi.ThemeCSS.generate(theme)
+      iex> String.contains?(css, ":root {")
+      true
+      iex> String.contains?(css, ".dark {")
+      true
+      iex> String.contains?(css, "@theme {")
+      true
+
+  Override the selector for a custom scope:
+
+      iex> theme = PhiaUi.Theme.get!(:blue)
+      iex> css = PhiaUi.ThemeCSS.generate(theme, selector: "#app", dark_selector: "#app.dark")
+      iex> String.contains?(css, "#app {")
+      true
+
+  Omit the `@theme` block when composing multiple themes:
+
+      iex> theme = PhiaUi.Theme.get!(:rose)
+      iex> css = PhiaUi.ThemeCSS.generate(theme, include_theme_block: false)
+      iex> String.contains?(css, "@theme {")
+      false
   """
   @spec generate(Theme.t(), keyword()) :: String.t()
   def generate(%Theme{} = theme, opts \\ []) do
@@ -75,18 +136,34 @@ defmodule PhiaUi.ThemeCSS do
   end
 
   @doc """
-  Generates a CSS string scoped to `[data-phia-theme="<name>"]` attribute selectors.
+  Generates a CSS string scoped to `[data-phia-theme="<name>"]` attribute
+  selectors, without any `@theme { }` block or `:root` selector.
 
-  Unlike `generate/2`, this function does NOT emit an `@theme { }` block, a
-  `:root { }` selector, or a standalone `.dark { }` selector. Instead it
-  produces two blocks:
+  This is the multi-theme format: multiple themes can coexist in the same CSS
+  file, each activated by setting `data-phia-theme` on an ancestor element.
+  Dark mode is handled by prefixing the selector with `.dark`.
 
-  - `[data-phia-theme="<name>"] { ... }` — light-mode custom properties
-  - `.dark [data-phia-theme="<name>"] { ... }` — dark-mode custom properties
+  The output for the `:blue` theme looks like:
 
-  This is intended for scoped multi-theme setups where several themes coexist
-  on the same page, each applied to a different ancestor element via the
-  `data-phia-theme` HTML attribute.
+      [data-phia-theme="blue"] {
+        --color-background: oklch(1 0 0);
+        --color-primary: oklch(0.546 0.245 262.881);
+        ...
+      }
+
+      .dark [data-phia-theme="blue"] {
+        --color-background: oklch(0.145 0.01 237.938);
+        ...
+      }
+
+  ## Example
+
+      iex> theme = PhiaUi.Theme.get!(:blue)
+      iex> css = PhiaUi.ThemeCSS.generate_for_selector(theme)
+      iex> String.contains?(css, ~s([data-phia-theme="blue"]))
+      true
+      iex> String.contains?(css, ~s(.dark [data-phia-theme="blue"]))
+      true
   """
   @spec generate_for_selector(Theme.t()) :: String.t()
   def generate_for_selector(%Theme{} = theme) do
@@ -107,20 +184,43 @@ defmodule PhiaUi.ThemeCSS do
   end
 
   @doc """
-  Generates a complete CSS string containing all themes, each scoped to its
-  `[data-phia-theme]` attribute selector.
+  Generates a complete CSS string containing all (or a selected subset of)
+  themes, each scoped to its `[data-phia-theme]` attribute selector.
 
-  Accepts:
+  This is the output written by `mix phia.theme install`. The resulting file
+  is designed to be imported into `assets/css/app.css` and does not contain
+  any `@theme { }` blocks — those remain in the base `theme.css`.
 
-  - `nil` (default) — uses all built-in presets from `Theme.list/0`
-  - a list of atoms (e.g. `[:zinc, :blue]`) — loads named presets
-  - a list of `%Theme{}` structs — uses the structs directly
+  Themes are sorted alphabetically by name for deterministic, diffable output.
 
-  The output does NOT include any `@theme { }` blocks; those remain in the
-  base `theme.css`. The output is sorted alphabetically by theme name for
-  deterministic ordering.
+  ## Arguments
 
-  Prepends a header comment explaining how to use the output file.
+  - `nil` (default) — includes all built-in presets from `Theme.list/0`.
+  - A list of atoms, e.g. `[:zinc, :blue, :rose]` — loads those named presets.
+  - A list of `%Theme{}` structs — uses the structs directly (custom themes).
+
+  ## Examples
+
+      iex> css = PhiaUi.ThemeCSS.generate_all()
+      iex> String.contains?(css, ~s([data-phia-theme="zinc"]))
+      true
+      iex> String.contains?(css, ~s([data-phia-theme="blue"]))
+      true
+
+  Subset of themes:
+
+      iex> css = PhiaUi.ThemeCSS.generate_all([:zinc, :blue])
+      iex> String.contains?(css, ~s([data-phia-theme="zinc"]))
+      true
+      iex> String.contains?(css, ~s([data-phia-theme="rose"]))
+      false
+
+  The generated file begins with a usage comment:
+
+      /* PhiaUI Themes — generated by mix phia.theme install
+       * Usage: import this file and set data-phia-theme on any ancestor element
+       * Example: <html data-phia-theme="blue" class="dark">
+       */
   """
   @spec generate_all([atom() | Theme.t()] | nil) :: String.t()
   def generate_all(themes \\ nil) do
@@ -142,9 +242,20 @@ defmodule PhiaUi.ThemeCSS do
   end
 
   @doc """
-  Serialises a `%PhiaUi.Theme{}` to a JSON string.
+  Serialises a `%PhiaUi.Theme{}` to a pretty-printed JSON string.
 
-  Requires `:jason` as a dependency (available as a transitive dep of Phoenix).
+  The output can be redirected to a file and later restored with `from_json/1`
+  or passed to `mix phia.theme import`. Requires `:jason` as a dependency
+  (available as a transitive dependency of Phoenix).
+
+  ## Example
+
+      iex> theme = PhiaUi.Theme.get!(:zinc)
+      iex> json = PhiaUi.ThemeCSS.to_json(theme)
+      iex> String.contains?(json, "\\"name\\"")
+      true
+      iex> String.contains?(json, "\\"zinc\\"")
+      true
   """
   @spec to_json(Theme.t()) :: String.t()
   def to_json(%Theme{} = theme) do
@@ -154,9 +265,21 @@ defmodule PhiaUi.ThemeCSS do
   end
 
   @doc """
-  Deserialises a JSON string into a `%PhiaUi.Theme{}`.
+  Deserialises a JSON string into a `%PhiaUi.Theme{}` struct.
 
-  Raises `Jason.DecodeError` for invalid JSON and `KeyError` for missing required fields.
+  Expects the JSON schema produced by `to_json/1`. Raises `Jason.DecodeError`
+  for malformed JSON and `KeyError` if required fields (`name`, `label`,
+  `colors`) are missing.
+
+  ## Example
+
+      iex> theme = PhiaUi.Theme.get!(:zinc)
+      iex> json = PhiaUi.ThemeCSS.to_json(theme)
+      iex> restored = PhiaUi.ThemeCSS.from_json(json)
+      iex> restored.name
+      "zinc"
+      iex> restored.label
+      "Zinc"
   """
   @spec from_json(String.t()) :: Theme.t()
   def from_json(json) when is_binary(json) do
@@ -170,7 +293,7 @@ defmodule PhiaUi.ThemeCSS do
   # ---------------------------------------------------------------------------
 
   # Normalises the `themes` argument of `generate_all/1` into a list of
-  # `%Theme{}` structs.
+  # `%Theme{}` structs. Handles nil (all presets), atom keys, and Theme structs.
   defp resolve_themes(nil) do
     Theme.list() |> Enum.map(&Theme.get!/1)
   end
@@ -182,6 +305,12 @@ defmodule PhiaUi.ThemeCSS do
     end)
   end
 
+  # Converts a color map (atom-keyed) into sorted CSS custom property lines.
+  #
+  # Sorting by key name ensures deterministic output across Elixir versions,
+  # which is important for diffing generated CSS files in version control.
+  # Underscores in key names are converted to hyphens to match CSS conventions:
+  #   :card_foreground → --color-card-foreground
   defp color_vars(colors) when is_map(colors) do
     colors
     |> Enum.sort_by(fn {k, _} -> to_string(k) end)
@@ -191,6 +320,12 @@ defmodule PhiaUi.ThemeCSS do
     end)
   end
 
+  # Converts radius and typography fields into @theme-compatible CSS lines.
+  #
+  # The `--radius` variable sets the base corner radius used by all components.
+  # Typography keys follow the same underscore-to-hyphen convention as colors:
+  #   :font_sans → --font-sans
+  #   :font_mono → --font-mono
   defp theme_vars(%Theme{} = theme) do
     radius_line = "  --radius: #{theme.radius};\n"
 

@@ -201,7 +201,29 @@ defmodule PhiaUi.Components.Dialog do
   # dialog_header/1
   # ---------------------------------------------------------------------------
 
-  @doc "Layout container for dialog title and description."
+  @doc """
+  Layout container for the dialog title and description.
+
+  Renders a `<div>` with `flex flex-col space-y-1.5 text-center sm:text-left`.
+  On mobile viewports the content is centred; on `sm` and wider it aligns
+  to the left, matching the standard modal convention for each form factor.
+
+  Wrap `dialog_title/1` and `dialog_description/1` inside this component.
+  Both must have their `:id` set (to `"{dialog-id}-title"` and
+  `"{dialog-id}-description"`) so the panel's `aria-labelledby` and
+  `aria-describedby` attributes resolve correctly.
+
+  ## Example
+
+      <.dialog_header>
+        <.dialog_title id="confirm-delete-title">
+          Delete project?
+        </.dialog_title>
+        <.dialog_description id="confirm-delete-description">
+          All data will be permanently removed. This cannot be undone.
+        </.dialog_description>
+      </.dialog_header>
+  """
   attr(:class, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
@@ -262,7 +284,33 @@ defmodule PhiaUi.Components.Dialog do
   # dialog_footer/1
   # ---------------------------------------------------------------------------
 
-  @doc "Action row at the bottom of the dialog (close button, confirmations)."
+  @doc """
+  Action row at the bottom of the dialog for confirmation and close buttons.
+
+  Renders a `<div>` with `flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2`.
+
+  **Responsive stacking behaviour:**
+  - On mobile (`< sm`): buttons stack vertically in reverse DOM order, so
+    the primary action (last in the template) appears visually at the top —
+    thumb-friendly and consistent with mobile modal conventions.
+  - On `sm`+ screens: buttons arrange horizontally, aligned to the right,
+    with `space-x-2` (8px) gaps.
+
+  Place the cancel/close action first in the template and the primary
+  (submit/confirm) action last. The CSS reversal puts the primary action
+  at the top on mobile automatically:
+
+  ## Example
+
+      <.dialog_footer>
+        <%!-- Cancel appears second on desktop, first (top) on mobile --%>
+        <.dialog_close for="confirm-delete">Cancel</.dialog_close>
+        <%!-- Primary action appears first on desktop (rightmost), top on mobile --%>
+        <.button variant={:destructive} phx-click="delete_item">
+          Delete
+        </.button>
+      </.dialog_footer>
+  """
   attr(:class, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)

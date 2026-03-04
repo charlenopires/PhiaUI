@@ -3,68 +3,97 @@ defmodule PhiaUi.Components.Carousel do
   Carousel component with touch swipe, button navigation, and keyboard support.
 
   Follows the shadcn/ui Carousel anatomy adapted for Phoenix LiveView.
-  The `PhiaCarousel` vanilla JS hook manages CSS transform-based sliding,
-  touch swipe detection, keyboard navigation, and loop behaviour.
+  The `PhiaCarousel` vanilla-JS hook manages CSS `transform`-based sliding,
+  touch/swipe detection, keyboard navigation (arrow keys), and optional loop
+  behaviour. Zero npm dependencies.
 
-  ## Sub-components
+  ## When to use
 
-  | Function             | Element  | Purpose                                    |
-  |----------------------|----------|--------------------------------------------|
-  | `carousel/1`         | `div`    | Root container — mounts PhiaCarousel hook  |
-  | `carousel_content/1` | `div`    | Flex track that holds all slides           |
-  | `carousel_item/1`    | `div`    | Individual slide (100% width)              |
-  | `carousel_previous/1`| `button` | Navigate to the previous slide             |
-  | `carousel_next/1`    | `button` | Navigate to the next slide                 |
+  - Hero banner with rotating promotional images
+  - Product image gallery (multiple photos of the same item)
+  - Onboarding walkthrough (step-by-step screens)
+  - Testimonial rotator
+  - Vertical announcement ticker
 
-  ## Example — horizontal with navigation
+  ## Anatomy
 
-      <.carousel id="hero">
+  | Component             | Element  | Purpose                                        |
+  |-----------------------|----------|------------------------------------------------|
+  | `carousel/1`          | `div`    | Root container — mounts the `PhiaCarousel` hook|
+  | `carousel_content/1`  | `div`    | Flex track that holds all slides side-by-side  |
+  | `carousel_item/1`     | `div`    | Individual slide (`min-w-full shrink-0`)        |
+  | `carousel_previous/1` | `button` | Navigate to the previous slide                 |
+  | `carousel_next/1`     | `button` | Navigate to the next slide                     |
+
+  ## Basic horizontal carousel
+
+      <.carousel id="hero-banner">
         <.carousel_content>
-          <.carousel_item>Slide 1</.carousel_item>
-          <.carousel_item>Slide 2</.carousel_item>
-          <.carousel_item>Slide 3</.carousel_item>
+          <.carousel_item>
+            <img src="/images/promo-1.jpg" alt="Summer sale" class="w-full object-cover" />
+          </.carousel_item>
+          <.carousel_item>
+            <img src="/images/promo-2.jpg" alt="New arrivals" class="w-full object-cover" />
+          </.carousel_item>
+          <.carousel_item>
+            <img src="/images/promo-3.jpg" alt="Free shipping" class="w-full object-cover" />
+          </.carousel_item>
         </.carousel_content>
         <.carousel_previous />
         <.carousel_next />
       </.carousel>
 
-  ## Example — looping vertical carousel
+  ## Looping vertical carousel
 
-      <.carousel id="vert" orientation="vertical" loop={true}>
+      <.carousel id="announcements" orientation="vertical" loop={true}>
         <.carousel_content>
-          <.carousel_item>Top</.carousel_item>
-          <.carousel_item>Bottom</.carousel_item>
+          <.carousel_item class="h-12 flex items-center">
+            Maintenance window scheduled for Sunday 2 AM UTC
+          </.carousel_item>
+          <.carousel_item class="h-12 flex items-center">
+            v2.4.0 released — see the changelog
+          </.carousel_item>
         </.carousel_content>
         <.carousel_previous />
         <.carousel_next />
       </.carousel>
 
-  ## Example — with dot indicators
+  ## Carousel with dot indicator slot
 
-      <.carousel id="dots">
+      <.carousel id="product-gallery">
         <.carousel_content>
-          <.carousel_item>Slide 1</.carousel_item>
-          <.carousel_item>Slide 2</.carousel_item>
+          <.carousel_item :for={img <- @product_images}>
+            <img src={img.url} alt={img.alt} class="w-full rounded-lg object-cover" />
+          </.carousel_item>
         </.carousel_content>
+        <.carousel_previous />
+        <.carousel_next />
         <:indicators>
-          <button class="h-2 w-2 rounded-full bg-primary"></button>
-          <button class="h-2 w-2 rounded-full bg-muted"></button>
+          <button
+            :for={{_img, i} <- Enum.with_index(@product_images)}
+            data-index={i}
+            class="h-2 w-2 rounded-full bg-muted data-[active]:bg-primary"
+          />
         </:indicators>
       </.carousel>
 
+  ## Accessibility
+
+  - The root element has `role="region"` and `aria-label="carousel"`
+  - Each slide has `role="group"` and `aria-roledescription="slide"`
+  - Navigation buttons have `aria-label="Previous slide"` / `"Next slide"`
+  - The root is focusable (`tabindex="0"`) so arrow-key navigation works
+    without a mouse
+
   ## Hook setup
 
-  Copy `priv/templates/js/hooks/carousel.js` to your project via:
+      mix phia.add carousel   # copies hooks/carousel.js to your project
 
-      mix phia.add carousel
-
-  Then register in your `app.js`:
-
+      # app.js
       import PhiaCarousel from "./hooks/carousel"
       let liveSocket = new LiveSocket("/live", Socket, {
         hooks: { PhiaCarousel }
       })
-
   """
 
   use Phoenix.Component
@@ -75,34 +104,61 @@ defmodule PhiaUi.Components.Carousel do
   # carousel/1
   # ---------------------------------------------------------------------------
 
-  attr(:id, :string, default: "carousel", doc: "Unique carousel ID used by the hook")
+  attr(:id, :string,
+    default: "carousel",
+    doc: """
+    Unique carousel ID. The `PhiaCarousel` hook uses this to identify the
+    instance and store its current slide index in hook state.
+    """
+  )
 
   attr(:orientation, :string,
     default: "horizontal",
     values: ~w(horizontal vertical),
-    doc: "Carousel orientation — controls transform axis and swipe direction"
+    doc: """
+    Carousel slide direction:
+    - `"horizontal"` — slides left/right (default, most common)
+    - `"vertical"`   — slides up/down (e.g. announcement ticker)
+    The hook reads `data-orientation` to set the correct transform axis.
+    """
   )
 
   attr(:loop, :boolean,
     default: false,
-    doc: "When true, navigating past the last slide wraps around to the first"
+    doc: """
+    When `true`, navigating past the last slide wraps to the first (and
+    navigating before the first wraps to the last). The hook reads `data-loop`.
+    """
   )
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the root div")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the root div")
 
-  slot(:inner_block, required: true, doc: "carousel_content and navigation sub-components")
+  attr(:rest, :global,
+    doc: "HTML attributes forwarded to the root div"
+  )
+
+  slot(:inner_block,
+    required: true,
+    doc: "`carousel_content/1` and navigation sub-components"
+  )
 
   slot(:indicators,
-    doc: "Optional dot indicators rendered at the bottom of the carousel"
+    doc: """
+    Optional dot indicator buttons rendered at the bottom of the carousel.
+    The `PhiaCarousel` hook can toggle a `data-active` attribute on the active
+    indicator. Use `data-[active]:bg-primary` Tailwind variant to style it.
+    """
   )
 
   @doc """
   Renders the carousel root container.
 
-  Mounts the `PhiaCarousel` hook and passes orientation/loop configuration
-  via `data-*` attributes. The root is focusable (`tabindex="0"`) so
-  keyboard arrow keys can control the carousel.
+  Mounts the `PhiaCarousel` hook and communicates configuration via `data-*`
+  attributes. The root is focusable (`tabindex="0"`) so keyboard users can
+  navigate slides with arrow keys without any additional setup.
+
+  `role="region"` + `aria-label="carousel"` ensures the landmark is announced
+  correctly by screen readers.
   """
   def carousel(assigns) do
     ~H"""
@@ -118,6 +174,7 @@ defmodule PhiaUi.Components.Carousel do
       {@rest}
     >
       {render_slot(@inner_block)}
+      <%!-- Dot indicators — absolutely positioned at the bottom of the root --%>
       <%= if @indicators != [] do %>
         <div class="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
           {render_slot(@indicators)}
@@ -131,17 +188,23 @@ defmodule PhiaUi.Components.Carousel do
   # carousel_content/1
   # ---------------------------------------------------------------------------
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the track div")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the track div")
 
-  slot(:inner_block, required: true, doc: "carousel_item sub-components")
+  attr(:rest, :global,
+    doc: "HTML attributes forwarded to the track div (the element that receives `transform`)"
+  )
+
+  slot(:inner_block, required: true, doc: "`carousel_item/1` slide children")
 
   @doc """
   Renders the carousel track container.
 
-  The flex layout places all slides side by side. The PhiaCarousel hook
-  updates `transform: translateX/Y(n%)` on this element to switch slides.
-  The `transition-transform duration-300` classes provide smooth animation.
+  The `data-carousel-track` attribute is used by the `PhiaCarousel` hook to
+  locate and animate this element. The hook updates `style.transform` on this
+  element directly to translate between slides.
+
+  `transition-transform duration-300 ease-in-out` provides the slide animation.
+  Do not remove these classes unless you want an instant snap transition.
   """
   def carousel_content(assigns) do
     ~H"""
@@ -159,17 +222,23 @@ defmodule PhiaUi.Components.Carousel do
   # carousel_item/1
   # ---------------------------------------------------------------------------
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the slide div")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the slide div")
 
-  slot(:inner_block, required: true, doc: "Slide content")
+  attr(:rest, :global,
+    doc: "HTML attributes forwarded to the slide div"
+  )
+
+  slot(:inner_block, required: true, doc: "Slide content — images, cards, text, etc.")
 
   @doc """
   Renders an individual carousel slide.
 
-  Each slide has `role="group"` and `aria-roledescription="slide"` for
-  screen reader announcements. The `min-w-full shrink-0` classes ensure
-  each slide occupies exactly the full width of the track.
+  `min-w-full shrink-0` ensures each slide occupies exactly 100% of the track
+  width (or height for vertical carousels), preventing any bleeding between
+  slides.
+
+  `role="group"` and `aria-roledescription="slide"` allow screen readers to
+  announce "Slide 1 of 3" when the user navigates via keyboard.
   """
   def carousel_item(assigns) do
     ~H"""
@@ -188,17 +257,25 @@ defmodule PhiaUi.Components.Carousel do
   # carousel_previous/1
   # ---------------------------------------------------------------------------
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the button element")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the button element")
 
-  slot(:inner_block, doc: "Button content — defaults to a left arrow ‹ character")
+  attr(:rest, :global,
+    doc: "HTML attributes forwarded to the `<button>` element"
+  )
+
+  slot(:inner_block,
+    doc: "Button content — defaults to the left-pointing single-guillemet character `‹`"
+  )
 
   @doc """
-  Renders the previous slide navigation button.
+  Renders the previous-slide navigation button.
 
-  The `data-carousel-prev` marker is used by the PhiaCarousel hook to
-  attach a click handler and manage the `disabled` state. When `:loop`
-  is false and the carousel is at the first slide, the button is disabled.
+  The `data-carousel-prev` attribute is used by the `PhiaCarousel` hook to
+  attach a click listener and manage the `disabled` attribute. When `loop`
+  is `false` and the carousel is at the first slide, the hook sets
+  `disabled` on this button to prevent backward navigation.
+
+  Override the default `‹` icon by placing content in the `:inner_block` slot.
   """
   def carousel_previous(assigns) do
     ~H"""
@@ -229,17 +306,25 @@ defmodule PhiaUi.Components.Carousel do
   # carousel_next/1
   # ---------------------------------------------------------------------------
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the button element")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the button element")
 
-  slot(:inner_block, doc: "Button content — defaults to a right arrow › character")
+  attr(:rest, :global,
+    doc: "HTML attributes forwarded to the `<button>` element"
+  )
+
+  slot(:inner_block,
+    doc: "Button content — defaults to the right-pointing single-guillemet character `›`"
+  )
 
   @doc """
-  Renders the next slide navigation button.
+  Renders the next-slide navigation button.
 
-  The `data-carousel-next` marker is used by the PhiaCarousel hook to
-  attach a click handler and manage the `disabled` state. When `:loop`
-  is false and the carousel is at the last slide, the button is disabled.
+  The `data-carousel-next` attribute is used by the `PhiaCarousel` hook to
+  attach a click listener and manage the `disabled` attribute. When `loop`
+  is `false` and the carousel is at the last slide, the hook sets `disabled`
+  on this button to prevent forward navigation.
+
+  Override the default `›` icon by placing content in the `:inner_block` slot.
   """
   def carousel_next(assigns) do
     ~H"""

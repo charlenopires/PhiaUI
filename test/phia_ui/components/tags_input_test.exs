@@ -92,14 +92,14 @@ defmodule PhiaUi.Components.TagsInputTest do
   end
 
   # ---------------------------------------------------------------------------
-  # Criterion 3: attr :placeholder, default: "Adicionar tag..."
+  # Criterion 3: attr :placeholder, default: "Add tag..."
   # ---------------------------------------------------------------------------
 
   describe "tags_input/1 - :placeholder attr" do
-    test "renders default placeholder 'Adicionar tag...'" do
+    test "renders default placeholder 'Add tag...'" do
       field = build_field()
       html = render_component(&H.render_tags_input_defaults/1, %{field: field})
-      assert html =~ "Adicionar tag..."
+      assert html =~ "Add tag..."
     end
 
     test "renders custom placeholder when :placeholder is set" do
@@ -291,7 +291,7 @@ defmodule PhiaUi.Components.TagsInputTest do
         render_component(&H.render_tags_input/1, %{
           field: field,
           label: "Tags",
-          placeholder: "Adicionar tag...",
+          placeholder: "Add tag...",
           separator: ","
         })
 
@@ -301,7 +301,7 @@ defmodule PhiaUi.Components.TagsInputTest do
       assert html =~ ~s(type="hidden")
       assert html =~ ~s(phx-hook="PhiaTagsInput")
       assert html =~ ~s(data-separator=",")
-      assert html =~ "Adicionar tag..."
+      assert html =~ "Add tag..."
       assert html =~ "elixir"
       assert html =~ "phoenix"
       assert html =~ "liveview"

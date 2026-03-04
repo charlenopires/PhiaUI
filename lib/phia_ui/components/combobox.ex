@@ -1,116 +1,222 @@
 defmodule PhiaUi.Components.Combobox do
   @moduledoc """
-  Combobox component with search/filter, built on top of Popover + Command patterns.
+  Combobox component with search/filter for PhiaUI.
 
-  Server-rendered selection widget with real-time filtering. The parent LiveView
-  manages open/search state and handles three events:
-
-  - `combobox-toggle` — toggle open/closed
-  - `combobox-search` — update the search query (receives `%{"query" => query}`)
-  - `combobox-change` — item selected (receives `%{"value" => value}`)
+  A searchable selection widget that renders as a trigger button + dropdown
+  panel. Filtering is server-side: the parent LiveView handles the search event
+  and passes back a filtered `options` list. No client-side JS hook is required
+  for basic functionality.
 
   ## Sub-components
 
-  - `combobox/1` — root widget (trigger + dropdown panel)
-  - `form_combobox/1` — `Phoenix.HTML.FormField`-integrated variant
+  - `combobox/1` — standalone combobox (trigger + dropdown panel)
+  - `form_combobox/1` — `Phoenix.HTML.FormField`-integrated variant with hidden
+    input and changeset error display
 
-  ## Example
+  ## When to use
 
+  Use `combobox/1` when a `<select>` element would have too many options and
+  users benefit from typing to filter — country pickers, user selectors,
+  product/SKU selectors, time-zone pickers, etc.
+
+  For simple short lists (< 10 items), use a native `filter_select/1` instead.
+
+  ## Three-event model
+
+  The parent LiveView must handle exactly three events:
+
+  | Event            | When fired                       | Payload                   |
+  |------------------|----------------------------------|---------------------------|
+  | `on_toggle`      | Trigger button clicked           | none (params ignored)     |
+  | `on_search`      | User types in the search input   | `%{"query" => string}`    |
+  | `on_change`      | User selects an option           | `%{"value" => string}`    |
+
+  ## Complete example — country selector
+
+      defmodule MyAppWeb.ProfileLive do
+        use Phoenix.LiveView
+
+        @countries [
+          %{value: "us", label: "United States"},
+          %{value: "gb", label: "United Kingdom"},
+          %{value: "de", label: "Germany"},
+          %{value: "fr", label: "France"},
+          # ... etc.
+        ]
+
+        def mount(_params, _session, socket) do
+          {:ok, assign(socket,
+            country: nil,
+            country_open: false,
+            country_search: ""
+          )}
+        end
+
+        def handle_event("toggle-country", _params, socket) do
+          {:noreply, update(socket, :country_open, &(!&1))}
+        end
+
+        def handle_event("search-country", %{"query" => q}, socket) do
+          {:noreply, assign(socket, country_search: q)}
+        end
+
+        def handle_event("pick-country", %{"value" => v}, socket) do
+          {:noreply, assign(socket,
+            country: v,
+            country_open: false,
+            country_search: ""
+          )}
+        end
+
+        # Filter the options server-side based on search query
+        defp filtered_countries(search) do
+          query = String.downcase(search)
+          Enum.filter(@countries, &String.contains?(String.downcase(&1.label), query))
+        end
+      end
+
+      <%!-- Template --%>
       <.combobox
-        id="fruit-picker"
-        options={[%{value: "apple", label: "Apple"}, %{value: "banana", label: "Banana"}]}
-        value={@selected_fruit}
-        open={@combobox_open}
-        search={@combobox_search}
-        on_change="pick-fruit"
-        on_search="search-fruit"
-        on_toggle="toggle-fruit"
+        id="country-picker"
+        options={filtered_countries(@country_search)}
+        value={@country}
+        open={@country_open}
+        search={@country_search}
+        placeholder="Select a country..."
+        on_toggle="toggle-country"
+        on_search="search-country"
+        on_change="pick-country"
       />
 
-  ## LiveView handler example
+  ## Form-integrated example
 
-      def handle_event("toggle-fruit", _params, socket) do
-        {:noreply, update(socket, :combobox_open, &(!&1))}
-      end
+      <.form for={@form} phx-submit="save">
+        <.form_combobox
+          id="timezone-picker"
+          field={@form[:timezone]}
+          options={filtered_timezones(@timezone_search)}
+          value={@selected_timezone}
+          open={@timezone_open}
+          search={@timezone_search}
+          placeholder="Select timezone..."
+          on_toggle="toggle-tz"
+          on_search="search-tz"
+          on_change="pick-tz"
+        />
+        <.button type="submit">Save</.button>
+      </.form>
 
-      def handle_event("search-fruit", %{"query" => q}, socket) do
-        {:noreply, assign(socket, combobox_search: q)}
-      end
+  ## Options format
 
-      def handle_event("pick-fruit", %{"value" => v}, socket) do
-        {:noreply, assign(socket, selected_fruit: v, combobox_open: false)}
-      end
+  Options can be passed in two formats:
+
+      # Map format (preferred)
+      options={[%{value: "us", label: "United States"}, ...]}
+
+      # Tuple format (compatible with Phoenix.HTML.Form select helpers)
+      options={[{"United States", "us"}, {"Germany", "de"}, ...]}
+
+  Both formats are normalised internally to `%{value: string, label: string}`.
 
   ## ARIA
 
   The trigger button has `aria-haspopup="listbox"` and `aria-expanded` toggled
   with the `open` assign. The dropdown has `role="listbox"` and each option has
-  `role="option"` with `aria-selected`.
-
-  ## Keyboard navigation
-
-  Full keyboard support (Escape / Enter / arrow keys) requires the optional
-  `PhiaCombobox` JS hook. Without it the component is still fully usable via
-  mouse / touch in LiveView.
+  `role="option"` with `aria-selected`. Keyboard navigation (Escape / Enter /
+  arrow keys) requires the optional `PhiaCombobox` JS hook.
   """
 
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr(:id, :string, required: true, doc: "Unique combobox ID")
-  attr(:value, :string, default: nil, doc: "Currently selected value")
+  attr(:id, :string, required: true, doc: "Unique combobox DOM id")
+
+  attr(:value, :string,
+    default: nil,
+    doc: "Currently selected value string, or `nil` when nothing is selected"
+  )
 
   attr(:placeholder, :string,
     default: "Select an option...",
-    doc: "Placeholder shown when no value is selected"
+    doc: "Trigger button text shown when no value is selected"
   )
 
   attr(:search_placeholder, :string,
     default: "Search...",
-    doc: "Placeholder text for the search input"
+    doc: "Placeholder text for the search input inside the dropdown"
   )
 
   attr(:options, :list,
     default: [],
-    doc: "List of `%{value: string, label: string}` maps or `{label, value}` keyword tuples"
+    doc: """
+    List of options in either format:
+    - `%{value: string, label: string}` maps
+    - `{label, value}` 2-tuples (compatible with Phoenix.HTML.Form)
+
+    Pass a pre-filtered subset when the LiveView handles `on_search`.
+    """
   )
 
-  attr(:open, :boolean, default: false, doc: "Whether the dropdown panel is visible")
-  attr(:search, :string, default: "", doc: "Current search query used for client-side filtering")
+  attr(:open, :boolean,
+    default: false,
+    doc: "Whether the dropdown panel is currently visible. Controlled by the LiveView."
+  )
+
+  attr(:search, :string,
+    default: "",
+    doc: "Current search query — used for client-side label filtering when `options` is static"
+  )
 
   attr(:on_change, :string,
     default: "combobox-change",
-    doc: "phx-click event emitted when an option is selected (sends `%{value: value}`)"
+    doc: """
+    `phx-click` event name emitted when a user selects an option.
+    The LiveView receives `%{"value" => value}`.
+    """
   )
 
   attr(:on_search, :string,
     default: "combobox-search",
-    doc: "phx-change event emitted by the search input (sends `%{query: query}`)"
+    doc: """
+    `phx-change` event name emitted by the search input.
+    The LiveView receives `%{"query" => query}`.
+    Use this to filter `options` server-side and re-assign.
+    """
   )
 
   attr(:on_toggle, :string,
     default: "combobox-toggle",
-    doc: "phx-click event emitted when the trigger button is clicked"
+    doc: """
+    `phx-click` event name emitted when the trigger button is clicked.
+    The LiveView should toggle the `open` assign: `update(socket, :open, &(!&1))`.
+    """
   )
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes merged via cn/1")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the root div")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes merged via `cn/1`")
+
+  attr(:rest, :global,
+    doc: "HTML attributes forwarded to the root div"
+  )
 
   @doc """
-  Renders a combobox with search filtering and server-driven state.
+  Renders a combobox with a trigger button and searchable dropdown.
 
-  The parent LiveView handles the three events (`on_toggle`, `on_search`,
-  `on_change`) and passes updated `open`, `search`, and `value` assigns back
-  on each re-render.
+  The component is fully server-driven: `open`, `search`, `value`, and
+  `options` are all controlled by the LiveView. On each re-render, the
+  `options` list is normalised and filtered by the current `search` query
+  for cases where all options are passed statically (no server-side filtering).
 
-  Accepts both `%{value: v, label: l}` maps and `{label, value}` keyword tuples
-  as `:options`.
+  For large option lists (hundreds of items), handle `on_search` in the LiveView
+  and pass a pre-filtered `options` list instead of relying on client-side filtering.
   """
   def combobox(assigns) do
     assigns =
       assigns
+      # Filter options by search query (client-side path for small option lists).
+      # For large lists, pass pre-filtered options from the LiveView instead.
       |> assign(:filtered_options, filter_options(assigns.options, assigns.search))
+      # Resolve the display label for the currently selected value.
       |> assign(:selected_label, find_label(assigns.options, assigns.value))
 
     ~H"""
@@ -119,7 +225,7 @@ defmodule PhiaUi.Components.Combobox do
       class={cn(["relative w-full", @class])}
       {@rest}
     >
-      <%!-- Trigger button --%>
+      <%!-- Trigger button — shows selected label or placeholder --%>
       <button
         type="button"
         aria-haspopup="listbox"
@@ -133,13 +239,14 @@ defmodule PhiaUi.Components.Combobox do
           "disabled:cursor-not-allowed disabled:opacity-50"
         ])}
       >
+        <%!-- Muted text when no value is selected --%>
         <span class={cn([is_nil(@value) && "text-muted-foreground"])}>
           {@selected_label || @placeholder}
         </span>
         <span class="ml-2 opacity-50">&#8595;</span>
       </button>
 
-      <%!-- Dropdown panel (conditionally rendered) --%>
+      <%!-- Dropdown panel — conditionally rendered (no hidden DOM element) --%>
       <div
         :if={@open}
         id={"#{@id}-listbox"}
@@ -149,7 +256,7 @@ defmodule PhiaUi.Components.Combobox do
           "text-popover-foreground overflow-hidden"
         ])}
       >
-        <%!-- Search input --%>
+        <%!-- Search input — fires on_search on every keystroke --%>
         <div class="flex items-center border-b px-3">
           <input
             type="text"
@@ -164,14 +271,16 @@ defmodule PhiaUi.Components.Combobox do
           />
         </div>
 
-        <%!-- Options list --%>
+        <%!-- Options list — scrollable, max 240px --%>
         <div class="max-h-60 overflow-y-auto p-1">
+          <%!-- Empty state when no options match the search query --%>
           <div
             :if={@filtered_options == []}
             class="py-6 text-center text-sm text-muted-foreground"
           >
             No options found.
           </div>
+          <%!-- Each option fires on_change with its value --%>
           <div
             :for={option <- @filtered_options}
             role="option"
@@ -182,9 +291,11 @@ defmodule PhiaUi.Components.Combobox do
               "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5",
               "text-sm outline-none transition-colors",
               "hover:bg-accent hover:text-accent-foreground",
+              # Highlight the currently selected option with a subtle background
               @value == option.value && "bg-accent/50"
             ])}
           >
+            <%!-- Checkmark indicates the currently selected item --%>
             <span class="mr-2 flex h-4 w-4 items-center justify-center">
               <span :if={@value == option.value}>&#10003;</span>
             </span>
@@ -198,15 +309,22 @@ defmodule PhiaUi.Components.Combobox do
 
   attr(:field, Phoenix.HTML.FormField,
     required: true,
-    doc: "Phoenix.HTML.FormField struct for form integration"
+    doc: """
+    `Phoenix.HTML.FormField` struct from `@form[:field_name]`.
+    Provides `id`, `name`, and `errors` for form integration.
+    """
   )
 
-  attr(:id, :string, required: true, doc: "Unique combobox ID")
-  attr(:value, :any, default: nil, doc: "Currently selected value (string or nil)")
+  attr(:id, :string, required: true, doc: "Unique combobox DOM id")
+
+  attr(:value, :any,
+    default: nil,
+    doc: "Currently selected value (string or nil)"
+  )
 
   attr(:placeholder, :string,
     default: "Select an option...",
-    doc: "Placeholder shown when no value is selected"
+    doc: "Trigger button placeholder text"
   )
 
   attr(:search_placeholder, :string,
@@ -214,37 +332,53 @@ defmodule PhiaUi.Components.Combobox do
     doc: "Placeholder text for the search input"
   )
 
-  attr(:options, :list, default: [], doc: "Options list")
-  attr(:open, :boolean, default: false, doc: "Whether the dropdown panel is visible")
+  attr(:options, :list, default: [], doc: "Options list (same format as `combobox/1`)")
+  attr(:open, :boolean, default: false, doc: "Whether the dropdown is visible")
   attr(:search, :string, default: "", doc: "Current search query")
 
   attr(:on_change, :string,
     default: "combobox-change",
-    doc: "phx-click event emitted when an option is selected"
+    doc: "`phx-click` event for option selection"
   )
 
   attr(:on_search, :string,
     default: "combobox-search",
-    doc: "phx-change event emitted by the search input"
+    doc: "`phx-change` event for search input"
   )
 
   attr(:on_toggle, :string,
     default: "combobox-toggle",
-    doc: "phx-click event emitted when the trigger button is clicked"
+    doc: "`phx-click` event for the trigger button"
   )
 
-  attr(:class, :string, default: nil, doc: "Additional CSS classes merged via cn/1")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
 
   @doc """
   Renders a combobox integrated with `Phoenix.HTML.FormField`.
 
-  Injects a `<input type="hidden">` bound to the field's `name` so the selected
-  value is included in `phx-submit` form payloads. Errors from the FormField are
-  displayed as destructive text below the widget.
+  Injects a `<input type="hidden">` bound to `field.name` so the selected
+  value is included in `phx-submit` form payloads. Changeset errors from
+  `field.errors` are displayed as destructive text below the widget.
+
+  ## Example
+
+      <.form_combobox
+        id="assignee-picker"
+        field={@form[:assignee_id]}
+        options={@team_members}
+        value={@selected_assignee}
+        open={@assignee_open}
+        search={@assignee_search}
+        placeholder="Assign to..."
+        on_toggle="toggle-assignee"
+        on_search="search-assignee"
+        on_change="pick-assignee"
+      />
   """
   def form_combobox(assigns) do
     ~H"""
     <div>
+      <%!-- Hidden input carries the selected value string for changeset submission --%>
       <input type="hidden" id={@field.id} name={@field.name} value={@value || ""} />
       <.combobox
         id={@id}
@@ -259,6 +393,7 @@ defmodule PhiaUi.Components.Combobox do
         on_toggle={@on_toggle}
         class={@class}
       />
+      <%!-- Changeset validation errors --%>
       <div :if={@field.errors != []}>
         <p :for={error <- @field.errors} class="mt-1 text-sm text-destructive">
           {elem(error, 0)}
@@ -269,11 +404,13 @@ defmodule PhiaUi.Components.Combobox do
   end
 
   # ---------------------------------------------------------------------------
-  # Private helpers — pattern matching only, no case/cond
+  # Private helpers — pure functions, no case/cond
   # ---------------------------------------------------------------------------
 
+  # When search is empty, return all options without filtering.
   defp filter_options(options, ""), do: normalize_options(options)
 
+  # When search has a value, case-insensitively filter by label substring.
   defp filter_options(options, search) do
     query = String.downcase(search)
 
@@ -282,13 +419,17 @@ defmodule PhiaUi.Components.Combobox do
     |> Enum.filter(&String.contains?(String.downcase(&1.label), query))
   end
 
+  # Normalise both supported formats to %{value: string, label: string}.
   defp normalize_options(options), do: Enum.map(options, &normalize_option/1)
 
+  # Already in map format — pass through unchanged.
   defp normalize_option(%{value: _, label: _} = opt), do: opt
 
+  # Tuple format {label, value} — convert to map.
   defp normalize_option({label, value}),
     do: %{value: to_string(value), label: to_string(label)}
 
+  # Find the display label for the currently selected value.
   defp find_label(_options, nil), do: nil
 
   defp find_label(options, value) do
@@ -298,6 +439,7 @@ defmodule PhiaUi.Components.Combobox do
     |> extract_label()
   end
 
+  # No matching option found — return nil so placeholder is shown.
   defp extract_label(nil), do: nil
   defp extract_label(%{label: label}), do: label
 end

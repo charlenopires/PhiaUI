@@ -97,14 +97,14 @@ defmodule PhiaUi.Components.ImageUploadTest do
   end
 
   # ---------------------------------------------------------------------------
-  # Criterion 2: attr :label, default: "Imagem de capa"
+  # Criterion 2: attr :label, default: "Click or drag & drop to upload"
   # ---------------------------------------------------------------------------
 
   describe "image_upload/1 - :label attr" do
-    test "renders default label 'Imagem de capa' when :label is nil" do
+    test "renders default label when :label is nil" do
       upload = build_upload()
       html = render_component(&H.render_image_upload_default_label/1, %{upload: upload})
-      assert html =~ "Imagem de capa"
+      assert html =~ "Click or drag"
     end
 
     test "renders custom label when :label is set" do
@@ -226,34 +226,34 @@ defmodule PhiaUi.Components.ImageUploadTest do
   # ---------------------------------------------------------------------------
 
   describe "image_upload/1 - entry errors" do
-    test "renders 'Arquivo muito grande' for :too_large error" do
+    test "renders 'File too large' for :too_large error" do
       entry = build_entry(ref: "phx-e0")
       upload = build_upload(entries: [entry], errors: [{"phx-e0", :too_large}])
       html = render_component(&H.render_image_upload/1, %{upload: upload})
-      assert html =~ "Arquivo muito grande"
+      assert html =~ "File too large"
     end
 
-    test "renders 'Formato não suportado' for :not_accepted error" do
+    test "renders 'Unsupported file format' for :not_accepted error" do
       entry = build_entry(ref: "phx-e0")
       upload = build_upload(entries: [entry], errors: [{"phx-e0", :not_accepted}])
       html = render_component(&H.render_image_upload/1, %{upload: upload})
-      assert html =~ "Formato não suportado"
+      assert html =~ "Unsupported file format"
     end
 
-    test "renders 'Limite de arquivos atingido' for :too_many_files error" do
+    test "renders 'File limit reached' for :too_many_files error" do
       entry = build_entry(ref: "phx-e0")
       upload = build_upload(entries: [entry], errors: [{"phx-e0", :too_many_files}])
       html = render_component(&H.render_image_upload/1, %{upload: upload})
-      assert html =~ "Limite de arquivos atingido"
+      assert html =~ "File limit reached"
     end
 
     test "renders no error text when entry has no errors" do
       entry = build_entry(ref: "phx-e0")
       upload = build_upload(entries: [entry], errors: [])
       html = render_component(&H.render_image_upload/1, %{upload: upload})
-      refute html =~ "Arquivo muito grande"
-      refute html =~ "Formato não suportado"
-      refute html =~ "Limite de arquivos atingido"
+      refute html =~ "File too large"
+      refute html =~ "Unsupported file format"
+      refute html =~ "File limit reached"
     end
   end
 
@@ -325,12 +325,12 @@ defmodule PhiaUi.Components.ImageUploadTest do
       html =
         render_component(&H.render_image_upload/1, %{
           upload: upload,
-          label: "Imagem de capa",
+          label: "Upload cover image",
           class: "mt-4"
         })
 
       assert html =~ ~s(for="phx-abc123")
-      assert html =~ "Imagem de capa"
+      assert html =~ "Upload cover image"
       assert html =~ "upload-cloud"
       assert html =~ "sr-only"
       assert html =~ "capa.jpg"
@@ -340,7 +340,7 @@ defmodule PhiaUi.Components.ImageUploadTest do
       assert html =~ "phx-e0"
       assert html =~ "phx-e1"
       assert html =~ "cancel_upload"
-      assert html =~ "Arquivo muito grande"
+      assert html =~ "File too large"
       assert html =~ "mt-4"
     end
   end

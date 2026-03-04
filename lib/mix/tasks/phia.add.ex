@@ -1,10 +1,12 @@
 defmodule Mix.Tasks.Phia.Add do
   @moduledoc """
-  Ejects a PhiaUI component into the current Phoenix project.
+  Ejects a PhiaUI component into the current Phoenix project as an editable
+  source file.
 
-  Copies the component source (rendered from an EEx template) into
-  `lib/{app_web}/components/{component}.ex` so the host project owns and can
-  freely customise the code.
+  When you run `mix phia.add`, PhiaUI renders an EEx template and writes the
+  result to `lib/{app_web}/components/ui/{component}.ex`. From that point on,
+  the file belongs to your project — edit it freely. This is the same
+  "copy-paste ownership" model popularised by shadcn/ui.
 
   ## Usage
 
@@ -14,18 +16,52 @@ defmodule Mix.Tasks.Phia.Add do
 
       button    badge    card    table    dialog
 
+  ## What gets created
+
+  Running `mix phia.add button` in a project called `my_app` creates:
+
+      lib/my_app_web/components/ui/button.ex
+      lib/my_app_web/class_merger.ex          (shared dependency, skipped if exists)
+      lib/my_app_web/class_merger/cache.ex    (shared dependency, skipped if exists)
+      lib/my_app_web/class_merger/groups.ex   (shared dependency, skipped if exists)
+      assets/js/phia_hooks/{component}.js     (only for components that need a hook)
+
+  The web module namespace (e.g., `MyAppWeb`) is derived automatically from the
+  `:app` key in `mix.exs`.
+
   ## Behaviour
 
   - Derives the web module name from `Mix.Project.config()[:app]`
     (e.g., `:my_app` → `MyAppWeb`).
   - Renders the EEx template from PhiaUI's `priv/templates/components/`.
   - Writes the file with `Mix.Generator.create_file/3` (conflict-aware).
-  - **Idempotent**: if the file already exists the user is prompted.
+  - **Idempotent**: if the file already exists the user is prompted before
+    any overwrite.
+  - The `ClassMerger` utility (required by every component) is ejected
+    automatically and skipped if already present.
   - Prints a confirmation message via `Mix.shell().info/1`.
+
+  ## Next steps after ejecting
+
+  1. Run `mix phia.install` once (if you haven't already) to inject PhiaUI
+     theme tokens into `assets/css/app.css`.
+  2. Add `ClassMerger.Cache` to your supervision tree:
+       children = [MyAppWeb.ClassMerger.Cache, ...]
+  3. Import the component in any LiveView or layout:
+       import MyAppWeb.Components.UI.Button
 
   ## Options
 
       --help    Print this help message
+
+  ## Examples
+
+      $ mix phia.add button
+      * create lib/my_app_web/components/ui/button.ex
+
+      $ mix phia.add dialog
+      * create lib/my_app_web/components/ui/dialog.ex
+      * create assets/js/phia_hooks/dialog.js
   """
 
   use Mix.Task
@@ -67,6 +103,9 @@ defmodule Mix.Tasks.Phia.Add do
   @doc """
   Derives the host project's web module name from the current Mix project.
 
+  The web module name is the camelized app name suffixed with `"Web"`. For
+  example, a project with `app: :my_app` returns `"MyAppWeb"`.
+
   ## Example
 
       iex> Mix.Tasks.Phia.Add.app_web_name()
@@ -79,7 +118,10 @@ defmodule Mix.Tasks.Phia.Add do
   end
 
   @doc """
-  Builds the target file path for a component under `root`.
+  Builds the absolute target file path for a component under `root`.
+
+  The path follows the Phoenix convention of placing UI components under
+  `lib/{app_web_dir}/components/ui/`.
 
   ## Example
 
@@ -95,11 +137,22 @@ defmodule Mix.Tasks.Phia.Add do
   @doc """
   Ejects a component from PhiaUI's templates into `root`.
 
-  Also automatically ejects ClassMerger (a required dependency for all
-  components) unless it is already present.
+  This is the main entry point called by `run/1`. It runs a pipeline of
+  steps: validate → resolve_target → render_content → write_file.
 
-  Returns `:ok` on success, `:already_exists` if the file is already present,
-  or `{:error, reason}` for unknown components.
+  Also automatically ejects the `ClassMerger` utility (a required dependency
+  shared by all components) unless it is already present.
+
+  ## Return values
+
+  - `:ok` — component was created successfully.
+  - `:already_exists` — file already existed; user was prompted.
+  - `{:error, reason}` — component name is not in the known components list.
+
+  ## Example
+
+      iex> Mix.Tasks.Phia.Add.eject_component("button", "/tmp/my_project")
+      :ok
   """
   @spec eject_component(String.t(), Path.t()) :: :ok | :already_exists | {:error, String.t()}
   def eject_component(component_name, root \\ File.cwd!()) do
@@ -113,12 +166,18 @@ defmodule Mix.Tasks.Phia.Add do
   @doc """
   Ejects the ClassMerger dependency files into `root`.
 
-  Creates three files:
-  - `lib/{app_web}/class_merger.ex`
-  - `lib/{app_web}/class_merger/cache.ex`
-  - `lib/{app_web}/class_merger/groups.ex`
+  `ClassMerger` is a Tailwind CSS class conflict resolver (similar to
+  `tailwind-merge`) implemented in pure Elixir. Every PhiaUI component imports
+  the `cn/1` helper it provides, so it must be present in the host project.
 
-  Skips any file that already exists (idempotent).
+  Creates three files relative to `lib/{app_web_dir}/`:
+
+  - `class_merger.ex` — main `cn/1` function
+  - `class_merger/cache.ex` — ETS-backed GenServer cache
+  - `class_merger/groups.ex` — Tailwind conflict group mappings
+
+  Skips any file that already exists, making this function safe to call
+  repeatedly.
   """
   @spec eject_class_merger(Path.t()) :: :ok
   def eject_class_merger(root) do
@@ -142,10 +201,14 @@ defmodule Mix.Tasks.Phia.Add do
 
   @doc """
   Copies the JS hook file for `component_name` into `root/assets/js/phia_hooks/`
-  if a hook template exists at `priv/templates/js/hooks/{component}.js`.
+  if a corresponding hook template exists at `priv/templates/js/hooks/{component}.js`.
 
-  No-op (returns `:ok`) when no hook template is found.
-  Idempotent: skips copy if the target already exists.
+  Components such as Dialog, DropdownMenu, and Toast require a client-side
+  JavaScript hook for browser interactions (focus trapping, keyboard handling,
+  etc.). This function handles that copy automatically during ejection.
+
+  No-op (returns `:ok`) when no hook template is found for the given component.
+  Idempotent: skips the copy if the target hook file already exists.
   """
   @spec eject_js_hooks(String.t(), Path.t()) :: :ok
   def eject_js_hooks(component_name, root) do
@@ -168,6 +231,9 @@ defmodule Mix.Tasks.Phia.Add do
 
   @doc """
   Returns a next-steps message to display after ejecting `component_name`.
+
+  This message reminds the developer to run `mix phia.install`, add
+  `ClassMerger.Cache` to their supervision tree, and import the component.
   """
   @spec next_steps_message(String.t()) :: String.t()
   def next_steps_message(component_name) do
@@ -192,13 +258,16 @@ defmodule Mix.Tasks.Phia.Add do
   # ---------------------------------------------------------------------------
 
   # Renders an EEx template with `module_name` and `app_web` assigns.
-  # HEEx markers in templates must be escaped as `<%%= %>` so EEx passes
-  # them through as literal `<%= %>` in the output.
+  #
+  # Templates use `<%%= %>` for HEEx markers so that EEx passes them through
+  # as literal `<%= %>` in the generated output file. This prevents EEx from
+  # trying to evaluate HEEx expressions during the ejection step.
   defp render_template(path, module_name) do
     EEx.eval_file(path, assigns: [module_name: module_name, app_web: module_name])
   end
 
-  # Returns [{template_filename, target_relative_path}, ...]
+  # Returns [{template_filename, target_relative_path}, ...] for the three
+  # ClassMerger source files that must be co-located with components.
   defp class_merger_files do
     [
       {"class_merger.ex.eex", "class_merger.ex"},
@@ -218,7 +287,9 @@ defmodule Mix.Tasks.Phia.Add do
   end
 
   # Pipeline steps for eject_component/2.
-  # Each step receives a context map or passes {:error, reason} through unchanged.
+  # Each step receives a context map and enriches it, or short-circuits with
+  # {:error, reason} which is then passed through unchanged by all downstream
+  # steps (railway-oriented programming pattern).
 
   defp validate(%{component: name} = ctx) do
     if name in @known_components do
@@ -244,17 +315,20 @@ defmodule Mix.Tasks.Phia.Add do
 
   defp write_file(%{target: target, content: content, component: name, root: root}) do
     File.mkdir_p!(Path.dirname(target))
+    # Always eject ClassMerger first so the component's import can resolve.
     eject_class_merger(root)
+    # Copy the JS hook file if one exists for this component.
     eject_js_hooks(name, root)
     if Mix.Generator.create_file(target, content), do: :ok, else: :already_exists
   end
 
   defp write_file({:error, _} = err), do: err
 
+  # Resolves the EEx template path for a component.
+  # Prefers a local priv/ path (useful when developing phia_ui itself) and
+  # falls back to the installed application's priv directory.
   defp template_path(component_name) do
     filename = "#{component_name}.ex.eex"
-    # When running inside the phia_ui library itself, use priv/ directly.
-    # When installed as a dep, use Application.app_dir/2.
     local = Path.join([File.cwd!(), "priv/templates/components", filename])
 
     if File.exists?(local) do
@@ -264,6 +338,8 @@ defmodule Mix.Tasks.Phia.Add do
     end
   end
 
+  # Resolves the JS hook template path for a component.
+  # Returns {:ok, path} when found, :not_found when the component has no hook.
   defp js_hook_template_path(component_name) do
     filename = "#{component_name}.js"
     local = Path.join([File.cwd!(), "priv/templates/js/hooks", filename])

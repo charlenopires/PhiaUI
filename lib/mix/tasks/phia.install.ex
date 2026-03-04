@@ -2,23 +2,52 @@ defmodule Mix.Tasks.Phia.Install do
   @moduledoc """
   Sets up PhiaUI in the current Phoenix project.
 
-  Injects the PhiaUI TailwindCSS v4 `@theme` block into `assets/css/app.css`,
-  creates `assets/js/phia_hooks/index.js`, and registers PhiaUI hooks in
-  `assets/js/app.js`.
+  This is the first command to run when integrating PhiaUI into an existing
+  Phoenix application. It performs three idempotent setup steps:
+
+  1. **Injects the theme CSS** — Prepends the PhiaUI TailwindCSS v4 `@theme`
+     block (color tokens, radius, typography, etc.) into `assets/css/app.css`.
+  2. **Creates the hooks entry point** — Writes
+     `assets/js/phia_hooks/index.js` with an empty `PhiaHooks` export that
+     you can add individual component hooks to.
+  3. **Wires hooks into app.js** — Prepends an import statement and the
+     `PhiaHooks` registration snippet to `assets/js/app.js`.
 
   ## Usage
 
       mix phia.install
 
-  ## Behaviour
+  Run this command once from the root of your Phoenix project. It is safe to
+  run multiple times — each step is idempotent and skips silently when already
+  applied.
 
-  - Detects the current app name via `Mix.Project.config()[:app]`.
-  - Prepends the `@theme { ... }` block from `priv/templates/theme/theme.css`
-    into `assets/css/app.css`.
-  - Creates `assets/js/phia_hooks/index.js` with PhiaHooks export.
-  - Adds PhiaHooks import and registration to `assets/js/app.js`.
-  - **Idempotent**: all steps are safe to run multiple times.
-  - Prints confirmation messages via `Mix.shell().info/1`.
+  ## What gets modified
+
+      assets/css/app.css          — PhiaUI @theme block prepended
+      assets/js/phia_hooks/       — directory created
+      assets/js/phia_hooks/index.js — PhiaHooks export created
+      assets/js/app.js            — import + hook registration prepended
+
+  ## Typical workflow
+
+      # 1. Install PhiaUI setup
+      $ mix phia.install
+
+      # 2. Eject individual components as editable source files
+      $ mix phia.add button
+      $ mix phia.add dialog
+
+      # 3. Optionally install theme presets for runtime colour switching
+      $ mix phia.theme install
+
+  ## Idempotency markers
+
+  The task uses sentinel strings to detect prior installation:
+
+  - CSS: `/* PhiaUI Theme — do not remove this line */`
+  - JS: `// phia_hooks_registered`
+
+  Do not remove these markers, as they prevent double-injection.
 
   ## Options
 
@@ -29,7 +58,10 @@ defmodule Mix.Tasks.Phia.Install do
 
   @shortdoc "Installs PhiaUI theme tokens, hooks, and app.js wiring"
 
+  # Sentinel string written at the top of app.css to detect prior installation.
   @css_marker "/* PhiaUI Theme — do not remove this line */"
+
+  # Sentinel string written at the top of app.js to detect prior installation.
   @js_marker "// phia_hooks_registered"
 
   @hooks_content """
@@ -68,7 +100,7 @@ defmodule Mix.Tasks.Phia.Install do
   end
 
   @doc """
-  Returns the current Mix project's application name.
+  Returns the current Mix project's application name atom.
 
   ## Example
 
@@ -79,9 +111,18 @@ defmodule Mix.Tasks.Phia.Install do
   def app_name, do: Mix.Project.config()[:app]
 
   @doc """
-  Injects the PhiaUI theme block into the CSS file at `path`.
+  Injects the PhiaUI `@theme` block into the CSS file at `path`.
 
-  Skips silently if the marker is already present (idempotent).
+  The theme block is read from `priv/templates/theme/theme.css` and prepended
+  to the existing file contents, separated by the idempotency marker comment.
+
+  Skips silently if the marker is already present, so it is safe to call this
+  function multiple times.
+
+  ## Return values
+
+  - `:ok` — theme block was injected.
+  - `:already_installed` — marker was already present; file was not changed.
   """
   @spec inject_theme(Path.t()) :: :ok | :already_installed
   def inject_theme(path) do
@@ -97,10 +138,18 @@ defmodule Mix.Tasks.Phia.Install do
   end
 
   @doc """
-  Creates `assets/js/phia_hooks/index.js` under `root` with PhiaHooks export.
+  Creates `assets/js/phia_hooks/index.js` under `root` with an empty
+  `PhiaHooks` export.
 
   Uses `Mix.Generator.create_file/3` for interactive conflict handling: if the
   file already exists, the user is prompted before any overwrite.
+
+  The generated file exports an empty object that you populate by importing
+  individual component hook files, for example:
+
+      import PhiaDialog from "./dialog.js"
+      const PhiaHooks = { PhiaDialog }
+      export default PhiaHooks
   """
   @spec inject_hooks(Path.t()) :: :ok | nil
   def inject_hooks(root) do
@@ -111,9 +160,19 @@ defmodule Mix.Tasks.Phia.Install do
   end
 
   @doc """
-  Adds PhiaHooks import and registration to `assets/js/app.js` under `root`.
+  Adds a PhiaHooks import and registration snippet to `assets/js/app.js`
+  under `root`.
+
+  The snippet is prepended to the file so the hooks are available before
+  any LiveSocket initialisation code.
 
   Skips if the idempotency marker is already present.
+
+  ## Return values
+
+  - `:ok` — snippet was prepended to app.js.
+  - `:already_installed` — marker was already present; file was not changed.
+  - `:not_found` — `assets/js/app.js` does not exist.
   """
   @spec inject_app_js(Path.t()) :: :ok | :already_installed | :not_found
   def inject_app_js(root) do
@@ -141,15 +200,19 @@ defmodule Mix.Tasks.Phia.Install do
   # Private helpers
   # ---------------------------------------------------------------------------
 
+  # Reads the theme CSS template and wraps it with the idempotency marker.
+  # The marker must appear at the very top so `String.contains?/2` finds it
+  # even if the file has been reformatted.
   defp build_theme_block do
     template_path = template_path()
     theme_css = File.read!(template_path)
     @css_marker <> "\n" <> theme_css <> "\n"
   end
 
+  # Resolves the theme CSS template path.
+  # Prefers a local priv/ path (useful when developing phia_ui itself) and
+  # falls back to the installed application's priv directory.
   defp template_path do
-    # When running inside the phia_ui library itself, use priv/ directly.
-    # When installed as a dep, use Application.app_dir/2.
     local = Path.join([File.cwd!(), "priv/templates/theme/theme.css"])
 
     if File.exists?(local) do

@@ -112,6 +112,59 @@ defmodule PhiaUi.Components.Button do
 
   @doc """
   Renders a `<button>` element with semantic PhiaUI theming.
+
+  **Icon slots and gap**: when either `left_icon` or `right_icon` is
+  provided, `gap-2` is automatically added to the button's class list so
+  the icon and label maintain consistent spacing — you do not need to add
+  margin classes inside the slots.
+
+  **Loading state**: when `loading={true}`, an animated SVG spinner
+  (`animate-spin h-4 w-4`) is prepended to the button content, `aria-busy`
+  is set to `"true"` (announcing the in-progress state to screen readers),
+  and `pointer-events-none opacity-50` is applied to prevent duplicate
+  submissions while the operation completes.
+
+  **Disabled + loading**: both `:disabled` and `:loading` independently
+  apply `pointer-events-none opacity-50`. When both are true the button is
+  non-interactive and visually dimmed — this is intentional and safe.
+
+  ## Examples
+
+      <%!-- Primary call-to-action --%>
+      <.button>Save changes</.button>
+
+      <%!-- Destructive action — use a confirmation dialog alongside --%>
+      <.button variant={:destructive}>Delete account</.button>
+
+      <%!-- Icon-only toolbar button with accessible label --%>
+      <.button size={:icon} aria-label="Open menu">
+        <.icon name="menu" />
+      </.button>
+
+      <%!-- Left icon adds gap-2 automatically --%>
+      <.button>
+        <:left_icon><.icon name="arrow-left" /></:left_icon>
+        Back
+      </.button>
+
+      <%!-- Right icon with a destructive context --%>
+      <.button variant={:destructive}>
+        Delete
+        <:right_icon><.icon name="trash-2" /></:right_icon>
+      </.button>
+
+      <%!-- Loading state while an async operation is in progress --%>
+      <.button loading={@saving}>
+        {if @saving, do: "Saving…", else: "Save"}
+      </.button>
+
+      <%!-- LiveView phx-disable-with alternative (server-driven) --%>
+      <.button phx-click="save" phx-disable-with="Saving…">
+        Save
+      </.button>
+
+      <%!-- Full-width block button --%>
+      <.button class="w-full">Continue</.button>
   """
   def button(assigns) do
     assigns =

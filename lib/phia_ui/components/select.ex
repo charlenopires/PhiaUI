@@ -1,19 +1,91 @@
 defmodule PhiaUi.Components.Select do
   @moduledoc """
-  Native HTML Select Form Component for Phoenix LiveView.
+  Native HTML select form component for Phoenix LiveView.
 
-  Provides `phia_select/1` — a semantic wrapper over `<select>` with full
-  `Phoenix.HTML.Form` integration, changeset error display, and a Lucide
-  chevron-down icon overlaid on the right side.
+  `phia_select/1` wraps the browser's native `<select>` element with PhiaUI
+  styling, a Lucide chevron-down icon overlay, and full `Phoenix.HTML.FormField`
+  integration including changeset error display.
 
-  ## Example
+  ## When to use
+
+  Use `phia_select/1` for dropdown selection when:
+  - The option count is moderate (2–20 options work best with a native dropdown)
+  - You want zero JavaScript and full browser accessibility for free
+  - A simple, familiar dropdown interaction is appropriate
+
+  For searchable or async-loaded options, consider `phia_combobox/1` instead.
+
+  ## Basic usage
+
+      <.form for={@form} phx-submit="save" phx-change="validate">
+        <.phia_select
+          field={@form[:country]}
+          options={[{"United States", "us"}, {"Canada", "ca"}, {"United Kingdom", "gb"}]}
+          label="Country"
+          prompt="Select your country"
+        />
+        <.button type="submit">Save</.button>
+      </.form>
+
+  ## Options format
+
+  The `:options` attribute accepts any format supported by
+  `Phoenix.HTML.Form.options_for_select/2`:
+
+      <%!-- Tuple list {label, value} — most common --%>
+      options={[{"Free", "free"}, {"Pro", "pro"}, {"Enterprise", "enterprise"}]}
+
+      <%!-- Plain strings — value equals label --%>
+      options={["Small", "Medium", "Large"]}
+
+      <%!-- Keyword list --%>
+      options={[Free: "free", Pro: "pro"]}
+
+      <%!-- Mixed integers --%>
+      options={[{"1 month", 1}, {"6 months", 6}, {"1 year", 12}]}
+
+  ## Pre-selecting a value
+
+  The currently selected value is read from `field.value` automatically.
+  When a changeset is loaded with existing data, the correct option will be
+  pre-selected:
+
+      # In your LiveView mount/2:
+      changeset = Settings.change_preferences(user.preferences)
+      assign(socket, form: to_form(changeset))
+
+  ## Prompt (placeholder option)
+
+  Use `:prompt` to render an unselectable leading option:
 
       <.phia_select
-        field={@form[:category]}
-        options={[{"Technology", "tech"}, {"Sports", "sports"}]}
-        label="Category"
-        prompt="Choose a category"
+        field={@form[:role]}
+        options={[{"Admin", "admin"}, {"Member", "member"}, {"Viewer", "viewer"}]}
+        label="Role"
+        prompt="Choose a role..."
       />
+
+  ## Dynamic options from the database
+
+      <.phia_select
+        field={@form[:category_id]}
+        options={Enum.map(@categories, &{&1.name, &1.id})}
+        label="Category"
+        prompt="Select a category"
+      />
+
+  ## No JavaScript
+
+  The component is CSS-only. A `chevron-down` icon is positioned absolutely
+  inside a `pointer-events-none` overlay so it does not interfere with the
+  native `<select>` click target. The browser handles all keyboard navigation
+  and accessibility natively.
+
+  ## Accessibility
+
+  The `<select>` is associated with its `<label>` via `for`/`id` from the field
+  struct. Changeset errors appear below the element in destructive colour.
+  Focus states use PhiaUI's standard ring tokens.
   """
 
   use Phoenix.Component
@@ -28,38 +100,109 @@ defmodule PhiaUi.Components.Select do
 
   attr(:field, Phoenix.HTML.FormField,
     required: true,
-    doc: "A `Phoenix.HTML.FormField` from `@form[:field_name]`"
+    doc: """
+    A `Phoenix.HTML.FormField` struct obtained via `@form[:field_name]`. Provides
+    the element `id`, `name`, and current `value` for pre-selection, as well as
+    `errors` for validation display.
+    """
   )
 
   attr(:options, :list,
     required: true,
-    doc: ~s(Options list — accepts [{"Label", value}], ["value"], or [value])
+    doc: """
+    The list of options to render. Accepts any format supported by
+    `Phoenix.HTML.Form.options_for_select/2`:
+    - `[{"Label", value}, ...]` — explicit label/value tuples (most readable)
+    - `["value1", "value2"]` — plain strings where label equals value
+    - `[label: "value", ...]` — keyword list format
+    - Mixed integers and strings are supported as values.
+
+    The currently selected option is determined by comparing each value against
+    `field.value`.
+    """
   )
 
   attr(:prompt, :string,
     default: nil,
-    doc: "Placeholder option rendered as <option value=\"\"> at the top"
+    doc: """
+    When provided, renders a leading `<option value="">` as a placeholder.
+    The user sees this text before making a selection. Useful to communicate
+    that a choice is required, e.g. `prompt="Select a country..."`.
+    Submitting with the prompt selected sends an empty string value.
+    """
   )
 
-  attr(:label, :string, default: nil, doc: "Label text rendered above the select")
-  attr(:description, :string, default: nil, doc: "Helper text rendered below the select")
-  attr(:class, :string, default: nil, doc: "Additional CSS classes for the select element")
+  attr(:label, :string,
+    default: nil,
+    doc: """
+    Text rendered in a `<label>` above the select. Associated via `for`/`id`
+    so clicking the label opens the dropdown. When `nil`, no label is rendered.
+    """
+  )
+
+  attr(:description, :string,
+    default: nil,
+    doc: """
+    Helper text rendered below the label and above the select element.
+    Use for constraints or context, e.g. "This affects all team members."
+    Rendered in `text-muted-foreground`.
+    """
+  )
+
+  attr(:class, :string,
+    default: nil,
+    doc: """
+    Additional Tailwind CSS classes merged into the `<select>` element via
+    `cn/1`. Use to adjust width, font, or other styles. Example:
+    `class="w-48"` for a fixed-width dropdown.
+    """
+  )
 
   @doc """
   Renders a native `<select>` element integrated with `Phoenix.HTML.FormField`.
 
-  No JavaScript is required — the browser's native dropdown handles interaction.
-  A `chevron-down` icon is positioned absolutely on the right with
+  No JavaScript is required — the browser's native dropdown handles all
+  interaction. A `chevron-down` icon is positioned absolutely on the right with
   `pointer-events-none` so it overlays the select without interfering with
   clicks. The `:options` list is rendered via `Phoenix.HTML.Form.options_for_select/2`,
-  which accepts tuples `{"Label", value}`, plain strings, or integers. An
-  optional `:prompt` renders a leading `<option value="">` placeholder.
+  which marks the correct `<option>` as selected based on `field.value`.
 
+  An optional `:prompt` renders a leading `<option value="">` placeholder.
+  Changeset errors from `field.errors` are displayed below the element by
+  the `form_field/1` wrapper.
+
+  ## Examples
+
+      <%!-- User role assignment --%>
       <.phia_select
         field={@form[:role]}
-        options={[{"Admin", "admin"}, {"Member", "member"}]}
+        options={[{"Admin", "admin"}, {"Member", "member"}, {"Viewer", "viewer"}]}
         label="Role"
-        prompt="Select a role…"
+        prompt="Select a role..."
+      />
+
+      <%!-- Subscription plan selector --%>
+      <.phia_select
+        field={@form[:plan]}
+        options={[{"Free", "free"}, {"Pro", "pro"}, {"Enterprise", "enterprise"}]}
+        label="Plan"
+      />
+
+      <%!-- Dynamic options from assigns --%>
+      <.phia_select
+        field={@form[:category_id]}
+        options={Enum.map(@categories, &{&1.name, &1.id})}
+        label="Category"
+        prompt="Choose a category"
+      />
+
+      <%!-- Fixed-width with description --%>
+      <.phia_select
+        field={@form[:timezone]}
+        options={@timezones}
+        label="Timezone"
+        description="Used for scheduling reminders."
+        class="w-64"
       />
   """
   def phia_select(assigns) do
@@ -79,9 +222,11 @@ defmodule PhiaUi.Components.Select do
             ])
           }
         >
+          <%!-- Prompt renders as an unselectable leading option with an empty value --%>
           <option :if={@prompt} value="">{@prompt}</option>
           {Phoenix.HTML.Form.options_for_select(@options, @field.value)}
         </select>
+        <%!-- Icon overlay: pointer-events-none prevents it from blocking the native select click --%>
         <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
           <.icon name="chevron-down" size={:sm} />
         </div>
