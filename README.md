@@ -41,177 +41,287 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 ## Component Library — 119 Components
 
-### Primitives & Feedback — 9 components
+### Buttons — 7 components
 
-Stateless HEEx components. No JavaScript. → [Full examples & use cases](docs/components/primitives.md)
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| Button | `button/1` | 6 variants × 4 sizes, disabled state |
-| Card | `card/1` | Composable header / content / footer slots |
-| Badge | `badge/1` | 4 variants for status labels |
-| Icon | `icon/1` | Lucide SVG sprite, 4 sizes (`xs`, `sm`, `md`, `lg`) |
-| Alert | `alert/1` | 2 variants with title and description sub-components |
-| Skeleton | `skeleton/1` | `animate-pulse` placeholders for loading states |
-| Breadcrumb | `breadcrumb/1` | 7 sub-components, `aria-current="page"` |
-| Pagination | `pagination/1` | Server-side pagination with `phx-click` |
-| Kbd | `kbd/1` | Semantic `<kbd>` keyboard shortcut display |
-
-### Form Integration — 12 components
-
-Integrated with `Phoenix.HTML.Form` and Ecto changesets. → [Full examples & use cases](docs/components/forms.md)
+Action triggers for all interaction patterns: primary actions, toolbars, floating actions, and toggles.
 
 | Component | Function | Description |
 |-----------|----------|-------------|
-| Input | `phia_input/1` | Label + input + description + errors |
-| Textarea | `phia_textarea/1` | Multi-line with form integration |
-| Select | `phia_select/1` | Native select with FormField |
-| Form | `form_field/1`, `form_label/1`, `form_message/1` | Composable form primitives |
-| Checkbox | `checkbox/1`, `form_checkbox/1` | Native checkbox, indeterminate state, FormField |
-| Radio Group | `radio_group/1`, `form_radio_group/1` | Native radio inputs, `:let` context |
-| Switch | `switch/1`, `form_switch/1` | Toggle switch, CSS animation, FormField |
-| Slider | `slider/1`, `form_slider/1` | CSS `input[type=range]`, WAI-ARIA, FormField |
-| Rating | `rating/1`, `form_rating/1` | CSS-only star rating, radiogroup ARIA |
-| Tags Input | `tags_input/1` | Multi-tag, deduplication, CSV sync — `PhiaTagsInput` |
-| Image Upload | `image_upload/1` | Drop zone + preview, native Phoenix uploads |
-| Rich Text Editor | `rich_text_editor/1` | WYSIWYG, 14 toolbar commands, zero npm — `PhiaRichTextEditor` |
-| Calendar | `calendar/1` | Server-rendered monthly grid, single/range mode, keyboard nav |
+| Button | `button/1` | 6 variants (default, destructive, outline, secondary, ghost, link) × 4 sizes, icon size, disabled state |
+| ButtonGroup | `button_group/1` | Unified button toolbar with horizontal/vertical orientation, shared border radius |
+| BackTop | `back_top/1` | Fixed scroll-to-top button — appears after scroll threshold, smooth scroll, fade — `PhiaBackTop` hook |
+| CopyButton | `copy_button/1` | Clipboard copy with check-icon feedback and `aria-live` announcement — `PhiaCopyButton` hook |
+| FloatButton | `float_button/1` | Fixed circular FAB; speed-dial variant with expandable item buttons |
+| Toggle | `toggle/1` | `aria-pressed` stateful button, 2 variants (default, outline), 3 sizes |
+| ToggleGroup | `toggle_group/1` | Single or multiple selection group, `:let` context for active state |
 
-### Interactive Components — 17 components
+→ [Full documentation](docs/components/buttons.md)
 
-Vanilla JS hooks for accessible behaviors. → [Full examples & use cases](docs/components/interactive.md)
+### Calendar — 33 components
 
-| Component | Function | Hook | Key features |
-|-----------|----------|------|--------------|
-| Dialog | `dialog/1` | `PhiaDialog` | Focus trap, Escape, scroll lock |
-| Dropdown Menu | `dropdown_menu/1` | `PhiaDropdownMenu` | Smart flip, click-outside, arrow keys |
-| Accordion | `accordion/1` | (LiveView.JS) | Single / multiple mode |
-| Tooltip | `tooltip/1` | `PhiaTooltip` | Hover + focus, 4 positions, smart flip |
-| Popover | `popover/1` | `PhiaPopover` | Click-open, focus trap, click-outside |
-| Toast | `toast/1` | `PhiaToast` | `push_event` driven, auto-dismiss, stacking |
-| Command Menu | `command/1` | `PhiaCommand` | Ctrl+K global, Arrow keys, server-side filter |
-| Date Range Picker | `date_range_picker/1` | `PhiaDateRangePicker` | Dual calendar, range highlight, min/max |
-| Collapsible | `collapsible/1` | (LiveView.JS) | Zero hooks, server-controlled open state |
-| Alert Dialog | `alert_dialog/1` | `PhiaDialog` | `role="alertdialog"`, destructive variant |
-| Carousel | `carousel/1` | `PhiaCarousel` | Touch swipe, keyboard, loop, indicators |
-| Context Menu | `context_menu/1` | `PhiaContextMenu` | Right-click, smart positioning, WAI-ARIA |
-| Drawer | `drawer/1` | `PhiaDrawer` | 4 directions, focus trap, backdrop click |
-| Combobox | `combobox/1` | — | Server-side search filter, FormField |
-| Date Picker | `date_picker/1` | — | Calendar + Popover compose, format attr |
-| Sheet | `sheet/1` | `PhiaDialog` | 4 sides, 5 sizes, modal panel |
-| Hover Card | `hover_card/1` | — | `role="tooltip"`, hover preview card |
-
-### Utilities & Composed — 16 components
-
-CSS-only utilities, display patterns, and data viz primitives. → [Full examples & use cases](docs/components/utilities.md)
+The most comprehensive calendar and scheduling suite for Phoenix LiveView, covering every date/time interaction pattern from simple pickers to full booking platforms.
 
 | Component | Function | Description |
 |-----------|----------|-------------|
-| Aspect Ratio | `aspect_ratio/1` | CSS padding-top trick, any ratio (16:9, 4:3, 1:1…) |
-| Direction | `direction/1` | LTR/RTL wrapper for multilingual content |
-| Empty State | `empty/1` | Centered placeholder with icon/title/description/action slots |
-| Field | `field/1` | Standalone form field layout without FormField |
-| Button Group | `button_group/1` | Unified button toolbar, H/V orientation |
-| Avatar | `avatar/1` | Circular profile image with initials fallback, `avatar_group/1` |
-| Tabs Nav | `tabs_nav/1` | Navigation tabs: underline, pills, segment variants |
-| Theme Provider | `theme_provider/1` | Scoped CSS theme wrapper using `data-phia-theme` attribute |
-| Scroll Area | `scroll_area/1` | Custom scrollbar overlay, H/V/both orientations |
-| Progress | `progress/1` | `role="progressbar"`, `aria-valuenow`, indeterminate mode |
-| Separator | `separator/1` | Horizontal / vertical divider, `role="separator"` |
-| Toggle | `toggle/1` | `aria-pressed`, 2 variants, 3 sizes |
-| Toggle Group | `toggle_group/1` | Single / multiple selection, `:let` context |
-| Tabs | `tabs/1` | `tabs/list/trigger/content`, server-rendered, `:let` context |
-| Timeline | `timeline/1` | Vertical activity timeline, CSS-only connector |
-| Resizable | `resizable/1` | Drag-to-resize panels — `PhiaResizable` |
+| BadgeCalendar | `badge_calendar/1` | Calendar with numeric badge overlay per day (counts, notifications) |
+| BigCalendar | `big_calendar/1` | Full-page month view, view switcher (month/week/day), MON-first, event pills |
+| BookingCalendar | `booking_calendar/1` | Appointment booking calendar with availability slots per day and confirm flow |
+| Calendar | `calendar/1` | Server-rendered monthly grid, single/range mode, keyboard navigation |
+| CalendarTimePicker | `calendar_time_picker/1` | Full month calendar + inline time picker combined in one component |
+| CalendarWeekView | `calendar_week_view/1` | Week grid with time axis (00:00–23:00), events positioned by pixel offset |
+| CountdownTimer | `countdown_timer/1` | Live server-side countdown to target datetime, displays DD:HH:MM:SS |
+| DailyAgenda | `daily_agenda/1` | Single-day timeline with hour rows and overlapping event layout |
+| DateCard | `date_card/1` | Day card with 4 states: default / today / selected / disabled |
+| DateField | `date_field/1`, `form_date_field/1` | Segmented date input (DD / MM / YYYY) with independent slot navigation, FormField |
+| DatePicker | `date_picker/1` | Calendar + Popover compose, configurable date format |
+| DateRangePicker | `date_range_picker/1` | Dual calendar range selection, range highlight, min/max bounds — `PhiaDateRangePicker` hook |
+| DateRangePresets | `date_range_presets/1` | DateRangePicker extended with preset buttons (Today, This Week, Last 30 Days, custom) |
+| DateStrip | `date_strip/1` | Horizontal scrollable row of DateCards, auto-scrolls to selected day |
+| DateTimePicker | `date_time_picker/1`, `form_date_time_picker/1` | Combined date calendar + time picker in popover, ISO 8601 output, FormField |
+| EventCalendar | `event_calendar/1` | Monthly grid with event pills; day click expands event list |
+| HeatmapCalendar | `heatmap_calendar/1` | Contribution-style grid, intensity buckets, `role="grid"` WAI-ARIA |
+| MonthPicker | `month_picker/1`, `form_month_picker/1` | Grid of 12 months, year navigation arrows, FormField |
+| MultiMonthCalendar | `multi_month_calendar/1` | Side-by-side N months (2–4), synchronized navigation |
+| MultiSelectCalendar | `multi_select_calendar/1` | Calendar with toggle-per-day multi-day selection |
+| RangeCalendar | `range_calendar/1` | SUN-first month grid, range band: start/end blue circles + half-band + full-band |
+| ScheduleEventCard | `schedule_event_card/1` | Rich event card: title, time, location, attendees, status badge |
+| ScheduleView | `schedule_view/1` | Agenda-style list grouped by date, upcoming events sorted chronologically |
+| StreakCalendar | `streak_calendar/1` | Habit tracker / streak heatmap: current streak, longest streak, intensity levels |
+| TimePicker | `time_picker/1`, `form_time_picker/1` | Clock-face or scroll-wheel time selector, 12h/24h, minute step, FormField |
+| TimeSliderPicker | `time_slider_picker/1` | Slider-based start/end time range picker |
+| TimeSlotGrid | `time_slot_grid/1` | Grid of bookable time slots: available / booked / selected states |
+| TimeSlotList | `time_slot_list/1` | Vertical list of time slots with availability indicator and book button |
+| WeekCalendar | `week_calendar/1` | Compact week navigator: month title + prev/next arrows, 7-day strip, selected-day pill |
+| WeekDayPicker | `week_day_picker/1` | Mon–Sun pill toggles for recurrence rules, multi-select |
+| WeekPicker | `week_picker/1`, `form_week_picker/1` | ISO week selector (Wxx/YYYY), week highlight in calendar grid, FormField |
+| WheelPicker | `wheel_picker/1` | iOS-style scroll-snap wheel picker, configurable columns and items |
+| YearPicker | `year_picker/1`, `form_year_picker/1` | Scrollable year grid, min/max bounds, FormField |
 
-### Dashboard & Analytics — 9 components
-
-Enterprise layout shell, data tables, KPI widgets, and chart integration. → [Full examples & use cases](docs/components/dashboard.md)
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| Shell | `shell/1` | CSS Grid desktop layout (sidebar 240px + 1fr) |
-| Sidebar | `sidebar/1` + `sidebar_item/1` | Fixed sidebar, brand/nav/footer slots |
-| Topbar | `topbar/1` | Full-width header, actions slot |
-| Dark Mode Toggle | `dark_mode_toggle/1` | `PhiaDarkMode`: localStorage + `prefers-color-scheme` |
-| Table | `table/1` | 8 sub-components, `phx-update="stream"` compatible |
-| DataGrid | `data_grid/1` | Sortable columns, `phx-click` sort events |
-| Stat Card + Metric Grid | `stat_card/1`, `metric_grid/1` | KPI cards with trend indicators, responsive grid |
-| Chart Shell + PhiaChart | `chart_shell/1`, `phia_chart/1` | Any chart library wrapper + ECharts hook |
-| Heatmap Calendar | `heatmap_calendar/1` | Contribution grid, intensity buckets, WAI-ARIA grid |
-
-### Enterprise Components — 10 components
-
-Advanced data management and collaboration UI. → [Full examples & use cases](docs/components/enterprise.md)
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| Activity Feed | `activity_feed/1` | Chronological event log with 6 activity types and avatar slot |
-| Kanban Board | `kanban_board/1` | Drag-ready column + card layout with priority indicators |
-| Chat Message | `chat_message/1` | Full AI/human chat UI: container, bubbles, suggestions, input |
-| Mention Input | `mention_input/1` | `@mention` textarea with server-side autocomplete — `PhiaMentionInput` |
-| Filter Bar | `filter_bar/1` | Horizontal filter toolbar: search, select, toggle, reset |
-| Filter Builder | `filter_builder/1` | Dynamic query builder with field/operator/value rules |
-| Bulk Action Bar | `bulk_action_bar/1` | Contextual toolbar for table row selection |
-| Step Tracker | `step_tracker/1` | Multi-step wizard progress (horizontal/vertical) |
-| Navigation Menu | `navigation_menu/1` | Horizontal nav with links and dropdown content panels |
-
-### Gap Analysis Components — 15 components
-
-Newly added components identified by gap analysis vs shadcn/ui, Mantine, Ant Design, Chakra UI v3, and MUI. → [Full examples & use cases](docs/components/gap.md)
-
-#### Input Primitives
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| InputOTP | `input_otp/1`, `input_otp_group/1`, `input_otp_slot/1`, `input_otp_separator/1` | N-slot OTP/PIN input with auto-advance focus, paste distribution, `inputmode="numeric"` |
-| Spinner | `spinner/1` | CSS SVG animated loading indicator, 5 sizes, `role="status"` + `aria-live` |
-| NumberInput | `number_input/1`, `form_number_input/1` | Native `<input type="number">` with ± stepper buttons, prefix/suffix slots, FormField integration |
-| PasswordInput | `password_input/1`, `form_password_input/1` | Password field with show/hide toggle via `JS.toggle_attribute`, `autocomplete="current-password"` |
-| CopyButton | `copy_button/1` | Clipboard copy button — `PhiaCopyButton` hook, check icon feedback, `aria-live` announcement |
-
-#### Selection & Interaction
-
-| Component | Function | Hook | Description |
-|-----------|----------|------|-------------|
-| SegmentedControl | `segmented_control/1` | — | Radio-based segment selector, CSS active state, 3 sizes |
-| Chip | `chip/1`, `chip_group/1` | — | Interactive pill: toggle (`aria-pressed`), dismissible (×), 3 variants, 3 sizes |
-| Editable | `editable/1` | `PhiaEditable` | Click-to-edit inline field — preview/edit toggle, Enter confirm, Escape cancel, click-outside cancel |
-| Menubar | `menubar/1`, `menubar_trigger/1`, `menubar_content/1`, `menubar_item/1`, `menubar_separator/1` | — | Desktop app-style menu bar, `role="menubar"` + `role="menu"` + keyboard navigation |
-
-#### Upload & File
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| FileUpload | `file_upload/1`, `file_upload_entry/1` | Drag-and-drop zone, `phx-drop-target`, progress bar per entry, error display, cancel button |
-
-#### Utility & Navigation
-
-| Component | Function | Hook | Description |
-|-----------|----------|------|-------------|
-| ColorPicker | `color_picker/1` | `PhiaColorPicker` | Native `<input type="color">` + swatches + hex display, hook syncs all three |
-| FloatButton | `float_button/1` | — | Fixed circular action button; speed-dial variant with expandable item buttons |
-| MultiSelect | `multi_select/1`, `form_multi_select/1` | — | `<select multiple>` with selected-chip row, `find_label/2`, FormField integration |
-| Tree | `tree/1`, `tree_item/1` | — | Hierarchical tree view using native `<details>/<summary>` (zero JS), `role="tree"` + `aria-expanded` |
-| BackTop | `back_top/1` | `PhiaBackTop` | Fixed scroll-to-top button — appears after threshold px, smooth scroll, fade transition |
+→ [Full documentation](docs/components/calendar.md)
 
 ---
 
-## Live Sample — PhiaUI Dashboard
+### Cards — 5 components
 
-See PhiaUI in action with a full enterprise dashboard built entirely from library components:
+Structured surface components for metrics, selection, and e-commerce receipts.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Card | `card/1` | Composable card with header, content, and footer slots |
+| MetricGrid | `metric_grid/1` | Responsive grid wrapper for multiple StatCards, configurable column count |
+| ReceiptCard | `receipt_card/1` | Transaction/purchase receipt: line items, totals, merchant info, QR slot |
+| SelectableCard | `selectable_card/1` | Card with checkbox/radio selection state, border highlight when selected |
+| StatCard | `stat_card/1` | KPI card with value, trend indicator (up/down/neutral), and trend value |
+
+→ [Full documentation](docs/components/cards.md)
+
+---
+
+### Data — 13 components
+
+Enterprise data management: tables, grids, charts, Gantt, Kanban, and advanced filters.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| BulkActionBar | `bulk_action_bar/1` | Contextual toolbar activated by table row selection; action slots |
+| ChartShell | `chart_shell/1` | Consistent card chrome wrapper for any chart library |
+| Chart | `phia_chart/1` | ECharts integration hook — area, bar, line, pie, scatter — `PhiaChart` hook |
+| DataGrid | `data_grid/1` | Sortable columns with `phx-click` sort events, `next_dir/1` helper |
+| FilterBar | `filter_bar/1` | Horizontal filter toolbar with search, select, toggle, and reset slots |
+| FilterBuilder | `filter_builder/1` | Dynamic query builder: field / operator / value rule rows, add/remove |
+| GanttChart | `gantt_chart/1` | Horizontal SVG project timeline: row labels, date-range bars, today indicator |
+| GaugeChart | `gauge_chart/1` | SVG semicircle gauge, value needle, min/max labels, configurable color zones |
+| KanbanBoard | `kanban_board/1` | Drag-ready column + card layout with priority indicators and avatar slots |
+| SparklineCard | `sparkline_card/1` | Inline SVG sparkline polyline + metric value + trend badge |
+| Table | `table/1` | 8 sub-components, `phx-update="stream"` compatible, sortable headers |
+| Tree | `tree/1`, `tree_item/1` | Hierarchical tree view via native `<details>/<summary>` (zero JS), `role="tree"` |
+| UptimeBar | `uptime_bar/1` | Segmented uptime visualization (green/red/yellow segments), percentage badge |
+
+→ [Full documentation](docs/components/data.md)
+
+---
+
+### Display — 11 components
+
+Visual identity, status indicators, avatars, chat bubbles, and theme control.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| ActivityFeed | `activity_feed/1` | Chronological event log with 6 activity types, group labels, and avatar slot |
+| Avatar | `avatar/1` | Circular profile image with initials fallback, 5 sizes |
+| AvatarGroup | `avatar_group/1` | Stacked overlapping avatars, `+N` overflow badge, configurable max |
+| Badge | `badge/1` | 4 variants (default, secondary, outline, destructive) for status labels |
+| ChatMessage | `chat_message/1` | Full AI/human chat UI: container, bubbles, suggestions, chat input |
+| DarkModeToggle | `dark_mode_toggle/1` | localStorage + `prefers-color-scheme` dark mode toggle — `PhiaDarkMode` hook |
+| Direction | `direction/1` | LTR/RTL wrapper for multilingual (Arabic, Hebrew) content |
+| Icon | `icon/1` | Lucide SVG sprite, 4 sizes (`xs`, `sm`, `md`, `lg`) |
+| Kbd | `kbd/1` | Semantic `<kbd>` keyboard shortcut display |
+| ThemeProvider | `theme_provider/1` | Scoped CSS theme wrapper via `data-phia-theme` attribute |
+| Timeline | `timeline/1` | Vertical activity timeline with status states, CSS-only connector |
+
+→ [Full documentation](docs/components/display.md)
+
+---
+
+### Feedback — 11 components
+
+Loading states, alerts, notifications, and progress indicators.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Alert | `alert/1` | 2 variants (default, destructive) with title and description sub-components |
+| AlertDialog | `alert_dialog/1` | `role="alertdialog"`, destructive variant, shared `PhiaDialog` hook |
+| CircularProgress | `circular_progress/1` | Radial SVG progress ring, customizable size/stroke/color, `role="progressbar"` |
+| EmptyState | `empty_state/1` | Centered placeholder with icon, title, description, and action slots |
+| Progress | `progress/1` | Horizontal `role="progressbar"`, `aria-valuenow`, indeterminate mode |
+| Skeleton | `skeleton/1` | `animate-pulse` block placeholders for loading states |
+| Snackbar | `snackbar/1` | Temporary bottom-of-screen notification banner, auto-dismiss, action slot |
+| Sonner | `sonner/1` | Rich toast stack: icon variants, action button, promise integration — `PhiaSonner` hook |
+| Spinner | `spinner/1` | CSS SVG animated loading indicator, 5 sizes, `role="status"` + `aria-live` |
+| StepTracker | `step_tracker/1` | Multi-step wizard progress indicator, horizontal and vertical orientation |
+| Toast | `toast/1` | `push_event`-driven auto-dismiss toast, stacking, 5 variants — `PhiaToast` hook |
+
+→ [Full documentation](docs/components/feedback.md)
+
+---
+
+### Forms — 4 components
+
+Form layout primitives that integrate with `Phoenix.HTML.Form` and Ecto changesets.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Field | `field/1` | Standalone form field layout without Phoenix.HTML.FormField |
+| Form | `form/1` | `phx-change` / `phx-submit` form wrapper |
+| FormField | `form_field/1`, `form_label/1`, `form_message/1` | Composable label + input + error message primitives |
+| Label | `label/1` | Accessible `<label>` with `for` attribute, required indicator |
+
+→ [Full documentation](docs/components/forms.md)
+
+---
+
+### Inputs — 24 components
+
+Every input primitive with full Ecto / `Phoenix.HTML.FormField` integration.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Checkbox | `checkbox/1`, `form_checkbox/1` | Native checkbox, indeterminate state, FormField |
+| Chip | `chip/1`, `chip_group/1` | Interactive pill: toggle (`aria-pressed`), dismissible (×), 3 variants |
+| ColorPicker | `color_picker/1` | Native `<input type="color">` + swatches + hex display — `PhiaColorPicker` hook |
+| Combobox | `combobox/1` | Server-side search filter dropdown, FormField integration |
+| Editable | `editable/1` | Click-to-edit inline field: preview/edit toggle, Enter/Escape/click-outside — `PhiaEditable` hook |
+| FileUpload | `file_upload/1`, `file_upload_entry/1` | Drag-and-drop zone, `phx-drop-target`, per-entry progress bar, cancel |
+| ImageUpload | `image_upload/1` | Drop zone + preview grid, native Phoenix `live_file_input` uploads |
+| Input | `input/1` | Base `<input>` element, multiple types, class customization |
+| InputAddon | `input_addon/1` | Prefix/suffix addon wrapper for inputs (icons, labels, currency symbols) |
+| InputOTP | `input_otp/1` | N-slot OTP/PIN input with auto-advance focus, paste distribution, `inputmode="numeric"` |
+| MentionInput | `mention_input/1` | `@mention` textarea with server-side autocomplete — `PhiaMentionInput` hook |
+| MultiSelect | `multi_select/1`, `form_multi_select/1` | `<select multiple>` with selected-chip row, FormField integration |
+| NumberInput | `number_input/1`, `form_number_input/1` | `<input type="number">` with ± stepper buttons, prefix/suffix slots, FormField |
+| PasswordInput | `password_input/1`, `form_password_input/1` | Password field with show/hide toggle via `JS.toggle_attribute`, FormField |
+| PhiaInput | `phia_input/1` | Unified label + input + description + error message wrapper, all input types |
+| RadioGroup | `radio_group/1`, `form_radio_group/1` | Native radio inputs, `:let` context, FormField |
+| Rating | `rating/1`, `form_rating/1` | CSS-only star rating, `role="radiogroup"`, FormField |
+| RichTextEditor | `rich_text_editor/1` | WYSIWYG editor, 14 toolbar commands, zero npm — `PhiaRichTextEditor` hook |
+| SegmentedControl | `segmented_control/1` | Radio-based segment selector, CSS active-sliding state, 3 sizes |
+| Select | `select/1` | Native `<select>` with FormField integration |
+| Slider | `slider/1`, `form_slider/1` | CSS `input[type=range]`, WAI-ARIA `aria-valuemin/max/now`, FormField |
+| Switch | `switch/1`, `form_switch/1` | Toggle switch with CSS animation, `role="switch"`, FormField |
+| TagsInput | `tags_input/1` | Multi-tag input, deduplication, CSV hidden sync — `PhiaTagsInput` hook |
+| Textarea | `textarea/1` | Multi-line textarea with FormField integration |
+
+→ [Full documentation](docs/components/inputs.md)
+
+---
+
+### Layout — 7 components
+
+Structural composition components for panels, scroll areas, and collapsible regions.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Accordion | `accordion/1` | Single or multiple expand mode via `Phoenix.LiveView.JS`, zero hooks |
+| AspectRatio | `aspect_ratio/1` | CSS padding-top ratio trick, any ratio (16:9, 4:3, 1:1, etc.) |
+| Collapsible | `collapsible/1` | Single-panel expand/collapse, server-controlled open state via `Phoenix.LiveView.JS` |
+| Resizable | `resizable/1` | Drag-to-resize split panels — `PhiaResizable` hook |
+| ScrollArea | `scroll_area/1` | Custom scrollbar overlay, horizontal / vertical / both orientations |
+| Separator | `separator/1` | Horizontal or vertical divider, `role="separator"` |
+| Shell | `shell/1` | CSS Grid desktop layout: fixed sidebar 240px + fluid main 1fr |
+
+→ [Full documentation](docs/components/layout.md)
+
+---
+
+### Media — 3 components
+
+Audio playback, image carousels, and QR code generation.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| AudioPlayer | `audio_player/1` | Full media player: play/pause, scrubber, volume, duration display — `PhiaAudioPlayer` hook |
+| Carousel | `carousel/1` | Touch-swipe, keyboard navigation, loop, dot indicators — `PhiaCarousel` hook |
+| QrCode | `qr_code/1` | Inline SVG QR code via `eqrcode`, configurable size and error correction level |
+
+→ [Full documentation](docs/components/media.md)
+
+---
+
+### Navigation — 11 components
+
+Application chrome: sidebar, topbar, breadcrumbs, tabs, pagination, and mobile navigation.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| BottomNavigation | `bottom_navigation/1`, `bottom_navigation_item/1` | Mobile bottom tab bar, `aria-current` on active tab, icon + label layout |
+| Breadcrumb | `breadcrumb/1` | 7 sub-components, `aria-label="Breadcrumb"`, `aria-current="page"` on last item |
+| Menubar | `menubar/1` | Desktop app-style menu bar, `role="menubar"` + keyboard navigation |
+| MobileSidebarToggle | `mobile_sidebar_toggle/1` | Hamburger button that opens sidebar drawer on small viewports |
+| NavigationMenu | `navigation_menu/1` | Horizontal nav with links and mega-menu dropdown content panels |
+| Pagination | `pagination/1` | Server-side pagination with `phx-click` page events |
+| Sidebar | `sidebar/1`, `sidebar_item/1` | Fixed sidebar, brand / nav / footer slots, active item highlight |
+| Tabs | `tabs/1` | tab / list / trigger / content composition, server-rendered, `:let` context |
+| TabsNav | `tabs_nav/1` | Navigation tabs: underline, solid, and pill variants |
+| Toolbar | `toolbar/1`, `toolbar_button/1`, `toolbar_separator/1` | `role="toolbar"`, icon buttons, keyboard-navigable separator |
+| Topbar | `topbar/1` | Full-width application header with left/center/right action slots |
+
+→ [Full documentation](docs/components/navigation.md)
+
+---
+
+### Overlay — 9 components
+
+Modal dialogs, drawers, popovers, tooltips, and context menus — all with focus management.
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Command | `command/1` | Ctrl+K global command palette, arrow-key navigation, server-side filter — `PhiaCommand` hook |
+| ContextMenu | `context_menu/1` | Right-click context menu, smart positioning, `role="menu"` WAI-ARIA — `PhiaContextMenu` hook |
+| Dialog | `dialog/1` | Modal dialog with focus trap, Escape to close, scroll lock — `PhiaDialog` hook |
+| Drawer | `drawer/1` | 4-direction side panel / bottom sheet, focus trap, backdrop click — `PhiaDrawer` hook |
+| DropdownMenu | `dropdown_menu/1` | Trigger + menu: smart flip, click-outside, arrow-key navigation — `PhiaDropdownMenu` hook |
+| HoverCard | `hover_card/1` | `role="tooltip"` hover preview card, delay show/hide |
+| Popover | `popover/1` | Click-open floating panel, focus trap, click-outside to close — `PhiaPopover` hook |
+| Sheet | `sheet/1` | 4 sides (top/right/bottom/left), 5 sizes, modal side panel — `PhiaDialog` hook |
+| Tooltip | `tooltip/1` | Hover + focus tooltip, 4 positions, smart flip — `PhiaTooltip` hook |
+
+→ [Full documentation](docs/components/overlay.md)
+
+---
+
+## Live Sample
+
+See PhiaUI in action with a full enterprise dashboard, booking platform, and CMS built entirely from library components:
 
 **[github.com/charlenopires/PhiaUI-samples](https://github.com/charlenopires/PhiaUI-samples)**
-
-Or follow the step-by-step **[Dashboard Tutorial](docs/guides/tutorial-dashboard.md)** to build one from scratch.
 
 ---
 
 ## Quick Start
 
-### 1. Install
+### Step 1 — Install
 
-Add to `mix.exs`:
+Add PhiaUI to `mix.exs`:
 
 ```elixir
 def deps do
@@ -221,14 +331,16 @@ def deps do
 end
 ```
 
-Run:
+Fetch dependencies and run the installer:
 
 ```bash
 mix deps.get
 mix phia.install
 ```
 
-### 2. Add the theme
+The installer copies all 24 JS hook files to `assets/js/phia_hooks/` and injects the base theme import into `app.css`.
+
+### Step 2 — Configure CSS
 
 In `assets/css/app.css`:
 
@@ -243,18 +355,58 @@ For runtime color theme switching (optional), generate the multi-theme CSS:
 mix phia.theme install
 ```
 
-This creates `assets/css/phia-themes.css` and auto-imports it in `app.css`. Then set `data-phia-theme="blue"` on any ancestor element to activate that theme.
+This writes `assets/css/phia-themes.css` with all 8 `[data-phia-theme]` selectors and auto-imports it in `app.css`. Activate a preset by setting `data-phia-theme="blue"` on any ancestor element or on `<html>`.
 
-### 3. Eject components
+### Step 3 — Eject components
+
+Copy specific component source files into your project:
 
 ```bash
-mix phia.add button card badge dialog
+mix phia.add button card dialog
 ```
 
-### 4. Register hooks
+Components are ejected to `lib/your_app_web/components/ui/`. After ejection you own the code — read it, customize it, delete what you do not need.
+
+```
+lib/your_app_web/components/ui/button.ex      ← yours to edit
+assets/js/phia_hooks/dialog.js                ← yours to edit
+```
+
+### Step 4 — Import in your LiveView
+
+```elixir
+defmodule MyAppWeb.PageLive do
+  use MyAppWeb, :live_view
+
+  import MyAppWeb.Components.UI.Button
+  import MyAppWeb.Components.UI.Card
+  import MyAppWeb.Components.UI.Dialog
+
+  def render(assigns) do
+    ~H"""
+    <.button variant="default">Hello PhiaUI</.button>
+    """
+  end
+end
+```
+
+Or import globally in `my_app_web.ex`:
+
+```elixir
+defp html_helpers do
+  quote do
+    import MyAppWeb.Components.UI.Button
+    import MyAppWeb.Components.UI.Card
+    # add more as you eject them
+  end
+end
+```
+
+### Step 5 — Register JS hooks
+
+Add all 24 hooks to `assets/js/app.js`:
 
 ```javascript
-// assets/js/app.js
 import PhiaDialog          from "./phia_hooks/dialog"
 import PhiaDropdownMenu    from "./phia_hooks/dropdown_menu"
 import PhiaTagsInput       from "./phia_hooks/tags_input"
@@ -273,39 +425,42 @@ import PhiaDrawer          from "./phia_hooks/drawer"
 import PhiaTheme           from "./phia_hooks/theme"
 import PhiaResizable       from "./phia_hooks/resizable"
 import PhiaMentionInput    from "./phia_hooks/mention_input"
-import PhiaCopyButton   from "./phia_hooks/copy_button"
-import PhiaEditable     from "./phia_hooks/editable"
-import PhiaColorPicker  from "./phia_hooks/color_picker"
-import PhiaBackTop      from "./phia_hooks/back_top"
-import PhiaAudioPlayer  from "./phia_hooks/audio_player"
-import PhiaSonner       from "./phia_hooks/sonner"
+import PhiaCopyButton      from "./phia_hooks/copy_button"
+import PhiaEditable        from "./phia_hooks/editable"
+import PhiaColorPicker     from "./phia_hooks/color_picker"
+import PhiaBackTop         from "./phia_hooks/back_top"
+import PhiaAudioPlayer     from "./phia_hooks/audio_player"
+import PhiaSonner          from "./phia_hooks/sonner"
 
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: {
     PhiaDialog, PhiaDropdownMenu, PhiaTagsInput, PhiaRichTextEditor,
     PhiaTooltip, PhiaPopover, PhiaToast, PhiaDarkMode,
-    PhiaCommand, PhiaDateRangePicker, PhiaChart,
-    PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer,
-    PhiaTheme, PhiaResizable, PhiaMentionInput,
-    PhiaCopyButton, PhiaEditable, PhiaColorPicker, PhiaBackTop,
-    PhiaAudioPlayer, PhiaSonner
+    PhiaCommand, PhiaDateRangePicker, PhiaChart, PhiaCalendar,
+    PhiaCarousel, PhiaContextMenu, PhiaDrawer, PhiaTheme,
+    PhiaResizable, PhiaMentionInput, PhiaCopyButton, PhiaEditable,
+    PhiaColorPicker, PhiaBackTop, PhiaAudioPlayer, PhiaSonner
   }
 })
 ```
 
-> Hook files are copied to `assets/js/phia_hooks/` by `mix phia.install`.
+> Only import hooks for components you actually use. All hook files are vanilla JS — zero npm runtime dependencies.
 
 ---
 
-## Usage Examples
+## Usage Patterns
 
-### Button & Button Group
+### Buttons & Actions
 
 ```heex
+<%!-- Variants --%>
 <.button>Default</.button>
 <.button variant="destructive">Delete</.button>
-<.button variant="outline" size="sm"><.icon name="download" size={:sm} /> Export</.button>
+<.button variant="outline" size="sm">
+  <.icon name="download" size={:sm} /> Export
+</.button>
+<.button variant="ghost" size="icon"><.icon name="more-horizontal" size={:sm} /></.button>
 
 <%!-- Button Group toolbar --%>
 <.button_group>
@@ -313,332 +468,130 @@ let liveSocket = new LiveSocket("/live", Socket, {
   <.button variant="outline" size="icon"><.icon name="italic" size={:sm} /></.button>
   <.button variant="outline" size="icon"><.icon name="underline" size={:sm} /></.button>
 </.button_group>
+
+<%!-- Floating action button with speed dial --%>
+<.float_button position={:bottom_right}>
+  <:main icon="plus" aria_label="Actions" />
+  <:item icon="edit"  on_click="edit"   label="Edit" />
+  <:item icon="share" on_click="share"  label="Share" />
+  <:item icon="trash" on_click="delete" label="Delete" />
+</.float_button>
 ```
 
-→ [Button examples](docs/components/primitives.md#button) | [Button Group examples](docs/components/utilities.md#button-group)
+### Layout Shell
 
-### Form with Validation
+```heex
+<.shell>
+  <:sidebar>
+    <.sidebar>
+      <:brand>
+        <span class="font-bold text-lg">MyApp</span>
+      </:brand>
+      <:nav>
+        <.sidebar_item href="/dashboard" active={@path == "/dashboard"} icon="layout-dashboard">
+          Dashboard
+        </.sidebar_item>
+        <.sidebar_item href="/users" active={@path =~ "/users"} icon="users">
+          Users
+        </.sidebar_item>
+        <.sidebar_item href="/settings" active={@path =~ "/settings"} icon="settings">
+          Settings
+        </.sidebar_item>
+      </:nav>
+    </.sidebar>
+  </:sidebar>
+  <:topbar>
+    <.topbar>
+      <:left><h1 class="text-lg font-semibold">{@page_title}</h1></:left>
+      <:right>
+        <.dark_mode_toggle />
+        <.avatar><.avatar_fallback name={@current_user.name} /></.avatar>
+      </:right>
+    </.topbar>
+  </:topbar>
+  <:main>
+    {@inner_content}
+  </:main>
+</.shell>
+```
+
+### Forms & Inputs
 
 ```heex
 <.form for={@form} phx-change="validate" phx-submit="save">
-  <.phia_input field={@form[:email]} type="email" label="Email" phx-debounce="blur" />
-  <.phia_input field={@form[:name]} label="Name" />
+  <.phia_input field={@form[:email]} type="email" label="Email address" phx-debounce="blur" />
+  <.phia_input field={@form[:name]} label="Full name" />
+  <.form_number_input field={@form[:age]} label="Age" min={18} max={120} step={1} />
+  <.form_password_input field={@form[:password]} label="Password" />
+
   <.field>
     <div class="flex items-center gap-2">
       <.checkbox id="terms" name="terms" checked={@terms_checked} phx-click="toggle-terms" />
-      <.field_label for="terms">I agree to the Terms of Service</.field_label>
+      <.label for="terms">I agree to the Terms of Service</.label>
     </div>
-    <.field_message error={@terms_error} />
   </.field>
-  <.button type="submit">Register</.button>
+
+  <.button type="submit" class="w-full">Create account</.button>
 </.form>
+
+<%!-- Tags input --%>
+<.tags_input id="skill-tags" name="skills" value={@skills} placeholder="Add skill…" />
+
+<%!-- Inline editable field --%>
+<.editable id="project-name" value={@project.name} on_submit="rename_project">
+  <:preview><h1 class="text-2xl font-bold">{@project.name}</h1></:preview>
+  <:input><.phia_input id="project-name-input" name="name" value={@project.name} /></:input>
+</.editable>
 ```
 
-→ [Form examples](docs/components/forms.md)
-
-### Tabs
+### Overlay Components
 
 ```heex
-<.tabs active="overview">
-  <:tab_list>
-    <.tabs_trigger tab="overview">Overview</.tabs_trigger>
-    <.tabs_trigger tab="analytics">Analytics</.tabs_trigger>
-    <.tabs_trigger tab="settings">Settings</.tabs_trigger>
-  </:tab_list>
-  <.tabs_content tab="overview">
-    <p>Overview content here</p>
-  </.tabs_content>
-  <.tabs_content tab="analytics">
-    <p>Analytics content here</p>
-  </.tabs_content>
-</.tabs>
-```
+<%!-- Dialog --%>
+<.dialog id="confirm-dialog" open={@show_dialog}>
+  <.dialog_header>
+    <.dialog_title>Confirm action</.dialog_title>
+    <.dialog_description>This cannot be undone.</.dialog_description>
+  </.dialog_header>
+  <.dialog_footer>
+    <.button variant="outline" phx-click="cancel">Cancel</.button>
+    <.button variant="destructive" phx-click="confirm">Confirm</.button>
+  </.dialog_footer>
+</.dialog>
 
-### Step Tracker / Wizard
-
-```heex
-<.step_tracker>
-  <.step status="complete" label="Account" step={1} />
-  <.step status="active"   label="Profile"  step={2} description="Fill in your details" />
-  <.step status="upcoming" label="Confirm"  step={3} />
-</.step_tracker>
-```
-
-→ [Step Tracker examples](docs/components/enterprise.md#step-tracker)
-
-### Navigation Menu
-
-```heex
-<.navigation_menu>
-  <.navigation_menu_list>
-    <.navigation_menu_item>
-      <.navigation_menu_link href="/" active={@path == "/"}>Home</.navigation_menu_link>
-    </.navigation_menu_item>
-    <.navigation_menu_item>
-      <.navigation_menu_trigger label="Products" />
-      <.navigation_menu_content>
-        <ul class="grid grid-cols-2 gap-2 p-4">
-          <li><a href="/products/web">Web</a></li>
-          <li><a href="/products/mobile">Mobile</a></li>
-        </ul>
-      </.navigation_menu_content>
-    </.navigation_menu_item>
-  </.navigation_menu_list>
-</.navigation_menu>
-```
-
-→ [Navigation Menu examples](docs/components/enterprise.md#navigation-menu)
-
-### Filter Bar + Filter Builder
-
-```heex
-<%!-- Simple filter bar for a table --%>
-<.filter_bar>
-  <.filter_search placeholder="Search users…" on_search="search_users" />
-  <.filter_select label="Status" name="status"
-    options={[{"All", ""}, {"Active", "active"}, {"Inactive", "inactive"}]}
-    value={@filter_status} on_change="filter_status" />
-  <.filter_toggle label="Archived" name="archived"
-    checked={@show_archived} on_change="toggle_archived" />
-  <.filter_reset on_click="reset_filters" />
-</.filter_bar>
-
-<%!-- Advanced query builder --%>
-<.filter_builder
-  fields={[
-    %{name: "status", label: "Status", type: "select",
-      options: [{"Active", "active"}, {"Inactive", "inactive"}]},
-    %{name: "name",       label: "Name",       type: "text"},
-    %{name: "created_at", label: "Created At", type: "date"}
-  ]}
-  rules={@filter_rules}
-  on_add="add_filter_rule"
-  on_remove="remove_filter_rule"
-  on_change="update_filter_rule"
-/>
-```
-
-→ [Filter Bar examples](docs/components/enterprise.md#filter-bar) | [Filter Builder examples](docs/components/enterprise.md#filter-builder)
-
-### Bulk Action Bar
-
-```heex
-<.bulk_action_bar count={@selected_count} label="items selected" on_clear="clear_selection">
-  <.bulk_action label="Delete"  on_click="bulk_delete"  variant="destructive" icon="trash" />
-  <.bulk_action label="Archive" on_click="bulk_archive" icon="archive" />
-  <.bulk_action label="Export"  on_click="bulk_export"  icon="download" />
-</.bulk_action_bar>
-```
-
-→ [Bulk Action Bar examples](docs/components/enterprise.md#bulk-action-bar)
-
-### Activity Feed
-
-```heex
-<.activity_feed>
-  <.activity_group label="Today">
-    <.activity_item
-      type="mention"
-      name="Alice Martin"
-      description="mentioned you in Project Alpha"
-      timestamp="2m ago"
-    >
-      <:avatar><.avatar><.avatar_fallback name="Alice Martin" /></.avatar></:avatar>
-    </.activity_item>
-    <.activity_item
-      type="task"
-      name="Bob Chen"
-      description="completed task: Deploy to staging"
-      timestamp="15m ago"
-    />
-  </.activity_group>
-  <:footer>
-    <.button variant="ghost" size="sm" phx-click="load_more">Load more</.button>
-  </:footer>
-</.activity_feed>
-```
-
-→ [Activity Feed examples](docs/components/enterprise.md#activity-feed)
-
-### Kanban Board
-
-```heex
-<.kanban_board>
-  <.kanban_column label="To Do" count={3}>
-    <.kanban_card id="card-1" title="Design review" priority="high">
-      <:tags><.badge variant="secondary">Design</.badge></:tags>
-    </.kanban_card>
-  </.kanban_column>
-  <.kanban_column label="In Progress" count={1}>
-    <.kanban_card id="card-2" title="API integration" priority="critical">
-      <:avatar><.avatar size="sm"><.avatar_fallback name="Dev Team" /></.avatar></:avatar>
-    </.kanban_card>
-  </.kanban_column>
-  <.kanban_column label="Done" count={5} />
-</.kanban_board>
-```
-
-→ [Kanban Board examples](docs/components/enterprise.md#kanban-board)
-
-### Chat (AI/Human UI)
-
-```heex
-<.chat_container id="ai-chat">
-  <.chat_message role="assistant" id="msg-0">
-    <.chat_bubble role="assistant" timestamp="2:30 PM">
-      <:avatar><.avatar size="sm"><.avatar_fallback name="AI" /></.avatar></:avatar>
-      Welcome! How can I help you today?
-    </.chat_bubble>
-    <.chat_suggestions
-      suggestions={["What are key features?", "Show me an example"]}
-      on_select="select_suggestion"
-    />
-  </.chat_message>
-  <.chat_message role="user" id="msg-1">
-    <.chat_bubble role="user" timestamp="2:31 PM">
-      What are key features?
-    </.chat_bubble>
-  </.chat_message>
-</.chat_container>
-
-<.chat_input id="chat-compose" on_submit="send_message" placeholder="Ask anything…" />
-```
-
-→ [Chat examples](docs/components/enterprise.md#chat-message)
-
-### Mention Input
-
-```heex
-<.mention_input
-  id="comment-field"
-  name="comment"
-  suggestions={@mention_suggestions}
-  open={@mention_open}
-  search={@mention_search}
-  mentioned_ids={@mentioned_ids}
-  on_mention="mention_search"
-  on_select="mention_select"
-  placeholder="Leave a comment… type @ to mention"
-/>
-```
-
-```elixir
-def handle_event("mention_search", %{"query" => q}, socket) do
-  suggestions = filter_users(q)
-  {:noreply, assign(socket, mention_suggestions: suggestions, mention_open: true)}
-end
-```
-
-→ [Mention Input examples](docs/components/enterprise.md#mention-input)
-
-### Alert Dialog (confirmation)
-
-```heex
-<.alert_dialog id="delete-confirm" open={@show_confirm}>
-  <.alert_dialog_header>
-    <.alert_dialog_title>Delete item?</.alert_dialog_title>
-    <.alert_dialog_description>This action cannot be undone.</.alert_dialog_description>
-  </.alert_dialog_header>
-  <.alert_dialog_footer>
-    <.alert_dialog_cancel phx-click="cancel">Cancel</.alert_dialog_cancel>
-    <.alert_dialog_action variant="destructive" phx-click="confirm-delete">
-      Delete
-    </.alert_dialog_action>
-  </.alert_dialog_footer>
-</.alert_dialog>
-```
-
-→ [Alert Dialog examples](docs/components/interactive.md#alert-dialog)
-
-### Drawer (side panel / bottom sheet)
-
-```heex
-<.drawer_content id="filters-panel" open={@filters_open} direction="right">
-  <.drawer_header>
-    <h2 class="text-lg font-semibold">Filters</h2>
-  </.drawer_header>
+<%!-- Drawer --%>
+<.drawer id="filters-drawer" open={@filters_open} direction="right">
+  <.drawer_header><h2 class="font-semibold">Filters</h2></.drawer_header>
   <.drawer_close />
   <div class="px-6 pb-6">
     <.filter_builder fields={@fields} rules={@rules}
       on_add="add_rule" on_remove="remove_rule" on_change="update_rule" />
   </div>
   <.drawer_footer>
-    <.button phx-click="apply-filters">Apply</.button>
+    <.button phx-click="apply_filters">Apply filters</.button>
   </.drawer_footer>
-</.drawer_content>
+</.drawer>
+
+<%!-- Tooltip --%>
+<.tooltip content="Copy to clipboard">
+  <.copy_button value={@api_key} />
+</.tooltip>
+
+<%!-- Command palette (Ctrl+K) --%>
+<.command id="command-palette" open={@command_open} on_search="search_commands">
+  <.command_input placeholder="Search commands…" />
+  <.command_list>
+    <.command_item :for={cmd <- @commands} value={cmd.id} on_select="run_command">
+      <.icon name={cmd.icon} size={:sm} /> {cmd.label}
+    </.command_item>
+  </.command_list>
+</.command>
 ```
 
-→ [Drawer examples](docs/components/interactive.md#drawer)
-
-### Progress & Slider
+### Data & Analytics
 
 ```heex
-<%!-- Progress bar --%>
-<.progress value={75} max={100} aria-label="Upload progress" />
-
-<%!-- Range slider (form-integrated) --%>
-<.form_slider field={@form[:volume]} label="Volume" min={0} max={100} step={1} />
-```
-
-### Timeline
-
-```heex
-<.timeline>
-  <.timeline_item status="complete">
-    <:icon><.icon name="check-circle" size={:sm} /></:icon>
-    <:content>
-      <p class="font-medium">Order placed</p>
-      <p class="text-sm text-muted-foreground">March 1 at 10:00 AM</p>
-    </:content>
-  </.timeline_item>
-  <.timeline_item status="active">
-    <:icon><.icon name="package" size={:sm} /></:icon>
-    <:content>
-      <p class="font-medium">In transit</p>
-      <p class="text-sm text-muted-foreground">Estimated: March 5</p>
-    </:content>
-  </.timeline_item>
-  <.timeline_item status="upcoming">
-    <:icon><.icon name="home" size={:sm} /></:icon>
-    <:content>
-      <p class="font-medium text-muted-foreground">Delivered</p>
-    </:content>
-  </.timeline_item>
-</.timeline>
-```
-
-### Avatar with group
-
-```heex
-<.avatar_group>
-  <.avatar :for={user <- @team_members}>
-    <.avatar_image src={user.avatar_url} alt={user.name} />
-    <.avatar_fallback name={user.name} />
-  </.avatar>
-</.avatar_group>
-```
-
-→ [Avatar examples](docs/components/utilities.md#avatar)
-
-### Toast notification
-
-```heex
-<%!-- Mount once in root.html.heex --%>
-<.toast id="toast-viewport" />
-```
-
-```elixir
-# Trigger from any LiveView
-{:noreply, push_event(socket, "phia-toast", %{
-  title: "Saved", description: "Changes saved.", variant: "success"
-})}
-```
-
-→ [Toast examples](docs/components/interactive.md#toast)
-
-### Dashboard with charts
-
-```heex
+<%!-- KPI metric grid --%>
 <.metric_grid cols={4}>
   <.stat_card title="MRR"   value="$48,290" trend="up"      trend_value="+12.5%" />
   <.stat_card title="Users" value="2,840"   trend="up"      trend_value="+8.2%" />
@@ -646,6 +599,7 @@ end
   <.stat_card title="NPS"   value="67"      trend="neutral" trend_value="0" />
 </.metric_grid>
 
+<%!-- ECharts integration --%>
 <.phia_chart
   id="revenue-chart"
   type={:area}
@@ -654,389 +608,220 @@ end
   labels={@month_labels}
   height="320px"
 />
+
+<%!-- Streamable data table --%>
+<.table id="users-table" rows={@streams.users}>
+  <:col :let={user} label="Name">{user.name}</:col>
+  <:col :let={user} label="Email">{user.email}</:col>
+  <:col :let={user} label="Role"><.badge>{user.role}</.badge></:col>
+  <:action :let={user}>
+    <.button variant="ghost" size="sm" phx-click="edit" phx-value-id={user.id}>Edit</.button>
+  </:action>
+</.table>
+
+<%!-- Sparkline widget --%>
+<.sparkline_card
+  title="Weekly signups"
+  value="284"
+  trend="up"
+  trend_value="+18%"
+  data={@weekly_signups}
+/>
+
+<%!-- Gauge --%>
+<.gauge_chart value={72} min={0} max={100} label="CPU Usage" unit="%" />
 ```
 
-→ [Dashboard examples](docs/components/dashboard.md) | [Full tutorial](docs/guides/tutorial-dashboard.md)
-
-### Heatmap Calendar
+### Calendar Suite
 
 ```heex
-<.heatmap_calendar
-  data={@contribution_data}
-  rows={7}
-  cols={52}
-  max_value={10}
-  col_labels={@week_labels}
-  row_labels={~w(Mon Tue Wed Thu Fri Sat Sun)}
-  show_legend={true}
+<%!-- Simple date picker --%>
+<.date_picker field={@form[:start_date]} label="Start date" />
+
+<%!-- Booking calendar with time slots --%>
+<.booking_calendar
+  id="appointment-calendar"
+  available_dates={@available_dates}
+  selected_date={@selected_date}
+  on_date_select="select_date"
+/>
+
+<.time_slot_grid
+  id="time-slots"
+  slots={@time_slots}
+  selected={@selected_slot}
+  on_select="select_slot"
+/>
+
+<%!-- Full-page calendar --%>
+<.big_calendar
+  id="main-calendar"
+  events={@events}
+  view={@calendar_view}
+  current_date={@current_date}
+  on_view_change="change_view"
+  on_date_click="open_day"
+  on_event_click="open_event"
+/>
+
+<%!-- Week view with positioned events --%>
+<.calendar_week_view
+  id="week-view"
+  week_start={@week_start}
+  events={@week_events}
+  on_slot_click="new_event"
+/>
+
+<%!-- Streak/habit tracker --%>
+<.streak_calendar
+  data={@habit_data}
+  current_streak={@current_streak}
+  longest_streak={@longest_streak}
 />
 ```
 
-→ [Heatmap Calendar examples](docs/components/enterprise.md#heatmap-calendar)
-
-### InputOTP
+### Notifications
 
 ```heex
-<%!-- Simple: --%>
-<.input_otp id="verify-code" name="code" length={6} value={@otp_code} />
-
-<%!-- Composable with separator: --%>
-<.input_otp_group id="token-group">
-  <.input_otp_slot index={0} name="token[0]" value={String.at(@token, 0) || ""} />
-  <.input_otp_slot index={1} name="token[1]" value={String.at(@token, 1) || ""} />
-  <.input_otp_slot index={2} name="token[2]" value={String.at(@token, 2) || ""} />
-  <.input_otp_separator />
-  <.input_otp_slot index={3} name="token[3]" value={String.at(@token, 3) || ""} />
-  <.input_otp_slot index={4} name="token[4]" value={String.at(@token, 4) || ""} />
-  <.input_otp_slot index={5} name="token[5]" value={String.at(@token, 5) || ""} />
-</.input_otp_group>
+<%!-- Toast — mount once in root.html.heex --%>
+<.toast id="toast-viewport" />
 ```
-
-### Spinner
-
-```heex
-<.spinner />
-<.spinner size={:lg} class="text-primary" />
-<.spinner label="Loading data..." size={:sm} />
-```
-
-### NumberInput & PasswordInput
-
-```heex
-<.form_number_input field={@form[:quantity]} label="Quantity" min={1} max={999} step={1} />
-<.form_number_input field={@form[:price]} label="Price" prefix="$" suffix="USD" />
-
-<.form_password_input field={@form[:password]} label="Password" />
-<.form_password_input field={@form[:confirm]} label="Confirm Password" autocomplete="new-password" />
-```
-
-### CopyButton
-
-```heex
-<div class="flex items-center gap-2">
-  <code class="text-sm bg-muted px-2 py-1 rounded font-mono">{@api_key}</code>
-  <.copy_button value={@api_key} label="Copy API key" />
-</div>
-```
-
-### SegmentedControl
-
-```heex
-<.segmented_control
-  id="view-mode"
-  name="view"
-  value={@view}
-  on_change="change_view"
-  segments={[
-    %{value: "list",   label: "List"},
-    %{value: "grid",   label: "Grid"},
-    %{value: "kanban", label: "Kanban"}
-  ]}
-/>
-```
-
-### Chip & ChipGroup
-
-```heex
-<.chip_group>
-  <.chip :for={tech <- @selected_stack}
-    value={tech}
-    dismissible={true}
-    on_dismiss="remove_tech"
-    variant={:outline}>
-    {tech}
-  </.chip>
-</.chip_group>
-
-<%!-- Toggle chip --%>
-<.chip selected={@dark_mode} on_click="toggle_dark" value="dark">
-  Dark Mode
-</.chip>
-```
-
-### Editable (inline edit)
-
-```heex
-<.editable id="project-title" value={@project.name} on_submit="update_name">
-  <:preview>
-    <h1 class="text-2xl font-bold">{@project.name}</h1>
-  </:preview>
-  <:input>
-    <.phia_input id="project-title-input" name="name" value={@project.name} />
-  </:input>
-</.editable>
-```
-
-### FileUpload
-
-```heex
-<.file_upload upload={@uploads.attachments} label="Attach Files" accept=".pdf,.docx,.xlsx">
-  <:empty>
-    <.icon name="upload-cloud" class="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-    <p class="text-sm text-muted-foreground">
-      Drag & drop files here or <span class="text-primary underline">browse</span>
-    </p>
-  </:empty>
-  <:file :let={entry}>
-    <.file_upload_entry entry={entry} on_cancel="cancel_upload" />
-  </:file>
-</.file_upload>
-```
-
-### Menubar
-
-```heex
-<.menubar id="app-menubar">
-  <.menubar_menu>
-    <.menubar_trigger>File</.menubar_trigger>
-    <.menubar_content>
-      <.menubar_item on_click="new_file">New File</.menubar_item>
-      <.menubar_item on_click="open_file">Open…</.menubar_item>
-      <.menubar_separator />
-      <.menubar_item on_click="save" shortcut="⌘S">Save</.menubar_item>
-    </.menubar_content>
-  </.menubar_menu>
-  <.menubar_menu>
-    <.menubar_trigger>Edit</.menubar_trigger>
-    <.menubar_content>
-      <.menubar_item on_click="undo" shortcut="⌘Z">Undo</.menubar_item>
-      <.menubar_item on_click="redo" shortcut="⌘⇧Z">Redo</.menubar_item>
-    </.menubar_content>
-  </.menubar_menu>
-</.menubar>
-```
-
-### MultiSelect
-
-```heex
-<.form_multi_select
-  field={@form[:tags]}
-  label="Tags"
-  options={[{"Elixir", "elixir"}, {"Phoenix", "phoenix"}, {"LiveView", "liveview"}, {"Ecto", "ecto"}]}
-/>
-```
-
-### Tree
-
-```heex
-<.tree id="file-explorer">
-  <.tree_item label="lib" expandable={true} expanded={true}>
-    <.tree_item label="phia_ui" expandable={true}>
-      <.tree_item label="components" expandable={true}>
-        <.tree_item label="button.ex" on_click="open_file" value="button.ex" />
-        <.tree_item label="card.ex" on_click="open_file" value="card.ex" />
-      </.tree_item>
-    </.tree_item>
-  </.tree_item>
-  <.tree_item label="mix.exs" on_click="open_file" value="mix.exs" />
-</.tree>
-```
-
-### ColorPicker
-
-```heex
-<.color_picker
-  id="brand-color"
-  value={@brand_color}
-  on_change="update_brand_color"
-  swatches={["#1e40af", "#7c3aed", "#dc2626", "#16a34a", "#ea580c"]}
-/>
-```
-
-### FloatButton
-
-```heex
-<%!-- Simple --%>
-<.float_button icon="plus" on_click="new_item" aria_label="Create new item" />
-
-<%!-- Speed dial --%>
-<.float_button position={:bottom_right}>
-  <:main icon="menu" aria_label="Actions" />
-  <:item icon="edit" on_click="edit" label="Edit" />
-  <:item icon="share" on_click="share" label="Share" />
-  <:item icon="trash" on_click="delete" label="Delete" />
-</.float_button>
-```
-
-### BackTop
-
-```heex
-<%!-- Mount once per page that needs it --%>
-<.back_top threshold={300} smooth={true} aria_label="Back to top" />
-```
-
-→ [Gap analysis component examples](docs/components/gap.md)
-
-### Calendar & Scheduling Suite — 27 components
-
-The most comprehensive calendar and scheduling system for Phoenix LiveView. → [Full examples & use cases](docs/components/calendar.md)
-
-#### Standard Pickers
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| TimePicker | `time_picker/1`, `form_time_picker/1` | Clock-face or scroll-wheel time selector, 12h/24h, minute step, FormField |
-| DateTimePicker | `date_time_picker/1`, `form_date_time_picker/1` | Combined date calendar + time picker in popover, ISO 8601 output, FormField |
-| MonthPicker | `month_picker/1`, `form_month_picker/1` | Grid of 12 months, year navigation, FormField |
-| YearPicker | `year_picker/1`, `form_year_picker/1` | Scrollable year grid, min/max bounds, FormField |
-| WeekPicker | `week_picker/1`, `form_week_picker/1` | ISO week selector (Wxx/YYYY), week highlight in calendar grid |
-| DateField | `date_field/1`, `form_date_field/1` | Segmented date input (DD / MM / YYYY) with independent slot navigation |
-| WeekDayPicker | `week_day_picker/1` | Mon–Sun pill toggles for recurrence rules, multi-select |
-| CalendarTimePicker | `calendar_time_picker/1` | Full month calendar + inline time picker in one component |
-| DateRangePresets | `date_range_presets/1` | DateRangePicker with preset buttons (Today, This Week, Last 30 Days, etc.) |
-| WheelPicker | `wheel_picker/1` | iOS-style scroll-wheel picker, configurable columns and items |
-
-#### Calendar Views
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| BigCalendar | `big_calendar/1` | Full-page month view, view switcher (month/week/day), MON-first, event pills |
-| CalendarWeekView | `calendar_week_view/1` | Week grid with time axis (00:00–23:00), events positioned by px offset |
-| WeekCalendar | `week_calendar/1` | Compact week navigator: month title + prev/next arrows, 7-day strip, selected-day pill |
-| RangeCalendar | `range_calendar/1` | SUN-first month grid, range band: start/end circles + half-band + middle full-band |
-| MultiSelectCalendar | `multi_select_calendar/1` | Calendar with multi-day selection (toggle individual days) |
-| BadgeCalendar | `badge_calendar/1` | Calendar with numeric badge overlay per day (counts, notifications) |
-
-#### Scheduling & Time
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| TimeSlotGrid | `time_slot_grid/1` | Grid of bookable time slots: available / booked / selected states |
-| TimeSlotList | `time_slot_list/1` | Vertical list of time slots with availability indicator and book button |
-| DailyAgenda | `daily_agenda/1` | Single-day timeline with hour rows and overlapping event layout |
-| ScheduleEventCard | `schedule_event_card/1` | Rich event card: title, time, location, attendees, status badge |
-| CountdownTimer | `countdown_timer/1` | Live countdown to a target datetime, displays DD:HH:MM:SS |
-| TimeSliderPicker | `time_slider_picker/1` | Slider-based time range picker for start/end time selection |
-
-#### Booking & Specialized
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| BookingCalendar | `booking_calendar/1` | Appointment booking calendar: availability slots per day, confirm flow |
-| StreakCalendar | `streak_calendar/1` | Habit tracker / streak heatmap: current streak, longest streak, intensity |
-| ScheduleView | `schedule_view/1` | Agenda-style list grouped by date (upcoming events sorted chronologically) |
-| MultiMonthCalendar | `multi_month_calendar/1` | Side-by-side N months (2–4), synchronized navigation |
-| DateCard | `date_card/1` | Day card with 4 states: default / today / selected / disabled |
-| DateStrip | `date_strip/1` | Horizontal scrollable row of DateCards, highlights selected day |
-
-### Advanced Dashboard Widgets — 8 components
-
-High-fidelity data visualization and status widgets. → [Full examples & use cases](docs/components/widgets.md)
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| CircularProgress | `circular_progress/1` | Radial SVG progress ring, customizable size/stroke/color, `role="progressbar"` |
-| UptimeBar | `uptime_bar/1` | Segmented uptime visualization (green/red/yellow segments), percentage badge |
-| ReceiptCard | `receipt_card/1` | Transaction/purchase receipt layout: line items, totals, merchant info, QR slot |
-| SparklineCard | `sparkline_card/1` | Inline SVG sparkline polyline + metric value + trend badge |
-| GaugeChart | `gauge_chart/1` | SVG semicircle gauge, value needle, min/max labels, color zones |
-| GanttChart | `gantt_chart/1` | Horizontal timeline/project planning: row labels, date-range bars, today indicator |
-| EventCalendar | `event_calendar/1` | Monthly grid with event pills, day click expands event list |
-| Snackbar | `snackbar/1` | Temporary notification banner (bottom of screen), auto-dismiss, action slot |
-
-### Media, Communication & Navigation — 5 components
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| AudioPlayer | `audio_player/1` | Media player: play/pause, scrubber, volume, duration display — `PhiaAudioPlayer` hook |
-| Sonner | `sonner/1` | Rich toast notifications: icon variants, action button, promise integration — `PhiaSonner` hook |
-| QrCode | `qr_code/1` | SVG QR code generator via `eqrcode`, size attr, configurable error correction |
-| BottomNavigation | `bottom_navigation/1`, `bottom_navigation_item/1` | Mobile bottom tab bar, `aria-current` on active tab, icon + label layout |
-| Toolbar | `toolbar/1`, `toolbar_button/1`, `toolbar_separator/1` | Horizontal `role="toolbar"`, icon buttons, separators |
-
-### Display & Interaction Additions — 3 components
-
-| Component | Function | Description |
-|-----------|----------|-------------|
-| AvatarGroup | `avatar_group/1` | Standalone stacked avatars with overlap, `+N` overflow badge, sizes |
-| SelectableCard | `selectable_card/1` | Card with checkbox/radio selection state, border highlight when selected |
-| InputAddon | `input_addon/1` | Prefix/suffix addon wrapper for inputs (icons, labels, currency symbols) |
-
----
-
-## Mix Tasks
-
-```bash
-# Install core dependencies and setup
-mix phia.install
-
-# List all available components
-mix phia.list
-
-# Eject specific components into your codebase
-mix phia.add button card badge dialog
-
-# Generate the Lucide SVG sprite
-mix phia.icons
-
-# Theme management
-mix phia.theme list                    # list all 8 color presets
-mix phia.theme install                 # generate assets/css/phia-themes.css
-mix phia.theme apply zinc              # write theme vars to your theme.css
-mix phia.theme export blue             # print JSON (or --format css for CSS)
-mix phia.theme import ./my-brand.json  # apply custom theme
-```
-
----
-
-## Ejectable Architecture
-
-PhiaUI is not a traditional runtime dependency — components are **source code you own**:
-
-```bash
-mix phia.add button card dialog toast command carousel drawer
-```
-
-This copies Elixir modules and JS hooks directly into your project. After ejection, **you own the code**: read it, modify it, delete parts you don't need.
-
-```
-lib/your_app_web/components/ui/button.ex      ← yours to edit
-assets/js/phia_hooks/dialog.js                ← yours to edit
-assets/js/phia_hooks/carousel.js              ← yours to edit
-```
-
----
-
-## ClassMerger
-
-The `cn/1` function merges Tailwind classes with conflict resolution (last wins per group):
 
 ```elixir
-import PhiaUi.ClassMerger, only: [cn: 1]
-
-cn(["px-4 py-2", @class])           # => "px-4 py-2 mt-4" (if @class = "mt-4")
-cn(["px-4", "px-8"])                # => "px-8"  (conflict resolved)
-cn(["text-red-500", @error && "text-destructive", nil])  # nil filtered out
+# Trigger from any LiveView event handler
+{:noreply,
+ socket
+ |> push_event("phia-toast", %{
+   title: "File saved",
+   description: "document.pdf saved successfully.",
+   variant: "success"
+ })}
 ```
 
-Backed by an ETS-cached GenServer (`ClassMerger.Cache`) — zero overhead on repeated calls.
+```heex
+<%!-- Sonner (rich toast stack) — mount once in root.html.heex --%>
+<.sonner id="sonner-viewport" position="bottom-right" />
+```
+
+```elixir
+# Push a Sonner toast
+{:noreply, push_event(socket, "phia-sonner", %{
+  message: "Changes published",
+  type: "success",
+  action: %{label: "Undo", event: "undo_publish"}
+})}
+```
+
+```heex
+<%!-- Snackbar — inline temporary notification --%>
+<.snackbar id="save-snackbar" open={@snackbar_open} auto_dismiss={3000}>
+  Draft saved automatically
+  <:action phx-click="dismiss_snackbar">Dismiss</:action>
+</.snackbar>
+```
+
+### Feedback
+
+```heex
+<%!-- Spinner --%>
+<.spinner size={:md} label="Loading data…" />
+
+<%!-- Skeleton placeholders --%>
+<div class="space-y-3">
+  <.skeleton class="h-4 w-3/4" />
+  <.skeleton class="h-4 w-1/2" />
+  <.skeleton class="h-32 w-full" />
+</div>
+
+<%!-- Progress bar --%>
+<.progress value={@upload_progress} max={100} aria-label="Upload progress" />
+
+<%!-- Circular progress --%>
+<.circular_progress value={68} size={80} stroke_width={8} label="68%" />
+
+<%!-- Empty state --%>
+<.empty_state>
+  <:icon><.icon name="inbox" class="h-12 w-12 text-muted-foreground" /></:icon>
+  <:title>No results found</:title>
+  <:description>Try adjusting your filters or search terms.</:description>
+  <:action>
+    <.button phx-click="reset_filters">Clear filters</.button>
+  </:action>
+</.empty_state>
+
+<%!-- Step tracker --%>
+<.step_tracker>
+  <.step status="complete" label="Account"  step={1} />
+  <.step status="active"   label="Profile"  step={2} description="Fill in your details" />
+  <.step status="upcoming" label="Confirm"  step={3} />
+</.step_tracker>
+```
 
 ---
 
-## TailwindCSS v4 Theme
+## Tutorials
 
-The theme provides semantic OKLCH design tokens. Always use tokens, never hardcoded colors:
+Three end-to-end step-by-step guides that take you from a blank Phoenix LiveView project to a production-ready application.
 
-```css
-/* ✓ Use semantic tokens */
-bg-primary text-muted-foreground border-border bg-accent
+### 1. Analytics Dashboard
 
-/* ✗ Never hardcode */
-bg-gray-900 text-[#333]
+**[docs/guides/tutorial-dashboard.md](docs/guides/tutorial-dashboard.md)**
+
+Build a full enterprise analytics dashboard with a Shell layout (sidebar + topbar), KPI metric cards (StatCard, MetricGrid), live ECharts area and bar charts (PhiaChart), a streamable sortable data table (DataGrid), a Ctrl+K command palette, dark mode toggle, and real-time push_event updates. Covers `phx-update="stream"`, server-side sorting, and hook registration.
+
+### 2. Booking Platform
+
+**[docs/guides/tutorial-booking.md](docs/guides/tutorial-booking.md)**
+
+Build a complete appointment booking flow: BookingCalendar for date selection, TimeSlotGrid for slot availability, StepTracker wizard (date → slot → details → confirm), form validation with Ecto changesets, PhiaInput with live error feedback, AlertDialog for cancellation confirmation, and Sonner toast notifications on booking success or failure.
+
+### 3. Content Management System
+
+**[docs/guides/tutorial-cms.md](docs/guides/tutorial-cms.md)**
+
+Build a CMS with a RichTextEditor for content authoring, DataGrid with sortable columns and BulkActionBar for bulk publish/archive/delete, KanbanBoard for editorial pipeline management, ActivityFeed for audit log, FilterBuilder for advanced content search, Tree for taxonomy/category management, and Drawer side panel for record editing.
+
+---
+
+## Documentation
+
+| File | Description |
+|------|-------------|
+| [docs/components/buttons.md](docs/components/buttons.md) | Button, ButtonGroup, BackTop, CopyButton, FloatButton, Toggle, ToggleGroup |
+| [docs/components/calendar.md](docs/components/calendar.md) | All 33 calendar and scheduling components |
+| [docs/components/cards.md](docs/components/cards.md) | Card, MetricGrid, ReceiptCard, SelectableCard, StatCard |
+| [docs/components/data.md](docs/components/data.md) | BulkActionBar, Chart, ChartShell, DataGrid, FilterBar, FilterBuilder, GanttChart, GaugeChart, KanbanBoard, SparklineCard, Table, Tree, UptimeBar |
+| [docs/components/display.md](docs/components/display.md) | ActivityFeed, Avatar, AvatarGroup, Badge, ChatMessage, DarkModeToggle, Direction, Icon, Kbd, ThemeProvider, Timeline |
+| [docs/components/feedback.md](docs/components/feedback.md) | Alert, AlertDialog, CircularProgress, EmptyState, Progress, Skeleton, Snackbar, Sonner, Spinner, StepTracker, Toast |
+| [docs/components/forms.md](docs/components/forms.md) | Field, Form, FormField, Label |
+| [docs/components/inputs.md](docs/components/inputs.md) | All 24 input components |
+| [docs/components/layout.md](docs/components/layout.md) | Accordion, AspectRatio, Collapsible, Resizable, ScrollArea, Separator, Shell |
+| [docs/components/media.md](docs/components/media.md) | AudioPlayer, Carousel, QrCode |
+| [docs/components/navigation.md](docs/components/navigation.md) | BottomNavigation, Breadcrumb, Menubar, MobileSidebarToggle, NavigationMenu, Pagination, Sidebar, Tabs, TabsNav, Toolbar, Topbar |
+| [docs/components/overlay.md](docs/components/overlay.md) | Command, ContextMenu, Dialog, Drawer, DropdownMenu, HoverCard, Popover, Sheet, Tooltip |
+| [docs/guides/theme-system.md](docs/guides/theme-system.md) | CSS-first theming, 8 OKLCH color presets, dark mode, runtime switching, ThemeProvider, anti-FOUC |
+| [docs/guides/tutorial-dashboard.md](docs/guides/tutorial-dashboard.md) | Step-by-step analytics dashboard tutorial |
+| [docs/guides/tutorial-booking.md](docs/guides/tutorial-booking.md) | Step-by-step booking platform tutorial |
+| [docs/guides/tutorial-cms.md](docs/guides/tutorial-cms.md) | Step-by-step CMS tutorial |
+
+Generate ExDoc API reference locally:
+
+```bash
+mix docs
 ```
 
-Dark mode support via `@custom-variant dark (&:where(.dark, .dark *))` — toggle the `.dark` class on `<html>` with `PhiaDarkMode`.
+---
 
-### Color presets & runtime theme switching
+## Theming
 
 PhiaUI ships 8 OKLCH color presets: `zinc`, `slate`, `blue`, `rose`, `orange`, `green`, `violet`, `neutral`.
 
-Generate the multi-theme CSS file:
+Generate the multi-theme CSS:
 
 ```bash
 mix phia.theme install
-# → writes assets/css/phia-themes.css with all 8 [data-phia-theme] selectors
-# → injects @import into app.css automatically
+# Writes assets/css/phia-themes.css with all 8 [data-phia-theme] selectors
+# Auto-imports it in app.css
 ```
 
 Activate a preset at the HTML level:
@@ -1045,30 +830,31 @@ Activate a preset at the HTML level:
 <html class="dark" data-phia-theme="blue">
 ```
 
-Scoped per section via ThemeProvider:
+Scope a theme to a specific section:
 
 ```heex
-<.theme_provider theme={:blue}>
-  <.button>Blue button</.button>
+<.theme_provider theme={:rose}>
+  <.button>Rose button</.button>
 </.theme_provider>
 ```
 
-Runtime switching via the PhiaTheme hook:
+Enable runtime theme switching with the `PhiaTheme` hook:
 
 ```heex
-<select phx-hook="PhiaTheme" id="color-picker">
+<select phx-hook="PhiaTheme" id="theme-select">
   <option value="zinc">Zinc</option>
   <option value="blue">Blue</option>
   <option value="rose">Rose</option>
+  <option value="green">Green</option>
 </select>
 ```
 
-**Anti-FOUC** — add to `<head>` before any stylesheet:
+Dark mode is toggled by adding/removing the `.dark` class on `<html>` via the `PhiaDarkMode` hook. To prevent flash of unstyled content, add this script to `<head>` before any stylesheet:
 
 ```html
 <script>
   (function() {
-    var mode = localStorage.getItem('phia-mode') || localStorage.getItem('phia-theme');
+    var mode = localStorage.getItem('phia-mode');
     if (mode === 'dark' || (!mode && matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
     }
@@ -1082,59 +868,6 @@ Runtime switching via the PhiaTheme hook:
 
 ---
 
-## Use Cases
+## License
 
-- **Financial terminals** — StatCard + MetricGrid + PhiaChart for live P&L, position tracking, risk dashboards
-- **BI dashboards** — ChartShell + PhiaChart wrapping ECharts with consistent card chrome and real-time push_event updates
-- **SaaS admin panels** — Shell + Sidebar + DataGrid + Dialog + Toast for full CRUD interfaces
-- **KPI monitors** — Metric grids with real-time trend indicators and Ctrl+K command palette
-- **Project management** — KanbanBoard + ActivityFeed + BulkActionBar + StepTracker for work tracking
-- **Data exploration** — FilterBar + FilterBuilder + DataGrid for ad-hoc query interfaces
-- **Team collaboration** — MentionInput + ChatMessage for AI-augmented comment threads
-- **Booking and scheduling** — BookingCalendar + TimeSlotGrid + DateRangePicker + CalendarWeekView for complete reservation flows
-- **Habit and streak tracking** — StreakCalendar + BadgeCalendar + HeatmapCalendar for gamified productivity apps
-- **Project planning** — GanttChart + KanbanBoard + ActivityFeed + StepTracker for full project management UI
-- **Audio & media apps** — AudioPlayer with full controls, progress scrubber, volume, and dark mode support
-- **Internal tools** — Form components with Ecto changeset integration and rich text content editing
-- **Mobile-first apps** — Drawer (bottom sheet) + Carousel for mobile UX patterns
-- **Multilingual apps** — Direction wrapper for RTL content (Arabic, Hebrew)
-
----
-
-## Documentation
-
-Detailed examples and use cases:
-
-| Section | Contents |
-|---------|----------|
-| [Primitives & Feedback](docs/components/primitives.md) | Button, Card, Badge, Icon, Alert, Skeleton, Breadcrumb, Pagination, Kbd |
-| [Form Integration](docs/components/forms.md) | Input, Textarea, Select, Checkbox, Switch, Slider, Rating, Calendar, Tags Input, Image Upload, Rich Text Editor |
-| [Interactive Components](docs/components/interactive.md) | Dialog, Dropdown, Accordion, Tooltip, Popover, Toast, Command, DateRangePicker, Collapsible, AlertDialog, Carousel, ContextMenu, Drawer, Combobox, DatePicker, Sheet, HoverCard |
-| [Utilities & Composed](docs/components/utilities.md) | Aspect Ratio, Direction, Empty State, Field, Button Group, Avatar, Tabs Nav, Theme Provider, Scroll Area, Progress, Separator, Toggle, Tabs, Timeline, Resizable |
-| [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts, HeatmapCalendar |
-| [Enterprise Components](docs/components/enterprise.md) | ActivityFeed, KanbanBoard, ChatMessage, MentionInput, FilterBar, FilterBuilder, BulkActionBar, StepTracker, NavigationMenu |
-| [Gap Analysis Components](docs/components/gap.md) | InputOTP, Spinner, NumberInput, PasswordInput, CopyButton, SegmentedControl, Chip, Editable, FileUpload, Menubar, ColorPicker, FloatButton, MultiSelect, Tree, BackTop |
-| [Calendar & Scheduling Suite](docs/components/calendar.md) | TimePicker, DateTimePicker, MonthPicker, YearPicker, WeekPicker, DateField, BigCalendar, CalendarWeekView, WeekCalendar, RangeCalendar, TimeSlotGrid, BookingCalendar, StreakCalendar, and more |
-| [Advanced Widgets](docs/components/widgets.md) | CircularProgress, UptimeBar, ReceiptCard, SparklineCard, GaugeChart, GanttChart, EventCalendar, Snackbar |
-| [Media & Navigation](docs/components/media.md) | AudioPlayer, Sonner, QrCode, BottomNavigation, Toolbar |
-| [Theme System](docs/guides/theme-system.md) | CSS-first themes, color presets, runtime switching, ThemeProvider, PhiaTheme hook |
-| [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette, enterprise widgets |
-
-Generate API docs locally:
-
-```bash
-mix docs
-```
-
----
-
-## Contributing
-
-We value **Clarity**, **Simplicity**, and **Testability**.
-
-- All features require a specification with acceptance criteria before implementation
-- TDD: write failing tests first (red → green)
-- No Alpine.js, no npm deps for interactivity — vanilla JS hooks only
-- `cn/1` implemented natively — no tw_merge or similar
-- All interactive components require WAI-ARIA roles, states, and keyboard support
-- All code passes `mix credo --strict` without warnings
+MIT — see [LICENSE](LICENSE).
