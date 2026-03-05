@@ -111,7 +111,11 @@ defmodule Mix.Tasks.Phia.Undaisy do
 
     config_results =
       [
-        process_file(Path.join([root, "assets", "package.json"]), &clean_package_json/1, dry_run?),
+        process_file(
+          Path.join([root, "assets", "package.json"]),
+          &clean_package_json/1,
+          dry_run?
+        ),
         process_file(
           Path.join([root, "assets", "tailwind.config.js"]),
           &clean_tailwind_config/1,

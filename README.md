@@ -1,8 +1,8 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library — 90 components, inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 119 components, inspired by shadcn/ui.**
 
-Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets, enterprise data components, and AI-ready chat UI for financial terminals, BI dashboards, and KPI monitors.
+Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets, enterprise data components, full Calendar & Scheduling Suite, and AI-ready chat UI for financial terminals, BI dashboards, booking platforms, and KPI monitors.
 
 [![Hex.pm](https://img.shields.io/hexpm/v/phia_ui.svg)](https://hex.pm/packages/phia_ui)
 [![Elixir](https://img.shields.io/badge/elixir-%3E%3D1.17-purple)](https://elixir-lang.org)
@@ -15,7 +15,7 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 | Feature | **PhiaUI** | [DaisyUI](https://github.com/saadeghi/daisyui) | [Salad UI](https://github.com/bluzky/salad_ui) | [ShadCN/ui](https://github.com/shadcn-ui/ui) | [Doggo](https://github.com/woylie/doggo) | [Mishka Chelekom](https://github.com/mishka-group/mishka_chelekom) | [Primer Live](https://github.com/ArthurClemens/primer_live) |
 |---------|:----------:|:-------:|:--------:|:---------:|:-----:|:---------------:|:-----------:|
 | **Platform** | Phoenix LiveView | CSS / Any | Phoenix LiveView | React | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView |
-| **Components** | **90** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
+| **Components** | **119** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
 | Copy-paste ownership | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ |
 | LiveView-native (`phx-*`, streams) | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ | ✓ |
 | Zero npm runtime deps | ✓ | ✓ | Partial | ✗ | ✓ | ✓ | Partial |
@@ -39,7 +39,7 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 ---
 
-## Component Library — 90 Components
+## Component Library — 119 Components
 
 ### Primitives & Feedback — 9 components
 
@@ -216,7 +216,7 @@ Add to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.4"}
+    {:phia_ui, "~> 0.1.5"}
   ]
 end
 ```
@@ -277,6 +277,8 @@ import PhiaCopyButton   from "./phia_hooks/copy_button"
 import PhiaEditable     from "./phia_hooks/editable"
 import PhiaColorPicker  from "./phia_hooks/color_picker"
 import PhiaBackTop      from "./phia_hooks/back_top"
+import PhiaAudioPlayer  from "./phia_hooks/audio_player"
+import PhiaSonner       from "./phia_hooks/sonner"
 
 let liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
@@ -286,7 +288,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
     PhiaCommand, PhiaDateRangePicker, PhiaChart,
     PhiaCalendar, PhiaCarousel, PhiaContextMenu, PhiaDrawer,
     PhiaTheme, PhiaResizable, PhiaMentionInput,
-    PhiaCopyButton, PhiaEditable, PhiaColorPicker, PhiaBackTop
+    PhiaCopyButton, PhiaEditable, PhiaColorPicker, PhiaBackTop,
+    PhiaAudioPlayer, PhiaSonner
   }
 })
 ```
@@ -864,6 +867,91 @@ end
 
 → [Gap analysis component examples](docs/components/gap.md)
 
+### Calendar & Scheduling Suite — 27 components
+
+The most comprehensive calendar and scheduling system for Phoenix LiveView. → [Full examples & use cases](docs/components/calendar.md)
+
+#### Standard Pickers
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| TimePicker | `time_picker/1`, `form_time_picker/1` | Clock-face or scroll-wheel time selector, 12h/24h, minute step, FormField |
+| DateTimePicker | `date_time_picker/1`, `form_date_time_picker/1` | Combined date calendar + time picker in popover, ISO 8601 output, FormField |
+| MonthPicker | `month_picker/1`, `form_month_picker/1` | Grid of 12 months, year navigation, FormField |
+| YearPicker | `year_picker/1`, `form_year_picker/1` | Scrollable year grid, min/max bounds, FormField |
+| WeekPicker | `week_picker/1`, `form_week_picker/1` | ISO week selector (Wxx/YYYY), week highlight in calendar grid |
+| DateField | `date_field/1`, `form_date_field/1` | Segmented date input (DD / MM / YYYY) with independent slot navigation |
+| WeekDayPicker | `week_day_picker/1` | Mon–Sun pill toggles for recurrence rules, multi-select |
+| CalendarTimePicker | `calendar_time_picker/1` | Full month calendar + inline time picker in one component |
+| DateRangePresets | `date_range_presets/1` | DateRangePicker with preset buttons (Today, This Week, Last 30 Days, etc.) |
+| WheelPicker | `wheel_picker/1` | iOS-style scroll-wheel picker, configurable columns and items |
+
+#### Calendar Views
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| BigCalendar | `big_calendar/1` | Full-page month view, view switcher (month/week/day), MON-first, event pills |
+| CalendarWeekView | `calendar_week_view/1` | Week grid with time axis (00:00–23:00), events positioned by px offset |
+| WeekCalendar | `week_calendar/1` | Compact week navigator: month title + prev/next arrows, 7-day strip, selected-day pill |
+| RangeCalendar | `range_calendar/1` | SUN-first month grid, range band: start/end circles + half-band + middle full-band |
+| MultiSelectCalendar | `multi_select_calendar/1` | Calendar with multi-day selection (toggle individual days) |
+| BadgeCalendar | `badge_calendar/1` | Calendar with numeric badge overlay per day (counts, notifications) |
+
+#### Scheduling & Time
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| TimeSlotGrid | `time_slot_grid/1` | Grid of bookable time slots: available / booked / selected states |
+| TimeSlotList | `time_slot_list/1` | Vertical list of time slots with availability indicator and book button |
+| DailyAgenda | `daily_agenda/1` | Single-day timeline with hour rows and overlapping event layout |
+| ScheduleEventCard | `schedule_event_card/1` | Rich event card: title, time, location, attendees, status badge |
+| CountdownTimer | `countdown_timer/1` | Live countdown to a target datetime, displays DD:HH:MM:SS |
+| TimeSliderPicker | `time_slider_picker/1` | Slider-based time range picker for start/end time selection |
+
+#### Booking & Specialized
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| BookingCalendar | `booking_calendar/1` | Appointment booking calendar: availability slots per day, confirm flow |
+| StreakCalendar | `streak_calendar/1` | Habit tracker / streak heatmap: current streak, longest streak, intensity |
+| ScheduleView | `schedule_view/1` | Agenda-style list grouped by date (upcoming events sorted chronologically) |
+| MultiMonthCalendar | `multi_month_calendar/1` | Side-by-side N months (2–4), synchronized navigation |
+| DateCard | `date_card/1` | Day card with 4 states: default / today / selected / disabled |
+| DateStrip | `date_strip/1` | Horizontal scrollable row of DateCards, highlights selected day |
+
+### Advanced Dashboard Widgets — 8 components
+
+High-fidelity data visualization and status widgets. → [Full examples & use cases](docs/components/widgets.md)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| CircularProgress | `circular_progress/1` | Radial SVG progress ring, customizable size/stroke/color, `role="progressbar"` |
+| UptimeBar | `uptime_bar/1` | Segmented uptime visualization (green/red/yellow segments), percentage badge |
+| ReceiptCard | `receipt_card/1` | Transaction/purchase receipt layout: line items, totals, merchant info, QR slot |
+| SparklineCard | `sparkline_card/1` | Inline SVG sparkline polyline + metric value + trend badge |
+| GaugeChart | `gauge_chart/1` | SVG semicircle gauge, value needle, min/max labels, color zones |
+| GanttChart | `gantt_chart/1` | Horizontal timeline/project planning: row labels, date-range bars, today indicator |
+| EventCalendar | `event_calendar/1` | Monthly grid with event pills, day click expands event list |
+| Snackbar | `snackbar/1` | Temporary notification banner (bottom of screen), auto-dismiss, action slot |
+
+### Media, Communication & Navigation — 5 components
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| AudioPlayer | `audio_player/1` | Media player: play/pause, scrubber, volume, duration display — `PhiaAudioPlayer` hook |
+| Sonner | `sonner/1` | Rich toast notifications: icon variants, action button, promise integration — `PhiaSonner` hook |
+| QrCode | `qr_code/1` | SVG QR code generator via `eqrcode`, size attr, configurable error correction |
+| BottomNavigation | `bottom_navigation/1`, `bottom_navigation_item/1` | Mobile bottom tab bar, `aria-current` on active tab, icon + label layout |
+| Toolbar | `toolbar/1`, `toolbar_button/1`, `toolbar_separator/1` | Horizontal `role="toolbar"`, icon buttons, separators |
+
+### Display & Interaction Additions — 3 components
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| AvatarGroup | `avatar_group/1` | Standalone stacked avatars with overlap, `+N` overflow badge, sizes |
+| SelectableCard | `selectable_card/1` | Card with checkbox/radio selection state, border highlight when selected |
+| InputAddon | `input_addon/1` | Prefix/suffix addon wrapper for inputs (icons, labels, currency symbols) |
+
 ---
 
 ## Mix Tasks
@@ -1003,7 +1091,10 @@ Runtime switching via the PhiaTheme hook:
 - **Project management** — KanbanBoard + ActivityFeed + BulkActionBar + StepTracker for work tracking
 - **Data exploration** — FilterBar + FilterBuilder + DataGrid for ad-hoc query interfaces
 - **Team collaboration** — MentionInput + ChatMessage for AI-augmented comment threads
-- **Booking and scheduling** — DatePicker + DateRangePicker + HeatmapCalendar for reservation flows
+- **Booking and scheduling** — BookingCalendar + TimeSlotGrid + DateRangePicker + CalendarWeekView for complete reservation flows
+- **Habit and streak tracking** — StreakCalendar + BadgeCalendar + HeatmapCalendar for gamified productivity apps
+- **Project planning** — GanttChart + KanbanBoard + ActivityFeed + StepTracker for full project management UI
+- **Audio & media apps** — AudioPlayer with full controls, progress scrubber, volume, and dark mode support
 - **Internal tools** — Form components with Ecto changeset integration and rich text content editing
 - **Mobile-first apps** — Drawer (bottom sheet) + Carousel for mobile UX patterns
 - **Multilingual apps** — Direction wrapper for RTL content (Arabic, Hebrew)
@@ -1023,6 +1114,9 @@ Detailed examples and use cases:
 | [Dashboard & Analytics](docs/components/dashboard.md) | Shell, Dark Mode, Table, DataGrid, StatCard, Charts, HeatmapCalendar |
 | [Enterprise Components](docs/components/enterprise.md) | ActivityFeed, KanbanBoard, ChatMessage, MentionInput, FilterBar, FilterBuilder, BulkActionBar, StepTracker, NavigationMenu |
 | [Gap Analysis Components](docs/components/gap.md) | InputOTP, Spinner, NumberInput, PasswordInput, CopyButton, SegmentedControl, Chip, Editable, FileUpload, Menubar, ColorPicker, FloatButton, MultiSelect, Tree, BackTop |
+| [Calendar & Scheduling Suite](docs/components/calendar.md) | TimePicker, DateTimePicker, MonthPicker, YearPicker, WeekPicker, DateField, BigCalendar, CalendarWeekView, WeekCalendar, RangeCalendar, TimeSlotGrid, BookingCalendar, StreakCalendar, and more |
+| [Advanced Widgets](docs/components/widgets.md) | CircularProgress, UptimeBar, ReceiptCard, SparklineCard, GaugeChart, GanttChart, EventCalendar, Snackbar |
+| [Media & Navigation](docs/components/media.md) | AudioPlayer, Sonner, QrCode, BottomNavigation, Toolbar |
 | [Theme System](docs/guides/theme-system.md) | CSS-first themes, color presets, runtime switching, ThemeProvider, PhiaTheme hook |
 | [Tutorial: Build a Dashboard](docs/guides/tutorial-dashboard.md) | Step-by-step guide: shell, KPIs, charts, tables, command palette, enterprise widgets |
 

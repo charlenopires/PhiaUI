@@ -329,12 +329,19 @@ defmodule Mix.Tasks.Phia.Add do
   # falls back to the installed application's priv directory.
   defp template_path(component_name) do
     filename = "#{component_name}.ex.eex"
-    local = Path.join([File.cwd!(), "priv/templates/components", filename])
+    local_base = Path.join([File.cwd!(), "priv/templates/components"])
 
-    if File.exists?(local) do
-      local
-    else
-      Application.app_dir(:phia_ui, "priv/templates/components/#{filename}")
+    case Path.wildcard(Path.join(local_base, "**/#{filename}")) do
+      [path | _] ->
+        path
+
+      [] ->
+        installed_base = Application.app_dir(:phia_ui, "priv/templates/components")
+
+        case Path.wildcard(Path.join(installed_base, "**/#{filename}")) do
+          [path | _] -> path
+          [] -> Path.join(local_base, filename)
+        end
     end
   end
 

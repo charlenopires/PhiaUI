@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 75 components" do
-      assert map_size(ComponentRegistry.all()) == 75
+    test "contains exactly 119 components" do
+      assert map_size(ComponentRegistry.all()) == 119
     end
 
     test "all keys are atom component names" do
@@ -130,6 +130,238 @@ defmodule PhiaUi.ComponentRegistryTest do
     test "dialog has js_hooks" do
       meta = ComponentRegistry.get(:dialog)
       assert meta.js_hooks != []
+    end
+
+    test "avatar_group is registered" do
+      assert ComponentRegistry.get(:avatar_group) != nil
+    end
+
+    test "selectable_card is registered as interactive" do
+      meta = ComponentRegistry.get(:selectable_card)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "input_addon is registered as form" do
+      meta = ComponentRegistry.get(:input_addon)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "circular_progress is registered as widget" do
+      meta = ComponentRegistry.get(:circular_progress)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "event_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:event_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "uptime_bar is registered as widget" do
+      meta = ComponentRegistry.get(:uptime_bar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "receipt_card is registered as widget" do
+      meta = ComponentRegistry.get(:receipt_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "heatmap_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:heatmap_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "sparkline_card is registered as widget" do
+      meta = ComponentRegistry.get(:sparkline_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "gauge_chart is registered as widget" do
+      meta = ComponentRegistry.get(:gauge_chart)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "gantt_chart is registered as widget" do
+      meta = ComponentRegistry.get(:gantt_chart)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "snackbar is registered as interactive" do
+      meta = ComponentRegistry.get(:snackbar)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "time_picker is registered as form" do
+      meta = ComponentRegistry.get(:time_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "date_time_picker is registered as form" do
+      meta = ComponentRegistry.get(:date_time_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "month_picker is registered as form" do
+      meta = ComponentRegistry.get(:month_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "year_picker is registered as form" do
+      meta = ComponentRegistry.get(:year_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "week_picker is registered as form" do
+      meta = ComponentRegistry.get(:week_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "date_field is registered as form" do
+      meta = ComponentRegistry.get(:date_field)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "calendar_time_picker is registered as widget" do
+      meta = ComponentRegistry.get(:calendar_time_picker)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "date_range_presets is registered as widget" do
+      meta = ComponentRegistry.get(:date_range_presets)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "big_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:big_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "calendar_week_view is registered as widget" do
+      meta = ComponentRegistry.get(:calendar_week_view)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "date_card is registered as interactive" do
+      meta = ComponentRegistry.get(:date_card)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "date_strip is registered as interactive" do
+      meta = ComponentRegistry.get(:date_strip)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "week_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:week_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "range_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:range_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "time_slot_grid is registered as interactive" do
+      meta = ComponentRegistry.get(:time_slot_grid)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "wheel_picker is registered as form" do
+      meta = ComponentRegistry.get(:wheel_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "multi_select_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:multi_select_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "badge_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:badge_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "daily_agenda is registered as widget" do
+      meta = ComponentRegistry.get(:daily_agenda)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "schedule_event_card is registered as widget" do
+      meta = ComponentRegistry.get(:schedule_event_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "countdown_timer is registered as widget" do
+      meta = ComponentRegistry.get(:countdown_timer)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "time_slot_list is registered as interactive" do
+      meta = ComponentRegistry.get(:time_slot_list)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "time_slider_picker is registered as form" do
+      meta = ComponentRegistry.get(:time_slider_picker)
+      assert meta != nil
+      assert meta.tier == :form
+    end
+
+    test "booking_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:booking_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "streak_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:streak_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "schedule_view is registered as widget" do
+      meta = ComponentRegistry.get(:schedule_view)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "multi_month_calendar is registered as widget" do
+      meta = ComponentRegistry.get(:multi_month_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
     end
   end
 end

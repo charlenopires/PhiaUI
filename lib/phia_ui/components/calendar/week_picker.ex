@@ -1,0 +1,132 @@
+defmodule PhiaUi.Components.WeekPicker do
+  @moduledoc """
+  Week selection input — styled native `<input type="week">`.
+
+  Wraps the browser's native week picker with PhiaUI's input styling (borders,
+  focus ring, size variants, error state). Supports standalone use or
+  Phoenix form field integration with changeset error display.
+
+  The value format follows the ISO 8601 week notation: `"YYYY-Www"` (e.g. `"2026-W10"`).
+
+  Present in scheduling and reporting UIs: Mantine `WeekPicker`, Ant Design
+  `DatePicker` (picker="week"), MUI `DatePicker` with week view.
+
+  Zero JavaScript — uses the native browser week control.
+
+  ## Examples
+
+      <%!-- Standalone --%>
+      <.week_picker id="report_week" name="report_week" label="Reporting Week" value="2026-W10" />
+
+      <%!-- With min/max constraint --%>
+      <.week_picker id="sprint" name="sprint" min="2026-W01" max="2026-W52" />
+
+      <%!-- Form field integration --%>
+      <.week_picker
+        id="event_week"
+        name={@form[:week].name}
+        value={@form[:week].value}
+        errors={Enum.map(@form[:week].errors, &translate_error/1)}
+        label="Event Week"
+      />
+  """
+
+  use Phoenix.Component
+
+  import PhiaUi.ClassMerger, only: [cn: 1]
+
+  # ---------------------------------------------------------------------------
+  # Attributes
+  # ---------------------------------------------------------------------------
+
+  attr(:id, :string, default: nil, doc: "HTML `id` for the input and label `for` link.")
+  attr(:name, :string, default: nil, doc: "HTML `name` for form submission.")
+
+  attr(:value, :string,
+    default: nil,
+    doc: "Current week value in ISO format, e.g. `\"2026-W10\"`."
+  )
+
+  attr(:label, :string, default: nil, doc: "Label text rendered above the input.")
+  attr(:description, :string, default: nil, doc: "Helper text rendered below the label.")
+  attr(:errors, :list, default: [], doc: "List of error message strings.")
+
+  attr(:disabled, :boolean, default: false, doc: "Disables the input.")
+
+  attr(:size, :atom,
+    default: :default,
+    values: [:sm, :default, :lg],
+    doc: "Input height/padding: `:sm` (h-8), `:default` (h-10), `:lg` (h-12)."
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes merged onto the input.")
+
+  attr(:rest, :global,
+    include: ~w(required placeholder phx-debounce min max),
+    doc: "HTML attributes forwarded to the `<input>` element."
+  )
+
+  # ---------------------------------------------------------------------------
+  # Component
+  # ---------------------------------------------------------------------------
+
+  def week_picker(assigns) do
+    ~H"""
+    <div class="space-y-2">
+      <label
+        :if={@label}
+        for={@id}
+        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+      >
+        {@label}
+      </label>
+
+      <p :if={@description} class="text-sm text-muted-foreground">
+        {@description}
+      </p>
+
+      <input
+        type="week"
+        id={@id}
+        name={@name}
+        value={@value}
+        disabled={@disabled}
+        class={cn([input_class(@size), error_class(@errors), @class])}
+        {@rest}
+      />
+
+      <p :for={error <- @errors} class="text-sm font-medium text-destructive">
+        {error}
+      </p>
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # Private helpers
+  # ---------------------------------------------------------------------------
+
+  defp input_class(:sm) do
+    "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-xs " <>
+      "ring-offset-background focus-visible:outline-none focus-visible:ring-2 " <>
+      "focus-visible:ring-ring focus-visible:ring-offset-2 " <>
+      "disabled:cursor-not-allowed disabled:opacity-50"
+  end
+
+  defp input_class(:default) do
+    "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm " <>
+      "ring-offset-background focus-visible:outline-none focus-visible:ring-2 " <>
+      "focus-visible:ring-ring focus-visible:ring-offset-2 " <>
+      "disabled:cursor-not-allowed disabled:opacity-50"
+  end
+
+  defp input_class(:lg) do
+    "flex h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base " <>
+      "ring-offset-background focus-visible:outline-none focus-visible:ring-2 " <>
+      "focus-visible:ring-ring focus-visible:ring-offset-2 " <>
+      "disabled:cursor-not-allowed disabled:opacity-50"
+  end
+
+  defp error_class([]), do: nil
+  defp error_class(_), do: "border-destructive focus-visible:ring-destructive"
+end

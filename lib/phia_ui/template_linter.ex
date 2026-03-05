@@ -89,10 +89,7 @@ defmodule PhiaUi.TemplateLinter do
 
   defp template_files(dir) do
     if File.dir?(dir) do
-      dir
-      |> File.ls!()
-      |> Enum.filter(&String.ends_with?(&1, ".ex"))
-      |> Enum.map(&Path.join(dir, &1))
+      Path.wildcard(Path.join(dir, "**/*.ex"))
     else
       []
     end

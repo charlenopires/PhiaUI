@@ -169,14 +169,18 @@ defmodule Mix.Tasks.Phia.UndaisyTest do
     end
 
     test "removes daisyui from multi-plugin array — last position" do
-      config = "module.exports = {\n  plugins: [require(\"autoprefixer\"), require(\"daisyui\")]\n}"
+      config =
+        "module.exports = {\n  plugins: [require(\"autoprefixer\"), require(\"daisyui\")]\n}"
+
       assert {:changed, result} = Undaisy.clean_tailwind_config(config)
       refute String.contains?(result, "daisyui")
       assert String.contains?(result, "autoprefixer")
     end
 
     test "removes daisyui from multi-plugin array — first position" do
-      config = "module.exports = {\n  plugins: [require(\"daisyui\"), require(\"autoprefixer\")]\n}"
+      config =
+        "module.exports = {\n  plugins: [require(\"daisyui\"), require(\"autoprefixer\")]\n}"
+
       assert {:changed, result} = Undaisy.clean_tailwind_config(config)
       refute String.contains?(result, "daisyui")
       assert String.contains?(result, "autoprefixer")

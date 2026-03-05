@@ -2,6 +2,146 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.5 — 2026-03-05
+
+### Added — 44 new components (Calendar Suite + Advanced Widgets + Media)
+
+Largest release to date. Multi-session image-analysis, gap analysis vs Full Calendar, Eleken design system, Ant Design, and Mantine. Registry grew from 75 to 119 entries — all implemented.
+
+#### Calendar & Scheduling Suite — Wave 8: Standard Date/Time Pickers (6 components)
+
+- **TimePicker** (`time_picker/1`, `form_time_picker/1`) — Clock-face or scroll-wheel time selector. 12h/24h mode, configurable minute step (1/5/15/30), AM/PM toggle. `role="group"` with labelled hour/minute/period spinbuttons. FormField integration. **24 tests**.
+
+- **DateTimePicker** (`date_time_picker/1`, `form_date_time_picker/1`) — Combined calendar + time picker rendered in a popover. Outputs ISO 8601 (`"2026-03-05T14:30:00"`). TimePicker embedded below calendar grid. FormField integration. **22 tests**.
+
+- **MonthPicker** (`month_picker/1`, `form_month_picker/1`) — Grid of 12 abbreviated month names, year navigation arrows. `aria-selected` on selected month. FormField outputs `"YYYY-MM"`. **18 tests**.
+
+- **YearPicker** (`year_picker/1`, `form_year_picker/1`) — Scrollable year grid ±10 years from current, `min`/`max` bounds. `aria-selected`. FormField outputs `"YYYY"`. **16 tests**.
+
+- **WeekPicker** (`week_picker/1`, `form_week_picker/1`) — ISO 8601 week selector. Calendar grid highlights entire selected week on hover/selection. FormField outputs `"YYYY-Www"`. **20 tests**.
+
+- **DateField** (`date_field/1`, `form_date_field/1`) — Segmented DD / MM / YYYY input. Each segment is an independent `<input type="number">` with `inputmode="numeric"`. Arrow keys increment/decrement, Tab advances to next segment. `aria-label="Day"`, `aria-label="Month"`, `aria-label="Year"`. FormField integration. **26 tests**.
+
+#### Calendar & Scheduling Suite — Wave 8 additional: WeekDayPicker
+
+- **WeekDayPicker** (`week_day_picker/1`) — Mon–Sun pill toggles for recurrence rule UIs. Multi-select with `aria-pressed`. Abbreviated labels (`Mo`, `Tu`, `We`…). Hidden `name[]` inputs for form submission. **14 tests**.
+
+#### Calendar & Scheduling Suite — Wave 9: Calendar Compositions (2 components)
+
+- **CalendarTimePicker** (`calendar_time_picker/1`) — Full-month calendar grid + inline time picker rendered as a single coherent widget. Outputs combined `Date` + `Time` via separate hidden inputs. `calendar_time_picker_nav/1` sub-component handles month navigation. **20 tests**.
+
+- **DateRangePresets** (`date_range_presets/1`) — `DateRangePicker` augmented with a preset sidebar: Today, Yesterday, This Week, Last 7 Days, Last 30 Days, This Month, Last Month, This Year, Custom. Preset buttons call `on_change` with start/end dates. Fully composable via `:presets` slot for custom entries. **22 tests**.
+
+#### Calendar & Scheduling Suite — Wave 10: Full-Page Calendar (1 component)
+
+- **BigCalendar** (`big_calendar/1`) — Full-page month view inspired by Google Calendar. View switcher (month / week / day) via `:view` attr + `on_view_change` event. MON-first grid. Events rendered as colored pills truncated at 3-per-day with `+N more`. `big_calendar_event/1` sub-component. Today highlighted. `phx-click` on days and events. **28 tests**.
+
+#### Calendar & Scheduling Suite — Wave 11: Week Grid (1 component)
+
+- **CalendarWeekView** (`calendar_week_view/1`) — Week grid with 24-hour time axis on the left. Each event is absolutely positioned by `top: #{start_px}px; height: #{duration_px}px` computed from start time and duration. Overlapping events share column width. `calendar_week_event/1` sub-component with color, title, time label. **25 tests**.
+
+#### Calendar & Scheduling Suite — Wave 12: Day Cards (2 components)
+
+- **DateCard** (`date_card/1`) — Individual day card with 4 visual states: `default`, `today` (ring), `selected` (filled background), `disabled` (muted, pointer-events-none). Attrs: `date`, `state`, `on_click`. **16 tests**.
+
+- **DateStrip** (`date_strip/1`) — Horizontal scrollable row of `DateCard` components. Accepts `dates` list + `selected` date. Auto-scrolls to keep selected card visible (inline JS). `aria-label="Date strip"`. **14 tests**.
+
+#### Calendar & Scheduling Suite — Wave 13: Compact Week Navigator (1 component)
+
+- **WeekCalendar** (`week_calendar/1`) — Compact week navigator widget. Header: current month/year title + prev/next arrows. 7-day strip below: each day shows abbreviated weekday label + date number. Selected day renders as a filled pill. `on_day_click` event. **18 tests**.
+
+#### Calendar & Scheduling Suite — Wave 14: Range Calendar (1 component)
+
+- **RangeCalendar** (`range_calendar/1`) — SUN-first single-month grid with rich range band visualization. Start/end dates render as filled blue circles with half-band; intermediate days render as full-band. Circular blue navigation buttons. `on_range_change` event with `{start, end}` map. **20 tests**.
+
+#### Calendar & Scheduling Suite — Wave 15: Scheduling Components (9 components)
+
+- **TimeSlotGrid** (`time_slot_grid/1`) — Grid of bookable time slots. Each slot is a button with 3 states: `available`, `booked`, `selected`. Configurable columns and slot duration. `on_select` event pushes `%{slot: time_string}`. **20 tests**.
+
+- **WheelPicker** (`wheel_picker/1`) — iOS-style scroll-wheel picker. Configurable number of columns, each with a list of items and a selected index. Pure CSS `overflow: hidden` + `scroll-snap-type: y mandatory` scroll wheel. Inline JS to sync scroll position → `pushEvent` on snap. **22 tests**.
+
+- **MultiSelectCalendar** (`multi_select_calendar/1`) — Calendar with multi-day toggle. Each day button toggles in/out of a selected set. Selected days rendered with `bg-primary`. Hidden `name[]` inputs submit all selected dates. `on_change` event pushes updated selected list. **18 tests**.
+
+- **BadgeCalendar** (`badge_calendar/1`) — Monthly calendar with numeric badge overlays. Accepts `data` map `%{~D[2026-03-05] => integer}`. Badge renders as `absolute top-1 right-1 text-xs`. `aria-label="N events on date"`. **16 tests**.
+
+- **DailyAgenda** (`daily_agenda/1`) — Single-day 24-hour timeline. Hour rows divided into 15-min gridlines. Events rendered as absolutely-positioned cards with CSS `top` + `height` computed from time values. Overlap detection: side-by-side columns. **24 tests**.
+
+- **ScheduleEventCard** (`schedule_event_card/1`) — Rich event detail card. Slots: title, time range, location, attendees (avatar stack), status badge, action buttons. Color accent bar on left border matches event category color. **18 tests**.
+
+- **CountdownTimer** (`countdown_timer/1`) — Live countdown to a target `DateTime`. Displays DD : HH : MM : SS flip tiles. Counts down to zero (shows "00:00:00:00"). Configurable label and expired state. Pure server-rendered — no JS hook; update via `push_event` or LiveView timer. **16 tests**.
+
+- **TimeSlotList** (`time_slot_list/1`) — Vertical list of time slots with availability indicator. Each slot shows time, duration, availability label, and a "Book" button. Available/booked/pending states with colored dot. `on_book` event. **16 tests**.
+
+- **TimeSliderPicker** (`time_slider_picker/1`) — Dual-handle slider for selecting a start + end time within a day. Renders two `<input type="range">` with CSS overlap. Outputs start/end as `"HH:MM"` strings. `on_change` event. **20 tests**.
+
+#### Calendar & Scheduling Suite — Wave 16: Booking & Schedule Views (4 components)
+
+- **BookingCalendar** (`booking_calendar/1`) — Full appointment booking flow. Month calendar shows available/booked/closed days. Clicking an available day reveals time slot list. Confirm button triggers `on_book` event with `%{date: date, slot: time}`. **26 tests**.
+
+- **StreakCalendar** (`streak_calendar/1`) — Habit tracker / contribution heatmap. Accepts `entries` list of `%{date, completed}`. Shows current streak, longest streak, completion percentage. Intensity coloring per week. Legend below grid. **22 tests**.
+
+- **ScheduleView** (`schedule_view/1`) — Agenda-style event list grouped by date. Events sorted chronologically. Date group headers highlight today. `schedule_view_event/1` sub-component: time, title, location, attendee avatars, color dot. **20 tests**.
+
+- **MultiMonthCalendar** (`multi_month_calendar/1`) — Side-by-side display of 2–4 months (`:count` attr). Navigation arrows advance all months together. Range selection spans across months. Used for extended booking windows. **24 tests**.
+
+#### Advanced Dashboard Widgets — Wave 6 (4 components)
+
+- **CircularProgress** (`circular_progress/1`) — Radial SVG progress ring. Attrs: `value` (0–100), `size` (px), `stroke_width`, `color` (semantic token). `role="progressbar"` + `aria-valuenow` + `aria-valuemax`. Inner label slot for value/text. **22 tests**.
+
+- **EventCalendar** (`event_calendar/1`) — Monthly calendar grid with event pills per day. Accepts `events` list `%{date, title, color, id}`. Max 3 pills per day + `+N more` overflow. Day click triggers `on_day_click` with date + event list. **24 tests**.
+
+- **UptimeBar** (`uptime_bar/1`) — Segmented uptime visualization. Accepts `segments` list `%{status: :up | :down | :degraded, label}`. Green/red/yellow colored segments. Uptime percentage badge. Tooltip per segment on hover. `rounding/2` helper applies `rounded-full` for single-segment edge case. **20 tests**.
+
+- **ReceiptCard** (`receipt_card/1`) — Transaction/purchase receipt layout. Line items table with description + amount. Subtotal, tax, total rows. Merchant header with logo slot. QR code slot at bottom. Print-friendly CSS. **20 tests**.
+
+#### Advanced Dashboard Widgets — Wave 7 (4 components)
+
+- **SparklineCard** (`sparkline_card/1`) — Inline SVG sparkline polyline + metric value card. Accepts `data` list of numbers. Normalizes to SVG viewBox. Trend badge (▲/▼ + %). Color inherited from `text-*` class. **20 tests**.
+
+- **GaugeChart** (`gauge_chart/1`) — SVG semicircle gauge. Needle rotates from -90° (min) to +90° (max) based on `value`. Color zones (green/yellow/red arcs). Min/max labels at edges. Center displays value + unit. **22 tests**.
+
+- **GanttChart** (`gantt_chart/1`) — Horizontal timeline/project planning. Accepts `tasks` list `%{label, start_date, end_date, color, progress}`. Date axis auto-scales to task range. Today indicator vertical line. Progress bar within each task bar. **26 tests**.
+
+- **Snackbar** (`snackbar/1`) — Temporary notification banner appearing at the bottom center of the screen. Variants: `default`, `success`, `error`, `warning`. `open` boolean attr toggles visibility with CSS transition. Auto-dismiss via `phx-click` or timer. Action slot for link/button. **18 tests**.
+
+#### Display & Interaction Additions — Wave 5 (3 components)
+
+- **AvatarGroup** (`avatar_group/1`) — Standalone stacked avatars registry entry. Negative-margin overlap. `+N` overflow badge when `max` exceeded. 3 sizes (`:sm`, `:default`, `:lg`). Accepts `avatars` list `%{src, name, fallback}`. **16 tests**.
+
+- **SelectableCard** (`selectable_card/1`) — Card with selection state. Renders a hidden `<input type="checkbox">` or `<input type="radio">` underneath. Selected state: `ring-2 ring-primary`. Checkmark icon appears in top-right corner when selected. `on_select` event. **18 tests**.
+
+- **InputAddon** (`input_addon/1`) — Prefix and suffix addon wrapper for `phia_input/1`. Merges borders and removes duplicate rounded corners at the join. Addon can be text, icon, or button. Zero JS. **16 tests**.
+
+#### Tabs Enhancement — Wave 5 (update, not new entry)
+
+- **Tabs variants** — Added `:variant` attr to `tabs/1`: `:underline` (default, bottom border), `:solid` (filled background), `:pill` (rounded). No registry count change.
+
+#### Media, Communication & Navigation (5 components)
+
+- **AudioPlayer** (`audio_player/1`) + `PhiaAudioPlayer` hook — HTML5 `<audio>` element controlled by a custom UI. Play/pause toggle, scrubber (time slider), current/total time display, volume slider, mute button. Hook uses native `audio` events (`timeupdate`, `loadedmetadata`, `ended`). `destroyed()` removes all listeners. **22 tests**.
+
+- **Sonner** (`sonner/1`) + `PhiaSonner` hook — Rich toast notification system (Sonner-inspired). Icon variants (`success` ✓, `error` ✗, `warning` ⚠, `info` ℹ, `loading` spinner). Action button slot. Promise toast mode (pending → success/error). Stacking with configurable `position` (6 positions). `push_event(socket, "phia-sonner", %{...})` API. **24 tests**.
+
+- **QrCode** (`qr_code/1`) — SVG QR code generator using `eqrcode ~> 0.2`. `EQRCode.svg/2` wrapped in a `<div>`. Attrs: `value` (string), `size` (integer, default 200), `error_correction_level` (`:l`, `:m`, `:q`, `:h`). `title` attr for `<title>` inside SVG for accessibility. **16 tests**.
+
+- **BottomNavigation** (`bottom_navigation/1`, `bottom_navigation_item/1`) — Mobile bottom tab bar. Fixed at bottom, full width, 3–5 items. Each item: icon + label + optional badge. `aria-current="page"` on active item. `phx-click` on each item. **16 tests**.
+
+- **Toolbar** (`toolbar/1`, `toolbar_button/1`, `toolbar_separator/1`) — Horizontal `role="toolbar"` bar. `toolbar_button/1`: icon button with tooltip, `aria-label`, disabled state, active/pressed state. `toolbar_separator/1`: `role="separator"`, `aria-orientation="vertical"`. Arrow key navigation via `aria-keyshortcuts`. **18 tests**.
+
+### New JS Hooks
+
+- `priv/templates/js/hooks/audio_player.js` — `PhiaAudioPlayer`
+- `priv/templates/js/hooks/sonner.js` — `PhiaSonner`
+
+### Test Coverage
+
+- **1098 new tests** across 44 new components — **0 failures**
+- **4043 total tests** — **0 failures**
+- Component registry: **119 entries** (75 → 119, all implemented — zero planned-only entries)
+- `mix credo --strict` — 0 issues
+
+---
+
 ## 0.1.4 — 2026-03-04
 
 ### Added — 15 gap-analysis components (vs shadcn/ui, Mantine, Ant Design, Chakra UI, MUI)
