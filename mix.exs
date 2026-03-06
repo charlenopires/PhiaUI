@@ -45,21 +45,29 @@ defmodule PhiaUi.MixProject do
         "README.md",
         "CHANGELOG.md",
         "LICENSE",
-        "docs/components/primitives.md",
+        "docs/components/buttons.md",
+        "docs/components/calendar.md",
+        "docs/components/cards.md",
+        "docs/components/data.md",
+        "docs/components/display.md",
+        "docs/components/feedback.md",
         "docs/components/forms.md",
-        "docs/components/interactive.md",
-        "docs/components/dashboard.md",
-        "docs/components/utilities.md",
-        "docs/components/enterprise.md",
-        "docs/guides/tutorial-dashboard.md",
-        "docs/guides/theme-system.md"
+        "docs/components/inputs.md",
+        "docs/components/layout.md",
+        "docs/components/media.md",
+        "docs/components/navigation.md",
+        "docs/components/overlay.md",
+        "docs/guides/theme-system.md",
+        "docs/guides/tutorial-booking.md",
+        "docs/guides/tutorial-cms.md",
+        "docs/guides/tutorial-dashboard.md"
       ],
       main: "readme",
       source_url: "https://github.com/phiaui/phia_ui",
       source_ref: "v#{@version}",
       groups_for_extras: [
-        Components: ~r/docs\/components\/.*/,
-        Guides: ~r/docs\/guides\/.*/
+        Guides: ~r/docs\/guides\/.*/,
+        Components: ~r/docs\/components\/.*/
       ]
     ]
   end

@@ -210,47 +210,46 @@ defmodule PhiaUi.Components.Drawer do
   # ---------------------------------------------------------------------------
 
   @doc """
-  Button that opens the drawer.
+  Wrapper that opens the drawer when any element inside it is clicked.
 
-  The `PhiaDrawer` hook listens for clicks on elements with the
-  `data-drawer-trigger="{drawer_content_id}"` attribute and shows the
-  matching drawer content panel.
+  Renders a `<div>` (not a `<button>`) so you can place any trigger content
+  inside — including a `<.button>` — without creating invalid nested-button
+  HTML. The `PhiaDrawer` hook intercepts clicks on `[data-drawer-trigger]`
+  anywhere in the document via event delegation, so the wrapper element type
+  does not need to be focusable itself.
 
-  The `drawer_id` attribute is used to build the `data-drawer-trigger` value
-  pointing at the content panel's ID (by convention the content panel is given
-  `id="{drawer_id}-content"`).
+  ## Example
 
-  The trigger can also be wired up `phx-click` for additional LiveView-side
-  effects (e.g. fetching fresh data before the drawer opens):
-
-      <.drawer_trigger drawer_id="comments" phx-click="load_comments">
-        View Comments
+      <.drawer_trigger drawer_id="settings-drawer">
+        <.button variant="outline">
+          <.icon name="settings" class="mr-2" />
+          Open Settings
+        </.button>
       </.drawer_trigger>
   """
   attr(:drawer_id, :string,
     required: true,
     doc: """
-    ID of the parent `drawer/1`. The hook looks for `drawer_content/1` with
-    an `id` matching `"{drawer_id}-content"` (by convention) to know which
-    panel to open.
+    ID that matches the target `drawer_content/1`'s `id` attribute.
+    The hook looks for `[data-drawer-trigger]` whose value equals the
+    `drawer_content/1` element's `id`.
     """
   )
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes")
-  attr(:rest, :global, doc: "Extra HTML attributes forwarded to the trigger `<button>`")
+  attr(:rest, :global, doc: "Extra HTML attributes forwarded to the wrapper `<div>`")
 
-  slot(:inner_block, required: true, doc: "Trigger button content — text, icon, or a `button/1`")
+  slot(:inner_block, required: true, doc: "Trigger content — any element, typically a `<.button>`")
 
   def drawer_trigger(assigns) do
     ~H"""
-    <button
-      type="button"
+    <div
       data-drawer-trigger={@drawer_id}
-      class={cn([@class])}
+      class={cn(["inline-flex", @class])}
       {@rest}
     >
       {render_slot(@inner_block)}
-    </button>
+    </div>
     """
   end
 

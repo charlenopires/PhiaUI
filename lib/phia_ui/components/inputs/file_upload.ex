@@ -123,23 +123,44 @@ defmodule PhiaUi.Components.FileUpload do
 
     ~H"""
     <div class={cn(["file-upload-wrapper", @class])}>
-      <%!-- Label wraps the hidden file input so the entire element is clickable --%>
-      <label class="block text-sm font-medium text-foreground mb-2">
-        {@label}
-        <input
-          type="file"
-          class="sr-only"
-          accept={@accept}
-        />
-      </label>
+      <%!-- Section label (not a <label> wrapping the input — live_file_input auto-wires itself) --%>
+      <p class="block text-sm font-medium text-foreground mb-2">{@label}</p>
 
       <%!-- Drop zone — phx-drop-target is only added when upload.ref is available --%>
-      <div
-        class="drop-zone border-2 border-dashed border-border rounded-lg p-8 text-center text-muted-foreground hover:border-primary hover:bg-muted/40 transition-colors cursor-pointer"
+      <label
+        class="drop-zone flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border rounded-lg p-8 text-center text-muted-foreground hover:border-primary hover:bg-muted/40 transition-colors cursor-pointer"
         phx-drop-target={@drop_target_ref}
       >
-        {render_slot(@empty)}
-      </div>
+        <%!-- Upload icon --%>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-muted-foreground/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
+        </svg>
+
+        <%!-- Slot content or default message --%>
+        <%= if @empty != [] do %>
+          {render_slot(@empty)}
+        <% else %>
+          <span class="text-sm">
+            <span class="font-medium text-primary">Click to upload</span>
+            <span class="text-muted-foreground"> or drag and drop</span>
+          </span>
+        <% end %>
+
+        <%!-- Live file input (Phoenix-wired) or plain fallback --%>
+        <%= if @upload != nil do %>
+          <.live_file_input upload={@upload} class="sr-only" />
+        <% else %>
+          <input type="file" class="sr-only" accept={@accept} />
+        <% end %>
+      </label>
+
+      <%!-- Per-upload validation errors --%>
+      <%= if @upload != nil do %>
+        <p :for={err <- upload_level_errors(@upload)}
+           class="text-xs text-destructive mt-1">
+          {humanize_upload_error(err)}
+        </p>
+      <% end %>
 
       <%!-- File list — only rendered when upload has at least one entry --%>
       <div :if={length(@entries) > 0} class="mt-4 space-y-2">
@@ -253,4 +274,14 @@ defmodule PhiaUi.Components.FileUpload do
   defp entry_field(entry, field) when is_map(entry) do
     Map.get(entry, field) || Map.get(entry, to_string(field))
   end
+
+  # Extracts upload-level errors from the upload config (not per-entry errors).
+  defp upload_level_errors(nil), do: []
+  defp upload_level_errors(upload), do: Map.get(upload, :errors) || []
+
+  # Translates Phoenix.LiveView upload error atoms to human-readable strings.
+  defp humanize_upload_error(:too_large), do: "File is too large"
+  defp humanize_upload_error(:too_many_files), do: "Too many files selected"
+  defp humanize_upload_error(:not_accepted), do: "File type is not accepted"
+  defp humanize_upload_error(other), do: to_string(other)
 end

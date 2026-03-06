@@ -56,11 +56,27 @@ defmodule PhiaUi.Components.Snackbar do
     ~H"""
     <div
       :if={@visible}
+      phx-mounted={
+        Phoenix.LiveView.JS.transition(
+          {"transition-all ease-out duration-300",
+           "opacity-0 translate-y-3 scale-95",
+           "opacity-100 translate-y-0 scale-100"},
+          time: 300
+        )
+      }
+      phx-remove={
+        Phoenix.LiveView.JS.transition(
+          {"transition-all ease-in duration-200",
+           "opacity-100 translate-y-0 scale-100",
+           "opacity-0 translate-y-3 scale-95"},
+          time: 200
+        )
+      }
       class={
         cn([
           "fixed bottom-6 left-1/2 -translate-x-1/2 z-50",
           "flex items-center gap-3 px-4 py-3",
-          "rounded-xl border border-border bg-card shadow-lg",
+          "rounded-xl border border-border bg-card shadow-xl",
           "min-w-[280px] max-w-lg",
           @class
         ])

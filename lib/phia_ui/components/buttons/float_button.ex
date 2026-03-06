@@ -38,9 +38,16 @@ defmodule PhiaUi.Components.FloatButton do
 
   use Phoenix.Component
 
+  alias Phoenix.LiveView.JS
+
   import PhiaUi.ClassMerger, only: [cn: 1]
 
   import PhiaUi.Components.Icon, only: [icon: 1]
+
+  attr(:id, :string,
+    default: "float-btn",
+    doc: "Element ID used to wire up speed-dial toggle targets. Must be unique per page."
+  )
 
   attr(:icon, :string,
     default: nil,
@@ -146,7 +153,7 @@ defmodule PhiaUi.Components.FloatButton do
   defp render_speed_dial(assigns) do
     main_slot = List.first(assigns.main) || %{}
     main_aria_label = Map.get(main_slot, :aria_label, "Actions")
-    main_icon = Map.get(main_slot, :icon, nil)
+    main_icon = Map.get(main_slot, :icon, "plus")
 
     assigns =
       assigns
@@ -155,23 +162,29 @@ defmodule PhiaUi.Components.FloatButton do
 
     ~H"""
     <div class={cn([
-      "fixed",
+      "fixed z-50",
       position_class(@position),
-      "flex flex-col-reverse items-center gap-3",
+      "flex flex-col-reverse items-end gap-3",
       @class
     ])}>
-      <%!-- Speed-dial items rendered above the main button --%>
-      <div class="flex flex-col-reverse gap-2" data-speed-dial-items>
+      <%!-- Speed-dial items — hidden by default, toggled by the main button --%>
+      <div
+        id={"#{@id}-items"}
+        class="flex flex-col-reverse items-end gap-2 hidden"
+        data-speed-dial-items
+      >
         <%= for item <- @item do %>
-          <div class="flex items-center gap-2">
-            <span class="text-sm bg-background border border-border rounded px-2 py-1 shadow-sm">
+          <div class="flex items-center justify-end gap-2.5">
+            <%!-- Label tooltip on the left of the item button --%>
+            <span :if={Map.get(item, :label) not in [nil, ""]}
+              class="text-xs font-medium bg-foreground/90 text-background rounded-md px-2.5 py-1 shadow-md whitespace-nowrap">
               {Map.get(item, :label, "")}
             </span>
             <button
               type="button"
               phx-click={Map.get(item, :on_click)}
-              aria-label={Map.get(item, :label, "")}
-              class="h-10 w-10 rounded-full bg-secondary text-secondary-foreground shadow hover:bg-secondary/90 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={Map.get(item, :label, "Action")}
+              class="h-11 w-11 rounded-full bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90 hover:scale-105 flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <%= if Map.get(item, :icon) do %>
                 <.icon name={Map.get(item, :icon)} class="h-5 w-5" />
@@ -180,16 +193,23 @@ defmodule PhiaUi.Components.FloatButton do
           </div>
         <% end %>
       </div>
-      <%!-- Main trigger button --%>
+      <%!-- Main trigger button — toggles speed-dial items + rotates icon --%>
       <button
         type="button"
         aria-label={@main_aria_label}
         aria-expanded="false"
-        class="h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        phx-click={
+          JS.toggle(to: "##{@id}-items",
+            in: {"transition-all ease-out duration-200", "opacity-0 scale-90 translate-y-2", "opacity-100 scale-100 translate-y-0"},
+            out: {"transition-all ease-in duration-150", "opacity-100 scale-100 translate-y-0", "opacity-0 scale-90 translate-y-2"})
+          |> JS.toggle_class("rotate-45", to: "##{@id}-main-icon")
+          |> JS.toggle_attribute({"aria-expanded", "true", "false"})
+        }
+        class="h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 hover:scale-105 active:scale-95 flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <%= if @main_icon do %>
+        <span id={"#{@id}-main-icon"} class="transition-transform duration-200">
           <.icon name={@main_icon} class="h-6 w-6" />
-        <% end %>
+        </span>
       </button>
     </div>
     """

@@ -76,11 +76,14 @@ defmodule PhiaUi.Components.BackTop do
       data-threshold={@threshold}
       data-smooth={to_string(@smooth)}
       aria-label={@aria_label}
+      aria-hidden="true"
       class={cn([
-        "fixed bottom-6 right-6 h-10 w-10 rounded-full",
+        "fixed bottom-6 right-6 z-50",
+        "h-11 w-11 rounded-full",
         "bg-primary text-primary-foreground shadow-lg",
         "flex items-center justify-center",
-        "opacity-0 transition-opacity",
+        "opacity-0 pointer-events-none",
+        "transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         @class
       ])}
@@ -91,7 +94,9 @@ defmodule PhiaUi.Components.BackTop do
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
         aria-hidden="true"
       >
         <polyline points="18 15 12 9 6 15" />
