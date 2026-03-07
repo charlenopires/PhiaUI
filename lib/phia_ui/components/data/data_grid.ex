@@ -991,6 +991,469 @@ defmodule PhiaUi.Components.DataGrid do
   end
 
   # ---------------------------------------------------------------------------
+  # data_grid_column_group/1
+  # ---------------------------------------------------------------------------
+
+  attr(:colspan, :integer, required: true, doc: "Number of columns this group spans")
+  attr(:label, :string, default: "", doc: "Group header text")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+
+  @doc """
+  Renders a `<th>` spanning multiple columns for two-row grouped headers.
+
+  Use inside a top `<tr>` in `<thead>` above the individual column headers.
+
+  ## Example
+
+      <thead>
+        <tr>
+          <.data_grid_column_group colspan={2} label="Personal Info" />
+          <.data_grid_column_group colspan={3} label="Work Details" />
+        </tr>
+        <tr>
+          <.data_grid_head>Name</.data_grid_head>
+          <.data_grid_head>Email</.data_grid_head>
+          ...
+        </tr>
+      </thead>
+  """
+  def data_grid_column_group(assigns) do
+    ~H"""
+    <th
+      colspan={@colspan}
+      class={cn([
+        "px-4 py-2 text-center text-xs font-semibold text-foreground border-b border-border",
+        "bg-muted/50 uppercase tracking-wider",
+        @class
+      ])}
+      {@rest}
+    >
+      {@label}
+    </th>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_group_head/1
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  @doc """
+  Full group header row wrapper for two-level column grouping.
+
+  Renders a `<tr>` that should be placed as the first row in `<thead>`.
+  Fill it with `data_grid_column_group/1` cells.
+
+  ## Example
+
+      <.data_grid_group_head>
+        <.data_grid_column_group colspan={2} label="Identity" />
+        <.data_grid_column_group colspan={2} label="Status" />
+      </.data_grid_group_head>
+  """
+  def data_grid_group_head(assigns) do
+    ~H"""
+    <tr class={cn(["border-b border-border", @class])} {@rest}>
+      {render_slot(@inner_block)}
+    </tr>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_pinned_row/1
+  # ---------------------------------------------------------------------------
+
+  attr(:position, :atom,
+    default: :bottom,
+    values: [:top, :bottom],
+    doc: "`:top` sticks to top of table body; `:bottom` sticks to bottom"
+  )
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  @doc """
+  Renders a sticky pinned row for summary totals or frozen header rows.
+
+  Use `:top` for pinned column headers within the body, `:bottom` for totals.
+  Place inside `data_grid_body/1`.
+
+  ## Example
+
+      <.data_grid_body id="rows">
+        <.data_grid_row :for={{id, row} <- @streams.rows} id={id}>
+          <.data_grid_cell>{row.name}</.data_grid_cell>
+        </.data_grid_row>
+        <.data_grid_pinned_row position={:bottom}>
+          <.data_grid_cell class="font-semibold">Total</.data_grid_cell>
+          <.data_grid_cell class="font-semibold tabular-nums">{@total}</.data_grid_cell>
+        </.data_grid_pinned_row>
+      </.data_grid_body>
+  """
+  def data_grid_pinned_row(assigns) do
+    ~H"""
+    <tr
+      class={cn([
+        "border-b border-border bg-card transition-colors",
+        @position == :top && "sticky top-0 z-10 shadow-sm",
+        @position == :bottom && "sticky bottom-0 z-10 shadow-[0_-1px_0_var(--color-border)]",
+        @class
+      ])}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </tr>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_detail_row/1
+  # ---------------------------------------------------------------------------
+
+  attr(:colspan, :integer, required: true, doc: "Number of columns to span (equals total column count)")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  @doc """
+  Renders a full-width detail panel row for expandable row content.
+
+  Place immediately after the expanded `data_grid_row/1`. Toggle visibility
+  in your LiveView by conditionally rendering this row.
+
+  ## Example
+
+      <.data_grid_row id={dom_id}>
+        ...
+        <.data_grid_cell>
+          <button phx-click="toggle_row" phx-value-id={row.id}>Expand</button>
+        </.data_grid_cell>
+      </.data_grid_row>
+      <.data_grid_detail_row :if={row.id in @expanded} colspan={5}>
+        <div class="p-4 bg-muted/20">Detailed view for {row.name}</div>
+      </.data_grid_detail_row>
+  """
+  def data_grid_detail_row(assigns) do
+    ~H"""
+    <tr class={cn(["border-b border-border bg-muted/10", @class])} {@rest}>
+      <td colspan={@colspan} class="p-0">
+        {render_slot(@inner_block)}
+      </td>
+    </tr>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_group_row/1
+  # ---------------------------------------------------------------------------
+
+  attr(:label, :string, required: true, doc: "Group name displayed in the header row")
+  attr(:count, :any, default: nil, doc: "Item count shown as a badge (nil to hide)")
+  attr(:expanded, :boolean, default: true, doc: "Controls chevron direction")
+  attr(:on_toggle, :string, default: "toggle_group", doc: "phx-click event name")
+  attr(:value, :string, required: true, doc: "phx-value-value identifying this group")
+  attr(:colspan, :integer, default: 1, doc: "Colspan for the group label cell")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+
+  @doc """
+  Renders a collapsible row-group header with a chevron and optional count badge.
+
+  Fires `on_toggle` with `phx-value-value={value}` when clicked.
+  Your LiveView maintains the expanded/collapsed state per group key.
+
+  ## Example
+
+      <.data_grid_group_row
+        label="Active Users"
+        count={length(@active_users)}
+        expanded={@groups_expanded["active"]}
+        on_toggle="toggle_group"
+        value="active"
+        colspan={5}
+      />
+  """
+  def data_grid_group_row(assigns) do
+    ~H"""
+    <tr
+      class={cn(["border-b border-border bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors", @class])}
+      phx-click={@on_toggle}
+      phx-value-value={@value}
+      {@rest}
+    >
+      <td colspan={@colspan} class="px-4 py-2">
+        <div class="flex items-center gap-2">
+          <.icon
+            name="chevron-right"
+            class={cn(["h-4 w-4 text-muted-foreground transition-transform", @expanded && "rotate-90"])}
+          />
+          <span class="text-sm font-medium">{@label}</span>
+          <span
+            :if={@count != nil}
+            class="ml-1 inline-flex h-5 items-center justify-center rounded-full bg-muted px-2 text-xs text-muted-foreground"
+          >
+            {@count}
+          </span>
+        </div>
+      </td>
+    </tr>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_aggregation_row/1
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+  slot(:inner_block, required: true, doc: "data_grid_cell/1 children with aggregate values")
+
+  @doc """
+  Renders a visually distinct aggregation row for totals, averages, or sums.
+
+  Use at the bottom of `data_grid_body/1` (or after a group's rows).
+  Applies a top double-border and `font-medium bg-muted/30` styling.
+
+  ## Example
+
+      <.data_grid_aggregation_row>
+        <.data_grid_cell class="font-semibold">Total</.data_grid_cell>
+        <.data_grid_cell class="tabular-nums">{@sum}</.data_grid_cell>
+      </.data_grid_aggregation_row>
+  """
+  def data_grid_aggregation_row(assigns) do
+    ~H"""
+    <tr
+      class={cn([
+        "border-t-2 border-border bg-muted/30 font-medium",
+        @class
+      ])}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </tr>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_export_button/1
+  # ---------------------------------------------------------------------------
+
+  attr(:id, :string, required: true, doc: "Unique ID (required for phx-hook)")
+  attr(:target_id, :string, required: true, doc: "ID of the `data_grid` table to export")
+  attr(:filename, :string, default: "export.csv", doc: "Downloaded filename")
+  attr(:label, :string, default: "Export CSV")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+
+  @doc """
+  Renders a client-side CSV export button.
+
+  The `PhiaGridExport` hook reads visible `<th>` columns (skipping those
+  with `data-hidden`) and all `<tr>` in the `<tbody>` to build a CSV blob
+  and trigger a browser download. Entirely client-side — no server call.
+
+  ## Example
+
+      <.data_grid_toolbar>
+        <div class="ml-auto flex items-center gap-2">
+          <.data_grid_export_button
+            id="users-export"
+            target_id="users-grid"
+            filename="users.csv"
+          />
+        </div>
+      </.data_grid_toolbar>
+      <.data_grid id="users-grid">...</.data_grid>
+  """
+  def data_grid_export_button(assigns) do
+    ~H"""
+    <button
+      id={@id}
+      type="button"
+      phx-hook="PhiaGridExport"
+      data-target-id={@target_id}
+      data-filename={@filename}
+      class={cn([
+        "inline-flex h-8 items-center gap-2 rounded-md border border-input",
+        "bg-background px-3 text-sm hover:bg-accent hover:text-accent-foreground",
+        "transition-colors",
+        @class
+      ])}
+      {@rest}
+    >
+      <.icon name="download" size={:sm} />
+      {@label}
+    </button>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_density_toggle/1
+  # ---------------------------------------------------------------------------
+
+  attr(:density, :atom,
+    default: :normal,
+    values: [:compact, :normal, :comfortable],
+    doc: "Currently active density"
+  )
+  attr(:on_change, :string, default: "change_density", doc: "phx-click event name")
+  attr(:class, :string, default: nil)
+
+  @doc """
+  Three-button toggle to switch between compact / normal / comfortable row density.
+
+  Fires `on_change` with `phx-value-density` set to the selected value string.
+  Pass the resulting density atom to `data_grid_head/1` and `data_grid_cell/1`.
+
+  ## Example
+
+      <.data_grid_toolbar>
+        <div class="ml-auto flex items-center gap-2">
+          <.data_grid_density_toggle density={@density} on_change="set_density" />
+        </div>
+      </.data_grid_toolbar>
+
+  ## Handler
+
+      def handle_event("set_density", %{"density" => d}, socket) do
+        {:noreply, assign(socket, density: String.to_existing_atom(d))}
+      end
+  """
+  def data_grid_density_toggle(assigns) do
+    ~H"""
+    <div
+      class={cn([
+        "inline-flex items-center rounded-md border border-input divide-x divide-border overflow-hidden",
+        @class
+      ])}
+      role="group"
+      aria-label="Row density"
+    >
+      <button
+        :for={d <- [:compact, :normal, :comfortable]}
+        type="button"
+        phx-click={@on_change}
+        phx-value-density={to_string(d)}
+        aria-pressed={to_string(@density == d)}
+        class={cn([
+          "h-8 px-3 text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+          @density == d && "bg-accent text-accent-foreground"
+        ])}
+      >
+        {density_label(d)}
+      </button>
+    </div>
+    """
+  end
+
+  defp density_label(:compact), do: "Compact"
+  defp density_label(:normal), do: "Normal"
+  defp density_label(:comfortable), do: "Comfortable"
+
+  # ---------------------------------------------------------------------------
+  # data_grid_filter_chip/1
+  # ---------------------------------------------------------------------------
+
+  attr(:label, :string, required: true, doc: "Display text for the filter chip")
+  attr(:value, :string, required: true, doc: "phx-value-key sent when chip is removed")
+  attr(:on_remove, :string, default: "remove_filter", doc: "phx-click event name")
+  attr(:class, :string, default: nil)
+
+  @doc """
+  Badge-style chip showing an active filter with a remove button.
+
+  Fires `on_remove` with `phx-value-key={value}` when the × is clicked.
+
+  ## Example
+
+      <.data_grid_filter_chip label="Role: Admin" value="role" on_remove="clear_filter" />
+  """
+  def data_grid_filter_chip(assigns) do
+    ~H"""
+    <span
+      class={cn([
+        "inline-flex items-center gap-1 rounded-full border border-border",
+        "bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground",
+        @class
+      ])}
+    >
+      {@label}
+      <button
+        type="button"
+        phx-click={@on_remove}
+        phx-value-key={@value}
+        aria-label={"Remove filter: #{@label}"}
+        class="ml-0.5 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full hover:bg-destructive hover:text-destructive-foreground transition-colors"
+      >
+        <.icon name="x" class="h-2.5 w-2.5" />
+      </button>
+    </span>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # data_grid_active_filters/1
+  # ---------------------------------------------------------------------------
+
+  attr(:filters, :list,
+    required: true,
+    doc: """
+    List of active filter maps. Each must have:
+    - `label` — display string (e.g. "Role: Admin")
+    - `value` — key sent to `on_remove` handler (e.g. "role")
+    """
+  )
+  attr(:on_remove, :string, default: "remove_filter", doc: "phx-click event fired by each chip")
+  attr(:clear_all_label, :string, default: "Clear all", doc: "Label for the clear-all button")
+  attr(:on_clear_all, :string, default: "clear_all_filters", doc: "phx-click event for clear all")
+  attr(:class, :string, default: nil)
+
+  @doc """
+  Flex row of active filter chips with a "Clear all" button.
+
+  Renders nothing when `filters` is empty. Each chip fires `on_remove` with
+  `phx-value-key` set to the filter's `:value`. A "Clear all" button fires
+  `on_clear_all`.
+
+  ## Example
+
+      <.data_grid_active_filters
+        :if={@filters != []}
+        filters={@filters}
+        on_remove="remove_filter"
+        on_clear_all="clear_filters"
+      />
+
+  Where `@filters` is e.g.:
+      [%{label: "Role: Admin", value: "role"}, %{label: "Status: Active", value: "status"}]
+  """
+  def data_grid_active_filters(assigns) do
+    ~H"""
+    <div :if={@filters != []} class={cn(["flex flex-wrap items-center gap-2", @class])}>
+      <span class="text-xs text-muted-foreground">Filters:</span>
+      <.data_grid_filter_chip
+        :for={filter <- @filters}
+        label={filter.label}
+        value={filter.value}
+        on_remove={@on_remove}
+      />
+      <button
+        type="button"
+        phx-click={@on_clear_all}
+        class="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+      >
+        {@clear_all_label}
+      </button>
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
 

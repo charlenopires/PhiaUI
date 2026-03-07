@@ -429,6 +429,69 @@
   to   { opacity: 1; transform: translateX(0);    }
 }
 
+/* ── Background Wave (v0.1.11) ────────────────────────────────────────────── */
+
+@property --phia-conic-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes phia-wave-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes phia-beam-sweep {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateX(200%); opacity: 0; }
+}
+
+@keyframes phia-bokeh-drift {
+  0%   { transform: translate(0,0) scale(1); }
+  33%  { transform: translate(var(--bx, 20px), var(--by, -15px)) scale(1.05); }
+  66%  { transform: translate(var(--bx2, -10px), var(--by2, 20px)) scale(.95); }
+  100% { transform: translate(0,0) scale(1); }
+}
+
+@keyframes phia-conic-spin {
+  from { --phia-conic-angle: 0deg; }
+  to   { --phia-conic-angle: 360deg; }
+}
+
+@theme {
+  --animate-wave-scroll: phia-wave-scroll 8s linear infinite;
+  --animate-beam-sweep:  phia-beam-sweep 4s ease-in-out infinite;
+  --animate-bokeh-drift: phia-bokeh-drift 8s ease-in-out infinite;
+  --animate-conic-spin:  phia-conic-spin 6s linear infinite;
+}
+
+/* Textarea Enhancement Utilities */
+.phia-code-textarea-wrap {
+  position: relative;
+  display: flex;
+}
+
+.phia-line-numbers {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phia-mesh-bg *,
+  .phia-wave-bg *,
+  .phia-bokeh-bg * {
+    animation: none !important;
+  }
+}
+
 /* ── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {
   * {

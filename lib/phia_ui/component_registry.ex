@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 471 PhiaUI components.
+  Source of truth for all 534 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -4916,6 +4916,646 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :navigation,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Utility Components (v0.1.11) ──────────────────────────────────────────
+    visually_hidden: %{
+      name: "visually_hidden",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    line_clamp: %{
+      name: "line_clamp",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    highlight_text: %{
+      name: "highlight_text",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    relative_time: %{
+      name: "relative_time",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    number_format: %{
+      name: "number_format",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    reading_time: %{
+      name: "reading_time",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    label_with_tooltip: %{
+      name: "label_with_tooltip",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    print_only: %{
+      name: "print_only",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    screen_only: %{
+      name: "screen_only",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    color_mode_value: %{
+      name: "color_mode_value",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    diff_display: %{
+      name: "diff_display",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    stat_unit: %{
+      name: "stat_unit",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    word_count: %{
+      name: "word_count",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    focus_trap: %{
+      name: "focus_trap",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: ["PhiaFocusTrap"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sticky_wrapper: %{
+      name: "sticky_wrapper",
+      module: PhiaUi.Components.Utilities,
+      template_file: "priv/templates/components/display/utilities.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Background Components (v0.1.11) ───────────────────────────────────────
+    gradient_mesh: %{
+      name: "gradient_mesh",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: ["PhiaMeshBg"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    noise_bg: %{
+      name: "noise_bg",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    animated_gradient_bg: %{
+      name: "animated_gradient_bg",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    retro_grid: %{
+      name: "retro_grid",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    wave_bg: %{
+      name: "wave_bg",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    hex_pattern: %{
+      name: "hex_pattern",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    stripe_pattern: %{
+      name: "stripe_pattern",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    checker_pattern: %{
+      name: "checker_pattern",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    dot_grid: %{
+      name: "dot_grid",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bokeh_bg: %{
+      name: "bokeh_bg",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    conic_gradient_bg: %{
+      name: "conic_gradient_bg",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    flicker_grid: %{
+      name: "flicker_grid",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: ["PhiaFlickerGrid"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    beam_bg: %{
+      name: "beam_bg",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    warp_grid: %{
+      name: "warp_grid",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    flowing_lines: %{
+      name: "flowing_lines",
+      module: PhiaUi.Components.Background,
+      template_file: "priv/templates/components/background/background.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Textarea Enhanced (v0.1.11) ────────────────────────────────────────────
+    autoresize_textarea: %{
+      name: "autoresize_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: ["PhiaAutoresize"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phia_autoresize_textarea: %{
+      name: "phia_autoresize_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: ["PhiaAutoresize"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chat_textarea: %{
+      name: "chat_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: ["PhiaChatTextarea"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    code_textarea: %{
+      name: "code_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: ["PhiaCodeTextarea"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phia_code_textarea: %{
+      name: "phia_code_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: ["PhiaCodeTextarea"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    textarea_with_actions: %{
+      name: "textarea_with_actions",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phia_textarea_with_actions: %{
+      name: "phia_textarea_with_actions",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    split_textarea: %{
+      name: "split_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phia_split_textarea: %{
+      name: "phia_split_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    ghost_textarea: %{
+      name: "ghost_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phia_ghost_textarea: %{
+      name: "phia_ghost_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    expandable_textarea: %{
+      name: "expandable_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phia_expandable_textarea: %{
+      name: "phia_expandable_textarea",
+      module: PhiaUi.Components.TextareaEnhanced,
+      template_file: "priv/templates/components/inputs/textarea_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── TreeView Enhanced (v0.1.11) ────────────────────────────────────────────
+    icon_tree: %{
+      name: "icon_tree",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    icon_tree_item: %{
+      name: "icon_tree_item",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [:icon_tree],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    checkbox_tree: %{
+      name: "checkbox_tree",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: ["PhiaCheckboxTree"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    checkbox_tree_item: %{
+      name: "checkbox_tree_item",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [:checkbox_tree],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    searchable_tree: %{
+      name: "searchable_tree",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    file_tree: %{
+      name: "file_tree",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    file_tree_item: %{
+      name: "file_tree_item",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [:file_tree],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    lazy_tree: %{
+      name: "lazy_tree",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: ["PhiaLazyTree"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    lazy_tree_item: %{
+      name: "lazy_tree_item",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: [],
+      dependencies: [:lazy_tree],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    virtual_tree: %{
+      name: "virtual_tree",
+      module: PhiaUi.Components.TreeEnhanced,
+      template_file: "priv/templates/components/data/tree_enhanced.ex",
+      js_hooks: ["PhiaVirtualTree"],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── DataGrid Enhanced (v0.1.11) ────────────────────────────────────────────
+    data_grid_column_group: %{
+      name: "data_grid_column_group",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_group_head: %{
+      name: "data_grid_group_head",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_pinned_row: %{
+      name: "data_grid_pinned_row",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_detail_row: %{
+      name: "data_grid_detail_row",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_group_row: %{
+      name: "data_grid_group_row",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_aggregation_row: %{
+      name: "data_grid_aggregation_row",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_export_button: %{
+      name: "data_grid_export_button",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: ["PhiaGridExport"],
+      dependencies: [:data_grid],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_density_toggle: %{
+      name: "data_grid_density_toggle",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_filter_chip: %{
+      name: "data_grid_filter_chip",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_grid_active_filters: %{
+      name: "data_grid_active_filters",
+      module: PhiaUi.Components.DataGrid,
+      template_file: "priv/templates/components/data/data_grid.ex",
+      js_hooks: [],
+      dependencies: [:data_grid_filter_chip],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -4923,7 +5563,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 471 component metadata entries."
+  @doc "Returns the full registry map — all 534 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
