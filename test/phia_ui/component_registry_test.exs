@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 240 components" do
-      assert map_size(ComponentRegistry.all()) == 240
+    test "contains exactly 254 components" do
+      assert map_size(ComponentRegistry.all()) == 254
     end
 
     test "all keys are atom component names" do

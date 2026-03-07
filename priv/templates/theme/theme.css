@@ -274,10 +274,48 @@
   to   { stroke-dashoffset: 0; }
 }
 
+/* ── Drag-and-Drop Keyframes ──────────────────────────────────────────────── */
+
+@keyframes phia-drop-in {
+  0%   { transform: scale(0.95) translateY(4px); opacity: 0; }
+  60%  { transform: scale(1.02) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes phia-drag-pulse {
+  0%, 100% {
+    border-color: oklch(var(--color-primary) / 40%);
+    background-color: oklch(var(--color-primary) / 5%);
+  }
+  50% {
+    border-color: oklch(var(--color-primary) / 80%);
+    background-color: oklch(var(--color-primary) / 12%);
+  }
+}
+
+/* ── Drag-and-Drop Utilities ──────────────────────────────────────────────── */
+
+.phia-dragging {
+  opacity: 0.4;
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+
+.phia-drag-over {
+  border-color: oklch(var(--color-primary));
+  background-color: oklch(var(--color-primary) / 8%);
+}
+
 /* Disable all chart animations when user prefers reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .phia-chart-animate,
   .phia-chart-animate * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  [data-dragging],
+  [data-drag-over] {
     animation: none !important;
     transition: none !important;
   }

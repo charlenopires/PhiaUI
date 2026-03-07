@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 240 PhiaUI components.
+  Source of truth for all 254 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -2497,6 +2497,148 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Interaction / DnD Suite (v0.1.7) ─────────────────────────────────────
+    drag_handle: %{
+      name: "drag_handle",
+      module: PhiaUi.Components.Sortable,
+      template_file: "priv/templates/components/interaction/sortable.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    drop_indicator: %{
+      name: "drop_indicator",
+      module: PhiaUi.Components.Sortable,
+      template_file: "priv/templates/components/interaction/sortable.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sortable_list: %{
+      name: "sortable_list",
+      module: PhiaUi.Components.Sortable,
+      template_file: "priv/templates/components/interaction/sortable.ex",
+      js_hooks: ["PhiaSortable"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sortable_item: %{
+      name: "sortable_item",
+      module: PhiaUi.Components.Sortable,
+      template_file: "priv/templates/components/interaction/sortable.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sortable_grid: %{
+      name: "sortable_grid",
+      module: PhiaUi.Components.SortableGrid,
+      template_file: "priv/templates/components/interaction/sortable_grid.ex",
+      js_hooks: ["PhiaSortableGrid"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sortable_grid_item: %{
+      name: "sortable_grid_item",
+      module: PhiaUi.Components.SortableGrid,
+      template_file: "priv/templates/components/interaction/sortable_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    kanban_board: %{
+      name: "kanban_board",
+      module: PhiaUi.Components.KanbanBoard,
+      template_file: "priv/templates/components/data/kanban_board.ex",
+      js_hooks: ["PhiaKanban"],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    kanban_column: %{
+      name: "kanban_column",
+      module: PhiaUi.Components.KanbanBoard,
+      template_file: "priv/templates/components/data/kanban_board.ex",
+      js_hooks: [],
+      dependencies: [:kanban_board],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    kanban_card: %{
+      name: "kanban_card",
+      module: PhiaUi.Components.KanbanBoard,
+      template_file: "priv/templates/components/data/kanban_board.ex",
+      js_hooks: [],
+      dependencies: [:kanban_column],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    drop_zone: %{
+      name: "drop_zone",
+      module: PhiaUi.Components.DropZone,
+      template_file: "priv/templates/components/interaction/drop_zone.ex",
+      js_hooks: ["PhiaDropZone"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    drag_transfer_list: %{
+      name: "drag_transfer_list",
+      module: PhiaUi.Components.DropZone,
+      template_file: "priv/templates/components/interaction/drop_zone.ex",
+      js_hooks: ["PhiaDragTransferList"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    multi_drag_list: %{
+      name: "multi_drag_list",
+      module: PhiaUi.Components.MultiDrag,
+      template_file: "priv/templates/components/interaction/multi_drag.ex",
+      js_hooks: ["PhiaMultiDrag"],
+      dependencies: [:sortable_item],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    draggable_tree: %{
+      name: "draggable_tree",
+      module: PhiaUi.Components.DraggableTree,
+      template_file: "priv/templates/components/interaction/draggable_tree.ex",
+      js_hooks: ["PhiaDraggableTree"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    draggable_tree_node: %{
+      name: "draggable_tree_node",
+      module: PhiaUi.Components.DraggableTree,
+      template_file: "priv/templates/components/interaction/draggable_tree.ex",
+      js_hooks: [],
+      dependencies: [:draggable_tree],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -2504,7 +2646,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 240 component metadata entries."
+  @doc "Returns the full registry map — all 254 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
