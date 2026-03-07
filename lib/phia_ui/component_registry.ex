@@ -3586,6 +3586,238 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :form,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Table Suite (v0.1.8) ──────────────────────────────────────────────────
+    # 21 new components: table states, expandable rows, grouped rows,
+    # inline editing, declarative data table, timeline, responsive, pivot
+
+    # Group: Table State (loading / empty / error)
+    table_skeleton: %{
+      name: "table_skeleton",
+      module: PhiaUi.Components.TableState,
+      template_file: "priv/templates/components/data/table_state.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    table_empty: %{
+      name: "table_empty",
+      module: PhiaUi.Components.TableState,
+      template_file: "priv/templates/components/data/table_state.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    table_error: %{
+      name: "table_error",
+      module: PhiaUi.Components.TableState,
+      template_file: "priv/templates/components/data/table_state.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Expandable Table
+    expandable_table_row: %{
+      name: "expandable_table_row",
+      module: PhiaUi.Components.ExpandableTable,
+      template_file: "priv/templates/components/data/expandable_table.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    expandable_table_detail: %{
+      name: "expandable_table_detail",
+      module: PhiaUi.Components.ExpandableTable,
+      template_file: "priv/templates/components/data/expandable_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Table Group
+    table_group: %{
+      name: "table_group",
+      module: PhiaUi.Components.TableGroup,
+      template_file: "priv/templates/components/data/table_group.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    table_group_header: %{
+      name: "table_group_header",
+      module: PhiaUi.Components.TableGroup,
+      template_file: "priv/templates/components/data/table_group.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Inline Edit Table
+    editable_cell: %{
+      name: "editable_cell",
+      module: PhiaUi.Components.InlineEditTable,
+      template_file: "priv/templates/components/data/inline_edit_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editable_row: %{
+      name: "editable_row",
+      module: PhiaUi.Components.InlineEditTable,
+      template_file: "priv/templates/components/data/inline_edit_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editable_row_actions: %{
+      name: "editable_row_actions",
+      module: PhiaUi.Components.InlineEditTable,
+      template_file: "priv/templates/components/data/inline_edit_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: DataTable (all-in-one declarative table)
+    data_table: %{
+      name: "data_table",
+      module: PhiaUi.Components.DataTable,
+      template_file: "priv/templates/components/data/data_table.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_table_column: %{
+      name: "data_table_column",
+      module: PhiaUi.Components.DataTable,
+      template_file: "priv/templates/components/data/data_table.ex",
+      js_hooks: [],
+      dependencies: [:data_table],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Timeline Table
+    timeline_table: %{
+      name: "timeline_table",
+      module: PhiaUi.Components.TimelineTable,
+      template_file: "priv/templates/components/data/timeline_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    timeline_table_row: %{
+      name: "timeline_table_row",
+      module: PhiaUi.Components.TimelineTable,
+      template_file: "priv/templates/components/data/timeline_table.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Responsive Table
+    responsive_table: %{
+      name: "responsive_table",
+      module: PhiaUi.Components.ResponsiveTable,
+      template_file: "priv/templates/components/data/responsive_table.ex",
+      js_hooks: [],
+      dependencies: [:table],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    responsive_table_row: %{
+      name: "responsive_table_row",
+      module: PhiaUi.Components.ResponsiveTable,
+      template_file: "priv/templates/components/data/responsive_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    responsive_table_field: %{
+      name: "responsive_table_field",
+      module: PhiaUi.Components.ResponsiveTable,
+      template_file: "priv/templates/components/data/responsive_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Pivot Table
+    pivot_table: %{
+      name: "pivot_table",
+      module: PhiaUi.Components.PivotTable,
+      template_file: "priv/templates/components/data/pivot_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pivot_cell: %{
+      name: "pivot_cell",
+      module: PhiaUi.Components.PivotTable,
+      template_file: "priv/templates/components/data/pivot_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pivot_row_header: %{
+      name: "pivot_row_header",
+      module: PhiaUi.Components.PivotTable,
+      template_file: "priv/templates/components/data/pivot_table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Table enhancements (new sub-component on existing Table module)
+    table_action_cell: %{
+      name: "table_action_cell",
+      module: PhiaUi.Components.Table,
+      template_file: "priv/templates/components/data/table.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -3593,7 +3825,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 343 component metadata entries."
+  @doc "Returns the full registry map — all 364 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

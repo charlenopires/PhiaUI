@@ -228,6 +228,23 @@ defmodule PhiaUi.Components.DataGrid do
       "Screen reader announcement for sort/filter/page changes. E.g.: 'Sorted by Name, ascending'"
   )
 
+  attr(:sticky_header, :boolean,
+    default: false,
+    doc: """
+    When `true`, the `<thead>` is sticky at the top of the scrollable container.
+    Adds `sticky top-0 z-10 bg-background` to the thead via a child selector.
+    """
+  )
+
+  attr(:loading, :boolean,
+    default: false,
+    doc: """
+    When `true`, renders a semi-transparent overlay with a spinner icon over the
+    table to indicate an in-flight data fetch. The table content remains visible
+    but non-interactive beneath the overlay.
+    """
+  )
+
   attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes for the outer overflow wrapper"
@@ -257,7 +274,7 @@ defmodule PhiaUi.Components.DataGrid do
   """
   def data_grid(assigns) do
     ~H"""
-    <div id={@id} class={cn(["w-full overflow-auto", @class])}>
+    <div id={@id} class={cn(["relative w-full overflow-auto", @class])}>
       <span
         role="status"
         aria-live="polite"
@@ -267,7 +284,21 @@ defmodule PhiaUi.Components.DataGrid do
       >
         {@status_message}
       </span>
-      <table class="w-full caption-bottom text-sm" {@rest}>
+      <%!-- Loading overlay --%>
+      <div
+        :if={@loading}
+        class="absolute inset-0 z-20 flex items-center justify-center bg-background/50"
+        aria-hidden="true"
+      >
+        <.icon name="loader-circle" class="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+      <table
+        class={cn([
+          "w-full caption-bottom text-sm",
+          @sticky_header && "[&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-background"
+        ])}
+        {@rest}
+      >
         <%= render_slot(@inner_block) %>
       </table>
     </div>
@@ -307,6 +338,17 @@ defmodule PhiaUi.Components.DataGrid do
     """
   )
 
+  attr(:density, :atom,
+    default: :normal,
+    values: [:compact, :normal, :comfortable],
+    doc: """
+    Padding density for the header cell:
+    - `:compact` — `px-3 py-1.5 h-9`
+    - `:normal` — `px-4 h-11` (default, matches original)
+    - `:comfortable` — `px-4 h-12`
+    """
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes")
   attr(:rest, :global)
 
@@ -339,7 +381,8 @@ defmodule PhiaUi.Components.DataGrid do
     <th
       aria-sort={if @sort_key, do: aria_sort(@sort_dir)}
       class={cn([
-        "h-11 px-4 text-left align-middle text-xs font-medium text-muted-foreground uppercase tracking-wider",
+        "text-left align-middle text-xs font-medium text-muted-foreground uppercase tracking-wider",
+        dg_head_density_class(@density),
         # When this th contains a checkbox, remove right padding to align with td counterpart
         "[&:has([role=checkbox])]:pr-0",
         @class
@@ -471,6 +514,17 @@ defmodule PhiaUi.Components.DataGrid do
   # data_grid_cell/1
   # ---------------------------------------------------------------------------
 
+  attr(:density, :atom,
+    default: :normal,
+    values: [:compact, :normal, :comfortable],
+    doc: """
+    Padding density for the data cell:
+    - `:compact` — `px-3 py-1.5`
+    - `:normal` — `px-4 py-3` (default)
+    - `:comfortable` — `px-4 py-4`
+    """
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the cell")
 
   attr(:rest, :global,
@@ -497,7 +551,7 @@ defmodule PhiaUi.Components.DataGrid do
   def data_grid_cell(assigns) do
     ~H"""
     <td
-      class={cn(["px-4 py-3 align-middle [&:has([role=checkbox])]:pr-0", @class])}
+      class={cn([dg_cell_density_class(@density), "align-middle [&:has([role=checkbox])]:pr-0", @class])}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
@@ -939,6 +993,16 @@ defmodule PhiaUi.Components.DataGrid do
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
+
+  # Density classes for data_grid_head/1
+  defp dg_head_density_class(:compact), do: "h-9 px-3"
+  defp dg_head_density_class(:normal), do: "h-11 px-4"
+  defp dg_head_density_class(:comfortable), do: "h-12 px-4"
+
+  # Density classes for data_grid_cell/1
+  defp dg_cell_density_class(:compact), do: "px-3 py-1.5"
+  defp dg_cell_density_class(:normal), do: "px-4 py-3"
+  defp dg_cell_density_class(:comfortable), do: "px-4 py-4"
 
   # Build the pagination button class once so it is not repeated four times
   # in the template. This is a plain string (not cn/1) since it never needs

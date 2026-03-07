@@ -204,6 +204,11 @@ defmodule PhiaUi.Components.Table do
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes")
 
+  attr(:striped, :boolean,
+    default: false,
+    doc: "When `true`, even-numbered rows receive a subtle `bg-muted/30` background"
+  )
+
   attr(:rest, :global,
     doc: """
     HTML attributes forwarded to `<tbody>`. When using LiveView Streams, pass
@@ -225,9 +230,20 @@ defmodule PhiaUi.Components.Table do
   last row, preventing a double border at the boundary between the table body
   and the table footer (or the container edge when no footer is present).
 
+  When `striped={true}`, even rows receive `bg-muted/30` via
+  `[&_tr:nth-child(even)]:bg-muted/30`.
+
   ## Static usage
 
       <.table_body>
+        <.table_row :for={row <- @rows}>
+          <.table_cell><%= row.name %></.table_cell>
+        </.table_row>
+      </.table_body>
+
+  ## Striped usage
+
+      <.table_body striped>
         <.table_row :for={row <- @rows}>
           <.table_cell><%= row.name %></.table_cell>
         </.table_row>
@@ -243,7 +259,14 @@ defmodule PhiaUi.Components.Table do
   """
   def table_body(assigns) do
     ~H"""
-    <tbody class={cn(["[&_tr:last-child]:border-0", @class])} {@rest}>
+    <tbody
+      class={cn([
+        "[&_tr:last-child]:border-0",
+        @striped && "[&_tr:nth-child(even)]:bg-muted/30",
+        @class
+      ])}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </tbody>
     """
@@ -346,6 +369,18 @@ defmodule PhiaUi.Components.Table do
   # ---------------------------------------------------------------------------
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes")
+
+  attr(:size, :atom,
+    default: :md,
+    values: [:sm, :md, :lg],
+    doc: """
+    Height and padding preset:
+    - `:sm` — `h-9 px-3 text-xs` (compact)
+    - `:md` — `h-11 px-4 text-xs` (default)
+    - `:lg` — `h-12 px-4 text-sm` (comfortable)
+    """
+  )
+
   attr(:rest, :global, doc: "HTML attributes forwarded to `<th>`")
 
   slot(:inner_block,
@@ -362,13 +397,15 @@ defmodule PhiaUi.Components.Table do
   ## Example
 
       <.table_head class="text-right">Amount</.table_head>
+      <.table_head size={:sm}>Compact Header</.table_head>
       <.table_head>Status</.table_head>
   """
   def table_head(assigns) do
     ~H"""
     <th
       class={cn([
-        "h-11 px-4 text-left align-middle text-xs font-medium text-muted-foreground uppercase tracking-wider",
+        "text-left align-middle font-medium text-muted-foreground uppercase tracking-wider",
+        head_size_class(@size),
         @class
       ])}
       {@rest}
@@ -378,6 +415,10 @@ defmodule PhiaUi.Components.Table do
     """
   end
 
+  defp head_size_class(:sm), do: "h-9 px-3 text-xs"
+  defp head_size_class(:md), do: "h-11 px-4 text-xs"
+  defp head_size_class(:lg), do: "h-12 px-4 text-sm"
+
   # ---------------------------------------------------------------------------
   # table_cell/1
   # ---------------------------------------------------------------------------
@@ -385,6 +426,17 @@ defmodule PhiaUi.Components.Table do
   attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes for padding or alignment overrides"
+  )
+
+  attr(:size, :atom,
+    default: :md,
+    values: [:sm, :md, :lg],
+    doc: """
+    Padding preset:
+    - `:sm` — `px-3 py-1.5` (compact)
+    - `:md` — `px-4 py-3` (default)
+    - `:lg` — `px-4 py-4` (comfortable)
+    """
   )
 
   attr(:rest, :global,
@@ -406,18 +458,22 @@ defmodule PhiaUi.Components.Table do
       <%!-- Right-align a numeric column --%>
       <.table_cell class="text-right font-mono tabular-nums">$1,234.56</.table_cell>
 
-      <%!-- Tighter padding for a compact icon-only column --%>
-      <.table_cell class="px-2 py-1">
+      <%!-- Compact cell for icon-only action column --%>
+      <.table_cell size={:sm}>
         <.button variant={:ghost} size={:icon}><.icon name="edit" /></.button>
       </.table_cell>
   """
   def table_cell(assigns) do
     ~H"""
-    <td class={cn(["px-4 py-3 align-middle", @class])} {@rest}>
+    <td class={cn([cell_size_class(@size), "align-middle", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </td>
     """
   end
+
+  defp cell_size_class(:sm), do: "px-3 py-1.5"
+  defp cell_size_class(:md), do: "px-4 py-3"
+  defp cell_size_class(:lg), do: "px-4 py-4"
 
   # ---------------------------------------------------------------------------
   # table_caption/1
@@ -455,6 +511,47 @@ defmodule PhiaUi.Components.Table do
     <caption class={cn(["mt-4 text-sm text-muted-foreground", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </caption>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # table_action_cell/1
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the `<td>`")
+
+  attr(:rest, :global, doc: "HTML attributes forwarded to the `<td>` element")
+
+  slot(:inner_block,
+    required: true,
+    doc: "Action buttons — typically `button` components with `variant={:ghost}` or `variant={:outline}`"
+  )
+
+  @doc """
+  Renders a standardised right-aligned action cell for the last column.
+
+  Wraps its content in a right-justified flex row so multiple action buttons
+  sit consistently spaced. Use this instead of a plain `table_cell/1` for
+  Edit / Delete / View button columns to ensure visual consistency.
+
+  ## Example
+
+      <.table_row :for={user <- @users}>
+        <.table_cell>{user.name}</.table_cell>
+        <.table_cell>{user.email}</.table_cell>
+        <.table_action_cell>
+          <.button variant={:ghost} size={:sm} phx-click="edit" phx-value-id={user.id}>Edit</.button>
+          <.button variant={:ghost} size={:sm} phx-click="delete" phx-value-id={user.id}>Delete</.button>
+        </.table_action_cell>
+      </.table_row>
+  """
+  def table_action_cell(assigns) do
+    ~H"""
+    <td class={cn(["px-4 py-3 align-middle text-right", @class])} {@rest}>
+      <div class="flex items-center justify-end gap-2">
+        <%= render_slot(@inner_block) %>
+      </div>
+    </td>
     """
   end
 end
