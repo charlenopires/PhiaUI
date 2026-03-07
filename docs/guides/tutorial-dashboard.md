@@ -628,13 +628,12 @@ After completing all steps you will have a fully functional SaaS analytics dashb
 
 ### Related components
 
-- [phia_chart](../components/chart.md#phia_chart)
-- [data_grid](../components/data.md#data_grid)
-- [pagination](../components/data.md#pagination)
-- [command](../components/overlay.md#command)
-- [metric_grid + stat_card](../components/display.md#stat_card)
-- [shell + sidebar + topbar](../components/layout.md#shell)
+- [phia_chart](data.md#phia_chart)
+- [data_grid](data.md#data_grid)
+- [pagination](data.md#pagination)
+- [command](overlay.md#command)
+- [metric_grid + stat_card](cards.md#stat_card)
+- [shell + sidebar + topbar](layout.md#shell)
 
 ---
 
-← [Back to README](../../README.md)

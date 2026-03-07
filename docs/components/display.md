@@ -1,20 +1,52 @@
 # Display
 
-Visual identity, status indicators, avatars, chat UI, and theme controls.
+27 display components — icons, badges, avatars, activity feeds, timelines, chat UI, theme controls, and display utilities. These are the atoms of your UI.
+
+**Modules**:
+- `PhiaUi.Components.Display` — icon, badge, avatar, avatar_group, activity_feed, timeline, chat_message, dark_mode_toggle, theme_provider, kbd, direction
+- `PhiaUi.Components.Utilities` — visually_hidden, line_clamp, highlight_text, relative_time, number_format, reading_time, label_with_tooltip, print_only, screen_only, color_mode_value, diff_display, stat_unit, word_count, focus_trap, sticky_wrapper
+
+```elixir
+import PhiaUi.Components.Display
+import PhiaUi.Components.Utilities
+```
+
+---
 
 ## Table of Contents
 
+**Visual Identity**
 - [icon](#icon)
 - [badge](#badge)
 - [avatar](#avatar)
 - [avatar_group](#avatar_group)
+- [kbd](#kbd)
+
+**Feed & Timeline**
 - [activity_feed](#activity_feed)
 - [timeline](#timeline)
 - [chat_message](#chat_message)
+
+**Theme Controls**
 - [dark_mode_toggle](#dark_mode_toggle)
 - [theme_provider](#theme_provider)
-- [kbd](#kbd)
 - [direction](#direction)
+
+**Utilities**
+- [visually_hidden](#visually_hidden)
+- [line_clamp](#line_clamp)
+- [highlight_text](#highlight_text)
+- [relative_time](#relative_time)
+- [number_format](#number_format)
+- [reading_time](#reading_time)
+- [label_with_tooltip](#label_with_tooltip)
+- [print_only / screen_only](#print_only--screen_only)
+- [color_mode_value](#color_mode_value)
+- [diff_display](#diff_display)
+- [stat_unit](#stat_unit)
+- [word_count](#word_count)
+- [focus_trap](#focus_trap)
+- [sticky_wrapper](#sticky_wrapper)
 
 ---
 
@@ -22,24 +54,24 @@ Visual identity, status indicators, avatars, chat UI, and theme controls.
 
 Lucide SVG sprite icon. Generate the sprite with `mix phia.icons`.
 
-**Sizes**: `:xs` (12px), `:sm` (16px), `:md` (20px, default), `:lg` (24px)
+**Sizes**: `:xs` (12px) · `:sm` (16px) · `:md` (20px, default) · `:lg` (24px)
 
 ```heex
 <.icon name="check" />
 <.icon name="alert-triangle" size="lg" class="text-destructive" />
-<.icon name="loader" size="sm" class="animate-spin text-primary" />
+<.icon name="loader" class="animate-spin text-primary" />
 <.icon name="arrow-up-right" size="xs" class="text-green-500" />
 ```
 
-**Common names**: `home`, `settings`, `user`, `log-out`, `search`, `plus`, `trash`, `pencil`, `check`, `x`, `chevron-right`, `chevron-down`, `bar-chart-2`, `file-text`, `bell`, `star`, `heart`, `shield`, `lock`, `key`, `mail`, `phone`, `calendar`, `clock`, `tag`, `upload`, `download`
+**Common names**: `home`, `settings`, `user`, `log-out`, `search`, `plus`, `trash`, `pencil`, `check`, `x`, `chevron-right`, `chevron-down`, `bar-chart-2`, `file-text`, `bell`, `star`, `shield`, `lock`, `mail`, `calendar`, `clock`, `upload`, `download`
 
 ---
 
 ## badge
 
-Status and category labels.
+Inline status and category labels.
 
-**Variants**: `default`, `secondary`, `destructive`, `outline`
+**Variants**: `default` · `secondary` · `destructive` · `outline`
 
 ```heex
 <.badge>Active</.badge>
@@ -49,7 +81,7 @@ Status and category labels.
 ```
 
 ```elixir
-# Dynamic variant based on status
+# Dynamic variant from Elixir
 defp status_variant("active"),   do: "default"
 defp status_variant("draft"),    do: "secondary"
 defp status_variant("failed"),   do: "destructive"
@@ -57,336 +89,374 @@ defp status_variant(_),          do: "outline"
 ```
 
 ```heex
-<%!-- In a table cell --%>
-<.table_cell>
-  <.badge variant={status_variant(@order.status)}>
-    <%= String.capitalize(@order.status) %>
-  </.badge>
-</.table_cell>
+<.badge variant={status_variant(@record.status)}>
+  <%= String.capitalize(@record.status) %>
+</.badge>
 ```
 
 ---
 
 ## avatar
 
-Circular profile image with initials fallback. 5 sizes: `:xs`, `:sm`, `:md`, `:lg`, `:xl`.
+Circular profile image with initials fallback.
 
-**Sub-components**: `avatar_image/1`, `avatar_fallback/1`
+**Sizes**: `:xs` · `:sm` · `:md` (default) · `:lg` · `:xl`
 
 ```heex
-<%!-- Image with fallback --%>
 <.avatar size="md">
   <.avatar_image src={@user.avatar_url} alt={@user.name} />
   <.avatar_fallback name={@user.name} />
 </.avatar>
 
-<%!-- Initials only --%>
+<%!-- Always-initials fallback --%>
 <.avatar size="lg">
-  <.avatar_fallback name="Alice Martin" />
+  <.avatar_fallback name="Jane Doe" class="bg-primary text-primary-foreground" />
 </.avatar>
-
-<%!-- Different sizes --%>
-<.avatar size="xs"><.avatar_fallback name="XS" /></.avatar>
-<.avatar size="sm"><.avatar_fallback name="SM" /></.avatar>
-<.avatar size="md"><.avatar_fallback name="MD" /></.avatar>
-<.avatar size="lg"><.avatar_fallback name="LG" /></.avatar>
-<.avatar size="xl"><.avatar_fallback name="XL" /></.avatar>
 ```
 
 ---
 
 ## avatar_group
 
-Overlapping avatar row with `+N` overflow badge.
-
-**Attrs**: `max` (integer, default 4)
+Stacked overlapping avatars with overflow count.
 
 ```heex
-<%!-- Show up to 5, then +N more --%>
-<.avatar_group max={5}>
-  <.avatar :for={user <- @team_members}>
-    <.avatar_image src={user.avatar_url} alt={user.name} />
-    <.avatar_fallback name={user.name} />
-  </.avatar>
-</.avatar_group>
-
-<%!-- With tooltip on hover for names --%>
 <.avatar_group max={4}>
-  <.tooltip :for={user <- @collaborators}>
-    <:trigger>
-      <.avatar size="sm">
-        <.avatar_fallback name={user.name} />
-      </.avatar>
-    </:trigger>
-    <:content><%= user.name %></:content>
-  </.tooltip>
+  <%= for member <- @team.members do %>
+    <.avatar size="sm">
+      <.avatar_image src={member.avatar_url} alt={member.name} />
+      <.avatar_fallback name={member.name} />
+    </.avatar>
+  <% end %>
 </.avatar_group>
 ```
+
+**Attrs**: `max` (integer — show up to N, then `+N more`), `class`
+
+---
+
+## kbd
+
+Keyboard key indicator.
+
+```heex
+<span class="text-sm text-muted-foreground">
+  Press <.kbd>⌘</.kbd><.kbd>K</.kbd> to open the command palette
+</span>
+```
+
+**Attrs**: `size` (`:sm` | `:md` | `:lg`, default `:md`), `class`
 
 ---
 
 ## activity_feed
 
-Chronological event log with `role="log"` and `aria-live="polite"`. Groups events by date. 6 activity types with distinct icons.
-
-**Sub-components**: `activity_group/1`, `activity_item/1`
-
-**Activity types**: `mention`, `file`, `call`, `task`, `reaction`, `system`
+Chronological activity list with icons and timestamps.
 
 ```heex
 <.activity_feed>
-  <.activity_group label="Today">
-    <.activity_item
-      type="mention"
-      name="Alice Martin"
-      description="mentioned you in Project Alpha discussion"
-      timestamp="2 minutes ago"
-    >
-      <:avatar>
-        <.avatar size="sm">
-          <.avatar_image src="/images/alice.jpg" alt="Alice" />
-          <.avatar_fallback name="Alice Martin" />
-        </.avatar>
-      </:avatar>
-    </.activity_item>
-
-    <.activity_item
-      type="task"
-      name="Bob Chen"
-      description="completed task: Deploy to staging"
-      timestamp="15 minutes ago"
-    >
-      <:avatar><.avatar size="sm"><.avatar_fallback name="Bob Chen" /></.avatar></:avatar>
-    </.activity_item>
-
-    <.activity_item
-      type="file"
-      name="Carol Davis"
-      description="uploaded Design System v2.pdf"
-      timestamp="1 hour ago"
+  <%= for event <- @events do %>
+    <.activity_feed_item
+      icon={event.icon}
+      title={event.title}
+      description={event.description}
+      timestamp={event.inserted_at}
     />
-  </.activity_group>
-
-  <.activity_group label="Yesterday">
-    <.activity_item
-      type="system"
-      name="System"
-      description="Deployment to production completed successfully"
-      timestamp="March 4 at 11:45 PM"
-    />
-  </.activity_group>
-
-  <:footer>
-    <.button variant="ghost" size="sm" class="w-full" phx-click="load_more_activity">
-      Load more
-    </.button>
-  </:footer>
+  <% end %>
 </.activity_feed>
-```
-
-### Streaming activity updates
-
-```elixir
-def mount(_params, _session, socket) do
-  if connected?(socket), do: Phoenix.PubSub.subscribe(MyApp.PubSub, "activity")
-  {:ok, stream(socket, :activities, ActivityFeed.recent(50))}
-end
-
-def handle_info({:new_activity, activity}, socket) do
-  {:noreply, stream_insert(socket, :activities, activity, at: 0)}
-end
 ```
 
 ---
 
 ## timeline
 
-Vertical event timeline with CSS-only connector line. Use for order status, deployment history, and audit logs.
-
-**Sub-components**: `timeline_item/1`
-**Statuses**: `complete`, `active`, `upcoming`
+Vertical timeline with connector lines.
 
 ```heex
-<%!-- Order tracking --%>
 <.timeline>
-  <.timeline_item status="complete">
-    <:icon><.icon name="check-circle" size="sm" class="text-green-500" /></:icon>
-    <:content>
-      <p class="font-medium">Order placed</p>
-      <p class="text-sm text-muted-foreground">March 1 at 10:00 AM</p>
-    </:content>
-  </.timeline_item>
-  <.timeline_item status="complete">
-    <:icon><.icon name="package" size="sm" class="text-green-500" /></:icon>
-    <:content>
-      <p class="font-medium">Packed and shipped</p>
-      <p class="text-sm text-muted-foreground">March 2 at 3:15 PM · FedEx #1234</p>
-    </:content>
-  </.timeline_item>
-  <.timeline_item status="active">
-    <:icon><.icon name="truck" size="sm" class="text-primary" /></:icon>
-    <:content>
-      <p class="font-medium text-primary">In transit</p>
-      <p class="text-sm text-muted-foreground">Estimated delivery: March 5</p>
-    </:content>
-  </.timeline_item>
-  <.timeline_item status="upcoming">
-    <:icon><.icon name="home" size="sm" class="text-muted-foreground" /></:icon>
-    <:content>
-      <p class="font-medium text-muted-foreground">Delivered</p>
-    </:content>
-  </.timeline_item>
+  <.timeline_item
+    title="Order placed"
+    description="Your order #1234 was confirmed."
+    timestamp={~N[2025-03-01 09:00:00]}
+    icon="package"
+    status={:complete}
+  />
+  <.timeline_item
+    title="Delivery"
+    description="Estimated arrival March 5."
+    icon="home"
+    status={:pending}
+  />
 </.timeline>
 ```
+
+**Statuses**: `:complete` · `:active` · `:pending`
 
 ---
 
 ## chat_message
 
-Full AI/human chat interface. Sub-components compose into a complete chat UI.
-
-**Sub-components**: `chat_container/1`, `chat_bubble/1`, `chat_suggestions/1`, `chat_input/1`
+A single chat bubble. Supports both sent and received sides, avatars, and timestamps.
 
 ```heex
-<%!-- Complete chat UI --%>
-<.chat_container id="ai-chat" class="h-[600px] flex flex-col">
-  <div class="flex-1 overflow-y-auto p-4 space-y-4">
-    <.chat_message role="assistant" id="msg-0">
-      <.chat_bubble role="assistant" timestamp="2:30 PM">
-        <:avatar>
-          <.avatar size="sm">
-            <.avatar_fallback name="AI" />
-          </.avatar>
-        </:avatar>
-        Hello! I'm your AI assistant. How can I help you today?
-      </.chat_bubble>
-      <.chat_suggestions
-        suggestions={["What can you do?", "Help me write a report", "Analyze my data"]}
-        on_select="send_suggestion"
-      />
-    </.chat_message>
-
-    <.chat_message :for={msg <- @messages} role={msg.role} id={"msg-#{msg.id}"}>
-      <.chat_bubble role={msg.role} timestamp={format_time(msg.inserted_at)}>
-        <:avatar :if={msg.role == "assistant"}>
-          <.avatar size="sm"><.avatar_fallback name="AI" /></.avatar>
-        </:avatar>
-        <%= msg.content %>
-      </.chat_bubble>
-    </.chat_message>
-
-    <div :if={@ai_typing} class="flex items-center gap-2 text-muted-foreground">
-      <.spinner size="sm" /> AI is typing…
-    </div>
-  </div>
-
-  <.chat_input
-    id="chat-compose"
-    on_submit="send_message"
-    placeholder="Ask anything…"
-    disabled={@ai_typing}
+<%= for msg <- @messages do %>
+  <.chat_message
+    content={msg.body}
+    side={if msg.user_id == @current_user.id, do: :right, else: :left}
+    avatar_src={msg.user.avatar_url}
+    name={msg.user.name}
+    timestamp={msg.inserted_at}
   />
-</.chat_container>
+<% end %>
 ```
 
-```elixir
-def handle_event("send_message", %{"message" => text}, socket) when text != "" do
-  user_msg = %{id: Ecto.UUID.generate(), role: "user", content: text, inserted_at: DateTime.utc_now()}
-  socket = socket
-    |> stream_insert(:messages, user_msg)
-    |> assign(ai_typing: true)
-  # Trigger async AI response
-  send(self(), {:ask_ai, text})
-  {:noreply, socket}
-end
-
-def handle_event("send_suggestion", %{"suggestion" => text}, socket) do
-  handle_event("send_message", %{"message" => text}, socket)
-end
-```
+**Attrs**: `side` (`:left` | `:right`), `content`, `avatar_src`, `name`, `timestamp`
 
 ---
 
 ## dark_mode_toggle
 
-Sun/moon icon toggle. Reads and writes `localStorage['phia-mode']`. Syncs with `prefers-color-scheme`. Adds/removes `class="dark"` on `<html>`.
-
-**Hook**: `PhiaDarkMode`
+Toggles `.dark` on `<html>` and persists to `localStorage`.
 
 ```heex
-<%!-- In topbar or header --%>
-<.dark_mode_toggle id="theme-toggle" />
-```
-
-```javascript
-// app.js
-import PhiaDarkMode from "./phia_hooks/dark_mode"
-// hooks: { PhiaDarkMode }
-```
-
-```html
-<!-- Anti-FOUC: add to <head> before any stylesheet -->
-<script>
-  (function() {
-    var mode = localStorage.getItem('phia-mode');
-    if (mode === 'dark' || (!mode && matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-  })();
-</script>
+<.dark_mode_toggle />
+<.dark_mode_toggle show_label={true} />
 ```
 
 ---
 
 ## theme_provider
 
-Scoped CSS theme wrapper. Sets `data-phia-theme` on its wrapper `<div>`, so PhiaUI tokens inside use the specified preset.
+Sets a colour theme on its wrapper div via `data-phia-theme`.
 
 ```heex
-<%!-- Scope a section to the rose preset --%>
-<.theme_provider theme={:rose}>
-  <.button>Rose button</.button>
-  <.badge>Rose badge</.badge>
+<.theme_provider theme="violet">
+  <.button>Violet button</.button>
 </.theme_provider>
-
-<%!-- Preview multiple themes --%>
-<div class="grid grid-cols-4 gap-4">
-  <.theme_provider :for={preset <- [:blue, :rose, :green, :violet]} theme={preset}>
-    <.card>
-      <.card_content class="pt-4">
-        <.button class="w-full"><%= preset %></.button>
-      </.card_content>
-    </.card>
-  </.theme_provider>
-</div>
 ```
 
----
-
-## kbd
-
-Semantic `<kbd>` element for displaying keyboard shortcuts.
-
-```heex
-<p>Press <.kbd>Ctrl</.kbd> + <.kbd>K</.kbd> to open the command palette.</p>
-<p>Use <.kbd>⌘</.kbd> + <.kbd>Z</.kbd> to undo.</p>
-<p>Navigate with <.kbd>↑</.kbd> <.kbd>↓</.kbd> arrow keys.</p>
-```
+**Available themes**: `zinc` · `slate` · `stone` · `gray` · `red` · `rose` · `orange` · `blue` · `green` · `violet`
 
 ---
 
 ## direction
 
-LTR/RTL wrapper for multilingual layouts. Sets the HTML `dir` attribute on its container.
+RTL/LTR wrapper.
 
 ```heex
-<.direction dir="ltr">
-  <p>Left-to-right content (English, French, etc.)</p>
-</.direction>
-
-<.direction dir="rtl">
-  <p>محتوى من اليمين إلى اليسار</p>
+<.direction dir={:rtl}>
+  <p>مرحباً بالعالم</p>
 </.direction>
 ```
 
-← [Back to README](../../README.md)
+---
+
+## visually_hidden
+
+Hides content visually but keeps it accessible to screen readers.
+
+```heex
+<button phx-click="close">
+  <.icon name="x" />
+  <.visually_hidden>Close dialog</.visually_hidden>
+</button>
+```
+
+**Attrs**: `as` (HTML tag string, default `"span"`), `class`
+
+---
+
+## line_clamp
+
+Truncates text to N lines with a client-side "Read more / Read less" toggle. Zero LiveView round-trips.
+
+```heex
+<.line_clamp id="post-body" lines={3}>
+  <%= @post.body %>
+</.line_clamp>
+```
+
+**Attrs**: `id` (required), `lines` (integer), `class`
+
+---
+
+## highlight_text
+
+XSS-safe text with query matches wrapped in `<mark>`. Case-insensitive.
+
+```heex
+<%!-- In a search results list --%>
+<.highlight_text text={result.title} query={@search_query} />
+
+<%!-- Custom mark style --%>
+<.highlight_text
+  text={result.body}
+  query={@query}
+  mark_class="bg-yellow-200 dark:bg-yellow-800 rounded px-0.5"
+/>
+```
+
+**Attrs**: `text`, `query`, `mark_class`, `class`
+
+---
+
+## relative_time
+
+Renders "just now", "5 minutes ago", "3 days ago" etc. from a `DateTime`.
+
+```heex
+<.relative_time datetime={@post.inserted_at} />
+<.relative_time datetime={@comment.inserted_at} now={@current_time} />
+```
+
+**Attrs**: `datetime` (DateTime), `now` (DateTime, default `DateTime.utc_now()`), `class`
+
+---
+
+## number_format
+
+Formats numbers with compact notation, decimals, prefix, and suffix — server-side.
+
+```heex
+<%!-- "1.2M" --%>
+<.number_format value={1_234_567} compact={true} />
+
+<%!-- "$1,234.56" --%>
+<.number_format value={1234.56} decimals={2} prefix="$" />
+
+<%!-- "98.6%" --%>
+<.number_format value={98.6} decimals={1} suffix="%" />
+```
+
+**Attrs**: `value` (number), `compact` (boolean), `decimals` (integer), `prefix`, `suffix`
+
+---
+
+## reading_time
+
+Estimates read time from word count.
+
+```heex
+<.reading_time text={@post.body} />
+<%!-- "4 min read" --%>
+
+<.reading_time text={@post.body} wpm={200} />
+```
+
+**Attrs**: `text`, `wpm` (integer, default 238), `label` (default `"min read"`)
+
+---
+
+## label_with_tooltip
+
+A `<label>` with an inline help icon and tooltip.
+
+```heex
+<.label_with_tooltip
+  label="API Key"
+  tooltip="Your secret key. Never share it publicly."
+  for="api-key-input"
+/>
+<.input id="api-key-input" name="api_key" type="password" />
+```
+
+---
+
+## print_only / screen_only
+
+Visibility wrappers for print vs screen media.
+
+```heex
+<.print_only>
+  <p>Printed on <%= Date.utc_today() %></p>
+</.print_only>
+
+<.screen_only>
+  <.button>Export PDF</.button>
+</.screen_only>
+```
+
+---
+
+## color_mode_value
+
+Renders different content in light vs dark mode via CSS.
+
+```heex
+<.color_mode_value>
+  <:light><img src="/logo-light.svg" alt="PhiaUI" /></:light>
+  <:dark><img src="/logo-dark.svg" alt="PhiaUI" /></:dark>
+</.color_mode_value>
+```
+
+---
+
+## diff_display
+
+Word-level diff between two strings. Renders `<del>` (red) and `<ins>` (green) inline.
+
+```heex
+<.diff_display
+  before="The quick brown fox jumps"
+  after="The slow green fox leaps"
+/>
+```
+
+---
+
+## stat_unit
+
+A value + unit pair with consistent styling. Common in dashboards.
+
+```heex
+<.stat_unit value="42" unit="req/s" />
+<.stat_unit value="99.9" unit="% uptime" />
+<.stat_unit value="1.2M" unit="users" />
+```
+
+---
+
+## word_count
+
+Counts words and displays the result.
+
+```heex
+<.word_count text="one two three" />
+<%!-- "3 words" --%>
+
+<.word_count text={@draft} class="text-xs text-muted-foreground" />
+```
+
+---
+
+## focus_trap
+
+Traps keyboard focus within a container for accessible modals. Hook: `PhiaFocusTrap`.
+
+```heex
+<.focus_trap id="modal-trap" enabled={@modal_open}>
+  <div role="dialog" aria-modal="true">
+    <h2>Modal title</h2>
+    <.button phx-click="close_modal">Close</.button>
+  </div>
+</.focus_trap>
+```
+
+**Attrs**: `id` (required), `enabled` (boolean, default `true`)
+
+---
+
+## sticky_wrapper
+
+Sticky positioning with configurable top offset.
+
+```heex
+<.sticky_wrapper offset_top={64}>
+  <div class="bg-card border-b px-6 py-3 flex items-center justify-between">
+    <span>3 rows selected</span>
+    <.button variant="destructive" size="sm">Delete selected</.button>
+  </div>
+</.sticky_wrapper>
+```
+
+**Attrs**: `offset_top` (integer px, default 0), `class`

@@ -1,104 +1,142 @@
 # Feedback
 
-Loading states, alerts, progress indicators, notification systems, and confirmation patterns.
+20 feedback components — alerts, banners, loading states, progress, skeletons, notifications, toasts, error displays, and confirmation patterns.
+
+**Module**: `PhiaUi.Components.Feedback`
+
+```elixir
+import PhiaUi.Components.Feedback
+```
+
+---
 
 ## Table of Contents
 
+**Alerts & Banners**
 - [alert](#alert)
-- [alert_dialog](#alert_dialog)
+- [banner](#banner)
+- [announcement_bar](#announcement_bar)
+- [cookie_consent](#cookie_consent)
+- [global_message](#global_message)
+
+**Loading**
 - [spinner](#spinner)
+- [loading_overlay](#loading_overlay)
+- [loading_dots](#loading_dots)
+- [loading_bar](#loading_bar)
 - [skeleton](#skeleton)
+
+**Progress**
 - [progress](#progress)
 - [circular_progress](#circular_progress)
-- [empty_state](#empty_state)
-- [step_tracker](#step_tracker)
+- [labeled_progress](#labeled_progress)
+- [segmented_progress](#segmented_progress)
+- [quota_bar](#quota_bar)
+- [step_progress_bar](#step_progress_bar)
+
+**Status**
+- [status_indicator](#status_indicator)
+- [connection_status](#connection_status)
+- [live_indicator](#live_indicator)
+
+**Notifications & Toasts**
 - [toast](#toast)
 - [snackbar](#snackbar)
 - [sonner](#sonner)
-- [popconfirm](#popconfirm) _(new in 0.1.7)_
-- [result_state](#result_state) _(new in 0.1.7)_
+- [notification](#notification)
+
+**Error & Empty States**
+- [empty_state](#empty_state)
+- [result_state](#result_state)
+- [error_display](#error_display)
+
+**Confirmation**
+- [popconfirm](#popconfirm)
+- [step_tracker](#step_tracker)
 
 ---
 
 ## alert
 
-Non-interactive feedback banner. 4 variants with optional icon slot.
+Non-interactive feedback banner with variants and optional icon slot.
 
-**Variants**: `default`, `destructive`, `warning`, `success`
+**Variants**: `default` · `destructive` · `warning` · `success`
 
 ```heex
-<%!-- Default --%>
-<.alert>
-  <.alert_title>Heads up!</.alert_title>
-  <.alert_description>Your trial expires in 3 days. Upgrade to keep access.</.alert_description>
-</.alert>
-
-<%!-- Destructive with icon --%>
-<.alert variant="destructive">
-  <:icon><.icon name="alert-circle" /></:icon>
-  <.alert_title>Payment failed</.alert_title>
-  <.alert_description>Your card was declined. Please update your payment method.</.alert_description>
-</.alert>
-
-<%!-- Warning --%>
-<.alert variant="warning">
-  <:icon><.icon name="alert-triangle" /></:icon>
-  <.alert_title>Storage limit approaching</.alert_title>
-  <.alert_description>You've used 90% of your 5GB quota.</.alert_description>
-</.alert>
-
-<%!-- Success --%>
 <.alert variant="success">
   <:icon><.icon name="check-circle" /></:icon>
-  <.alert_title>Published</.alert_title>
-  <.alert_description>Your post is now live and visible to subscribers.</.alert_description>
+  Your changes have been saved.
 </.alert>
 
-<%!-- Conditional render from flash --%>
-<.alert :if={@flash["error"]} variant="destructive">
-  <.alert_title>Error</.alert_title>
-  <.alert_description><%= @flash["error"] %></.alert_description>
+<.alert variant="destructive">
+  <:icon><.icon name="x-circle" /></:icon>
+  Failed to process payment. Please try again.
+</.alert>
+
+<.alert variant="warning">
+  <:icon><.icon name="alert-triangle" /></:icon>
+  Your trial expires in 3 days.
+  <:action><.button size="sm" variant="outline">Upgrade</.button></:action>
+</.alert>
+
+<%!-- Dismissable --%>
+<.alert variant="default" phx-click="dismiss_alert" id="info-alert">
+  New features are available in this version.
 </.alert>
 ```
 
 ---
 
-## alert_dialog
+## banner
 
-Modal confirmation dialog. Uses `PhiaDialog` hook. `role="alertdialog"` for screen readers.
-
-**Sub-components**: `alert_dialog_header/1`, `alert_dialog_title/1`, `alert_dialog_description/1`, `alert_dialog_footer/1`, `alert_dialog_cancel/1`, `alert_dialog_action/1`
+Top-of-page notification bar with optional action and dismiss button.
 
 ```heex
-<%!-- Delete confirmation --%>
-<.alert_dialog id="delete-confirm" open={@show_confirm}>
-  <.alert_dialog_header>
-    <.alert_dialog_title>Delete this item?</.alert_dialog_title>
-    <.alert_dialog_description>
-      This action cannot be undone. The item and all associated data will be permanently removed.
-    </.alert_dialog_description>
-  </.alert_dialog_header>
-  <.alert_dialog_footer>
-    <.alert_dialog_cancel phx-click="cancel-delete">Cancel</.alert_dialog_cancel>
-    <.alert_dialog_action variant="destructive" phx-click="confirm-delete" phx-value-id={@item_id}>
-      Delete
-    </.alert_dialog_action>
-  </.alert_dialog_footer>
-</.alert_dialog>
+<.banner variant="info" phx-click="dismiss_banner">
+  System maintenance scheduled for Sunday 2am–4am UTC.
+  <:action><.button size="sm" variant="ghost">Learn more</.button></:action>
+</.banner>
+```
+
+---
+
+## announcement_bar
+
+Marquee-scrolling announcement banner.
+
+```heex
+<.announcement_bar items={["Free shipping on orders over $50", "New products added weekly", "Use code SAVE20 for 20% off"]} />
+```
+
+---
+
+## cookie_consent
+
+GDPR-style cookie consent banner with accept/decline.
+
+```heex
+<.cookie_consent
+  on_accept="accept_cookies"
+  on_decline="decline_cookies"
+  policy_url="/privacy"
+/>
+```
+
+---
+
+## global_message
+
+App-level flash-style message bar. Hook: `PhiaGlobalMessage`.
+
+```heex
+<%!-- In your root layout --%>
+<.global_message id="app-flash" />
 ```
 
 ```elixir
-def handle_event("show-confirm", %{"id" => id}, socket) do
-  {:noreply, assign(socket, show_confirm: true, item_id: id)}
-end
-
-def handle_event("cancel-delete", _params, socket) do
-  {:noreply, assign(socket, show_confirm: false, item_id: nil)}
-end
-
-def handle_event("confirm-delete", %{"id" => id}, socket) do
-  MyApp.delete_item(id)
-  {:noreply, assign(socket, show_confirm: false, item_id: nil)}
+# Trigger from LiveView
+def handle_info({:show_message, msg}, socket) do
+  {:noreply, push_event(socket, "phia-global-message", %{message: msg, type: "success"})}
 end
 ```
 
@@ -106,371 +144,328 @@ end
 
 ## spinner
 
-CSS SVG animated loading indicator. 5 sizes, `role="status"`, `aria-live="polite"`.
-
-**Sizes**: `:xs`, `:sm`, `:md` (default), `:lg`, `:xl`
+Inline loading spinner.
 
 ```heex
 <.spinner />
 <.spinner size="lg" class="text-primary" />
-<.spinner size="sm" label="Loading users…" />
 
-<%!-- In a button during loading --%>
-<.button phx-click="save" disabled={@saving}>
-  <.spinner :if={@saving} size="xs" class="mr-2" />
-  <%= if @saving, do: "Saving…", else: "Save" %>
+<%!-- Inside a button --%>
+<.button disabled={@loading}>
+  <%= if @loading do %>
+    <.spinner size="sm" class="mr-2" /> Loading…
+  <% else %>
+    Save
+  <% end %>
 </.button>
+```
 
-<%!-- Full-page loading overlay --%>
-<div :if={@loading} class="flex items-center justify-center h-64">
-  <div class="text-center space-y-2">
-    <.spinner size="xl" class="text-primary mx-auto" />
-    <p class="text-sm text-muted-foreground">Loading your data…</p>
-  </div>
+**Sizes**: `:sm` · `:md` (default) · `:lg`
+
+---
+
+## loading_overlay
+
+Full-container overlay with spinner and optional message.
+
+```heex
+<div class="relative">
+  <.loading_overlay visible={@loading} message="Loading data…" />
+  <.table rows={@rows}>…</.table>
 </div>
+```
+
+---
+
+## loading_dots
+
+Three animated dots — use for chat "typing" indicators.
+
+```heex
+<.loading_dots />
+<.loading_dots size="lg" class="text-primary" />
+```
+
+---
+
+## loading_bar
+
+Indeterminate top-of-page loading bar (like YouTube/GitHub).
+
+```heex
+<.loading_bar visible={@page_loading} />
 ```
 
 ---
 
 ## skeleton
 
-`animate-pulse` placeholder blocks for content that is loading.
+Content placeholder while data loads.
 
 ```heex
-<%!-- Basic shapes --%>
-<.skeleton class="h-4 w-48" />
-<.skeleton class="h-10 w-10 rounded-full" />
-<.skeleton class="h-24 w-full rounded-md" />
+<%!-- Inline --%>
+<.skeleton class="h-4 w-32 rounded" />
+<.skeleton class="h-10 w-full rounded-lg" />
 
-<%!-- User card skeleton --%>
-<.card :if={@loading}>
-  <.card_header>
-    <div class="flex items-center gap-4">
-      <.skeleton class="h-12 w-12 rounded-full" />
-      <div class="space-y-2">
-        <.skeleton class="h-4 w-32" />
-        <.skeleton class="h-3 w-24" />
-      </div>
-    </div>
-  </.card_header>
-  <.card_content class="space-y-2">
-    <.skeleton class="h-4 w-full" />
-    <.skeleton class="h-4 w-5/6" />
-    <.skeleton class="h-4 w-4/6" />
-  </.card_content>
-</.card>
-
-<%!-- Table skeleton --%>
-<.table :if={@loading}>
-  <.table_body>
-    <.table_row :for={_ <- 1..5}>
-      <.table_cell><.skeleton class="h-4 w-28" /></.table_cell>
-      <.table_cell><.skeleton class="h-4 w-40" /></.table_cell>
-      <.table_cell><.skeleton class="h-6 w-16 rounded-full" /></.table_cell>
-      <.table_cell><.skeleton class="h-4 w-20" /></.table_cell>
-    </.table_row>
-  </.table_body>
-</.table>
+<%!-- Pre-built variants --%>
+<.skeleton_list items={5} />    <%!-- 5 row skeletons --%>
+<.skeleton_form fields={4} />   <%!-- 4 input field skeletons --%>
+<.skeleton_table_row cols={4} />
+<.skeleton_profile />           <%!-- Avatar + text lines --%>
 ```
 
 ---
 
 ## progress
 
-Horizontal progress bar. `role="progressbar"`, `aria-valuenow`. Set `value={nil}` for indeterminate (animated).
+Horizontal progress bar.
 
 ```heex
-<%!-- Determinate --%>
-<.progress value={75} max={100} aria-label="Upload progress" />
-<.progress value={@step} max={@total_steps} />
-
-<%!-- Indeterminate --%>
-<.progress aria-label="Loading…" />
-
-<%!-- File upload with label --%>
-<div class="space-y-1">
-  <div class="flex justify-between text-sm">
-    <span>Uploading report.pdf</span>
-    <span><%= @upload_percent %>%</span>
-  </div>
-  <.progress value={@upload_percent} max={100} />
-</div>
+<.progress value={65} />
+<.progress value={@percent} class="h-2 [&>div]:bg-green-500" />
 ```
+
+**Attrs**: `value` (0–100), `class`
 
 ---
 
 ## circular_progress
 
-SVG circular progress ring. Shows percentage label inside.
-
-**Attrs**: `value` (0–100), `size`, `stroke_width`, `color`
+SVG circular progress ring.
 
 ```heex
-<.circular_progress value={72} />
-<.circular_progress value={@disk_usage} size={120} stroke_width={8} color="text-orange-500" />
-<.circular_progress value={100} color="text-green-500" />
-
-<%!-- In a stat card --%>
-<.card>
-  <.card_content class="flex items-center gap-4 pt-4">
-    <.circular_progress value={@completion_rate} size={80} />
-    <div>
-      <p class="text-2xl font-bold"><%= @completion_rate %>%</p>
-      <p class="text-sm text-muted-foreground">Tasks completed</p>
-    </div>
-  </.card_content>
-</.card>
+<.circular_progress value={75} size={80} stroke_width={6} />
+<.circular_progress value={@cpu_usage} label="CPU" />
 ```
 
 ---
 
-## empty_state
+## labeled_progress
 
-Centered placeholder for empty lists, no search results, or onboarding.
-
-**Sub-components**: use slots `:icon`, `:title`, `:description`, `:action`
+Progress bar with label and percentage text.
 
 ```heex
-<%!-- Empty list --%>
-<.empty_state :if={@items == []}>
-  <:icon><.icon name="inbox" class="h-12 w-12 text-muted-foreground" /></:icon>
-  <:title>No items yet</:title>
-  <:description>Create your first item to get started.</:description>
-  <:action>
-    <.button phx-click="create-item">
-      <.icon name="plus" size="sm" /> Create item
-    </.button>
-  </:action>
-</.empty_state>
-
-<%!-- No search results --%>
-<.empty_state :if={@search != "" and @results == []}>
-  <:icon><.icon name="search" class="h-12 w-12 text-muted-foreground" /></:icon>
-  <:title>No results for "<%= @search %>"</:title>
-  <:description>Try adjusting your search or filter to find what you're looking for.</:description>
-  <:action>
-    <.button variant="outline" phx-click="clear-search">Clear search</.button>
-  </:action>
-</.empty_state>
-
-<%!-- Error state --%>
-<.empty_state>
-  <:icon><.icon name="alert-triangle" class="h-12 w-12 text-destructive" /></:icon>
-  <:title>Something went wrong</:title>
-  <:description>We couldn't load your data. Please try again.</:description>
-  <:action>
-    <.button phx-click="retry-load">Try again</.button>
-  </:action>
-</.empty_state>
+<.labeled_progress label="Storage" value={68} unit="GB used of 100GB" />
 ```
 
 ---
 
-## step_tracker
+## segmented_progress
 
-Multi-step wizard progress indicator. Horizontal or vertical orientation.
-
-**Sub-components**: `step/1` with attrs: `status` (complete/active/upcoming), `label`, `step` (number), `description`
+Multi-section progress bar for multi-step flows.
 
 ```heex
-<%!-- Horizontal (default) --%>
-<.step_tracker>
-  <.step status="complete" label="Account"  step={1} />
-  <.step status="complete" label="Profile"  step={2} />
-  <.step status="active"   label="Billing"  step={3} description="Enter payment details" />
-  <.step status="upcoming" label="Confirm"  step={4} />
-</.step_tracker>
-
-<%!-- Vertical --%>
-<.step_tracker orientation="vertical">
-  <.step status="complete" label="Choose plan" step={1} />
-  <.step status="active"   label="Payment"     step={2} description="Secure checkout" />
-  <.step status="upcoming" label="Activate"    step={3} />
-</.step_tracker>
+<.segmented_progress steps={4} current_step={2} />
 ```
 
-```elixir
-# LiveView with step navigation
-def handle_event("next-step", _params, socket) do
-  {:noreply, update(socket, :step, &min(&1 + 1, socket.assigns.total_steps))}
-end
+---
 
-def handle_event("prev-step", _params, socket) do
-  {:noreply, update(socket, :step, &max(&1 - 1, 1))}
-end
+## quota_bar
 
-defp step_status(current, step_num) do
-  cond do
-    step_num < current -> "complete"
-    step_num == current -> "active"
-    true -> "upcoming"
-  end
-end
+Stacked bar showing quota usage with colour zones.
+
+```heex
+<.quota_bar used={8.2} total={10} unit="GB" warn_at={80} danger_at={90} />
+```
+
+---
+
+## step_progress_bar
+
+Horizontal bar with step dots and labels.
+
+```heex
+<.step_progress_bar current={2} steps={["Details", "Address", "Payment", "Review"]} />
+```
+
+---
+
+## status_indicator
+
+Dot indicator with colour-coded status.
+
+```heex
+<div class="flex items-center gap-2">
+  <.status_indicator status={:online} />
+  <span>Alice Smith</span>
+</div>
+```
+
+**Statuses**: `:online` · `:offline` · `:away` · `:busy` · `:error`
+
+---
+
+## connection_status
+
+Shows LiveView socket connection state.
+
+```heex
+<.connection_status />
+```
+
+---
+
+## live_indicator
+
+Pulsing "LIVE" badge.
+
+```heex
+<.live_indicator />
+<.live_indicator label="Broadcasting" />
 ```
 
 ---
 
 ## toast
 
-`push_event`-driven toast notification. Mount once in `root.html.heex`, trigger from any LiveView.
-
-**Hook**: `PhiaToast`
-**Variants**: `default`, `success`, `destructive`, `warning`, `info`
+Programmatic toast notification. Fire with `put_flash/3` or `push_event/3`.
 
 ```heex
-<%!-- Mount once in root.html.heex or app.html.heex --%>
-<.toast id="toast-viewport" />
+<%!-- In root layout --%>
+<.toast flash={@flash} />
 ```
 
 ```elixir
-# Trigger from any LiveView event handler
-{:noreply, push_event(socket, "phia-toast", %{
-  title: "Saved",
-  description: "Your changes have been saved successfully.",
-  variant: "success",
-  duration_ms: 4000
-})}
-
-# Error toast
-{:noreply, push_event(socket, "phia-toast", %{
-  title: "Error",
-  description: "Failed to save. Please try again.",
-  variant: "destructive"
-})}
-
-# Simple toast (no description)
-{:noreply, push_event(socket, "phia-toast", %{title: "Copied to clipboard!"})}
+# In a LiveView event handler
+def handle_event("save", _params, socket) do
+  case save(socket.assigns.form) do
+    {:ok, _} ->
+      {:noreply, put_flash(socket, :info, "Saved successfully!")}
+    {:error, _} ->
+      {:noreply, put_flash(socket, :error, "Failed to save.")}
+  end
+end
 ```
 
 ---
 
 ## snackbar
 
-Material-style bottom-center notification. Component-controlled (not push_event). Good for undo patterns.
-
-**Attrs**: `message`, `variant` (default/success/error/warning), `action_label`, `on_action`
+Bottom-anchored notification with action button.
 
 ```heex
-<.snackbar
-  :if={@snackbar_message}
-  message={@snackbar_message}
-  variant={@snackbar_variant}
-  action_label="Undo"
-  on_action="undo_delete"
-/>
-```
-
-```elixir
-def handle_event("delete-item", %{"id" => id}, socket) do
-  MyApp.soft_delete(id)
-  Process.send_after(self(), :clear_snackbar, 5000)
-  {:noreply, assign(socket,
-    snackbar_message: "Item deleted",
-    snackbar_variant: "default",
-    last_deleted_id: id
-  )}
-end
-
-def handle_event("undo_delete", _params, socket) do
-  MyApp.restore(socket.assigns.last_deleted_id)
-  {:noreply, assign(socket, snackbar_message: nil, last_deleted_id: nil)}
-end
-
-def handle_info(:clear_snackbar, socket) do
-  {:noreply, assign(socket, snackbar_message: nil)}
-end
+<.snackbar id="undo-snack" message="Item deleted" action_label="Undo" on_action="undo_delete" />
 ```
 
 ---
 
 ## sonner
 
-Rich stacking toast notifications (Sonner-style). Push multiple toasts; they stack with animations.
-
-**Hook**: `PhiaSonner`
+Toast stack manager inspired by Sonner. Supports queueing multiple toasts. Hook: `PhiaSonner`.
 
 ```heex
-<%!-- Mount once in root.html.heex --%>
-<.sonner id="sonner-viewport" />
+<%!-- In root layout --%>
+<.sonner id="app-toasts" position={:bottom_right} />
 ```
 
 ```elixir
-# Types: "success", "error", "warning", "info", "default"
-{:noreply, push_event(socket, "phia-sonner", %{
-  message: "Post published!",
-  type: "success"
-})}
+# Trigger from LiveView
+push_event(socket, "phia-sonner", %{
+  type: "success",
+  title: "Saved",
+  description: "Your changes have been saved.",
+  duration: 4000
+})
+```
 
-{:noreply, push_event(socket, "phia-sonner", %{
-  message: "Build failed",
-  description: "See logs for details.",
-  type: "error"
-})}
+---
+
+## notification
+
+Notification item in a notification list or notification_center.
+
+```heex
+<.notification_center id="notif-center">
+  <%= for n <- @notifications do %>
+    <.notification_item
+      title={n.title}
+      body={n.body}
+      timestamp={n.inserted_at}
+      read={n.read_at != nil}
+      icon={n.icon}
+      phx-click="mark_read"
+      phx-value-id={n.id}
+    />
+  <% end %>
+</.notification_center>
+```
+
+---
+
+## empty_state
+
+Centred placeholder for empty lists.
+
+```heex
+<.empty_state
+  icon="inbox"
+  title="No messages"
+  description="When you receive messages, they'll appear here."
+>
+  <:action>
+    <.button phx-click="compose">Compose message</.button>
+  </:action>
+</.empty_state>
+```
+
+---
+
+## result_state
+
+Success / error / warning full-page or section result screen.
+
+```heex
+<.result_state
+  status={:success}
+  title="Payment confirmed"
+  description="Your order #1234 has been placed."
+>
+  <:action>
+    <.button href="/orders">View orders</.button>
+  </:action>
+</.result_state>
+```
+
+**Statuses**: `:success` · `:error` · `:warning` · `:info`
+
+---
+
+## error_display
+
+Formatted error message with stack trace (development mode).
+
+```heex
+<.error_display error={@error} show_trace={Mix.env() == :dev} />
 ```
 
 ---
 
 ## popconfirm
 
-_(new in 0.1.7)_
-
-Inline confirmation popover that appears before a destructive action is committed. Avoids full modal dialogs for lightweight confirmations.
-
-**Module**: `PhiaUi.Components.Feedback`
-**Attrs**: `id`, `message`, `on_confirm`, `on_cancel`, `placement` (`"top"`, `"bottom"`, `"left"`, `"right"`)
+Inline confirm/cancel popover for destructive actions.
 
 ```heex
 <.popconfirm
   id="delete-confirm"
-  message="Delete this record? This cannot be undone."
+  message="Are you sure you want to delete this record? This cannot be undone."
   on_confirm="delete_record"
-  placement="top"
+  confirm_label="Yes, delete"
 >
   <.button variant="destructive">Delete</.button>
 </.popconfirm>
 ```
 
-### Use Cases
-
-- Delete row confirmation
-- Archive/unarchive actions
-- Disconnect confirmation
-
 ---
 
-## result_state
+## step_tracker
 
-_(new in 0.1.7)_
-
-Full-page outcome display component for success, error, warning, and info states. Renders a centered icon, title, description, and action buttons.
-
-**Module**: `PhiaUi.Components.Feedback`
-**Attrs**: `type` (`"success"`, `"error"`, `"warning"`, `"info"`), `title`, `description`
+Multi-step wizard tracker with icons and statuses.
 
 ```heex
-<.result_state type="success" title="Payment successful!" description="Your order has been confirmed.">
-  <:primary_action>
-    <.button phx-click="go_home">Back to home</.button>
-  </:primary_action>
-  <:secondary_action>
-    <.button variant="outline" phx-click="view_order">View order</.button>
-  </:secondary_action>
-</.result_state>
+<.step_tracker current={@step}>
+  <:step status={:complete} icon="check">Account</:step>
+  <:step status={:active} icon="user">Profile</:step>
+  <:step status={:pending}>Plan</:step>
+  <:step status={:pending}>Confirm</:step>
+</.step_tracker>
 ```
-
-```heex
-<.result_state type="error" title="Payment failed" description="Your card was declined.">
-  <:primary_action>
-    <.button phx-click="retry">Try again</.button>
-  </:primary_action>
-</.result_state>
-```
-
-### Use Cases
-
-- Payment outcome pages
-- Form submission confirmations
-- Permission denied / 403 pages
-- Empty state with action
-
-← [Back to README](../../README.md)

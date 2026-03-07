@@ -1,7 +1,72 @@
 defmodule PhiaUi.Components.EventCard do
   @moduledoc """
-  Card component for displaying an event with a date badge, time, location,
-  attendee avatars, and optional actions slot.
+  Card component for displaying an event with a colored date badge, time,
+  location, attendee avatar stack, and optional actions slot.
+
+  ## Card layout
+
+  The card is a horizontal flex row:
+
+  - **Left panel** — a deeply colored `category_color` block showing the
+    abbreviated month and day number in white text.
+  - **Right panel** — event title, time row (clock icon), location row
+    (map-pin or video icon), attendee avatar stack with overflow count, and
+    an optional `:actions` slot.
+
+  ## Category colors
+
+  | `:category_color` | Tailwind class    |
+  |-------------------|-------------------|
+  | `:primary`        | `bg-primary`      |
+  | `:blue`           | `bg-blue-500`     |
+  | `:emerald`        | `bg-emerald-500`  |
+  | `:amber`          | `bg-amber-500`    |
+  | `:rose`           | `bg-rose-500`     |
+  | `:violet`         | `bg-violet-500`   |
+
+  ## Virtual events
+
+  Set `virtual={true}` for online/video events — this swaps the map-pin icon
+  for a video icon in the location row.
+
+  ## Attendee avatars
+
+  Pass a list of `%{src: url, name: string}` maps to `attendees`. Up to
+  `max_attendees` (default: 3) avatars are shown. Any overflow is displayed
+  as `"+N"` text to the right of the stack.
+
+  ## Examples
+
+      <%!-- In-person team standup --%>
+      <.event_card
+        title="Team Standup"
+        month="MAR"
+        day="15"
+        time="9:00 AM"
+        location="Conference Room A"
+        category_color={:blue}
+        attendees={[%{src: "/avatars/alice.jpg", name: "Alice"}, %{src: nil, name: "Bob"}]}
+      />
+
+      <%!-- Virtual all-hands meeting --%>
+      <.event_card
+        title="All-Hands Q1 Review"
+        month="APR"
+        day="1"
+        time="2:00 PM"
+        location="Zoom"
+        virtual={true}
+        category_color={:violet}
+        attendees={Enum.map(@attendees, &%{src: &1.avatar_url, name: &1.name})}
+      />
+
+      <%!-- Event with RSVP action buttons --%>
+      <.event_card title="Company Picnic" month="JUN" day="21" category_color={:emerald}>
+        <:actions>
+          <.button size={:sm}>Accept</.button>
+          <.button size={:sm} variant={:outline}>Decline</.button>
+        </:actions>
+      </.event_card>
   """
 
   use Phoenix.Component
@@ -20,7 +85,10 @@ defmodule PhiaUi.Components.EventCard do
 
   attr(:location, :string, default: nil, doc: "Event location or meeting link label")
 
-  attr(:virtual, :boolean, default: false, doc: "When true, shows a video icon instead of map-pin")
+  attr(:virtual, :boolean,
+    default: false,
+    doc: "When true, shows a video icon instead of map-pin"
+  )
 
   attr(:attendees, :list,
     default: [],
@@ -47,8 +115,12 @@ defmodule PhiaUi.Components.EventCard do
   @doc """
   Renders an event card with a colored date badge and event details.
 
+  The card is a horizontal flex row. Computes `visible_attendees` and
+  `overflow` before rendering so callers don't need to paginate manually.
+
   ## Examples
 
+      <%!-- In-person event --%>
       <.event_card
         title="Team Standup"
         month="MAR"
@@ -56,8 +128,23 @@ defmodule PhiaUi.Components.EventCard do
         time="9:00 AM"
         location="Conference Room A"
         category_color={:blue}
-        attendees={[%{src: "/avatars/alice.jpg", name: "Alice"}, %{src: nil, name: "Bob"}]}
+        attendees={[%{src: "/avatars/alice.jpg", name: "Alice"}]}
       />
+
+      <%!-- Virtual event with action buttons --%>
+      <.event_card
+        title="Board Meeting"
+        month="APR"
+        day="3"
+        time="11:00 AM"
+        location="Google Meet"
+        virtual={true}
+        category_color={:violet}
+      >
+        <:actions>
+          <.button size={:sm}>Join</.button>
+        </:actions>
+      </.event_card>
   """
   def event_card(assigns) do
     visible_attendees = Enum.take(assigns.attendees, assigns.max_attendees)

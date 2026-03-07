@@ -3,8 +3,54 @@ defmodule PhiaUi.Components.FileCard do
   File attachment card with type-based icon and color coding.
 
   Displays a file's name, size, upload date, and a type-specific icon.
-  Supports two layout variants: `:default` (stacked) and `:compact` (single row).
-  File type is automatically detected from the extension.
+  Supports two layout variants: `:default` (icon + stacked info) and
+  `:compact` (single row, suitable for lists or tables).
+  File type is automatically detected from the file extension.
+
+  ## Supported file types and icon colors
+
+  | Extension(s)                | Detected type | Icon colour  |
+  |-----------------------------|---------------|--------------|
+  | `.pdf`                      | `:pdf`        | Red          |
+  | `.doc`, `.docx`             | `:doc`        | Blue         |
+  | `.xls`, `.xlsx`             | `:xls`        | Emerald      |
+  | `.ppt`, `.pptx`             | `:ppt`        | Orange       |
+  | `.jpg`, `.jpeg`, `.png`, `.gif`, `.webp` | `:image` | Violet |
+  | `.zip`, `.rar`, `.tar`, `.gz` | `:archive` | Yellow       |
+  | `.mp3`, `.wav`, `.mp4`, `.mov` | `:media`  | Pink         |
+  | Anything else               | `:default`    | Muted        |
+
+  ## Layout variants
+
+  - `:default` — icon block on the left, filename + extension badge on top,
+    size and date below. Actions slot wraps below the info block.
+  - `:compact` — single row: icon (smaller, 36×36) + filename + size/date
+    inline. Actions slot stays in the row.
+
+  ## Examples
+
+      <%!-- PDF attachment in default layout --%>
+      <.file_card filename="report-q1.pdf" size="2.4 MB" uploaded_at="Mar 6, 2026">
+        <:actions>
+          <.button size={:sm} variant={:outline} href="/files/report-q1.pdf" download>
+            Download
+          </.button>
+        </:actions>
+      </.file_card>
+
+      <%!-- Compact list row --%>
+      <.file_card filename="presentation.pptx" size="8.1 MB" variant={:compact} />
+
+      <%!-- File list from assigns --%>
+      <div class="space-y-2">
+        <.file_card
+          :for={file <- @attachments}
+          filename={file.name}
+          size={file.human_size}
+          uploaded_at={file.inserted_at_label}
+          href={file.download_url}
+        />
+      </div>
   """
 
   use Phoenix.Component
@@ -13,25 +59,58 @@ defmodule PhiaUi.Components.FileCard do
   import PhiaUi.Components.Icon, only: [icon: 1]
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :filename, :string, required: true, doc: "File name including extension"
-  attr :size, :string, default: nil, doc: "Human-readable file size (e.g. '2.4 MB')"
-  attr :uploaded_at, :string, default: nil, doc: "Upload date/time label"
-  attr :href, :string, default: nil, doc: "Download link for the file"
+  attr(:filename, :string, required: true, doc: "File name including extension")
+  attr(:size, :string, default: nil, doc: "Human-readable file size (e.g. '2.4 MB')")
+  attr(:uploaded_at, :string, default: nil, doc: "Upload date/time label")
+  attr(:href, :string, default: nil, doc: "Download link for the file")
 
-  attr :variant, :atom,
+  attr(:variant, :atom,
     default: :default,
     values: [:default, :compact],
     doc: "Layout variant: :default (stacked) or :compact (single row)"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the card element"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the card element")
 
-  slot :actions, doc: "Action buttons (download, delete, share, etc.)"
+  slot(:actions, doc: "Action buttons (download, delete, share, etc.)")
 
-  @doc "Renders a file card."
+  @doc """
+  Renders a file attachment card.
+
+  The card layout contains:
+  - A colored icon block (auto-detected from `filename` extension).
+  - The `filename` with a monospace extension badge (e.g. "PDF", "XLSX").
+  - Optional `size` and `uploaded_at` metadata labels.
+  - An optional `:actions` slot for download, delete, or share buttons.
+
+  When `href` is set, the filename renders as a download link. When no
+  `href` is provided, the filename is a plain `<span>`.
+
+  ## Examples
+
+      <%!-- PDF attachment --%>
+      <.file_card filename="invoice.pdf" size="1.2 MB" uploaded_at="Mar 6, 2026">
+        <:actions>
+          <.button size={:sm} variant={:outline}>Download</.button>
+        </:actions>
+      </.file_card>
+
+      <%!-- Compact single-row layout --%>
+      <.file_card filename="data.xlsx" size="512 KB" variant={:compact} />
+
+      <%!-- With download link --%>
+      <.file_card
+        filename="contract.docx"
+        size="320 KB"
+        href="/downloads/contract.docx"
+        uploaded_at="2 days ago"
+      />
+  """
   def file_card(assigns) do
     assigns = assign(assigns, :ftype, file_type(assigns.filename))
     assigns = assign(assigns, :ext_label, ext_label(assigns.filename))
+
     ~H"""
     <.card class={cn([@class])} {@rest}>
       <.card_content class={content_padding(@variant)}>

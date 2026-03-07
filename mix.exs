@@ -58,13 +58,16 @@ defmodule PhiaUi.MixProject do
         "docs/components/navigation.md",
         "docs/components/overlay.md",
         "docs/components/animation.md",
+        "docs/components/background.md",
         "docs/components/editor.md",
         "docs/components/interaction.md",
+        "docs/components/surface.md",
         "docs/components/typography.md",
         "docs/guides/theme-system.md",
         "docs/guides/tutorial-booking.md",
         "docs/guides/tutorial-cms.md",
-        "docs/guides/tutorial-dashboard.md"
+        "docs/guides/tutorial-dashboard.md",
+        "docs/guides/tutorial-livebook.md"
       ],
       main: "readme",
       source_url: "https://github.com/phiaui/phia_ui",

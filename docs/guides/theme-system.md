@@ -461,4 +461,4 @@ mix phia.theme import ./my-brand.json
 
 ---
 
-← [Back to README](../../README.md) | [Dashboard Tutorial](tutorial-dashboard.md)
+← [Dashboard Tutorial](tutorial-dashboard.md)

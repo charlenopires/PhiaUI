@@ -2,6 +2,49 @@ defmodule PhiaUi.Components.ProgressCard do
   @moduledoc """
   Card component that displays a titled progress bar with optional description,
   value label, variant coloring, size, icon slot, and footer slot.
+
+  ## Variant × size color matrix
+
+  The `variant` controls the progress bar fill and the `size` controls height:
+
+  | `:variant`      | Bar color                  |
+  |-----------------|----------------------------|
+  | `:default`      | `bg-primary` (theme color) |
+  | `:success`      | `bg-emerald-500`           |
+  | `:warning`      | `bg-amber-500`             |
+  | `:destructive`  | `bg-destructive`           |
+
+  | `:size` | Bar height |
+  |---------|------------|
+  | `:sm`   | `h-1`      |
+  | `:md`   | `h-2`      |
+  | `:lg`   | `h-3`      |
+
+  ## Examples
+
+      <%!-- Default progress for an upload --%>
+      <.progress_card title="Upload Progress" value={72} />
+
+      <%!-- Disk usage warning with footer --%>
+      <.progress_card
+        title="Disk Usage"
+        value={90}
+        variant={:destructive}
+        size={:lg}
+        description="Storage is almost full"
+      >
+        <:footer>10 GB of 12 GB used</:footer>
+      </.progress_card>
+
+      <%!-- Goal completion with custom label --%>
+      <.progress_card
+        title="Annual Goal"
+        value={65}
+        variant={:success}
+        label="$65,000 / $100,000"
+      >
+        <:icon><.icon name="target" class="text-emerald-500" /></:icon>
+      </.progress_card>
   """
 
   use Phoenix.Component
@@ -46,14 +89,40 @@ defmodule PhiaUi.Components.ProgressCard do
   slot(:footer, doc: "Optional footer content rendered at the bottom of the card")
 
   @doc """
-  Renders a progress card with a titled progress bar.
+  Renders a titled progress card.
+
+  Card regions (top to bottom):
+  - **Header** — optional `:icon` slot (left) + `title` text
+  - **Content** — optional `description`, optional value label, progress bar
+  - **Footer** — optional `:footer` slot (timestamps, legends, etc.)
+
+  The `label` attribute overrides the default percentage display
+  (`"\#{value}%"`). Set `show_value={false}` to hide the label entirely.
 
   ## Examples
 
-      <.progress_card title="Upload Progress" value={72} variant={:success} />
+      <%!-- Upload progress --%>
+      <.progress_card title="Upload Progress" value={72} />
 
-      <.progress_card title="Disk Usage" value={90} variant={:destructive} size={:lg}>
+      <%!-- Disk usage with destructive WARNING and footer --%>
+      <.progress_card
+        title="Disk Usage"
+        value={90}
+        variant={:destructive}
+        size={:lg}
+        description="Storage is almost full"
+      >
         <:footer>10 GB of 12 GB used</:footer>
+      </.progress_card>
+
+      <%!-- Revenue goal with custom label and icon --%>
+      <.progress_card
+        title="Annual Sales Goal"
+        value={65}
+        variant={:success}
+        label="$65,000 of $100,000"
+      >
+        <:icon><.icon name="trending-up" class="text-emerald-500" /></:icon>
       </.progress_card>
   """
   def progress_card(assigns) do

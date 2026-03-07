@@ -1,265 +1,378 @@
 # Buttons
 
-Interactive action components: primary actions, toolbars, clipboard utilities, floating actions, and toggles.
+~20 button components — primary actions, toolbars, toggles, floating buttons, social auth, fancy animated buttons, and action utilities.
+
+**Modules**: `PhiaUi.Components.Buttons`, `PhiaUi.Components.FancyButton`, `PhiaUi.Components.ActionButton`
+
+```elixir
+import PhiaUi.Components.Buttons
+```
+
+---
 
 ## Table of Contents
 
+**Core**
 - [button](#button)
 - [button_group](#button_group)
-- [back_top](#back_top)
-- [copy_button](#copy_button)
-- [float_button](#float_button)
 - [toggle](#toggle)
 - [toggle_group](#toggle_group)
+- [copy_button](#copy_button)
+
+**Floating & Back**
+- [float_button](#float_button)
+- [back_top](#back_top)
+
+**Extended Buttons (v0.1.9)**
+- [split_button](#split_button)
+- [icon_button](#icon_button)
+- [social_button](#social_button)
+
+**Fancy Buttons**
+- [gradient_button](#gradient_button)
+- [shimmer_button](#shimmer_button)
+- [glow_button](#glow_button)
+- [pulse_button](#pulse_button)
+
+**Action Buttons**
+- [close_button](#close_button)
+- [badge_button](#badge_button)
+- [confirm_button](#confirm_button)
+- [countdown_button](#countdown_button)
 
 ---
 
 ## button
 
-The primary action element. 6 variants × 4 sizes, icon slot, loading state, and `cn/1` class override.
+The primary action element. 6 variants × 4 sizes, icon slot, loading state.
 
-**Variants**: `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`
-**Sizes**: `sm`, `default`, `lg`, `icon`
+**Variants**: `default` · `destructive` · `outline` · `secondary` · `ghost` · `link`
+
+**Sizes**: `sm` · `default` · `lg` · `icon`
 
 ```heex
-<%!-- Variants --%>
-<.button>Default</.button>
-<.button variant="secondary">Secondary</.button>
-<.button variant="destructive">Delete</.button>
-<.button variant="outline">Outline</.button>
-<.button variant="ghost">Ghost</.button>
-<.button variant="link">Link</.button>
-
-<%!-- Sizes --%>
-<.button size="sm">Small</.button>
-<.button size="lg">Large</.button>
-<.button size="icon"><.icon name="plus" /></.button>
-
-<%!-- With icon --%>
-<.button variant="outline" size="sm">
-  <.icon name="download" size="sm" /> Export CSV
-</.button>
-<.button variant="destructive">
-  <.icon name="trash" size="sm" /> Delete
+<.button>Save</.button>
+<.button variant="outline" size="sm">Cancel</.button>
+<.button variant="destructive">Delete account</.button>
+<.button variant="ghost" size="icon" aria-label="Settings">
+  <.icon name="settings" />
 </.button>
 
-<%!-- States --%>
-<.button disabled>Disabled</.button>
-<.button phx-click="save" phx-disable-with="Saving…">Save</.button>
+<%!-- Loading state --%>
+<.button disabled={@saving}>
+  <%= if @saving do %>
+    <.icon name="loader" class="animate-spin mr-2" /> Saving…
+  <% else %>
+    Save changes
+  <% end %>
+</.button>
 
-<%!-- Full width --%>
-<.button class="w-full">Submit</.button>
+<%!-- With icon slot --%>
+<.button variant="default">
+  <:icon><.icon name="plus" /></:icon>
+  New project
+</.button>
 ```
 
-### LiveView pattern
-
-```elixir
-# Disable during async operation
-def handle_event("save", _params, socket) do
-  # Button shows "Saving…" via phx-disable-with during this handler
-  case MyApp.save(socket.assigns.data) do
-    {:ok, _} -> {:noreply, push_navigate(socket, to: ~p"/items")}
-    {:error, changeset} -> {:noreply, assign(socket, form: to_form(changeset))}
-  end
-end
-```
+**Attrs**: `variant`, `size`, `type` (default `"button"`), `disabled`, `class`, `rest` (forwarded)
 
 ---
 
 ## button_group
 
-Groups buttons into a single toolbar with shared border styling. Use for formatting bars, view switchers, and action toolbars.
+Groups buttons into a visually connected row.
 
 ```heex
-<%!-- Text formatting toolbar --%>
 <.button_group>
-  <.button variant="outline" size="icon"><.icon name="bold" size="sm" /></.button>
-  <.button variant="outline" size="icon"><.icon name="italic" size="sm" /></.button>
-  <.button variant="outline" size="icon"><.icon name="underline" size="sm" /></.button>
+  <.button variant="outline">Previous</.button>
+  <.button variant="outline">1</.button>
+  <.button variant="outline">2</.button>
+  <.button variant="outline">Next</.button>
 </.button_group>
-
-<%!-- View mode switcher --%>
-<.button_group>
-  <.button variant={if @view == "list", do: "default", else: "outline"}
-    phx-click="set-view" phx-value-view="list">
-    <.icon name="list" size="sm" /> List
-  </.button>
-  <.button variant={if @view == "grid", do: "default", else: "outline"}
-    phx-click="set-view" phx-value-view="grid">
-    <.icon name="grid" size="sm" /> Grid
-  </.button>
-</.button_group>
-
-<%!-- Vertical orientation --%>
-<.button_group orientation="vertical">
-  <.button variant="outline">Top</.button>
-  <.button variant="outline">Middle</.button>
-  <.button variant="outline">Bottom</.button>
-</.button_group>
-```
-
----
-
-## back_top
-
-A fixed "scroll to top" button that appears after the user scrolls past a threshold. Uses the `PhiaBackTop` hook.
-
-**Hook**: `PhiaBackTop`
-
-```heex
-<%!-- Mount once, usually in a layout --%>
-<.back_top id="back-to-top" />
-
-<%!-- Custom threshold and label --%>
-<.back_top id="back-to-top" threshold={400} />
-```
-
-```javascript
-// app.js — register the hook
-import PhiaBackTop from "./phia_hooks/back_top"
-// hooks: { PhiaBackTop }
-```
-
----
-
-## copy_button
-
-A clipboard copy button with visual feedback (check icon) and `aria-live` announcement for screen readers.
-
-**Hook**: `PhiaCopyButton`
-
-```heex
-<%!-- Copy an API key --%>
-<div class="flex items-center gap-2">
-  <code class="text-sm bg-muted px-2 py-1 rounded font-mono"><%= @api_key %></code>
-  <.copy_button value={@api_key} label="Copy API key" />
-</div>
-
-<%!-- Copy a URL --%>
-<div class="flex items-center gap-2 border rounded-md px-3 py-2">
-  <span class="text-sm text-muted-foreground flex-1 truncate"><%= @share_url %></span>
-  <.copy_button value={@share_url} />
-</div>
-
-<%!-- Copy code snippet in docs --%>
-<div class="relative">
-  <pre class="bg-muted p-4 rounded-lg"><code><%= @code_sample %></code></pre>
-  <div class="absolute top-2 right-2">
-    <.copy_button value={@code_sample} label="Copy code" />
-  </div>
-</div>
-```
-
----
-
-## float_button
-
-A fixed-position circular action button (FAB). Supports a speed-dial variant with expandable sub-items.
-
-```heex
-<%!-- Simple FAB --%>
-<.float_button id="new-item" phx-click="create-item" position="bottom-right">
-  <.icon name="plus" />
-</.float_button>
-
-<%!-- Speed-dial with expandable actions --%>
-<.float_button id="speed-dial" position="bottom-right" variant="speed_dial">
-  <:trigger><.icon name="plus" /></:trigger>
-  <:item phx-click="create-document" label="Document">
-    <.icon name="file-text" size="sm" />
-  </:item>
-  <:item phx-click="create-folder" label="Folder">
-    <.icon name="folder" size="sm" />
-  </:item>
-  <:item phx-click="upload-file" label="Upload">
-    <.icon name="upload" size="sm" />
-  </:item>
-</.float_button>
 ```
 
 ---
 
 ## toggle
 
-A stateful `aria-pressed` button. Use for mute/unmute, show/hide, pinned/unpinned, and similar binary states.
-
-**Variants**: `default`, `outline`
-**Sizes**: `sm`, `default`, `lg`
+Single toggle button — pressed / unpressed state.
 
 ```heex
-<%!-- Basic toggle --%>
-<.toggle pressed={@bold} phx-click="toggle-bold">
-  <.icon name="bold" size="sm" />
+<.toggle pressed={@bold} phx-click="toggle_bold" aria-label="Bold">
+  <.icon name="bold" />
 </.toggle>
-
-<%!-- With label --%>
-<.toggle pressed={@muted} phx-click="toggle-mute" variant="outline">
-  <.icon name={if @muted, do: "volume-x", else: "volume-2"} size="sm" />
-  <%= if @muted, do: "Unmute", else: "Mute" %>
-</.toggle>
-
-<%!-- Formatting toggles in an editor --%>
-<div class="flex gap-1">
-  <.toggle pressed={@bold}    phx-click="toggle-format" phx-value-format="bold">
-    <.icon name="bold" size="sm" />
-  </.toggle>
-  <.toggle pressed={@italic}  phx-click="toggle-format" phx-value-format="italic">
-    <.icon name="italic" size="sm" />
-  </.toggle>
-  <.toggle pressed={@underline} phx-click="toggle-format" phx-value-format="underline">
-    <.icon name="underline" size="sm" />
-  </.toggle>
-</div>
 ```
 
-```elixir
-def handle_event("toggle-format", %{"format" => format}, socket) do
-  {:noreply, update(socket, String.to_atom(format), &(!&1))}
-end
-```
+**Attrs**: `pressed` (boolean), `variant` (`default` | `outline`), `size`, `class`
 
 ---
 
 ## toggle_group
 
-Wraps multiple toggles for single or multiple selection. Uses `:let` to pass the current `value` down to each toggle.
+Multiple toggles with single or multi select.
 
 ```heex
-<%!-- Single selection (like a tab bar) --%>
-<.toggle_group value={@alignment} on_change="set-alignment" type="single">
-  <:option value="left">
-    <.icon name="align-left" size="sm" />
-  </:option>
-  <:option value="center">
-    <.icon name="align-center" size="sm" />
-  </:option>
-  <:option value="right">
-    <.icon name="align-right" size="sm" />
-  </:option>
+<%!-- Single select --%>
+<.toggle_group type="single" value={@view} on_change="set_view">
+  <.toggle_group_item value="list"><.icon name="list" /></.toggle_group_item>
+  <.toggle_group_item value="grid"><.icon name="grid" /></.toggle_group_item>
 </.toggle_group>
 
-<%!-- Multiple selection --%>
-<.toggle_group value={@selected_days} on_change="toggle-day" type="multiple">
-  <:option value="mon">Mon</:option>
-  <:option value="tue">Tue</:option>
-  <:option value="wed">Wed</:option>
-  <:option value="thu">Thu</:option>
-  <:option value="fri">Fri</:option>
+<%!-- Multi select --%>
+<.toggle_group type="multiple" values={@active_formats} on_change="set_formats">
+  <.toggle_group_item value="bold"><.icon name="bold" /></.toggle_group_item>
+  <.toggle_group_item value="italic"><.icon name="italic" /></.toggle_group_item>
 </.toggle_group>
 ```
 
-```elixir
-# Single selection handler
-def handle_event("set-alignment", %{"value" => alignment}, socket) do
-  {:noreply, assign(socket, alignment: alignment)}
-end
+---
 
-# Multiple selection handler
-def handle_event("toggle-day", %{"value" => day}, socket) do
-  days = socket.assigns.selected_days
-  updated = if day in days, do: List.delete(days, day), else: [day | days]
-  {:noreply, assign(socket, selected_days: updated)}
-end
+## copy_button
+
+Copies text to clipboard; shows a check icon for 2 seconds.
+
+```heex
+<.copy_button text={@api_key} />
+
+<%!-- Inline with content --%>
+<div class="flex items-center gap-2">
+  <code class="font-mono text-sm"><%= @api_key %></code>
+  <.copy_button text={@api_key} size="sm" />
+</div>
 ```
 
-← [Back to README](../../README.md)
+**Attrs**: `text` (string to copy), `label` (aria-label), `size`
+
+---
+
+## float_button
+
+Fixed-position floating action button.
+
+```heex
+<.float_button phx-click="new_item" position={:bottom_right} aria-label="Add item">
+  <.icon name="plus" />
+</.float_button>
+```
+
+**Attrs**: `position` (`:bottom_right` | `:bottom_left` | `:top_right` | `:top_left`), `size`
+
+---
+
+## back_top
+
+Scroll-to-top button that appears after scrolling down. Hook: `PhiaBackTop`.
+
+```heex
+<.back_top id="back-to-top" threshold={300} />
+```
+
+**Attrs**: `id` (required), `threshold` (px scroll offset before showing, default 300)
+
+---
+
+## split_button
+
+Primary action button with a dropdown for secondary actions. Hook: `PhiaSplitButton`.
+
+```heex
+<.split_button id="export-btn" label="Export" phx-click="export_csv">
+  <:option phx-click="export_pdf">Export as PDF</:option>
+  <:option phx-click="export_xlsx">Export as XLSX</:option>
+</.split_button>
+```
+
+**Attrs**: `id` (required), `label`, `variant`, `size`
+
+---
+
+## icon_button
+
+Square icon-only button with built-in aria-label support.
+
+```heex
+<.icon_button icon="trash" label="Delete" phx-click="delete" variant="destructive" />
+<.icon_button icon="pencil" label="Edit" phx-click="edit" variant="ghost" size="sm" />
+<.icon_button icon="settings" label="Settings" phx-click="open_settings" />
+```
+
+**Attrs**: `icon` (Lucide name), `label` (aria-label text, required), `variant`, `size`
+
+---
+
+## social_button
+
+Pre-styled social auth button with inline SVG brand icon.
+
+```heex
+<.social_button provider={:github} phx-click="auth_github">
+  Continue with GitHub
+</.social_button>
+<.social_button provider={:google} phx-click="auth_google">
+  Continue with Google
+</.social_button>
+```
+
+```heex
+<%!-- Group for auth page --%>
+<.social_button_group>
+  <.social_button provider={:github} phx-click="auth_github">GitHub</.social_button>
+  <.social_button provider={:google} phx-click="auth_google">Google</.social_button>
+</.social_button_group>
+```
+
+**Providers**: `:github` · `:google` · `:twitter` · `:discord` · `:facebook` · `:apple`
+
+---
+
+## gradient_button
+
+Button with an animated gradient background.
+
+```heex
+<.gradient_button from="from-violet-600" to="to-indigo-600" phx-click="upgrade">
+  Upgrade to Pro
+</.gradient_button>
+```
+
+**Attrs**: `from`, `via`, `to` (Tailwind gradient class strings), `size`, `class`
+
+---
+
+## shimmer_button
+
+Button with a sweeping shimmer animation.
+
+```heex
+<.shimmer_button phx-click="launch">
+  Launch product
+</.shimmer_button>
+```
+
+**Attrs**: `shimmer_color` (CSS color), `background` (CSS color), `size`, `class`
+
+---
+
+## glow_button
+
+Button with a coloured glow shadow that pulses on hover.
+
+```heex
+<.glow_button color="#6366f1" phx-click="cta">
+  Get started free
+</.glow_button>
+```
+
+**Attrs**: `color` (CSS color for glow), `size`, `class`
+
+---
+
+## pulse_button
+
+Button with a pulsing ring animation — draws attention to a primary CTA.
+
+```heex
+<.pulse_button phx-click="cta" variant="default">
+  Start now
+</.pulse_button>
+```
+
+---
+
+## close_button
+
+Compact X button. Use to dismiss modals, sheets, or alerts.
+
+```heex
+<.close_button phx-click="close_modal" />
+<.close_button phx-click={JS.hide(to: "#banner")} size="sm" />
+```
+
+---
+
+## badge_button
+
+Button with a notification badge count.
+
+```heex
+<.badge_button count={@unread_count} phx-click="open_notifications">
+  <.icon name="bell" />
+</.badge_button>
+```
+
+**Attrs**: `count` (integer or nil), `variant`, `size`
+
+---
+
+## confirm_button
+
+Two-phase confirm — first click shows a confirmation prompt, second fires the event.
+
+```heex
+<.confirm_button
+  label="Delete account"
+  confirm_label="Yes, delete"
+  phx-click="delete_account"
+  variant="destructive"
+/>
+```
+
+**Attrs**: `label`, `confirm_label`, `cancel_label`, `variant`, `size`
+
+Hook: `PhiaConfirmButton`
+
+---
+
+## countdown_button
+
+Disabled for N seconds then auto-enables. Use for resend-OTP flows.
+
+```heex
+<.countdown_button
+  id="resend-btn"
+  seconds={60}
+  label="Resend code"
+  countdown_label="Resend in {n}s"
+  phx-click="resend_otp"
+/>
+```
+
+**Attrs**: `id` (required), `seconds` (integer), `label`, `countdown_label` (`{n}` replaced with remaining), `variant`
+
+Hook: `PhiaCountdownButton`
+
+---
+
+## Real-world patterns
+
+### Auth page
+
+```heex
+<div class="flex flex-col gap-3 max-w-sm mx-auto">
+  <.social_button provider={:github} phx-click="auth_github">
+    Continue with GitHub
+  </.social_button>
+  <.social_button provider={:google} phx-click="auth_google">
+    Continue with Google
+  </.social_button>
+  <.separator label="or" />
+  <.button variant="outline" phx-click="show_email_form">
+    Continue with email
+  </.button>
+</div>
+```
+
+### Toolbar
+
+```heex
+<div class="flex items-center gap-1 border rounded-md p-1">
+  <.toggle_group type="multiple" values={@formats} on_change="set_format">
+    <.toggle_group_item value="bold"><.icon name="bold" size="sm" /></.toggle_group_item>
+    <.toggle_group_item value="italic"><.icon name="italic" size="sm" /></.toggle_group_item>
+    <.toggle_group_item value="underline"><.icon name="underline" size="sm" /></.toggle_group_item>
+  </.toggle_group>
+  <.separator orientation={:vertical} class="h-6 mx-1" />
+  <.icon_button icon="link" label="Insert link" phx-click="insert_link" variant="ghost" size="sm" />
+  <.icon_button icon="image" label="Insert image" phx-click="insert_image" variant="ghost" size="sm" />
+</div>
+```

@@ -2,9 +2,73 @@ defmodule PhiaUi.Components.NotificationCard do
   @moduledoc """
   Notification/alert card with type-based color coding and dismiss support.
 
-  Displays a title, optional message, timestamp, and type icon. Supports
-  four severity levels (:info, :success, :warning, :error) with matching
-  left-border color and icon. Optionally dismissible with a phx-click handler.
+  Displays a title, optional message body, timestamp, and an icon that
+  automatically matches the `type`. Optionally shows a dismiss button that
+  fires a LiveView event when clicked. The card can be visually dimmed to
+  indicate "already read" state.
+
+  ## Severity types
+
+  | `:type`      | Left border colour | Default icon         |
+  |--------------|--------------------|----------------------|
+  | `:info`      | `border-l-blue-500`    | `information-circle` |
+  | `:success`   | `border-l-emerald-500` | `check-circle`       |
+  | `:warning`   | `border-l-amber-500`   | `exclamation-triangle`|
+  | `:error`     | `border-l-red-500`     | `x-circle`           |
+
+  ## Dismiss support
+
+  Set `dismissible={true}` and provide `on_dismiss` with a LiveView event
+  name. An `×` button renders at the top-right; clicking it fires the event
+  with `phx-click`. Handle the event in your LiveView to remove the
+  notification from state.
+
+  ## Read state
+
+  Set `read={true}` to apply `opacity-60` — useful for marking a notification
+  as acknowledged without removing it from the list.
+
+  ## Custom icon slot
+
+  Override the default type icon by providing the `:icon` slot:
+
+      <.notification_card title="Build succeeded" type={:success}>
+        <:icon><.icon name="rocket" class="text-emerald-500" /></:icon>
+      </.notification_card>
+
+  ## Examples
+
+      <%!-- Info notification --%>
+      <.notification_card
+        title="New message from Alice"
+        message="Hey, are you free for a call?"
+        timestamp="2 min ago"
+        type={:info}
+      />
+
+      <%!-- Error with dismiss --%>
+      <.notification_card
+        title="Payment failed"
+        message="Your card was declined. Please update your billing information."
+        type={:error}
+        dismissible={true}
+        on_dismiss="dismiss_notification"
+        read={false}
+      />
+
+      <%!-- Notification list from state --%>
+      <div class="space-y-2">
+        <.notification_card
+          :for={notif <- @notifications}
+          title={notif.title}
+          message={notif.body}
+          timestamp={notif.relative_time}
+          type={notif.type}
+          read={notif.read}
+          dismissible={true}
+          on_dismiss="dismiss_notif"
+        />
+      </div>
   """
 
   use Phoenix.Component
@@ -12,25 +76,56 @@ defmodule PhiaUi.Components.NotificationCard do
   import PhiaUi.Components.Icon, only: [icon: 1]
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :title, :string, required: true, doc: "Notification title"
-  attr :message, :string, default: nil, doc: "Notification body text"
-  attr :timestamp, :string, default: nil, doc: "Timestamp label (e.g. '2 min ago')"
+  attr(:title, :string, required: true, doc: "Notification title")
+  attr(:message, :string, default: nil, doc: "Notification body text")
+  attr(:timestamp, :string, default: nil, doc: "Timestamp label (e.g. '2 min ago')")
 
-  attr :type, :atom,
+  attr(:type, :atom,
     default: :info,
     values: [:info, :success, :warning, :error],
     doc: "Severity type — controls border color and icon"
+  )
 
-  attr :dismissible, :boolean, default: false, doc: "Show dismiss (X) button"
-  attr :on_dismiss, :string, default: nil, doc: "phx-click event for dismiss button"
-  attr :read, :boolean, default: false, doc: "Dim the card when already read"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the outer div"
+  attr(:dismissible, :boolean, default: false, doc: "Show dismiss (X) button")
+  attr(:on_dismiss, :string, default: nil, doc: "phx-click event for dismiss button")
+  attr(:read, :boolean, default: false, doc: "Dim the card when already read")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the outer div")
 
-  slot :icon, doc: "Custom icon override (replaces default type icon)"
-  slot :actions, doc: "Action buttons rendered at the bottom"
+  slot(:icon, doc: "Custom icon override (replaces default type icon)")
+  slot(:actions, doc: "Action buttons rendered at the bottom")
 
-  @doc "Renders a notification card."
+  @doc """
+  Renders a notification card with a colored left border and type icon.
+
+  The card has three optional regions:
+
+  - **Icon area** — type-specific icon on the left (or custom `:icon` slot).
+  - **Content area** — title, optional body `message`, optional `timestamp`.
+  - **Actions slot** — buttons rendered below the message.
+
+  A dismiss button (`×`) appears at the top-right when `dismissible={true}`.
+  The `on_dismiss` event name drives a `phx-click` attribute on that button.
+
+  ## Examples
+
+      <%!-- Success notification --%>
+      <.notification_card
+        title="Profile updated"
+        message="Your changes have been saved."
+        type={:success}
+        timestamp="just now"
+      />
+
+      <%!-- Dismissible error --%>
+      <.notification_card
+        title="Upload failed"
+        message="File exceeds the 10 MB limit."
+        type={:error}
+        dismissible={true}
+        on_dismiss="clear_error"
+      />
+  """
   def notification_card(assigns) do
     ~H"""
     <div

@@ -33,23 +33,77 @@ defmodule PhiaUi.Components.TestimonialCard do
   import PhiaUi.Components.Avatar
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :quote, :string, required: true, doc: "The testimonial quote text"
-  attr :author_name, :string, required: true, doc: "Author's full name"
-  attr :author_role, :string, default: nil, doc: "Author's job title"
-  attr :author_src, :string, default: nil, doc: "Author avatar image URL"
-  attr :company, :string, default: nil, doc: "Company name"
-  attr :rating, :integer, default: nil, doc: "Star rating 1–5; nil = no stars"
+  attr(:quote, :string, required: true, doc: "The testimonial quote text")
+  attr(:author_name, :string, required: true, doc: "Author's full name")
+  attr(:author_role, :string, default: nil, doc: "Author's job title")
+  attr(:author_src, :string, default: nil, doc: "Author avatar image URL")
+  attr(:company, :string, default: nil, doc: "Company name")
+  attr(:rating, :integer, default: nil, doc: "Star rating 1–5; nil = no stars")
 
-  attr :variant, :atom,
+  attr(:variant, :atom,
     default: :default,
     values: [:default, :bordered, :minimal],
     doc: "Visual variant"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the outer element"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the outer element")
 
   @doc """
-  Renders a testimonial card.
+  Renders a customer testimonial card.
+
+  The card body contains (top to bottom):
+
+  1. **Star row** — rendered only when `rating` (1–5) is provided; fills amber
+     stars then empty stars.
+  2. **Decorative quote mark** — a large `"` in `text-muted-foreground/20` for
+     visual interest.
+  3. **Quote text** — italic paragraph in normal foreground colour.
+  4. **Author row** — avatar (if `author_src` provided) + name + role/company.
+
+  When `variant={:minimal}`, the card chrome is omitted and the body is rendered
+  inside a plain `<div>`. For all other variants, the body is wrapped in a
+  `PhiaUi.Components.Card`.
+
+  ## Examples
+
+      <%!-- Default card with stars and author --%>
+      <.testimonial_card
+        quote="PhiaUI saved our team weeks of UI work. Absolutely love it."
+        author_name="Jane Doe"
+        author_role="CTO"
+        author_src="/avatars/jane.jpg"
+        rating={5}
+      />
+
+      <%!-- Bordered variant --%>
+      <.testimonial_card
+        quote="Clean components, great documentation."
+        author_name="Alex Smith"
+        author_role="Lead Engineer"
+        company="Acme Corp"
+        variant={:bordered}
+        rating={4}
+      />
+
+      <%!-- Minimal (no card chrome) for embedding in dark sections --%>
+      <.testimonial_card
+        quote="The best Phoenix component library I have used."
+        author_name="Maria"
+        variant={:minimal}
+      />
+
+      <%!-- Testimonials grid from a list --%>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <.testimonial_card
+          :for={t <- @testimonials}
+          quote={t.quote}
+          author_name={t.author}
+          author_role={t.title}
+          author_src={t.avatar_url}
+          rating={t.rating}
+        />
+      </div>
   """
   def testimonial_card(assigns) do
     ~H"""

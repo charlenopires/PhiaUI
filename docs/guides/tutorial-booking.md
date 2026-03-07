@@ -505,6 +505,5 @@ A complete 4-step booking wizard with:
 
 > **Next steps:** Add SMS/email confirmation via `Swoosh`, integrate Google Calendar via the `google_api` library, or add a patient portal LiveView where patients can view and cancel upcoming appointments.
 
-← [Back to README](../../README.md)
 
-**See also**: [booking_calendar](../components/calendar.md#booking_calendar) · [time_slot_grid](../components/calendar.md#time_slot_grid) · [selectable_card](../components/cards.md#selectable_card) · [step_tracker](../components/feedback.md#step_tracker)
+**See also**: [booking_calendar](calendar.md#booking_calendar) · [time_slot_grid](calendar.md#time_slot_grid) · [selectable_card](cards.md#selectable_card) · [step_tracker](feedback.md#step_tracker)

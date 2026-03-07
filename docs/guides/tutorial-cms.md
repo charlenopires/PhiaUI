@@ -677,6 +677,5 @@ A production-ready CMS admin panel with:
 
 > **Next steps:** Add real-time collaboration with Phoenix PubSub + `activity_feed/1` to show who's editing what, integrate the `heatmap_calendar/1` to visualize publishing frequency, or add a `filter_builder/1` in a drawer for advanced content queries.
 
-← [Back to README](../../README.md)
 
-**See also**: [data_grid](../components/data.md#data_grid) · [kanban_board](../components/data.md#kanban_board) · [rich_text_editor](../components/inputs.md#rich_text_editor) · [activity_feed](../components/display.md#activity_feed)
+**See also**: [data_grid](data.md#data_grid) · [kanban_board](data.md#kanban_board) · [rich_text_editor](inputs.md#rich_text_editor) · [activity_feed](display.md#activity_feed)

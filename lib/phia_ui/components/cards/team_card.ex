@@ -29,26 +29,74 @@ defmodule PhiaUi.Components.TeamCard do
   import PhiaUi.Components.Avatar
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :name, :string, required: true, doc: "Team member's display name"
-  attr :role, :string, default: nil, doc: "Job title"
-  attr :department, :string, default: nil, doc: "Department or team name"
-  attr :src, :string, default: nil, doc: "Avatar image URL"
-  attr :fallback, :string, default: nil, doc: "Initials for avatar fallback"
-  attr :email, :string, default: nil, doc: "Email address"
+  attr(:name, :string, required: true, doc: "Team member's display name")
+  attr(:role, :string, default: nil, doc: "Job title")
+  attr(:department, :string, default: nil, doc: "Department or team name")
+  attr(:src, :string, default: nil, doc: "Avatar image URL")
+  attr(:fallback, :string, default: nil, doc: "Initials for avatar fallback")
+  attr(:email, :string, default: nil, doc: "Email address")
 
-  attr :variant, :atom,
+  attr(:variant, :atom,
     default: :default,
     values: [:default, :compact, :horizontal],
     doc: "Layout variant"
+  )
 
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the outer card"
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the outer card")
 
-  slot :badges, doc: "Badge chips (role tags, skills, etc.)"
-  slot :actions, doc: "Action buttons"
+  slot(:badges, doc: "Badge chips (role tags, skills, etc.)")
+  slot(:actions, doc: "Action buttons")
 
   @doc """
   Renders a team member card.
+
+  The card layout is controlled by `variant`:
+
+  - `:default` — centered column. Large avatar (`:lg`) above the member's
+    name, role, department, and email. Badges and action buttons stack below.
+  - `:compact` — centered column, medium avatar and tighter text sizes.
+    Use in dense grids where space is limited.
+  - `:horizontal` — flex row. Medium avatar on the left; name, role,
+    department, email, badges, and actions on the right.
+
+  All text fields (`role`, `department`, `email`, `badges`, `actions`) are
+  optional — the layout adapts cleanly when they are not provided.
+
+  ## Examples
+
+      <%!-- Minimal team member --%>
+      <.team_card name="Alice Smith" />
+
+      <%!-- Vertical card with all fields --%>
+      <.team_card
+        name="Alice Smith"
+        role="Senior Engineer"
+        department="Platform"
+        email="alice@example.com"
+        src="/avatars/alice.jpg"
+        fallback="AS"
+      >
+        <:badges>
+          <.badge>Elixir</.badge>
+          <.badge variant={:outline}>Phoenix</.badge>
+        </:badges>
+        <:actions>
+          <.button size={:sm}>Message</.button>
+        </:actions>
+      </.team_card>
+
+      <%!-- Horizontal compact team list --%>
+      <div class="space-y-3">
+        <.team_card
+          :for={member <- @team}
+          name={member.name}
+          role={member.title}
+          department={member.department}
+          src={member.avatar_url}
+          variant={:horizontal}
+        />
+      </div>
   """
   def team_card(assigns) do
     ~H"""

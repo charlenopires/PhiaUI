@@ -1,570 +1,441 @@
 # Navigation
 
-Application chrome: sidebar, topbar, breadcrumbs, tabs, pagination, and mobile navigation.
+33 navigation components — sidebar, topbar, breadcrumbs, tabs, pagination, command palette, table of contents, and mobile navigation patterns.
+
+**Module**: `PhiaUi.Components.Navigation`
+
+```elixir
+import PhiaUi.Components.Navigation
+```
+
+---
 
 ## Table of Contents
 
-- [sidebar](#sidebar)
-- [topbar](#topbar)
+**App Shell**
+- [sidebar](#sidebar) / [topbar](#topbar) / [shell](#shell)
 - [mobile_sidebar_toggle](#mobile_sidebar_toggle)
+- [app_shell](#app_shell)
+
+**Primary Navigation**
+- [navigation_menu](#navigation_menu)
+- [mega_menu](#mega_menu)
+- [menubar](#menubar)
+- [vertical_nav](#vertical_nav)
+- [nav_link](#nav_link)
+- [nav_list](#nav_list)
+
+**Tabs**
 - [tabs](#tabs)
 - [tabs_nav](#tabs_nav)
-- [pagination](#pagination)
+
+**Breadcrumbs & Steps**
 - [breadcrumb](#breadcrumb)
-- [navigation_menu](#navigation_menu)
-- [menubar](#menubar)
-- [toolbar](#toolbar)
+- [stepper_nav](#stepper_nav)
+
+**Pagination**
+- [pagination](#pagination)
+- [cursor_pagination](#cursor_pagination)
+- [load_more](#load_more)
+
+**Contextual Navigation (v0.1.10)**
+- [command_palette](#command_palette)
+- [toc](#toc) — Table of Contents
+- [back_to_top](#back_to_top)
+- [page_progress](#page_progress)
+- [link_group](#link_group)
+- [context_nav](#context_nav)
+- [nav_rail](#nav_rail)
+
+**Mobile & Overlay Nav**
 - [bottom_navigation](#bottom_navigation)
+- [chip_nav](#chip_nav)
+- [dot_navigation](#dot_navigation)
+- [floating_nav](#floating_nav)
+- [dock](#dock)
+- [speed_dial](#speed_dial)
+- [toolbar](#toolbar)
+- [action_sheet](#action_sheet)
 
 ---
 
 ## sidebar
 
-Fixed sidebar navigation panel. Used inside `shell/1`. Brand, nav, and footer slots.
-
-**Sub-components**: `sidebar_item/1`
-**Slots**: `:brand`, `:nav_items`, `:footer_items`
+Fixed sidebar navigation panel. Collapsible. Use inside `shell/1`.
 
 ```heex
-<.sidebar>
-  <:brand>
-    <.icon name="layers" class="h-5 w-5 text-primary" />
-    <span class="font-bold">MyApp</span>
-  </:brand>
-  <:nav_items>
-    <.sidebar_item href={~p"/dashboard"} active={@current_path == "/dashboard"}>
-      <:icon><.icon name="layout-dashboard" /></:icon>
-      Dashboard
-    </.sidebar_item>
-    <.sidebar_item href={~p"/users"} active={String.starts_with?(@current_path, "/users")}>
-      <:icon><.icon name="users" /></:icon>
-      Users
-      <:badge>12</:badge>
-    </.sidebar_item>
-    <.sidebar_item href={~p"/analytics"} active={@current_path == "/analytics"}>
-      <:icon><.icon name="bar-chart-2" /></:icon>
-      Analytics
-    </.sidebar_item>
-    <.sidebar_item href={~p"/settings"} active={@current_path == "/settings"}>
-      <:icon><.icon name="settings" /></:icon>
-      Settings
-    </.sidebar_item>
-  </:nav_items>
-  <:footer_items>
-    <.sidebar_item href="/docs">
-      <:icon><.icon name="book-open" /></:icon>
-      Documentation
-    </.sidebar_item>
-  </:footer_items>
-</.sidebar>
+<.shell>
+  <:sidebar>
+    <.sidebar>
+      <:brand>
+        <div class="flex items-center gap-2 px-4 py-3">
+          <img src="/logo.svg" class="h-6 w-6" alt="Logo" />
+          <span class="font-semibold">MyApp</span>
+        </div>
+      </:brand>
+
+      <:nav_items>
+        <.sidebar_item icon="home" href="/" active={@active == :home}>Dashboard</.sidebar_item>
+        <.sidebar_item icon="users" href="/users" active={@active == :users}>Users</.sidebar_item>
+        <.sidebar_item icon="bar-chart-2" href="/analytics" active={@active == :analytics}>Analytics</.sidebar_item>
+        <.sidebar_item icon="settings" href="/settings" active={@active == :settings}>Settings</.sidebar_item>
+      </:nav_items>
+
+      <:footer_items>
+        <.sidebar_item icon="help-circle" href="/help">Help</.sidebar_item>
+        <.sidebar_item icon="log-out" phx-click="logout">Sign out</.sidebar_item>
+      </:footer_items>
+    </.sidebar>
+  </:sidebar>
+
+  <:main>
+    <%= @inner_content %>
+  </:main>
+</.shell>
 ```
 
 ---
 
 ## topbar
 
-Full-width application header with brand, center, and actions slots.
-
-**Slots**: `:brand`, `:center`, `:actions`
+Sticky top bar with logo, search, actions, and user menu slots.
 
 ```heex
 <.topbar>
-  <:brand>
-    <.icon name="layers" class="h-5 w-5" />
-    <span class="font-bold">MyApp</span>
-  </:brand>
-  <:center>
-    <.input placeholder="Search…" class="w-64" />
-  </:center>
-  <:actions>
-    <.button variant="ghost" size="icon">
+  <:left>
+    <.mobile_sidebar_toggle target="main-sidebar" />
+    <.inline_search phx-change="search" />
+  </:left>
+  <:right>
+    <.dark_mode_toggle />
+    <.badge_button count={@notifications} phx-click="open_notifications">
       <.icon name="bell" />
-    </.button>
-    <.dark_mode_toggle id="topbar-theme" />
-    <.dropdown_menu id="user-menu">
-      <:trigger>
-        <.avatar size="sm"><.avatar_fallback name={@current_user.name} /></.avatar>
-      </:trigger>
-      <:content>
-        <.dropdown_menu_label><%= @current_user.email %></.dropdown_menu_label>
-        <.dropdown_menu_separator />
-        <.dropdown_menu_item navigate={~p"/settings"}>Settings</.dropdown_menu_item>
-        <.dropdown_menu_item phx-click="sign-out">Sign out</.dropdown_menu_item>
-      </:content>
-    </.dropdown_menu>
-  </:actions>
-  <.mobile_sidebar_toggle />
+    </.badge_button>
+    <.avatar size="sm">
+      <.avatar_image src={@user.avatar_url} />
+      <.avatar_fallback name={@user.name} />
+    </.avatar>
+  </:right>
 </.topbar>
-```
-
----
-
-## mobile_sidebar_toggle
-
-Hamburger button that opens the sidebar drawer on mobile. Always place inside `topbar/1`.
-
-```heex
-<%!-- Already used in the topbar example above.
-     It reads mobile sidebar state from shell/1 automatically. --%>
-<.mobile_sidebar_toggle />
 ```
 
 ---
 
 ## tabs
 
-Server-rendered content tabs. `active` attribute controls which panel is shown. Uses `:let` context.
+Content tabs with URL or state-driven active panel.
 
-**Sub-components**: `tabs_list/1`, `tabs_trigger/1`, `tabs_content/1`
-**Attrs**: `active` (string, matches `tab` attr on trigger/content)
+**Variants**: `:underline` · `:solid` · `:pill` · `:scrollable`
 
 ```heex
-<%!-- Basic tabs --%>
-<.tabs active={@active_tab}>
-  <:tab_list>
-    <.tabs_trigger tab="overview" phx-click="change-tab" phx-value-tab="overview">
-      Overview
-    </.tabs_trigger>
-    <.tabs_trigger tab="analytics" phx-click="change-tab" phx-value-tab="analytics">
-      Analytics
-    </.tabs_trigger>
-    <.tabs_trigger tab="settings" phx-click="change-tab" phx-value-tab="settings">
-      Settings
-    </.tabs_trigger>
-  </:tab_list>
-  <.tabs_content tab="overview">
-    <.metric_grid cols={3}>
-      <.stat_card title="Revenue" value="$48k" trend="up" trend_value="+12%" />
-      <.stat_card title="Users" value="2,840" trend="up" trend_value="+8%" />
-      <.stat_card title="Churn" value="3.1%" trend="down" trend_value="-0.4%" />
-    </.metric_grid>
-  </.tabs_content>
-  <.tabs_content tab="analytics">
-    <.phia_chart id="tab-chart" type={:line} series={@series} labels={@labels} height="300px" />
-  </.tabs_content>
-  <.tabs_content tab="settings">
-    <.form for={@settings_form} phx-submit="save-settings">
-      <.phia_input field={@settings_form[:name]} label="Project name" />
-      <.button type="submit" class="mt-4">Save</.button>
-    </.form>
-  </.tabs_content>
+<.tabs active={@tab} on_change="set_tab">
+  <:tab value="overview">Overview</:tab>
+  <:tab value="activity">Activity</:tab>
+  <:tab value="settings">Settings</:tab>
+
+  <:panel value="overview">
+    <.overview_panel />
+  </:panel>
+  <:panel value="activity">
+    <.activity_list />
+  </:panel>
+  <:panel value="settings">
+    <.settings_form />
+  </:panel>
 </.tabs>
 ```
 
-```elixir
-def mount(_params, _session, socket) do
-  {:ok, assign(socket, active_tab: "overview")}
-end
-
-def handle_event("change-tab", %{"tab" => tab}, socket) do
-  {:noreply, assign(socket, active_tab: tab)}
-end
+```heex
+<%!-- Pill variant --%>
+<.tabs active={@tab} on_change="set_tab" variant={:pill}>
+  <:tab value="all">All</:tab>
+  <:tab value="active">Active</:tab>
+  <:tab value="archived">Archived</:tab>
+</.tabs>
 ```
 
 ---
 
 ## tabs_nav
 
-URL-based tab navigation bar. 3 visual variants. Use for top-level page navigation.
-
-**Variants**: `underline`, `solid`, `pill`
-**Sub-components**: `tabs_nav_item/1`
+Standalone tab navigation bar — use when the tab panels are managed separately.
 
 ```heex
-<%!-- Underline variant (default) --%>
-<.tabs_nav>
-  <.tabs_nav_item href={~p"/settings"} active={@current_path == "/settings"}>
-    General
-  </.tabs_nav_item>
-  <.tabs_nav_item href={~p"/settings/security"} active={@current_path == "/settings/security"}>
-    Security
-  </.tabs_nav_item>
-  <.tabs_nav_item href={~p"/settings/billing"} active={@current_path == "/settings/billing"}>
-    Billing
-  </.tabs_nav_item>
-  <.tabs_nav_item href={~p"/settings/team"} active={@current_path == "/settings/team"}>
-    Team
-  </.tabs_nav_item>
+<.tabs_nav active={@tab} on_change="set_tab" variant={:underline}>
+  <:tab value="profile">Profile</:tab>
+  <:tab value="security">Security</:tab>
+  <:tab value="billing">Billing</:tab>
 </.tabs_nav>
 
-<%!-- Pill variant --%>
-<.tabs_nav variant="pill">
-  <.tabs_nav_item href="/docs/intro" active={@page_id == "intro"}>Introduction</.tabs_nav_item>
-  <.tabs_nav_item href="/docs/install" active={@page_id == "install"}>Installation</.tabs_nav_item>
-  <.tabs_nav_item href="/docs/usage" active={@page_id == "usage"}>Usage</.tabs_nav_item>
-</.tabs_nav>
-```
-
----
-
-## pagination
-
-Server-side page navigation. Fires `phx-click` events; your LiveView controls current page.
-
-**Sub-components**: `pagination_content/1`, `pagination_item/1`, `pagination_link/1`, `pagination_previous/1`, `pagination_next/1`, `pagination_ellipsis/1`
-
-```heex
-<.pagination>
-  <.pagination_content>
-    <.pagination_item>
-      <.pagination_previous on_change="paginate" current_page={@page} />
-    </.pagination_item>
-
-    <.pagination_item :for={n <- page_range(@page, @total_pages)}>
-      <%= if n == :ellipsis do %>
-        <.pagination_ellipsis />
-      <% else %>
-        <.pagination_link on_change="paginate" page={n} current_page={@page}>
-          <%= n %>
-        </.pagination_link>
-      <% end %>
-    </.pagination_item>
-
-    <.pagination_item>
-      <.pagination_next on_change="paginate" current_page={@page} total_pages={@total_pages} />
-    </.pagination_item>
-  </.pagination_content>
-</.pagination>
-```
-
-```elixir
-def handle_event("paginate", %{"page" => page}, socket) do
-  page = String.to_integer(page)
-  {:noreply, assign(socket, page: page, rows: load_page(page, socket.assigns.per_page))}
-end
-
-defp page_range(current, total) when total <= 7, do: Enum.to_list(1..total)
-defp page_range(current, total) do
-  cond do
-    current <= 4 -> [1, 2, 3, 4, 5, :ellipsis, total]
-    current >= total - 3 -> [1, :ellipsis, total-4, total-3, total-2, total-1, total]
-    true -> [1, :ellipsis, current-1, current, current+1, :ellipsis, total]
-  end
-end
+<div class="mt-4">
+  <%= if @tab == "profile", do: live_render(@socket, ProfileLive) %>
+</div>
 ```
 
 ---
 
 ## breadcrumb
 
-Accessible navigation trail with `aria-current="page"` on the active item.
-
-**Sub-components**: `breadcrumb_list/1`, `breadcrumb_item/1`, `breadcrumb_link/1`, `breadcrumb_separator/1`, `breadcrumb_page/1`, `breadcrumb_ellipsis/1`
+Accessible breadcrumb trail with separator.
 
 ```heex
 <.breadcrumb>
-  <.breadcrumb_list>
-    <.breadcrumb_item>
-      <.breadcrumb_link navigate={~p"/"}>Home</.breadcrumb_link>
-    </.breadcrumb_item>
-    <.breadcrumb_separator />
-    <.breadcrumb_item>
-      <.breadcrumb_link navigate={~p"/settings"}>Settings</.breadcrumb_link>
-    </.breadcrumb_item>
-    <.breadcrumb_separator />
-    <.breadcrumb_item>
-      <.breadcrumb_page>Billing</.breadcrumb_page>
-    </.breadcrumb_item>
-  </.breadcrumb_list>
-</.breadcrumb>
-
-<%!-- Built from a list --%>
-<.breadcrumb>
-  <.breadcrumb_list>
-    <%= for {label, path, last?} <- @breadcrumbs do %>
-      <.breadcrumb_item>
-        <%= if last? do %>
-          <.breadcrumb_page><%= label %></.breadcrumb_page>
-        <% else %>
-          <.breadcrumb_link navigate={path}><%= label %></.breadcrumb_link>
-        <% end %>
-      </.breadcrumb_item>
-      <.breadcrumb_separator :if={not last?} />
-    <% end %>
-  </.breadcrumb_list>
+  <:item href="/">Home</:item>
+  <:item href="/products">Products</:item>
+  <:item href="/products/electronics">Electronics</:item>
+  <:item>MacBook Pro</:item>
 </.breadcrumb>
 ```
 
 ---
 
-## navigation_menu
+## stepper_nav
 
-Horizontal navigation with links and mega-menu dropdown content panels.
-
-**Sub-components**: `navigation_menu_list/1`, `navigation_menu_item/1`, `navigation_menu_link/1`, `navigation_menu_trigger/1`, `navigation_menu_content/1`
+Multi-step wizard progress indicator.
 
 ```heex
-<.navigation_menu>
-  <.navigation_menu_list>
-    <.navigation_menu_item>
-      <.navigation_menu_link href="/" active={@path == "/"}>Home</.navigation_menu_link>
-    </.navigation_menu_item>
-    <.navigation_menu_item>
-      <.navigation_menu_trigger label="Products" />
-      <.navigation_menu_content>
-        <ul class="grid grid-cols-2 gap-3 p-4 w-96">
-          <li>
-            <a href="/products/analytics" class="block p-3 rounded-md hover:bg-muted">
-              <p class="font-medium text-sm">Analytics</p>
-              <p class="text-xs text-muted-foreground mt-1">Real-time business insights</p>
-            </a>
-          </li>
-          <li>
-            <a href="/products/crm" class="block p-3 rounded-md hover:bg-muted">
-              <p class="font-medium text-sm">CRM</p>
-              <p class="text-xs text-muted-foreground mt-1">Customer relationship management</p>
-            </a>
-          </li>
-        </ul>
-      </.navigation_menu_content>
-    </.navigation_menu_item>
-    <.navigation_menu_item>
-      <.navigation_menu_link href="/pricing" active={@path == "/pricing"}>Pricing</.navigation_menu_link>
-    </.navigation_menu_item>
-  </.navigation_menu_list>
-</.navigation_menu>
+<.stepper_nav current={@step} total={4}>
+  <:step label="Account" />
+  <:step label="Profile" />
+  <:step label="Plan" />
+  <:step label="Confirm" />
+</.stepper_nav>
+```
+
+**Attrs**: `current` (1-based integer), `total` (integer), `on_step` (event name for clicking completed steps)
+
+---
+
+## pagination
+
+Offset-based pagination with page numbers.
+
+```heex
+<.pagination
+  page={@page}
+  total_pages={@total_pages}
+  on_page="goto_page"
+/>
+```
+
+**Attrs**: `page`, `total_pages`, `on_page` (event name), `show_edges` (boolean, show first/last buttons)
+
+---
+
+## cursor_pagination
+
+Previous / Next cursor-based pagination for infinite data.
+
+```heex
+<.cursor_pagination
+  previous_cursor={@prev_cursor}
+  next_cursor={@next_cursor}
+  on_prev="paginate_prev"
+  on_next="paginate_next"
+/>
+```
+
+```elixir
+def handle_event("paginate_next", _params, socket) do
+  {:noreply, assign(socket, data: fetch_page(socket.assigns.next_cursor))}
+end
 ```
 
 ---
 
-## menubar
+## load_more
 
-Desktop application-style menu bar with keyboard navigation.
-
-**Sub-components**: `menubar_menu/1`, `menubar_trigger/1`, `menubar_content/1`, `menubar_item/1`, `menubar_separator/1`, `menubar_label/1`
+"Load more" button for append-style pagination.
 
 ```heex
-<.menubar>
-  <.menubar_menu>
-    <.menubar_trigger>File</.menubar_trigger>
-    <.menubar_content>
-      <.menubar_item phx-click="new-document">New Document</.menubar_item>
-      <.menubar_item phx-click="open-document">Open…</.menubar_item>
-      <.menubar_separator />
-      <.menubar_item phx-click="save">Save <.kbd>⌘S</.kbd></.menubar_item>
-      <.menubar_item phx-click="save-as">Save As… <.kbd>⇧⌘S</.kbd></.menubar_item>
-    </.menubar_content>
-  </.menubar_menu>
-  <.menubar_menu>
-    <.menubar_trigger>Edit</.menubar_trigger>
-    <.menubar_content>
-      <.menubar_item phx-click="undo">Undo <.kbd>⌘Z</.kbd></.menubar_item>
-      <.menubar_item phx-click="redo">Redo <.kbd>⇧⌘Z</.kbd></.menubar_item>
-      <.menubar_separator />
-      <.menubar_item phx-click="find">Find <.kbd>⌘F</.kbd></.menubar_item>
-    </.menubar_content>
-  </.menubar_menu>
-</.menubar>
+<.load_more
+  loading={@loading_more}
+  has_more={@has_more}
+  on_load="load_more"
+  label="Load more posts"
+/>
 ```
 
 ---
 
-## toolbar
+## command_palette
 
-Horizontal action toolbar for top of content areas. `role="toolbar"` with keyboard navigation.
-
-**Sub-components**: `toolbar_group/1`, `toolbar_separator/1`, `toolbar_toggle/1`, `toolbar_button/1`
+⌘K command palette with groups, items, empty state, and keyboard navigation. Hook: `PhiaCommand`.
 
 ```heex
-<.toolbar aria-label="Text formatting">
-  <.toolbar_group>
-    <.toolbar_toggle :for={fmt <- ["bold", "italic", "underline"]}
-      pressed={fmt in @active_formats}
-      phx-click="toggle-format"
-      phx-value-format={fmt}
-    >
-      <.icon name={fmt} size="sm" />
-    </.toolbar_toggle>
-  </.toolbar_group>
-  <.toolbar_separator />
-  <.toolbar_group>
-    <.toolbar_toggle pressed={@align == "left"} phx-click="set-align" phx-value-align="left">
-      <.icon name="align-left" size="sm" />
-    </.toolbar_toggle>
-    <.toolbar_toggle pressed={@align == "center"} phx-click="set-align" phx-value-align="center">
-      <.icon name="align-center" size="sm" />
-    </.toolbar_toggle>
-    <.toolbar_toggle pressed={@align == "right"} phx-click="set-align" phx-value-align="right">
-      <.icon name="align-right" size="sm" />
-    </.toolbar_toggle>
-  </.toolbar_group>
-</.toolbar>
+<.command_palette id="cmd" open={@cmd_open} on_close="close_cmd">
+  <.command_palette_group label="Navigation">
+    <.command_palette_item icon="home" href="/" shortcut="G H">Dashboard</.command_palette_item>
+    <.command_palette_item icon="users" href="/users" shortcut="G U">Users</.command_palette_item>
+  </.command_palette_group>
+
+  <.command_palette_group label="Actions">
+    <.command_palette_item icon="plus" phx-click="new_project">New Project</.command_palette_item>
+    <.command_palette_item icon="upload" phx-click="import">Import data</.command_palette_item>
+  </.command_palette_group>
+
+  <.command_palette_empty>No results found.</.command_palette_empty>
+</.command_palette>
+```
+
+```heex
+<%!-- Trigger --%>
+<.button variant="outline" phx-click="open_cmd" class="gap-2">
+  <.icon name="search" size="sm" />
+  Search…
+  <.kbd>⌘</.kbd><.kbd>K</.kbd>
+</.button>
+```
+
+---
+
+## toc
+
+Auto-generated table of contents with active section highlighting. Hook: `PhiaToc`.
+
+```heex
+<aside class="sticky top-20">
+  <.toc id="article-toc" label="On this page">
+    <.toc_item href="#introduction" depth={1}>Introduction</.toc_item>
+    <.toc_item href="#installation" depth={1}>Installation</.toc_item>
+    <.toc_item href="#configuration" depth={2}>Configuration</.toc_item>
+    <.toc_item href="#usage" depth={1}>Usage</.toc_item>
+  </.toc>
+</aside>
+```
+
+The `PhiaToc` hook uses `IntersectionObserver` to set `data-toc-active` on the currently visible section's link.
+
+---
+
+## back_to_top
+
+Scroll-to-top button that appears after scrolling past a threshold. Hook: `PhiaBackTop`.
+
+```heex
+<.back_to_top id="back-btn" threshold={400} />
+```
+
+---
+
+## page_progress
+
+Thin progress bar at the top of the page showing scroll position. Hook: `PhiaPageProgress`.
+
+```heex
+<.page_progress id="read-progress" class="fixed top-0 left-0 z-50" />
+```
+
+---
+
+## link_group
+
+Grouped set of links with an optional heading — common in footers and sidebars.
+
+```heex
+<.link_group>
+  <.link_group_heading>Product</.link_group_heading>
+  <.link_group_item href="/features">Features</.link_group_item>
+  <.link_group_item href="/pricing">Pricing</.link_group_item>
+  <.link_group_item href="/changelog">Changelog</.link_group_item>
+</.link_group>
+```
+
+---
+
+## context_nav
+
+Contextual sidebar navigation for settings-style pages.
+
+```heex
+<div class="flex gap-8">
+  <aside class="w-56 shrink-0">
+    <.context_nav>
+      <.context_nav_item href="/settings/profile" active={@section == :profile}>
+        Profile
+      </.context_nav_item>
+      <.context_nav_item href="/settings/security" active={@section == :security}>
+        Security
+      </.context_nav_item>
+      <.context_nav_item href="/settings/billing" active={@section == :billing}>
+        Billing
+      </.context_nav_item>
+    </.context_nav>
+  </aside>
+  <main class="flex-1"><%= @inner_content %></main>
+</div>
+```
+
+---
+
+## nav_rail
+
+Compact vertical icon navigation (Material-style).
+
+```heex
+<.nav_rail>
+  <.nav_rail_item icon="home" href="/" label="Home" active={@active == :home} />
+  <.nav_rail_item icon="search" href="/search" label="Search" active={@active == :search} />
+  <.nav_rail_item icon="bell" href="/notifications" label="Alerts" badge={@unread} />
+  <.nav_rail_item icon="settings" href="/settings" label="Settings" />
+</.nav_rail>
 ```
 
 ---
 
 ## bottom_navigation
 
-Mobile fixed bottom navigation bar. Use on small screens as an alternative to a sidebar.
-
-**Sub-components**: `bottom_nav_item/1`
-**Attrs**: `href`, `active` (bool), `label`
+Mobile bottom tab bar (iOS/Android style).
 
 ```heex
-<.bottom_navigation>
-  <.bottom_nav_item href={~p"/"} active={@current_path == "/"} label="Home">
-    <.icon name="home" />
-  </.bottom_nav_item>
-  <.bottom_nav_item href={~p"/search"} active={@current_path == "/search"} label="Search">
-    <.icon name="search" />
-  </.bottom_nav_item>
-  <.bottom_nav_item href={~p"/notifications"} active={@current_path == "/notifications"} label="Alerts">
-    <.icon name="bell" />
-  </.bottom_nav_item>
-  <.bottom_nav_item href={~p"/profile"} active={@current_path == "/profile"} label="Profile">
-    <.icon name="user" />
-  </.bottom_nav_item>
+<.bottom_navigation active={@tab} on_change="set_tab">
+  <:item value="home" icon="home" label="Home" />
+  <:item value="search" icon="search" label="Search" />
+  <:item value="inbox" icon="inbox" label="Inbox" badge={@unread} />
+  <:item value="profile" icon="user" label="Profile" />
 </.bottom_navigation>
 ```
 
-> **Tip:** Combine `bottom_navigation` with `shell/1` for responsive layouts — show `sidebar` on desktop and `bottom_navigation` on mobile using Tailwind's `md:hidden` / `hidden md:block` classes.
-
 ---
 
-## Menu Suite (new in 0.1.7)
+## chip_nav
 
-### mega_menu
-
-Full-width dropdown navigation panel with multi-column layout. Replaces simple dropdowns in primary navigation bars.
-
-**Attrs**: `id`, `trigger_label`, `cols` (number of columns)
+Horizontally scrollable filter chip navigation row.
 
 ```heex
-<.mega_menu id="products-menu" trigger_label="Products" cols={3}>
-  <:column title="Analytics">
-    <.nav_link href="/analytics/overview">Overview</.nav_link>
-    <.nav_link href="/analytics/reports">Reports</.nav_link>
-  </:column>
-  <:column title="Operations">
-    <.nav_link href="/ops/deployments">Deployments</.nav_link>
-  </:column>
-</.mega_menu>
-```
-
----
-
-### speed_dial
-
-FAB-style expandable action menu. Primary button expands to show labeled icon items on click.
-
-**Attrs**: `id`, `icon`, `label`, `direction` (`"up"`, `"down"`, `"left"`, `"right"`)
-
-```heex
-<.speed_dial id="create-dial" icon="plus" label="Create" direction="up">
-  <:item icon="file-text" label="Document" on_click="new_doc" />
-  <:item icon="image" label="Image" on_click="new_image" />
-  <:item icon="folder" label="Folder" on_click="new_folder" />
-</.speed_dial>
-```
-
----
-
-### action_sheet
-
-Mobile-style bottom action sheet with icon items and cancel button.
-
-**Attrs**: `id`, `open`, `title`
-
-```heex
-<.action_sheet id="file-actions" open={@sheet_open} title="File actions">
-  <:item icon="edit" label="Rename" on_click="rename" />
-  <:item icon="trash" label="Delete" on_click="delete" class="text-destructive" />
-</.action_sheet>
-```
-
----
-
-### app_shell
-
-Full-page app shell composing sidebar, topbar, and main content in a single wrapper.
-
-```heex
-<.app_shell>
-  <:sidebar>...</:sidebar>
-  <:topbar>...</:topbar>
-  <:main>...</:main>
-</.app_shell>
-```
-
----
-
-### chip_nav
-
-Horizontal pill/chip navigation bar with active fill state.
-
-```heex
-<.chip_nav>
-  <:item href="/all" active={@filter == "all"}>All</:item>
-  <:item href="/active" active={@filter == "active"}>Active</:item>
+<.chip_nav active={@category} on_change="set_category">
+  <:item value="all">All</:item>
+  <:item value="design">Design</:item>
+  <:item value="engineering">Engineering</:item>
+  <:item value="product">Product</:item>
 </.chip_nav>
 ```
 
 ---
 
-### dock
+## floating_nav
 
-macOS-style centered icon dock with tooltip labels.
-
-**Attrs**: `position` (`"bottom"`, `"left"`, `"right"`)
+Floating pill navigation bar — centered at the bottom of the viewport.
 
 ```heex
-<.dock position="bottom">
-  <:item icon="home" label="Home" href="/" />
-  <:item icon="search" label="Search" href="/search" />
-</.dock>
-```
-
----
-
-### dot_navigation
-
-Minimal dot indicator navigation for carousels and slides.
-
-**Attrs**: `count`, `current` (0-based), `on_change`
-
-```heex
-<.dot_navigation count={@slides_count} current={@current} on_change="go_slide" />
-```
-
----
-
-### floating_nav
-
-Floating pill navigation bar with `backdrop-blur` glass morphism style.
-
-```heex
-<.floating_nav class="fixed bottom-6 left-1/2 -translate-x-1/2">
-  <:item icon="home" href="/" active={@path == "/"} />
-  <:item icon="users" href="/team" active={@path == "/team"} />
+<.floating_nav active={@page}>
+  <.floating_nav_item href="/" icon="home" label="Home" />
+  <.floating_nav_item href="/explore" icon="compass" label="Explore" />
+  <.floating_nav_item href="/create" icon="plus-circle" label="Create" />
+  <.floating_nav_item href="/profile" icon="user" label="Profile" />
 </.floating_nav>
 ```
 
 ---
 
-### nav_link
+## speed_dial
 
-Styled navigation anchor with active state and icon slot.
-
-**Attrs**: `href`, `active`, `icon`
+Floating action button that expands into multiple options.
 
 ```heex
-<.nav_link href="/dashboard" active={@current_path == "/dashboard"} icon="layout-dashboard">
-  Dashboard
-</.nav_link>
+<.speed_dial icon="plus" position={:bottom_right} label="New">
+  <:action icon="file-text" phx-click="new_doc" label="Document" />
+  <:action icon="image" phx-click="new_image" label="Image" />
+  <:action icon="folder" phx-click="new_folder" label="Folder" />
+</.speed_dial>
 ```
-
----
-
-### vertical_nav
-
-Vertical navigation list with collapsible section groups.
-
-```heex
-<.vertical_nav>
-  <:group label="Analytics">
-    <.nav_link href="/analytics" icon="bar-chart">Overview</.nav_link>
-  </:group>
-</.vertical_nav>
-```
-
-← [Back to README](../../README.md)

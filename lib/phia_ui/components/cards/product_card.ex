@@ -2,8 +2,42 @@ defmodule PhiaUi.Components.ProductCard do
   @moduledoc """
   E-commerce product card with image, rating, pricing, and add-to-cart action.
 
-  Supports sold-out state, badge overlay, star ratings, and an optional
-  actions slot for custom CTA overrides.
+  Renders a `Card` with an optional product image (square aspect ratio),
+  an optional badge overlay (top-left), product title, price row, star
+  rating, and action buttons.
+
+  ## Image handling
+
+  - When `src` is provided, renders an `<img>` with `aspect-square object-cover`.
+  - When `src` is `nil`, renders a muted placeholder box.
+  - Both the image and title are wrapped in an `<a>` link when `href` is provided.
+
+  ## Badge overlay
+
+  Set `badge` to show a label over the top-left corner of the image
+  (e.g. `"Sale"`, `"New"`). The badge is hidden when `sold_out={true}`;
+  instead a `"Sold Out"` secondary badge is shown automatically.
+
+  ## Star rating
+
+  Pass a `rating` float between `0.0` and `5.0` to render a star row
+  style. Provide `review_count` to append the count in parentheses.
+
+  ## Sold-out state
+
+  When `sold_out={true}`, a `"Sold Out"` badge overlay is shown and the
+  add-to-cart button is disabled.
+
+  ## Custom actions slot
+
+  Override the default add-to-cart button via the `:actions` slot when you
+  need a different CTA (e.g. "View details" or "Add to wishlist"):
+
+      <.product_card title="Widget" price="$9" src="/img/widget.jpg">
+        <:actions>
+          <.button variant={:outline} class="w-full">View details</.button>
+        </:actions>
+      </.product_card>
   """
 
   use Phoenix.Component
@@ -13,27 +47,28 @@ defmodule PhiaUi.Components.ProductCard do
   import PhiaUi.Components.Button, only: [button: 1]
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  attr :title, :string, required: true, doc: "Product title"
-  attr :price, :string, required: true, doc: "Current price string"
-  attr :original_price, :string, default: nil, doc: "Original/strikethrough price"
-  attr :src, :string, default: nil, doc: "Product image URL"
-  attr :alt, :string, default: "", doc: "Image alt text"
-  attr :rating, :float, default: nil, doc: "Star rating 0.0–5.0"
-  attr :review_count, :integer, default: nil, doc: "Number of reviews"
-  attr :badge, :string, default: nil, doc: "Optional badge label on image"
+  attr(:title, :string, required: true, doc: "Product title")
+  attr(:price, :string, required: true, doc: "Current price string")
+  attr(:original_price, :string, default: nil, doc: "Original/strikethrough price")
+  attr(:src, :string, default: nil, doc: "Product image URL")
+  attr(:alt, :string, default: "", doc: "Image alt text")
+  attr(:rating, :float, default: nil, doc: "Star rating 0.0–5.0")
+  attr(:review_count, :integer, default: nil, doc: "Number of reviews")
+  attr(:badge, :string, default: nil, doc: "Optional badge label on image")
 
-  attr :badge_variant, :atom,
+  attr(:badge_variant, :atom,
     default: :default,
     values: [:default, :destructive, :secondary, :outline],
     doc: "Badge color variant"
+  )
 
-  attr :sold_out, :boolean, default: false, doc: "Show sold-out overlay and disable button"
-  attr :href, :string, default: nil, doc: "Optional link for image and title"
-  attr :on_add_to_cart, :string, default: nil, doc: "phx-click event for add-to-cart button"
-  attr :class, :string, default: nil, doc: "Additional CSS classes"
-  attr :rest, :global, doc: "HTML attributes forwarded to the card element"
+  attr(:sold_out, :boolean, default: false, doc: "Show sold-out overlay and disable button")
+  attr(:href, :string, default: nil, doc: "Optional link for image and title")
+  attr(:on_add_to_cart, :string, default: nil, doc: "phx-click event for add-to-cart button")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "HTML attributes forwarded to the card element")
 
-  slot :actions, doc: "Override the default add-to-cart button"
+  slot(:actions, doc: "Override the default add-to-cart button")
 
   @doc "Renders a product card."
   def product_card(assigns) do

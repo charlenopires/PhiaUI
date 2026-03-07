@@ -1,279 +1,472 @@
 # Cards
 
-Structured surface components for content grouping, KPI metrics, financial receipts, and selectable items.
+22 card components — base card, KPI metrics, article previews, profiles, pricing, products, receipts, and event/team cards.
+
+**Module**: `PhiaUi.Components.Cards`
+
+```elixir
+import PhiaUi.Components.Cards
+```
+
+---
 
 ## Table of Contents
 
+**Base**
 - [card](#card)
+- [selectable_card](#selectable_card)
+
+**Analytics**
 - [stat_card](#stat_card)
 - [metric_grid](#metric_grid)
+- [sparkline_card](#sparkline_card)
 - [receipt_card](#receipt_card)
-- [selectable_card](#selectable_card)
+
+**Content Cards**
+- [article_card](#article_card)
+- [feature_card](#feature_card)
+- [image_card](#image_card)
+- [profile_card](#profile_card)
+- [team_card](#team_card)
+- [link_preview_card](#link_preview_card)
+
+**E-Commerce**
+- [product_card](#product_card)
+- [pricing_card](#pricing_card)
+- [color_swatch_card](#color_swatch_card)
+- [cta_card](#cta_card)
+
+**Status & Feedback**
+- [testimonial_card](#testimonial_card)
+- [progress_card](#progress_card)
+- [notification_card](#notification_card)
+- [file_card](#file_card)
+- [event_card](#event_card)
 
 ---
 
 ## card
 
-The base composable card. Use `card_header`, `card_content`, and `card_footer` to build any card layout.
+Base card container. Used by all card variants and as a standalone wrapper.
 
-**Sub-components**: `card_header/1`, `card_title/1`, `card_description/1`, `card_content/1`, `card_footer/1`
+**Sub-components**: `card_header`, `card_title`, `card_description`, `card_content`, `card_footer`
 
 ```heex
-<%!-- Basic information card --%>
 <.card>
   <.card_header>
-    <.card_title>Team Members</.card_title>
-    <.card_description>Manage your workspace members.</.card_description>
+    <.card_title>Team members</.card_title>
+    <.card_description>Invite and manage your team.</.card_description>
   </.card_header>
   <.card_content>
-    <.avatar_group :for={user <- @team} max={5}>
-      <.avatar><.avatar_fallback name={user.name} /></.avatar>
-    </.avatar_group>
-  </.card_content>
-  <.card_footer class="flex justify-between items-center">
-    <span class="text-sm text-muted-foreground"><%= length(@team) %> members</span>
-    <.button variant="outline" size="sm" phx-click="invite">Invite</.button>
-  </.card_footer>
-</.card>
-
-<%!-- Media card (horizontal layout) --%>
-<.card class="flex flex-row overflow-hidden">
-  <img src={@cover_url} class="w-32 object-cover shrink-0" alt={@title} />
-  <div class="flex flex-col flex-1">
-    <.card_header>
-      <.card_title><%= @title %></.card_title>
-    </.card_header>
-    <.card_content>
-      <p class="text-sm text-muted-foreground line-clamp-2"><%= @excerpt %></p>
-    </.card_content>
-  </div>
-</.card>
-
-<%!-- Settings card --%>
-<.card>
-  <.card_header>
-    <.card_title>Email Notifications</.card_title>
-    <.card_description>Choose what you receive in your inbox.</.card_description>
-  </.card_header>
-  <.card_content class="space-y-4">
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm font-medium">Marketing emails</p>
-        <p class="text-xs text-muted-foreground">Promotions and offers</p>
-      </div>
-      <.form_switch field={@form[:marketing_emails]} />
-    </div>
-    <.separator />
-    <div class="flex items-center justify-between">
-      <div>
-        <p class="text-sm font-medium">Security alerts</p>
-        <p class="text-xs text-muted-foreground">Login attempts and changes</p>
-      </div>
-      <.form_switch field={@form[:security_alerts]} />
-    </div>
+    <.table rows={@members}>…</.table>
   </.card_content>
   <.card_footer>
-    <.button phx-click="save-notifications">Save preferences</.button>
+    <.button variant="outline">View all</.button>
   </.card_footer>
 </.card>
-
-<%!-- Pricing card --%>
-<.card class={if @plan == "pro", do: "border-primary ring-2 ring-primary", else: ""}>
-  <.card_header>
-    <.card_title>Pro</.card_title>
-    <.card_description>For growing teams</.card_description>
-  </.card_header>
-  <.card_content>
-    <p class="text-4xl font-bold">$49<span class="text-base font-normal text-muted-foreground">/mo</span></p>
-    <ul class="mt-4 space-y-2 text-sm">
-      <li class="flex items-center gap-2"><.icon name="check" size="sm" class="text-green-500" /> Unlimited projects</li>
-      <li class="flex items-center gap-2"><.icon name="check" size="sm" class="text-green-500" /> Priority support</li>
-      <li class="flex items-center gap-2"><.icon name="check" size="sm" class="text-green-500" /> Advanced analytics</li>
-    </ul>
-  </.card_content>
-  <.card_footer>
-    <.button class="w-full" phx-click="subscribe" phx-value-plan="pro">Get started</.button>
-  </.card_footer>
-</.card>
-```
-
----
-
-## stat_card
-
-KPI metric card with title, primary value, trend direction, and optional sparkline slot.
-
-**Attrs**: `title`, `value`, `trend` (up/down/neutral), `trend_value`, `description`, `icon`
-
-```heex
-<%!-- Basic KPI cards --%>
-<.stat_card
-  title="Monthly Revenue"
-  value="$48,290"
-  trend="up"
-  trend_value="+12.5%"
-  description="vs. last month"
-/>
-
-<.stat_card
-  title="Active Users"
-  value="2,840"
-  trend="up"
-  trend_value="+8.2%"
-/>
-
-<.stat_card
-  title="Churn Rate"
-  value="3.1%"
-  trend="down"
-  trend_value="-0.4%"
-  description="30-day rolling"
-/>
-
-<.stat_card
-  title="NPS Score"
-  value="67"
-  trend="neutral"
-  trend_value="No change"
-/>
-
-<%!-- With icon --%>
-<.stat_card
-  title="Open Tickets"
-  value="142"
-  trend="up"
-  trend_value="+23"
-  icon="ticket"
-/>
-```
-
-### Trend color convention
-
-| `trend` value | Color |
-|---------------|-------|
-| `"up"` | Green (positive by default; use `trend_positive={false}` for metrics where up is bad) |
-| `"down"` | Red |
-| `"neutral"` | Muted gray |
-
----
-
-## metric_grid
-
-Responsive CSS Grid wrapper for `stat_card` components. Supports 1–4 columns with mobile-first breakpoints.
-
-```heex
-<%!-- 4-column KPI row --%>
-<.metric_grid cols={4}>
-  <.stat_card title="MRR"   value="$48,290" trend="up"      trend_value="+12.5%" />
-  <.stat_card title="Users" value="2,840"   trend="up"      trend_value="+8.2%" />
-  <.stat_card title="Churn" value="3.1%"    trend="down"    trend_value="-0.4%" />
-  <.stat_card title="NPS"   value="67"      trend="neutral" trend_value="—" />
-</.metric_grid>
-
-<%!-- 3-column for dashboards with wider cards --%>
-<.metric_grid cols={3}>
-  <.stat_card title="Revenue" value="$124k" trend="up" trend_value="+18%" />
-  <.stat_card title="Orders"  value="1,293" trend="up" trend_value="+4%" />
-  <.stat_card title="Refunds" value="23"    trend="down" trend_value="+2" />
-</.metric_grid>
-
-<%!-- 2-column for narrow layouts --%>
-<.metric_grid cols={2}>
-  <.stat_card title="Uptime" value="99.98%" trend="up" trend_value="+0.01%" />
-  <.stat_card title="Latency (p99)" value="142ms" trend="down" trend_value="+8ms" />
-</.metric_grid>
-```
-
----
-
-## receipt_card
-
-Receipt/invoice layout card. Sub-components: `receipt_row/1` for line items, `receipt_divider/1`, and `receipt_total/1`.
-
-```heex
-<.receipt_card>
-  <.card_header>
-    <.card_title>Order #38291</.card_title>
-    <.card_description>March 5, 2026 · 14:32</.card_description>
-  </.card_header>
-  <.card_content>
-    <.receipt_row label="PhiaUI Pro (1 year)" value="$149.00" />
-    <.receipt_row label="Team add-on (5 seats)" value="$49.00" />
-    <.receipt_row label="Discount (LAUNCH20)" value="-$39.60" class="text-green-600" />
-    <.receipt_divider />
-    <.receipt_row label="Subtotal" value="$158.40" />
-    <.receipt_row label="Tax (8%)" value="$12.67" />
-    <.receipt_divider />
-    <.receipt_total label="Total" value="$171.07" />
-  </.card_content>
-  <.card_footer class="flex justify-between">
-    <.button variant="outline" size="sm" phx-click="download-receipt">
-      <.icon name="download" size="sm" /> PDF
-    </.button>
-    <.button variant="ghost" size="sm" phx-click="email-receipt">
-      <.icon name="mail" size="sm" /> Email
-    </.button>
-  </.card_footer>
-</.receipt_card>
 ```
 
 ---
 
 ## selectable_card
 
-A card with a selection state (checkbox-style ring highlight). Use for service selection, plan pickers, and preference grids.
-
-**Attrs**: `id`, `selected` (bool), `on_select` (event name), `value`
+Card that toggles selected state — use for plan/option pickers.
 
 ```heex
-<%!-- Service type selection --%>
 <div class="grid grid-cols-3 gap-4">
-  <.selectable_card
-    :for={service <- @services}
-    id={"service-#{service.id}"}
-    selected={@selected_service == service.id}
-    on_select="select-service"
-    value={service.id}
-  >
-    <.icon name={service.icon} class="h-8 w-8 text-primary mb-2" />
-    <p class="font-medium"><%= service.name %></p>
-    <p class="text-xs text-muted-foreground mt-1"><%= service.description %></p>
-  </.selectable_card>
-</div>
-
-<%!-- Notification preferences --%>
-<div class="grid grid-cols-2 gap-3">
-  <.selectable_card
-    id="notif-email"
-    selected={"email" in @notify_via}
-    on_select="toggle-notify"
-    value="email"
-  >
-    <.icon name="mail" class="h-6 w-6 mb-1" />
-    <p class="text-sm font-medium">Email</p>
-  </.selectable_card>
-  <.selectable_card
-    id="notif-sms"
-    selected={"sms" in @notify_via}
-    on_select="toggle-notify"
-    value="sms"
-  >
-    <.icon name="message-square" class="h-6 w-6 mb-1" />
-    <p class="text-sm font-medium">SMS</p>
-  </.selectable_card>
+  <%= for plan <- @plans do %>
+    <.selectable_card
+      value={plan.id}
+      selected={@selected_plan == plan.id}
+      phx-click="select_plan"
+      phx-value-id={plan.id}
+    >
+      <.heading level={4}><%= plan.name %></.heading>
+      <.display_text class="mt-1">$<%= plan.price %></.display_text>
+      <ul class="mt-3 space-y-1 text-sm text-muted-foreground">
+        <%= for feature <- plan.features do %>
+          <li class="flex gap-2">
+            <.icon name="check" size="sm" class="text-primary" />
+            <%= feature %>
+          </li>
+        <% end %>
+      </ul>
+    </.selectable_card>
+  <% end %>
 </div>
 ```
 
-```elixir
-def handle_event("select-service", %{"value" => id}, socket) do
-  {:noreply, assign(socket, selected_service: id)}
-end
+---
 
-def handle_event("toggle-notify", %{"value" => channel}, socket) do
-  channels = socket.assigns.notify_via
-  updated = if channel in channels, do: List.delete(channels, channel), else: [channel | channels]
-  {:noreply, assign(socket, notify_via: updated)}
-end
+## stat_card
+
+KPI metric card with value, delta, sparkline, and optional link.
+
+```heex
+<.stat_card
+  title="Monthly Revenue"
+  value="$24,500"
+  delta="+12.5%"
+  delta_type={:increase}
+  sparkline_data={[18000, 19500, 21000, 22500, 23000, 24500]}
+  href="/analytics/revenue"
+/>
 ```
 
-← [Back to README](../../README.md)
+**Attrs**: `title`, `value`, `delta`, `delta_type` (`:increase` | `:decrease` | `:neutral`), `sparkline_data` (list of numbers), `href`, `icon`
+
+---
+
+## metric_grid
+
+Responsive grid of stat cards.
+
+```heex
+<.metric_grid>
+  <.stat_card title="MRR" value="$24,500" delta="+12%" delta_type={:increase}
+    sparkline_data={@mrr_data} />
+  <.stat_card title="Active Users" value="18,423" delta="+5.2%" delta_type={:increase}
+    sparkline_data={@user_data} />
+  <.stat_card title="Churn Rate" value="2.1%" delta="-0.3%" delta_type={:decrease}
+    sparkline_data={@churn_data} />
+  <.stat_card title="NPS Score" value="72" delta="+4" delta_type={:increase} />
+</.metric_grid>
+```
+
+**Attrs**: `cols` (integer, default 4), `class`
+
+---
+
+## sparkline_card
+
+Small chart embedded inside a metric card.
+
+```heex
+<.sparkline_card
+  title="API Requests"
+  value="1.2M"
+  data={[800, 950, 1100, 980, 1050, 1200]}
+  trend={:up}
+  animate={true}
+/>
+```
+
+**Attrs**: `title`, `value`, `data` (list of numbers), `trend` (`:up` | `:down` | `:flat`), `animate`, `height`
+
+---
+
+## receipt_card
+
+Financial receipt / invoice breakdown.
+
+```heex
+<.receipt_card
+  title="Invoice #1042"
+  date={~D[2025-03-01]}
+  items={[
+    %{label: "Pro plan (annual)", amount: "$290.00"},
+    %{label: "Extra seats × 3", amount: "$90.00"}
+  ]}
+  subtotal="$380.00"
+  tax="$34.20"
+  total="$414.20"
+  currency="USD"
+/>
+```
+
+---
+
+## article_card
+
+Blog post / article preview card with cover image, category, meta, and excerpt.
+
+```heex
+<.article_card
+  title={@post.title}
+  excerpt={@post.excerpt}
+  cover_src={@post.cover_url}
+  category="Engineering"
+  read_time="5 min read"
+  date={@post.published_at}
+  author_name={@post.author.name}
+  author_avatar={@post.author.avatar_url}
+  href={~p"/blog/#{@post.slug}"}
+/>
+```
+
+---
+
+## feature_card
+
+Icon + title + description card for landing pages.
+
+```heex
+<.feature_card
+  icon="zap"
+  title="Fast by default"
+  description="Server-rendered components with Tailwind JIT — no bundle overhead."
+/>
+```
+
+---
+
+## image_card
+
+Image-first card with optional overlay text.
+
+```heex
+<.image_card
+  src={@project.hero_url}
+  alt={@project.title}
+  title={@project.title}
+  subtitle={@project.category}
+  href={~p"/projects/#{@project.id}"}
+/>
+```
+
+---
+
+## profile_card
+
+User profile summary card.
+
+```heex
+<.profile_card
+  name={@user.name}
+  title={@user.job_title}
+  company={@user.company}
+  avatar_src={@user.avatar_url}
+  bio={@user.bio}
+  location={@user.location}
+  href={~p"/users/#{@user.id}"}
+/>
+```
+
+---
+
+## team_card
+
+Team member card with avatar, role, and social links.
+
+```heex
+<.team_card
+  name={@member.name}
+  role={@member.role}
+  avatar_src={@member.photo_url}
+  twitter={@member.twitter}
+  linkedin={@member.linkedin}
+  github={@member.github}
+/>
+```
+
+---
+
+## link_preview_card
+
+Open Graph link preview card.
+
+```heex
+<.link_preview_card
+  url="https://hex.pm/packages/phia_ui"
+  title="phia_ui"
+  description="Enterprise-ready Phoenix LiveView component library."
+  image_src="/og/phia_ui.png"
+  site_name="Hex.pm"
+/>
+```
+
+---
+
+## product_card
+
+E-commerce product listing card.
+
+```heex
+<.product_card
+  name={product.name}
+  price={product.price}
+  compare_price={product.compare_price}
+  image_src={product.image_url}
+  badge="Sale"
+  rating={product.avg_rating}
+  review_count={product.review_count}
+  on_add_to_cart="add_to_cart"
+  product_id={product.id}
+/>
+```
+
+---
+
+## pricing_card
+
+Subscription pricing card with features list.
+
+```heex
+<.pricing_card
+  name="Pro"
+  price="$29"
+  period="/month"
+  description="For growing teams."
+  highlighted={true}
+  badge="Most popular"
+  features={["Unlimited projects", "20 team members", "Priority support", "Advanced analytics"]}
+  cta_label="Start free trial"
+  phx-click="select_pro"
+/>
+```
+
+---
+
+## color_swatch_card
+
+Colour palette entry with hex value and copy button.
+
+```heex
+<.color_swatch_card
+  name="Indigo 500"
+  hex="#6366f1"
+  rgb="99, 102, 241"
+/>
+```
+
+---
+
+## cta_card
+
+Call-to-action card with title, description, and button.
+
+```heex
+<.cta_card
+  title="Upgrade to Pro"
+  description="Get unlimited access to all components and priority support."
+  cta_label="Upgrade now"
+  phx-click="start_upgrade"
+  variant={:primary}
+/>
+```
+
+---
+
+## testimonial_card
+
+Customer testimonial with quote, name, role, and avatar.
+
+```heex
+<.testimonial_card
+  quote="PhiaUI cut our frontend development time in half."
+  name="Sarah Johnson"
+  role="CTO at Acme Corp"
+  avatar_src="/testimonials/sarah.jpg"
+  rating={5}
+/>
+```
+
+---
+
+## progress_card
+
+Card with a progress bar showing task or goal completion.
+
+```heex
+<.progress_card
+  title="Q1 Revenue Goal"
+  value={73}
+  label="$73K of $100K"
+  target_date={~D[2025-03-31]}
+  delta="+8% vs last quarter"
+/>
+```
+
+---
+
+## notification_card
+
+Notification item as a standalone card.
+
+```heex
+<.notification_card
+  icon="bell"
+  title="New message"
+  body="You have a new message from Alice."
+  timestamp={DateTime.utc_now() |> DateTime.add(-300, :second)}
+  read={false}
+  phx-click="mark_read"
+  phx-value-id={@notification.id}
+/>
+```
+
+---
+
+## file_card
+
+File attachment preview card with icon, name, size, and download.
+
+```heex
+<.file_card
+  filename="report-q1-2025.pdf"
+  size="2.4 MB"
+  mime="application/pdf"
+  download_url={~p"/files/#{@file.id}/download"}
+  uploaded_by={@file.uploader.name}
+  uploaded_at={@file.inserted_at}
+/>
+```
+
+---
+
+## event_card
+
+Event listing card with date, title, location, and RSVP.
+
+```heex
+<.event_card
+  title="ElixirConf 2025"
+  date={~D[2025-08-15]}
+  location="Austin, TX"
+  image_src="/events/elixirconf.jpg"
+  attendee_count={450}
+  href="https://elixirconf.com"
+  status={:upcoming}
+/>
+```
+
+---
+
+## Real-world: Dashboard KPI section
+
+```heex
+<section class="space-y-6">
+  <.page_header title="Overview" description="Key metrics for March 2025" />
+
+  <.metric_grid>
+    <.stat_card
+      title="Monthly Revenue"
+      value="$24,500"
+      delta="+12.5%"
+      delta_type={:increase}
+      sparkline_data={@mrr_history}
+      href="/revenue"
+    />
+    <.stat_card
+      title="Active Users"
+      value={number_format(@active_users, compact: true)}
+      delta="+5.2%"
+      delta_type={:increase}
+      sparkline_data={@user_history}
+    />
+    <.stat_card
+      title="Churn Rate"
+      value="2.1%"
+      delta="-0.3%"
+      delta_type={:decrease}
+      sparkline_data={@churn_history}
+    />
+    <.stat_card
+      title="NPS Score"
+      value="72"
+      delta="+4"
+      delta_type={:increase}
+    />
+  </.metric_grid>
+</section>
+```

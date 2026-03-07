@@ -1,252 +1,152 @@
 # Inputs
 
-All 43 input components with full Ecto/FormField integration and WAI-ARIA accessibility. Includes Upload Wave (8 components) and Special Inputs (11 components with FormField integration) added in v0.1.7.
+61 input components with full Ecto `FormField` integration and WAI-ARIA accessibility. Every component that wraps a form field ships with a `phia_X/1` companion that accepts `Phoenix.HTML.FormField` — name, value, errors, and form ID are wired automatically.
 
-PhiaUI input components cover every common form pattern from bare `<input>` elements to rich WYSIWYG editors.
-Each component that wraps a form field ships with a companion `form_X/1` variant that accepts a `Phoenix.HTML.FormField`
-and automatically reads the field name, value, errors, and form ID so you never have to wire them manually.
+**Modules**:
+- `PhiaUi.Components.Inputs` — core inputs
+- `PhiaUi.Components.AdvancedSelects` — tree_select, rich_select, visual_select
+- `PhiaUi.Components.SpecialEntry` — verifiable_input, duration_input, split_input, credit_card_input
+- `PhiaUi.Components.SmartInputs` — drag_number, suggestion_input, emoji_picker, keyboard_shortcut_input
+- `PhiaUi.Components.TextareaEnhanced` — 7 textarea variants + form companions (v0.1.11)
+
+```elixir
+import PhiaUi.Components.Inputs
+import PhiaUi.Components.TextareaEnhanced
+```
 
 ---
 
 ## Table of Contents
 
-- [phia_input](#phia_input)
-- [input](#input)
-- [textarea](#textarea)
-- [select](#select)
-- [checkbox](#checkbox)
-- [radio_group](#radio_group)
-- [switch](#switch)
-- [slider](#slider)
-- [rating](#rating)
-- [number_input](#number_input)
-- [password_input](#password_input)
-- [input_otp](#input_otp)
-- [input_addon](#input_addon)
-- [segmented_control](#segmented_control)
-- [chip](#chip)
-- [editable](#editable)
-- [combobox](#combobox)
-- [multi_select](#multi_select)
-- [tags_input](#tags_input)
-- [file_upload](#file_upload)
-- [image_upload](#image_upload)
-- [rich_text_editor](#rich_text_editor)
-- [color_picker](#color_picker)
-- [mention_input](#mention_input)
+**Core Inputs**
+- [phia_input](#phia_input) — universal form input
+- [input](#input) — bare input element
+- [textarea](#textarea) — bare textarea
+- [select](#select) / [combobox](#combobox) / [multi_select](#multi_select)
+- [checkbox](#checkbox) / [radio_group](#radio_group) / [switch](#switch)
+- [slider](#slider) / [rating](#rating) / [number_input](#number_input)
+- [password_input](#password_input) / [input_otp](#input_otp)
+- [segmented_control](#segmented_control) / [chip](#chip)
+- [tags_input](#tags_input) / [editable](#editable) / [color_picker](#color_picker)
+- [mention_input](#mention_input) / [rich_text_editor](#rich_text_editor)
 
-### Input Wave (new in 0.1.7)
-
-- [search_input](#search_input)
-- [clearable_input](#clearable_input)
-- [textarea_counter](#textarea_counter)
-- [copy_input](#copy_input)
-- [url_input](#url_input)
-- [phone_input](#phone_input)
-- [input_group](#input_group)
-- [inline_search](#inline_search)
-- [unit_input](#unit_input)
+**Input Utilities**
+- [search_input](#search_input) / [clearable_input](#clearable_input) / [copy_input](#copy_input)
+- [url_input](#url_input) / [phone_input](#phone_input) / [unit_input](#unit_input)
+- [input_group](#input_group) / [input_addon](#input_addon) / [inline_search](#inline_search)
 - [autocomplete_input](#autocomplete_input)
 
-### Upload Components (new in 0.1.7)
+**Uploads**
+- [file_upload](#file_upload) / [image_upload](#image_upload) / [avatar_upload](#avatar_upload)
+- [upload_button](#upload_button) / [upload_card](#upload_card) / [upload_progress](#upload_progress)
+- [upload_queue](#upload_queue) / [document_upload](#document_upload)
+- [image_gallery_upload](#image_gallery_upload) / [fullscreen_drop](#fullscreen_drop)
 
-- [avatar_upload](#avatar_upload)
-- [upload_button](#upload_button)
-- [image_gallery_upload](#image_gallery_upload)
-- [document_upload](#document_upload)
-- [upload_progress](#upload_progress)
-- [upload_card](#upload_card)
-- [upload_queue](#upload_queue)
-- [fullscreen_drop](#fullscreen_drop)
+**Advanced Selects**
+- [tree_select](#tree_select) / [rich_select](#rich_select) / [visual_select](#visual_select)
 
-### Special Inputs (new in 0.1.7)
+**Special Entry**
+- [verifiable_input](#verifiable_input) / [duration_input](#duration_input)
+- [split_input](#split_input) / [credit_card_input](#credit_card_input)
 
-- [currency_input](#currency_input)
-- [masked_input](#masked_input)
-- [range_slider](#range_slider)
-- [signature_pad](#signature_pad)
-- [color_swatch_picker](#color_swatch_picker)
-- [float_input](#float_input)
-- [float_textarea](#float_textarea)
-- [form_feedback](#form_feedback)
-- [input_status](#input_status)
-- [form_stepper](#form_stepper)
-- [country_select](#country_select)
-- [mention_input](#mention_input)
+**Smart Inputs**
+- [drag_number](#drag_number) / [suggestion_input](#suggestion_input)
+- [emoji_picker](#emoji_picker) / [keyboard_shortcut_input](#keyboard_shortcut_input)
+
+**Textarea Variants (v0.1.11)**
+- [autoresize_textarea](#autoresize_textarea)
+- [chat_textarea](#chat_textarea)
+- [code_textarea](#code_textarea)
+- [textarea_with_actions](#textarea_with_actions)
+- [split_textarea](#split_textarea)
+- [ghost_textarea](#ghost_textarea)
+- [expandable_textarea](#expandable_textarea)
 
 ---
 
 ## phia_input
 
-The all-in-one form field wrapper. Renders a label, an `<input>` (or `<select>`/`<textarea>`), an optional
-description line, and Ecto changeset error messages — all wired automatically from a `Phoenix.HTML.FormField`.
-This is the recommended starting point for any Ecto-backed form.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `field` | `Phoenix.HTML.FormField` | required | Provides name, id, value, errors |
-| `type` | `string` | `"text"` | Any HTML input type plus `"select"`, `"textarea"` |
-| `label` | `string` | `nil` | Rendered as `<label>` |
-| `description` | `string` | `nil` | Helper text below the input |
-| `placeholder` | `string` | `nil` | Passed to the inner element |
-| `phx-debounce` | `string` | `nil` | Passed through to `phx-debounce` |
-| `class` | `string` | `nil` | Extra classes on the wrapper div |
-
-**Examples**
-
-Simple text field from a changeset form:
+Universal form input — wraps `Phoenix.HTML.FormField` and renders the correct input type with label, description, and error display.
 
 ```heex
-<.phia_input
-  field={@form[:email]}
-  type="email"
-  label="Email address"
-  description="We will never share your email."
-  placeholder="you@example.com"
-  phx-debounce="300"
-/>
+<.form for={@form} phx-change="validate" phx-submit="save">
+  <.phia_input field={@form[:name]}   label="Full name"  required />
+  <.phia_input field={@form[:email]}  type="email"  label="Email" />
+  <.phia_input field={@form[:bio]}    type="textarea" label="Bio" rows={4} />
+  <.phia_input field={@form[:role]}   type="select" label="Role"
+    options={[{"Admin", "admin"}, {"User", "user"}]} />
+  <.phia_input field={@form[:active]} type="checkbox" label="Active" />
+</.form>
 ```
 
-Select with inline options:
+**Types**: `text` · `email` · `password` · `number` · `tel` · `url` · `date` · `time` · `datetime-local` · `textarea` · `select` · `checkbox` · `hidden`
 
-```heex
-<.phia_input
-  field={@form[:role]}
-  type="select"
-  label="Role"
-  options={[{"Admin", "admin"}, {"Editor", "editor"}, {"Viewer", "viewer"}]}
-/>
-```
-
-Multi-line textarea:
-
-```heex
-<.phia_input
-  field={@form[:bio]}
-  type="textarea"
-  label="Bio"
-  placeholder="Tell us about yourself…"
-  rows={5}
-/>
-```
+**Attrs**: `field` (required), `type`, `label`, `description`, `required`, `disabled`, `class`
 
 ---
 
 ## input
 
-The bare `<input>` element with PhiaUI styling. Use this when you are not working with an Ecto changeset
-or when you need full manual control over name, value, and change events.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `type` | `string` | `"text"` | Any valid HTML input type |
-| `value` | `string` | `nil` | Controlled value |
-| `name` | `string` | `nil` | Form field name |
-| `placeholder` | `string` | `nil` | Placeholder text |
-| `disabled` | `boolean` | `false` | Disables the element |
-| `class` | `string` | `nil` | Extra classes |
-
-**Examples**
-
-Uncontrolled standalone input:
+Bare unstyled input component. Use inside custom form wrappers.
 
 ```heex
-<.input type="text" name="search" placeholder="Search…" />
-```
-
-Controlled via LiveView assigns:
-
-```heex
-<.input
-  type="number"
-  name="quantity"
-  value={@quantity}
-  phx-change="update_quantity"
-  min="1"
-  max="99"
-/>
+<.input type="text" name="query" value={@query} placeholder="Search…" phx-debounce="300" />
+<.input type="email" name="email" value="" required class="w-full" />
 ```
 
 ---
 
 ## textarea
 
-Multi-line text input with automatic resize support and optional FormField integration.
-
-Has a companion `form_textarea/1` that accepts `field` and wires errors automatically.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `field` | `Phoenix.HTML.FormField` | `nil` | Used by `form_textarea/1` |
-| `rows` | `integer` | `3` | Visible row count |
-| `placeholder` | `string` | `nil` | Placeholder text |
-| `resize` | `string` | `"vertical"` | `"none"` / `"vertical"` / `"both"` |
-| `class` | `string` | `nil` | Extra classes |
-
-**Examples**
-
-Bare textarea:
+Bare textarea with resize control.
 
 ```heex
-<.textarea name="notes" placeholder="Add notes…" rows={6} />
-```
-
-FormField variant with error display:
-
-```heex
-<.form_textarea
-  field={@form[:description]}
-  label="Description"
-  rows={4}
-  placeholder="Describe the issue…"
-/>
+<.textarea name="body" value={@draft} rows={6} placeholder="Write your post…" />
 ```
 
 ---
 
 ## select
 
-Native `<select>` element. Use `form_select/1` to bind to a FormField and display validation errors.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `options` | `list` | required | `[{"Label", value}, ...]` or `["item", ...]` |
-| `value` | `any` | `nil` | Currently selected value |
-| `name` | `string` | `nil` | Form field name |
-| `prompt` | `string` | `nil` | Placeholder option with blank value |
-| `multiple` | `boolean` | `false` | Enables multi-select |
-| `on_change` | `string` | `nil` | `phx-change` event name |
-
-**Examples**
-
-Static options with a prompt:
+Native `<select>` with styled options.
 
 ```heex
-<.select
-  name="country"
-  value={@country}
-  prompt="Select a country"
-  options={[{"United States", "us"}, {"Canada", "ca"}, {"Mexico", "mx"}]}
-  phx-change="country_changed"
+<.select name="country" value={@country} options={Countries.all()} />
+<.select name="plan" value={@plan}
+  options={[{"Starter — $9/mo", "starter"}, {"Pro — $29/mo", "pro"}]} />
+```
+
+---
+
+## combobox
+
+Searchable single-select with keyboard navigation.
+
+```heex
+<.combobox
+  id="user-select"
+  name="user_id"
+  value={@selected_user_id}
+  options={Enum.map(@users, &{&1.name, &1.id})}
+  placeholder="Search users…"
+  phx-change="select_user"
 />
 ```
 
-FormField variant:
+---
+
+## multi_select
+
+Multiple-value combobox with tag badges.
 
 ```heex
-<.form_select
-  field={@form[:status]}
-  label="Status"
-  prompt="-- pick one --"
-  options={[{"Active", :active}, {"Inactive", :inactive}]}
+<.multi_select
+  id="tags-select"
+  name="tags"
+  values={@selected_tags}
+  options={@available_tags}
+  placeholder="Add tags…"
+  on_change="update_tags"
 />
 ```
 
@@ -254,733 +154,294 @@ FormField variant:
 
 ## checkbox
 
-Standard checkbox with support for indeterminate state and a select-all pattern.
-Companion: `form_checkbox/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `checked` | `boolean` | `false` | Controlled checked state |
-| `indeterminate` | `boolean` | `false` | Visual indeterminate (dash icon) |
-| `name` | `string` | `nil` | Form field name |
-| `value` | `string` | `"true"` | Value sent when checked |
-| `label` | `string` | `nil` | Inline label |
-| `on_change` | `string` | `nil` | phx-change event |
-
-**Examples**
-
-Select-all header checkbox with indeterminate:
+Standard checkbox with label.
 
 ```heex
-<.checkbox
-  id="select-all"
-  checked={Enum.all?(@rows, & &1.selected)}
-  indeterminate={Enum.any?(@rows, & &1.selected) and not Enum.all?(@rows, & &1.selected)}
-  phx-click="toggle_all"
-  label="Select all"
-/>
-```
-
-FormField variant with Ecto:
-
-```heex
-<.form_checkbox
-  field={@form[:agree_to_terms]}
-  label="I agree to the terms and conditions"
-/>
-```
-
-LiveView handler:
-
-```elixir
-def handle_event("toggle_all", _, socket) do
-  all_selected = Enum.all?(socket.assigns.rows, & &1.selected)
-  rows = Enum.map(socket.assigns.rows, &Map.put(&1, :selected, !all_selected))
-  {:noreply, assign(socket, :rows, rows)}
-end
+<.checkbox name="agree" value="true" checked={@agreed} label="I agree to the Terms" />
 ```
 
 ---
 
 ## radio_group
 
-Radio button group. A `:let` context exposes `checked` and `value` down to each option slot,
-letting you build any custom radio UI. Companion: `form_radio_group/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `value` | `any` | `nil` | Currently selected value |
-| `name` | `string` | `nil` | Shared name for all radios |
-| `on_change` | `string` | `nil` | phx-change event |
-| `:option` slot | — | — | Repeated for each option; exposes `checked`, `value` |
-
-**Examples**
-
-Custom card-style radio group:
+Radio buttons as a vertical or horizontal group.
 
 ```heex
-<.radio_group name="plan" value={@plan} phx-change="select_plan">
-  <:option value="starter" :let={opt}>
-    <label class={["border rounded-lg p-4 cursor-pointer", opt.checked && "border-primary"]}>
-      <input type="radio" name={opt.name} value={opt.value} checked={opt.checked} class="sr-only" />
-      <span class="font-medium">Starter — Free</span>
-    </label>
-  </:option>
-  <:option value="pro" :let={opt}>
-    <label class={["border rounded-lg p-4 cursor-pointer", opt.checked && "border-primary"]}>
-      <input type="radio" name={opt.name} value={opt.value} checked={opt.checked} class="sr-only" />
-      <span class="font-medium">Pro — $12/mo</span>
-    </label>
-  </:option>
-</.radio_group>
-```
-
-FormField variant:
-
-```heex
-<.form_radio_group field={@form[:gender]} label="Gender">
-  <:option value="m">Male</:option>
-  <:option value="f">Female</:option>
-  <:option value="nb">Non-binary</:option>
-</.form_radio_group>
+<.radio_group name="plan" value={@plan} on_change="set_plan"
+  options={[{"Starter", "starter"}, {"Pro", "pro"}, {"Enterprise", "enterprise"}]} />
 ```
 
 ---
 
 ## switch
 
-A CSS toggle switch. Renders a visually styled `<button role="switch">` that communicates its
-checked state to screen readers. Companion: `form_switch/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `checked` | `boolean` | `false` | On/off state |
-| `on_change` | `string` | `nil` | phx-click event |
-| `label` | `string` | `nil` | Visible label or `aria-label` |
-| `disabled` | `boolean` | `false` | Disables interaction |
-| `size` | `atom` | `:default` | `:sm` / `:default` / `:lg` |
-
-**Examples**
-
-Notifications toggle:
+iOS-style toggle switch.
 
 ```heex
-<.switch
-  id="notif-switch"
-  checked={@notifications_enabled}
-  on_change="toggle_notifications"
-  label="Email notifications"
-/>
-```
+<.switch name="notifications" checked={@notifications_enabled} phx-change="toggle_notifications" />
 
-FormField variant:
-
-```heex
-<.form_switch
-  field={@form[:is_public]}
-  label="Make profile public"
-/>
-```
-
-LiveView handler:
-
-```elixir
-def handle_event("toggle_notifications", _, socket) do
-  {:noreply, update(socket, :notifications_enabled, &(!&1))}
-end
+<%!-- With label --%>
+<div class="flex items-center justify-between">
+  <span>Email notifications</span>
+  <.switch name="email_notif" checked={@email_notif} phx-change="toggle_email" />
+</div>
 ```
 
 ---
 
 ## slider
 
-A styled `<input type="range">` with full WAI-ARIA attributes (`aria-valuemin`, `aria-valuemax`,
-`aria-valuenow`). Companion: `form_slider/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `value` | `number` | `0` | Current value |
-| `min` | `number` | `0` | Minimum |
-| `max` | `number` | `100` | Maximum |
-| `step` | `number` | `1` | Step increment |
-| `on_change` | `string` | `nil` | phx-input / phx-change event |
-| `show_value` | `boolean` | `false` | Displays current value badge |
-
-**Examples**
-
-Volume control:
+Range slider, with optional marks and value display.
 
 ```heex
-<.slider
-  id="volume"
-  value={@volume}
-  min={0}
-  max={100}
-  step={5}
-  show_value={true}
-  phx-input="set_volume"
-/>
-```
-
-FormField with label:
-
-```heex
-<.form_slider
-  field={@form[:experience_years]}
-  label="Years of experience"
-  min={0}
-  max={40}
-  step={1}
-/>
+<.slider name="volume" min={0} max={100} step={5} value={@volume} phx-change="set_volume" />
+<.slider name="price" min={0} max={1000} value={@price_range} show_value={true} />
 ```
 
 ---
 
 ## rating
 
-A star rating widget rendered as a CSS `role="radiogroup"`. Supports 1–10 stars (default 5).
-Companion: `form_rating/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `value` | `integer` | `nil` | Currently selected star count |
-| `max` | `integer` | `5` | Total number of stars (1–10) |
-| `on_change` | `string` | `nil` | phx-click event |
-| `readonly` | `boolean` | `false` | Display-only mode |
-| `size` | `atom` | `:default` | `:sm` / `:default` / `:lg` |
-
-**Examples**
-
-Interactive product rating:
+Star rating input. Supports half-stars and custom icons.
 
 ```heex
-<.rating
-  id="product-rating"
-  value={@rating}
-  max={5}
-  on_change="rate_product"
-/>
-```
-
-Read-only display:
-
-```heex
-<.rating value={4} max={5} readonly={true} />
-```
-
-FormField variant:
-
-```heex
-<.form_rating
-  field={@form[:satisfaction]}
-  label="How satisfied are you?"
-  max={10}
-/>
+<.rating name="stars" value={@rating} max={5} phx-change="set_rating" />
+<.rating name="score" value={@score} max={5} allow_half={true} phx-change="set_score" />
 ```
 
 ---
 
 ## number_input
 
-An enhanced number field with plus/minus stepper buttons flanking the input. Supports prefix and
-suffix slots (e.g., currency symbol, unit label). Companion: `form_number_input/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `value` | `number` | `nil` | Current value |
-| `min` | `number` | `nil` | Minimum allowed |
-| `max` | `number` | `nil` | Maximum allowed |
-| `step` | `number` | `1` | Increment/decrement amount |
-| `prefix` | `string` | `nil` | Text/icon before the input |
-| `suffix` | `string` | `nil` | Text/icon after the input |
-| `on_change` | `string` | `nil` | phx-change event |
-
-**Examples**
-
-Quantity selector with bounds:
+Number input with increment/decrement buttons and step control.
 
 ```heex
-<.number_input
-  id="qty"
-  value={@quantity}
-  min={1}
-  max={99}
-  step={1}
-  phx-change="update_qty"
-/>
-```
-
-Price field with currency prefix:
-
-```heex
-<.number_input
-  id="price"
-  value={@price}
-  min={0}
-  step={0.01}
-  prefix="$"
-  suffix="USD"
-  phx-change="update_price"
-/>
-```
-
-FormField variant:
-
-```heex
-<.form_number_input
-  field={@form[:seats]}
-  label="Number of seats"
-  min={1}
-  max={500}
-/>
+<.number_input name="quantity" value={@qty} min={1} max={99} step={1} phx-change="set_qty" />
 ```
 
 ---
 
 ## password_input
 
-A password input with a show/hide toggle button. Uses `JS.toggle_attribute/1` to flip the
-`type` attribute between `"password"` and `"text"` — no JavaScript hook required.
-Companion: `form_password_input/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `value` | `string` | `nil` | Controlled value |
-| `name` | `string` | `nil` | Form field name |
-| `autocomplete` | `string` | `"current-password"` | `"new-password"` for registration forms |
-| `placeholder` | `string` | `nil` | Placeholder text |
-
-**Examples**
-
-Login form password:
+Password input with show/hide toggle. Uses `JS.toggle_attribute` — zero JS hook required.
 
 ```heex
-<.password_input
-  id="user-password"
-  name="user[password]"
-  placeholder="Enter your password"
-  autocomplete="current-password"
-/>
-```
-
-Registration form with new-password autocomplete:
-
-```heex
-<.form_password_input
-  field={@form[:password]}
-  label="New password"
-  autocomplete="new-password"
-  placeholder="At least 8 characters"
-/>
+<.password_input name="password" value="" label="Password" />
+<.phia_input field={@form[:password]} type="password" label="Password" />
 ```
 
 ---
 
 ## input_otp
 
-One-time password input. Composed of three sub-components:
-`input_otp_group/1`, `input_otp_slot/1`, and `input_otp_separator/1`.
-
-- Auto-advances focus to the next slot on each keypress.
-- Paste distributes characters across slots automatically.
-- Backspace moves focus to the previous slot and clears it.
-
-**Key attrs (input_otp/1)**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `length` | `integer` | `6` | Total number of digit slots |
-| `value` | `string` | `""` | Controlled current value |
-| `on_complete` | `string` | `nil` | Event fired when all slots are filled |
-| `type` | `string` | `"number"` | `"text"` for alphanumeric codes |
-
-**Examples**
-
-Six-digit SMS code:
+One-time passcode input — N grouped digit boxes. Moves focus automatically.
 
 ```heex
-<.input_otp id="sms-otp" length={6} value={@otp_value} on_complete="verify_otp">
-  <.input_otp_group>
-    <.input_otp_slot index={0} />
-    <.input_otp_slot index={1} />
-    <.input_otp_slot index={2} />
-  </.input_otp_group>
-  <.input_otp_separator />
-  <.input_otp_group>
-    <.input_otp_slot index={3} />
-    <.input_otp_slot index={4} />
-    <.input_otp_slot index={5} />
-  </.input_otp_group>
-</.input_otp>
-```
-
-Alphanumeric invite code (8 chars):
-
-```heex
-<.input_otp id="invite-otp" length={8} type="text" on_complete="redeem_code">
-  <.input_otp_group>
-    <%= for i <- 0..7 do %>
-      <.input_otp_slot index={i} />
-    <% end %>
-  </.input_otp_group>
-</.input_otp>
-```
-
-LiveView handler:
-
-```elixir
-def handle_event("verify_otp", %{"value" => code}, socket) do
-  case MyApp.Auth.verify_otp(socket.assigns.user, code) do
-    :ok -> {:noreply, push_navigate(socket, to: ~p"/dashboard")}
-    {:error, _} -> {:noreply, assign(socket, :otp_error, "Invalid code. Try again.")}
-  end
-end
-```
-
----
-
-## input_addon
-
-Wraps an `<input>` with a prefix and/or suffix element (icon, text, button). Sub-components:
-`input_addon_prefix/1` and `input_addon_suffix/1`.
-
-**Key attrs (input_addon/1)**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `class` | `string` | `nil` | Extra classes on the wrapper |
-
-**Examples**
-
-URL input with https:// prefix:
-
-```heex
-<.input_addon>
-  <.input_addon_prefix>https://</.input_addon_prefix>
-  <.input type="text" name="domain" placeholder="yoursite.com" class="rounded-l-none" />
-</.input_addon>
-```
-
-Search input with icon prefix and clear button suffix:
-
-```heex
-<.input_addon>
-  <.input_addon_prefix>
-    <.icon name="hero-magnifying-glass" class="size-4 text-muted-foreground" />
-  </.input_addon_prefix>
-  <.input type="text" name="q" value={@query} placeholder="Search…" class="rounded-none" />
-  <.input_addon_suffix>
-    <button phx-click="clear_search" class="px-2 text-muted-foreground hover:text-foreground">
-      <.icon name="hero-x-mark" class="size-4" />
-    </button>
-  </.input_addon_suffix>
-</.input_addon>
+<.input_otp name="otp" length={6} phx-change="verify_otp" />
+<%!-- Grouped as 3+3 --%>
+<.input_otp name="code" length={6} groups={[3, 3]} separator="-" phx-change="submit_code" />
 ```
 
 ---
 
 ## segmented_control
 
-A radio-button-based tab bar with a CSS animated active indicator that slides between options.
-Useful for mode switching (e.g., list/grid view, time range filters).
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `id` | `string` | required | Used as radio group id |
-| `name` | `string` | required | Radio input `name` |
-| `segments` | `list` | required | `[%{value: "v", label: "L"}, ...]` |
-| `value` | `string` | `nil` | Currently selected value |
-| `on_change` | `string` | `nil` | phx-change event |
-| `size` | `atom` | `:default` | `:sm` / `:default` / `:lg` |
-
-**Examples**
-
-View toggle:
+Button-style radio group with equal-width segments.
 
 ```heex
-<.segmented_control
-  id="view-toggle"
-  name="view"
-  value={@view}
-  segments={[%{value: "list", label: "List"}, %{value: "grid", label: "Grid"}, %{value: "map", label: "Map"}]}
-  on_change="set_view"
-/>
-```
-
-Time range filter:
-
-```heex
-<.segmented_control
-  id="range-filter"
-  name="range"
-  value={@range}
-  size={:sm}
-  segments={[
-    %{value: "1d", label: "1D"},
-    %{value: "7d", label: "7D"},
-    %{value: "30d", label: "30D"},
-    %{value: "ytd", label: "YTD"}
-  ]}
-  phx-change="update_range"
-/>
+<.segmented_control name="view" value={@view} on_change="set_view"
+  options={[{"List", "list"}, {"Grid", "grid"}, {"Map", "map"}]} />
 ```
 
 ---
 
 ## chip
 
-A compact interactive label. Can act as a toggle (pressed/unpressed) or be dismissible.
-`chip_group/1` wraps multiple chips in a flex row. Companion: `chip_group/1`.
-
-**Key attrs (chip/1)**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `label` | `string` | required | Chip text |
-| `variant` | `atom` | `:default` | `:default` / `:secondary` / `:outline` |
-| `size` | `atom` | `:default` | `:sm` / `:default` / `:lg` |
-| `pressed` | `boolean` | `false` | Toggle state; sets `aria-pressed` |
-| `on_dismiss` | `string` | `nil` | If set, renders a remove (×) button |
-| `on_press` | `string` | `nil` | phx-click for toggle |
-
-**Examples**
-
-Tag filter chips:
+Selectable filter pill. Toggle on/off.
 
 ```heex
-<.chip_group>
-  <%= for tag <- @available_tags do %>
+<div class="flex flex-wrap gap-2">
+  <%= for tag <- @all_tags do %>
     <.chip
-      label={tag.name}
-      pressed={tag.name in @selected_tags}
-      variant={:outline}
+      value={tag.id}
+      selected={tag.id in @selected_tags}
       phx-click="toggle_tag"
-      phx-value-tag={tag.name}
-    />
+      phx-value-id={tag.id}
+    ><%= tag.name %></.chip>
   <% end %>
-</.chip_group>
-```
-
-Dismissible selected values:
-
-```heex
-<.chip_group>
-  <%= for item <- @selections do %>
-    <.chip
-      label={item.label}
-      variant={:secondary}
-      on_dismiss="remove_selection"
-      phx-value-id={item.id}
-    />
-  <% end %>
-</.chip_group>
-```
-
----
-
-## editable
-
-Click-to-edit inline text. Uses the `PhiaEditable` JavaScript hook to manage the view/edit state
-transition. Press Enter or click outside to confirm; press Escape to cancel.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `id` | `string` | required | Must be unique for the hook |
-| `value` | `string` | `""` | Current display/edit value |
-| `on_change` | `string` | `nil` | phx-blur / phx-keydown event |
-| `placeholder` | `string` | `"Click to edit"` | Shown when value is empty |
-| `tag` | `string` | `"span"` | HTML element for the display view (`"h1"`, `"p"`, etc.) |
-
-**Examples**
-
-Inline page title editor:
-
-```heex
-<.editable
-  id="page-title"
-  value={@page.title}
-  tag="h1"
-  placeholder="Untitled page"
-  phx-blur="save_title"
-/>
-```
-
-Table cell inline edit:
-
-```heex
-<td>
-  <.editable
-    id={"cell-#{@row.id}"}
-    value={@row.name}
-    on_change="update_row_name"
-    phx-value-id={@row.id}
-  />
-</td>
-```
-
-LiveView handler:
-
-```elixir
-def handle_event("save_title", %{"value" => title}, socket) do
-  {:ok, page} = MyApp.Pages.update(socket.assigns.page, %{title: title})
-  {:noreply, assign(socket, :page, page)}
-end
-```
-
----
-
-## combobox
-
-A searchable dropdown with server-side filtering. No JavaScript hook required — search events are
-sent to the LiveView which updates the options list. The trigger displays the selected label;
-the dropdown is a `<ul>` rendered in a Popover.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `id` | `string` | required | |
-| `options` | `list` | `[]` | `[%{value: v, label: l}, ...]` |
-| `value` | `any` | `nil` | Selected value |
-| `on_search` | `string` | nil | phx-change for the search input |
-| `on_select` | `string` | nil | phx-click for option selection |
-| `placeholder` | `string` | `"Select…"` | Trigger placeholder |
-| `search_placeholder` | `string` | `"Search…"` | Search input placeholder |
-| `empty_message` | `string` | `"No results."` | Shown when options is empty |
-
-**Examples**
-
-User search combobox:
-
-```heex
-<.combobox
-  id="user-search"
-  options={@user_options}
-  value={@selected_user}
-  on_search="search_users"
-  on_select="select_user"
-  placeholder="Assign to…"
-  search_placeholder="Search by name or email"
-/>
-```
-
-LiveView handlers:
-
-```elixir
-def handle_event("search_users", %{"value" => query}, socket) do
-  users = MyApp.Accounts.search(query)
-  options = Enum.map(users, &%{value: &1.id, label: &1.name})
-  {:noreply, assign(socket, :user_options, options)}
-end
-
-def handle_event("select_user", %{"value" => user_id}, socket) do
-  {:noreply, assign(socket, :selected_user, user_id)}
-end
-```
-
----
-
-## multi_select
-
-A `<select multiple>` enhanced with a chip row showing selected values. Companion: `form_multi_select/1`.
-The component includes a `find_label/2` helper to map values back to display labels.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `options` | `list` | required | `[{"Label", value}, ...]` |
-| `value` | `list` | `[]` | List of selected values |
-| `name` | `string` | `nil` | Form field name |
-| `on_change` | `string` | `nil` | phx-change event |
-| `placeholder` | `string` | `"Select…"` | Shown when nothing selected |
-
-**Examples**
-
-Permission selector:
-
-```heex
-<.multi_select
-  id="permissions"
-  name="permissions"
-  value={@selected_permissions}
-  options={[
-    {"Read", "read"},
-    {"Write", "write"},
-    {"Delete", "delete"},
-    {"Admin", "admin"}
-  ]}
-  phx-change="update_permissions"
-/>
-```
-
-FormField variant:
-
-```heex
-<.form_multi_select
-  field={@form[:tags]}
-  label="Tags"
-  options={Enum.map(@tags, &{&1.name, &1.id})}
-/>
+</div>
 ```
 
 ---
 
 ## tags_input
 
-Multi-tag text input. Tags are stored in a hidden `<input>` as a comma-separated value. The
-`PhiaTagsInput` hook handles rendering the tag pills, creating new tags on Enter/comma, and
-deleting tags via backspace or the × button.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `field` | `Phoenix.HTML.FormField` | `nil` | Provides hidden input name + initial value |
-| `id` | `string` | required | Hook anchor |
-| `placeholder` | `string` | `"Add tag…"` | Text input placeholder |
-| `separator` | `string` | `","` | Character that triggers tag creation |
-| `max_tags` | `integer` | `nil` | Maximum number of tags allowed |
-
-**Examples**
-
-Blog post tags:
+Free-form tag entry — type and press Enter or comma.
 
 ```heex
-<.tags_input
-  id="post-tags"
-  field={@form[:tags]}
-  placeholder="Add tag and press Enter"
-  max_tags={10}
+<.tags_input name="tags" values={@tags} placeholder="Add a tag…" phx-change="update_tags" />
+```
+
+---
+
+## editable
+
+Click-to-edit inline text field.
+
+```heex
+<.editable value={@title} on_submit="update_title" class="text-2xl font-bold" />
+```
+
+---
+
+## color_picker
+
+HEX/HSL/RGB colour picker with swatches.
+
+```heex
+<.color_picker name="brand_color" value={@color} phx-change="set_color" />
+```
+
+---
+
+## mention_input
+
+Text input that triggers `@mention` suggestions. Hook: `PhiaMentionInput`.
+
+```heex
+<.mention_input
+  id="comment-input"
+  name="comment"
+  value=""
+  mention_source="search_users"
+  phx-change="update_comment"
 />
 ```
 
-Standalone without Ecto:
+---
+
+## rich_text_editor
+
+Full WYSIWYG editor. Outputs HTML. Hook: `PhiaRichText`.
 
 ```heex
-<.tags_input
-  id="skill-tags"
-  name="skills"
-  value={Enum.join(@skills, ",")}
-  placeholder="Type a skill…"
-  phx-change="update_skills"
+<.rich_text_editor id="description" name="description" value={@body} />
+```
+
+---
+
+## search_input
+
+Search field with leading icon and clear button.
+
+```heex
+<.search_input name="q" value={@query} phx-change="search" phx-debounce="300"
+  placeholder="Search projects…" />
+```
+
+---
+
+## clearable_input
+
+Standard input with an X clear button.
+
+```heex
+<.clearable_input name="filter" value={@filter} phx-change="set_filter" placeholder="Filter…" />
+```
+
+---
+
+## copy_input
+
+Read-only input with a copy-to-clipboard button.
+
+```heex
+<.copy_input label="Share URL" value={@share_url} />
+<.copy_input label="API Key" value={@api_key} type="password" />
+```
+
+---
+
+## url_input
+
+URL input with protocol prefix.
+
+```heex
+<.url_input name="website" value={@url} placeholder="yoursite.com" />
+```
+
+---
+
+## phone_input
+
+Phone input with country flag selector.
+
+```heex
+<.phone_input name="phone" value={@phone} default_country="US" phx-change="set_phone" />
+```
+
+---
+
+## unit_input
+
+Number input with a fixed unit label (e.g. "kg", "px", "%").
+
+```heex
+<.unit_input name="weight" value={@weight} unit="kg" min={0} />
+<.unit_input name="width" value={@width} unit="px" min={0} max={9999} />
+```
+
+---
+
+## input_group
+
+Combines multiple inputs into a visually joined row (prefix + input + suffix).
+
+```heex
+<.input_group>
+  <:prefix>https://</:prefix>
+  <.input name="domain" value={@domain} placeholder="yoursite.com" />
+  <:suffix>.com</:suffix>
+</.input_group>
+```
+
+---
+
+## input_addon
+
+Addon slot that attaches to an input — button, icon, or label.
+
+```heex
+<.input_addon>
+  <:addon_left><.icon name="search" size="sm" /></:addon_left>
+  <.input name="q" value={@q} placeholder="Search…" />
+</.input_addon>
+```
+
+---
+
+## inline_search
+
+Expandable inline search bar. Animates open on focus.
+
+```heex
+<.inline_search id="header-search" phx-change="search" phx-debounce="200" />
+```
+
+---
+
+## autocomplete_input
+
+Single-select input with async suggestion loading.
+
+```heex
+<.autocomplete_input
+  id="city-search"
+  name="city"
+  value={@city}
+  placeholder="Search city…"
+  on_search="search_cities"
+  options={@city_suggestions}
 />
 ```
 
@@ -988,578 +449,352 @@ Standalone without Ecto:
 
 ## file_upload
 
-Drag-and-drop file upload zone backed by Phoenix LiveView's native `allow_upload/3` mechanism.
-Sub-component `file_upload_entry/1` renders a progress bar and cancel button per entry.
-Uses `phx-drop-target` for drag-and-drop support.
-
-**Key attrs (file_upload/1)**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `upload` | `Phoenix.LiveView.UploadConfig` | required | From `@uploads.field_name` |
-| `label` | `string` | `"Upload files"` | Drop zone label |
-| `description` | `string` | `nil` | Allowed types description |
-| `class` | `string` | `nil` | Extra classes |
-
-**Examples**
-
-Document upload with entries:
+LiveView upload area with drag-and-drop.
 
 ```heex
-<.file_upload upload={@uploads.documents} label="Upload documents" description="PDF, DOC up to 10MB">
-  <%= for entry <- @uploads.documents.entries do %>
-    <.file_upload_entry
-      entry={entry}
-      on_cancel="cancel_upload"
-      phx-value-ref={entry.ref}
-    />
-  <% end %>
-</.file_upload>
-```
-
-LiveView setup:
-
-```elixir
-def mount(_params, _session, socket) do
-  {:ok, allow_upload(socket, :documents,
-    accept: ~w(.pdf .doc .docx),
-    max_entries: 5,
-    max_file_size: 10_000_000
-  )}
-end
-
-def handle_event("cancel_upload", %{"ref" => ref}, socket) do
-  {:noreply, cancel_upload(socket, :documents, ref)}
-end
-
-def handle_event("save", _params, socket) do
-  paths = consume_uploaded_entries(socket, :documents, fn %{path: path}, entry ->
-    dest = Path.join([:code.priv_dir(:my_app), "static", "uploads", entry.client_name])
-    File.cp!(path, dest)
-    {:ok, ~p"/uploads/#{entry.client_name}"}
-  end)
-  {:noreply, update(socket, :uploaded_files, &(&1 ++ paths))}
-end
+<.form for={@form} phx-change="validate" phx-submit="save">
+  <.file_upload upload={@uploads.avatar} />
+  <.button type="submit">Save</.button>
+</.form>
 ```
 
 ---
 
 ## image_upload
 
-Image-specific upload zone with an inline preview grid showing thumbnails of uploaded entries.
-Built on Phoenix's `live_file_input/1` and `live_img_preview/1`.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `upload` | `Phoenix.LiveView.UploadConfig` | required | From `@uploads.field_name` |
-| `label` | `string` | `"Upload images"` | Drop zone label |
-| `cols` | `integer` | `3` | Preview grid column count |
-
-**Examples**
-
-Product image gallery upload:
+Image upload with live preview.
 
 ```heex
-<.image_upload
-  upload={@uploads.images}
-  label="Add product images"
-  cols={4}
-/>
-
-<div class="grid grid-cols-4 gap-2 mt-4">
-  <%= for entry <- @uploads.images.entries do %>
-    <div class="relative">
-      <.live_img_preview entry={entry} class="rounded-lg aspect-square object-cover" />
-      <button
-        phx-click="cancel_image"
-        phx-value-ref={entry.ref}
-        class="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5"
-      >
-        <.icon name="hero-x-mark" class="size-3" />
-      </button>
-    </div>
-  <% end %>
-</div>
+<.image_upload upload={@uploads.photo} />
 ```
 
 ---
 
-## rich_text_editor
+## avatar_upload
 
-WYSIWYG rich text editor backed by the `PhiaRichTextEditor` JavaScript hook. Supports 14 toolbar
-commands. The editor syncs its HTML content to a hidden textarea on every change, making it
-compatible with standard Phoenix form submissions.
-
-**Supported toolbar commands**
-
-Bold, Italic, Underline, Strike, H1, H2, H3, Paragraph, Bullet List, Ordered List, Blockquote,
-Code Block, Inline Code, Link.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `id` | `string` | required | Hook anchor |
-| `field` | `Phoenix.HTML.FormField` | `nil` | Wires hidden input name + initial value |
-| `label` | `string` | `nil` | Label rendered above the toolbar |
-| `placeholder` | `string` | `"Write something…"` | Editor placeholder |
-| `min_height` | `string` | `"200px"` | CSS min-height of the editor area |
-
-**Examples**
-
-Blog post editor:
+Circular avatar crop/upload with preview overlay.
 
 ```heex
-<.rich_text_editor
-  id="post-body"
-  field={@form[:body]}
-  label="Post content"
-  placeholder="Start writing your post…"
-  min_height="400px"
-/>
-```
-
-Standalone without a form:
-
-```heex
-<.rich_text_editor
-  id="notes-editor"
-  name="notes"
-  label="Notes"
-  placeholder="Add your notes here…"
-  phx-change="update_notes"
-/>
+<.avatar_upload upload={@uploads.avatar} current_url={@user.avatar_url} />
 ```
 
 ---
 
-## color_picker
+## upload_button
 
-Color picker combining a native `<input type="color">` swatch trigger, a hex text input, and an
-optional row of preset swatches. The `PhiaColorPicker` hook keeps all three views in sync.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `id` | `string` | required | Hook anchor |
-| `value` | `string` | `"#000000"` | Hex color string |
-| `on_change` | `string` | `nil` | phx-change event |
-| `swatches` | `list` | `[]` | List of hex strings for preset swatches |
-| `show_hex` | `boolean` | `true` | Show editable hex input |
-
-**Examples**
-
-Brand color picker with presets:
+Small button that triggers a file dialog.
 
 ```heex
-<.color_picker
-  id="brand-color"
-  value={@brand_color}
-  on_change="update_brand_color"
-  swatches={~w(#ef4444 #f97316 #eab308 #22c55e #3b82f6 #8b5cf6 #ec4899)}
-/>
-```
-
-Form-integrated variant:
-
-```heex
-<.color_picker
-  id="label-color"
-  name="label[color]"
-  value={@label.color}
-  show_hex={true}
-  phx-change="preview_color"
-/>
-```
-
-LiveView handler:
-
-```elixir
-def handle_event("update_brand_color", %{"value" => hex}, socket) do
-  {:noreply, assign(socket, :brand_color, hex)}
-end
+<.upload_button upload={@uploads.file} label="Attach file" />
 ```
 
 ---
 
-## mention_input
+## upload_card
 
-A textarea that intercepts `@` keystrokes and opens an autocomplete dropdown of mentionable users
-or entities. Backed by the `PhiaMentionInput` JavaScript hook.
-
-**Key attrs**
-
-| Attr | Type | Default | Notes |
-|---|---|---|---|
-| `id` | `string` | required | Hook anchor |
-| `suggestions` | `list` | `[]` | `[%{id: id, name: name}, ...]` updated by LiveView |
-| `open` | `boolean` | `false` | Whether the dropdown is visible |
-| `search` | `string` | `""` | Current mention search string |
-| `on_mention` | `string` | `nil` | Event fired when `@` is typed; receives `%{"search" => ""}` |
-| `on_select` | `string` | `nil` | Event fired when a suggestion is chosen |
-| `placeholder` | `string` | `"Type @ to mention…"` | Textarea placeholder |
-| `field` | `Phoenix.HTML.FormField` | `nil` | Wires hidden textarea for form submission |
-
-**Examples**
-
-Comment field with user mentions:
-
-```heex
-<.mention_input
-  id="comment-body"
-  field={@form[:body]}
-  suggestions={@mention_suggestions}
-  open={@mention_open}
-  search={@mention_search}
-  on_mention="search_mentions"
-  on_select="insert_mention"
-  placeholder="Write a comment… use @ to mention someone"
-/>
-```
-
-LiveView handlers:
-
-```elixir
-def handle_event("search_mentions", %{"search" => query}, socket) do
-  users = MyApp.Accounts.search_users(query, limit: 5)
-  suggestions = Enum.map(users, &%{id: &1.id, name: &1.name})
-  {:noreply, assign(socket, mention_suggestions: suggestions, mention_open: true, mention_search: query)}
-end
-
-def handle_event("insert_mention", %{"id" => id, "name" => name}, socket) do
-  # Hook handles inserting the mention text; LiveView closes the dropdown
-  {:noreply, assign(socket, mention_open: false, mention_suggestions: [])}
-end
-```
-
----
-
-## Input Wave (new in 0.1.7)
-
-### search_input
-
-Search input with magnifier icon and optional clear button. Emits `phx-change` on keystroke.
-
-```heex
-<.search_input id="user-search" name="q" value={@query} placeholder="Search users..." phx-change="search" phx-debounce="300" />
-```
-
-### clearable_input
-
-Text input with a × clear button that resets the value.
-
-```heex
-<.clearable_input id="filter" name="filter" value={@filter} placeholder="Filter..." phx-change="filter" />
-```
-
-### textarea_counter
-
-Textarea with remaining character counter. Counter updates on input.
-
-**Attrs**: `id`, `name`, `value`, `max_length`, `rows`
-
-```heex
-<.textarea_counter id="bio" name="bio" value={@bio} max_length={280} rows={4} />
-```
-
-### copy_input
-
-Read-only input with an integrated copy button (uses `PhiaCopyButton` hook).
-
-**Attrs**: `id`, `value`, `label`
-
-```heex
-<.copy_input id="api-key" value={@api_key} label="API Key" />
-```
-
-### url_input
-
-URL input with protocol prefix badge (`https://`).
-
-**Attrs**: `id`, `name`, `value`, `placeholder`
-
-```heex
-<.url_input id="website" name="website" value={@website} placeholder="your-site.com" />
-```
-
-### phone_input
-
-Phone number input with country dial-code selector dropdown.
-
-**Attrs**: `id`, `name`, `value`, `default_country` (ISO 2-letter code, default `"US"`)
-
-```heex
-<.phone_input id="phone" name="phone" value={@phone} default_country="BR" />
-```
-
-### input_group
-
-Composite input with prepend/append sections that share a single border radius.
-
-```heex
-<.input_group>
-  <:prepend>https://</:prepend>
-  <.input id="domain" name="domain" value={@domain} />
-  <:append>.com</:append>
-</.input_group>
-```
-
-### inline_search
-
-Compact search bar for in-page filtering. Renders without a visible form border.
-
-```heex
-<.inline_search id="table-search" name="q" value={@q} phx-change="search" phx-debounce="200" />
-```
-
-### unit_input
-
-Numeric input with a unit selector dropdown. Useful for measurements and conversions.
-
-**Attrs**: `id`, `name`, `value`, `units` (list of strings), `selected_unit`, `on_unit_change`
-
-```heex
-<.unit_input id="weight" name="weight" value={@weight}
-  units={["kg", "lb", "oz"]} selected_unit={@weight_unit}
-  on_unit_change="change_unit" />
-```
-
-### autocomplete_input
-
-Text input with a suggestion dropdown list. Keyboard navigable.
-
-**Attrs**: `id`, `name`, `value`, `suggestions` (list of strings), `on_select`
-
-```heex
-<.autocomplete_input id="country" name="country" value={@country}
-  suggestions={@country_suggestions} on_select="select_country"
-  phx-change="search_country" />
-```
-
----
-
-## Upload Components (new in 0.1.7)
-
-### avatar_upload
-
-Circular avatar upload with preview. Click to replace. Wraps `live_file_input/1`.
-
-**Attrs**: `id`, `upload` (`Phoenix.LiveView.UploadConfig`), `current_url`, `name`
-
-```heex
-<.avatar_upload id="avatar-upload" upload={@uploads.avatar} current_url={@user.avatar_url} />
-```
-
-### upload_button
-
-Minimal button-triggered file upload.
-
-**Attrs**: `id`, `upload`, `label`, `accept`
-
-```heex
-<.upload_button id="doc-upload" upload={@uploads.document} label="Upload document" />
-```
-
-### image_gallery_upload
-
-Multi-image grid upload with inline previews and remove buttons.
-
-**Attrs**: `id`, `upload`, `max_files`
-
-```heex
-<.image_gallery_upload id="gallery" upload={@uploads.images} max_files={10} />
-```
-
-### document_upload
-
-Document upload zone with file type restriction and uploaded entry list.
-
-**Attrs**: `id`, `upload`, `accept`, `label`
-
-```heex
-<.document_upload id="docs" upload={@uploads.documents} accept=".pdf,.docx" />
-```
-
-### upload_progress
-
-Upload progress bar with filename, file size, and cancel button.
-
-**Attrs**: `entry` (`Phoenix.LiveView.UploadEntry`), `on_cancel`
+Card-style upload entry with progress, name, and cancel.
 
 ```heex
 <%= for entry <- @uploads.files.entries do %>
-  <.upload_progress entry={entry} on_cancel="cancel_upload" />
+  <.upload_card entry={entry} on_cancel="cancel_upload" />
 <% end %>
-```
-
-### upload_card
-
-File card with circular progress ring overlay and cancel button.
-
-**Attrs**: `entry`, `on_cancel`
-
-```heex
-<.upload_card entry={entry} on_cancel="cancel_upload" />
-```
-
-### upload_queue
-
-Ordered list of pending uploads with bulk cancel.
-
-**Attrs**: `id`, `upload`, `on_cancel_all`
-
-```heex
-<.upload_queue id="queue" upload={@uploads.files} on_cancel_all="cancel_all" />
-```
-
-### fullscreen_drop
-
-Full-viewport drag-and-drop overlay. Appears when a file is dragged anywhere over the window. Uses depth counter to avoid flicker on `dragenter`/`dragleave`.
-
-**Hook**: `PhiaFullscreenDrop`
-**Attrs**: `id`, `label`, `on_drop`
-
-```heex
-<.fullscreen_drop id="window-drop" label="Drop files to upload" on_drop="files_dropped" />
 ```
 
 ---
 
-## Special Inputs (new in 0.1.7)
+## upload_progress
 
-### currency_input
-
-Formatted monetary input with currency symbol prefix. Accepts float value, formats with locale decimal separator.
-
-**Attrs**: `id`, `name`, `value`, `currency` (default `"USD"`), `symbol` (default `"$"`)
+Thin progress bar for a single upload entry.
 
 ```heex
-<.form_currency_input field={@form[:price]} label="Price" currency="USD" />
+<.upload_progress entry={entry} />
 ```
 
-### masked_input
+---
 
-Input with value mask (phone, SSN, date, custom patterns). Uses `PhiaMaskedInput` hook.
+## upload_queue
 
-**Hook**: `PhiaMaskedInput`
-**Attrs**: `id`, `name`, `value`, `mask` (e.g. `"(000) 000-0000"`, `"000.000.000-00"`)
+Full upload queue manager — lists all in-progress entries.
 
 ```heex
-<.form_masked_input field={@form[:phone]} label="Phone" mask="(000) 000-0000" />
+<.upload_queue uploads={@uploads.files} on_cancel="cancel_upload" />
 ```
 
-### range_slider
+---
 
-Dual-thumb range slider for min/max selection. Uses `PhiaRangeSlider` hook; initial from/to percentages computed server-side.
+## document_upload
 
-**Hook**: `PhiaRangeSlider`
-**Attrs**: `id`, `name_from`, `name_to`, `value_from`, `value_to`, `min`, `max`, `step`
+Drop zone styled for documents (PDF, DOCX, etc.).
 
 ```heex
-<.form_range_slider
-  field={@form[:price_range]}
-  label="Price range"
-  min={0} max={1000} step={10}
-  value_from={@min_price} value_to={@max_price}
+<.document_upload upload={@uploads.report} accept=".pdf,.docx" />
+```
+
+---
+
+## image_gallery_upload
+
+Multi-image upload with thumbnail grid.
+
+```heex
+<.image_gallery_upload upload={@uploads.photos} max_files={10} />
+```
+
+---
+
+## fullscreen_drop
+
+Full-window drag-and-drop overlay. Shows on drag-enter. Hook: `PhiaFullscreenDrop`.
+
+```heex
+<.fullscreen_drop id="page-drop" upload={@uploads.files}>
+  <p>Drop files anywhere to upload</p>
+</.fullscreen_drop>
+```
+
+---
+
+## tree_select
+
+Hierarchical dropdown for nested data. Hook: `PhiaTreeSelect`.
+
+```heex
+<.tree_select
+  id="category-select"
+  name="category_id"
+  value={@category_id}
+  options={@category_tree}
+  placeholder="Select category…"
+  phx-change="set_category"
 />
 ```
 
-### signature_pad
+---
 
-Canvas signature drawing pad. Outputs base64 PNG on submit. Uses `PhiaSignaturePad` hook.
+## rich_select
 
-**Hook**: `PhiaSignaturePad`
-**Attrs**: `id`, `name`, `height`, `stroke_color`, `stroke_width`
+Dropdown with icons, descriptions, and search per option.
 
 ```heex
-<.signature_pad id="sig" name="signature" height={200} />
+<.rich_select id="role-select" name="role" value={@role} phx-change="set_role">
+  <.rich_select_option value="admin" icon="shield" description="Full access">Admin</.rich_select_option>
+  <.rich_select_option value="editor" icon="pencil" description="Can edit">Editor</.rich_select_option>
+  <.rich_select_option value="viewer" icon="eye" description="Read only">Viewer</.rich_select_option>
+</.rich_select>
 ```
 
-### color_swatch_picker
+---
 
-Click-to-select color swatch grid with FormField integration.
+## visual_select
 
-**Attrs**: `id`, `name`, `value`, `colors` (list of hex strings)
+Card-style radio select with thumbnails.
 
 ```heex
-<.form_color_swatch_picker
-  field={@form[:color]}
-  label="Brand color"
-  colors={["#3b82f6", "#8b5cf6", "#ec4899", "#10b981", "#f59e0b"]}
+<.visual_select name="theme" value={@theme} phx-change="set_theme">
+  <.visual_select_item value="light" image_src="/light.png">Light</.visual_select_item>
+  <.visual_select_item value="dark" image_src="/dark.png">Dark</.visual_select_item>
+  <.visual_select_item value="system" image_src="/system.png">System</.visual_select_item>
+</.visual_select>
+```
+
+---
+
+## verifiable_input
+
+Input with async server verification (e.g. check username availability).
+
+```heex
+<.verifiable_input
+  id="username-check"
+  name="username"
+  value={@username}
+  on_verify="check_username"
+  status={@username_status}
 />
 ```
 
-### float_input
+---
 
-Floating label text input. Label animates above the input when focused or filled.
+## duration_input
 
-```heex
-<.form_float_input field={@form[:name]} label="Full name" />
-```
-
-### float_textarea
-
-Floating label textarea.
+HH:MM:SS duration entry with separate spinners.
 
 ```heex
-<.form_float_textarea field={@form[:bio]} label="Bio" rows={4} />
+<.duration_input name="duration" value={3661} show_hours={true} phx-change="set_duration" />
+<%!-- value is total seconds; 3661 = 1h 1m 1s --%>
 ```
 
-### form_feedback
+---
 
-Contextual feedback message with icon for valid/invalid state.
+## split_input
 
-**Attrs**: `type` (`"valid"`, `"invalid"`, `"info"`), `message`
+N separate input boxes for structured codes (OTP, credit card, etc.). Hook: `PhiaSplitInput`.
 
 ```heex
-<.form_feedback type="valid" message="Username is available." />
-<.form_feedback type="invalid" message="This email is already taken." />
+<.split_input name="code" parts={4} value={@code} type="number" phx-change="update_code" />
 ```
 
-### input_status
+---
 
-Input status indicator icon suffix: loading spinner, check (valid), or X (invalid).
+## credit_card_input
 
-**Attrs**: `status` (`"loading"`, `"valid"`, `"invalid"`, `nil`)
+Credit card form with number, expiry, CVV, and cardholder auto-formatting. Hook: `PhiaCreditCard`.
 
 ```heex
-<div class="relative">
-  <.input id="username" name="username" value={@username} phx-change="check_username" />
-  <.input_status status={@username_status} />
-</div>
+<.credit_card_input
+  id="card-form"
+  name_prefix="card"
+  phx-change="validate_card"
+/>
 ```
 
-### form_stepper
+---
 
-Step-based wizard form with numbered item slots.
+## drag_number
 
-**Attrs**: `id`, `current_step` (1-based)
+Number input that increments/decrements by dragging left/right. Hook: `PhiaDragNumber`.
 
 ```heex
-<.form_stepper id="checkout" current_step={@step}>
-  <:step label="Account">
-    <.phia_input field={@form[:email]} label="Email" />
-  </:step>
-  <:step label="Billing">
-    <.form_currency_input field={@form[:amount]} label="Amount" />
-  </:step>
-  <:step label="Confirm">
-    <.form_summary changeset={@changeset} />
-  </:step>
-</.form_stepper>
+<.drag_number name="opacity" value={@opacity} min={0} max={100} step={1} />
 ```
 
-### country_select
+---
 
-Country dropdown with flag emojis. Pre-populated with all ISO 3166-1 alpha-2 countries.
+## suggestion_input
 
-**Attrs**: `id`, `name`, `value`, `placeholder`
+Text input with configurable suggestion chips below. Hook: `PhiaSuggestionInput`.
 
 ```heex
-<.form_country_select field={@form[:country]} label="Country" placeholder="Select country..." />
+<.suggestion_input
+  id="prompt-input"
+  name="prompt"
+  value={@prompt}
+  suggestions={["Summarise", "Translate", "Improve writing"]}
+  on_suggestion="apply_suggestion"
+/>
 ```
 
-← [Back to README](../../README.md)
+---
+
+## emoji_picker
+
+Emoji picker popover with category tabs and search. Hook: `PhiaEmojiPicker`.
+
+```heex
+<.emoji_picker id="emoji-1" name="reaction" on_select="add_reaction" />
+```
+
+---
+
+## keyboard_shortcut_input
+
+Records a keyboard shortcut combination (e.g. ⌘+Shift+P). Hook: `PhiaKeyShortcut`.
+
+```heex
+<.keyboard_shortcut_input name="shortcut" value={@shortcut} phx-change="set_shortcut" />
+```
+
+---
+
+## Textarea Variants (v0.1.11)
+
+All textarea variants in `PhiaUi.Components.TextareaEnhanced`. Each ships with a `phia_X` companion for Ecto FormField integration.
+
+### autoresize_textarea
+
+Auto-grows as you type. Feature-detects `field-sizing: content`; falls back to `scrollHeight`. Hook: `PhiaAutoresize`.
+
+```heex
+<.autoresize_textarea
+  id="bio-input"
+  name="bio"
+  value={@bio}
+  min_rows={2}
+  max_rows={10}
+  phx-change="update_bio"
+/>
+
+<%!-- Form-integrated --%>
+<.phia_autoresize_textarea field={@form[:bio]} label="Bio" min_rows={2} max_rows={10} />
+```
+
+### chat_textarea
+
+Enter to submit, Shift+Enter for newline. Auto-grows. Optional actions slot. Hook: `PhiaChatTextarea`.
+
+```heex
+<.chat_textarea id="chat-input" name="message" on_submit="send_message">
+  <:actions>
+    <.icon_button icon="paperclip" label="Attach" phx-click="attach" variant="ghost" />
+    <.icon_button icon="send" label="Send" phx-click="send" variant="default" />
+  </:actions>
+</.chat_textarea>
+```
+
+### code_textarea
+
+Monospace textarea with line numbers and Tab indentation. Hook: `PhiaCodeTextarea`.
+
+```heex
+<.code_textarea
+  id="snippet-editor"
+  name="code"
+  value={@snippet}
+  tab_size={2}
+  show_line_numbers={true}
+  rows={20}
+  phx-change="update_code"
+/>
+```
+
+### textarea_with_actions
+
+Textarea with a bottom action bar.
+
+```heex
+<.textarea_with_actions name="post" value={@draft}>
+  <:actions>
+    <.badge_button count={@word_count} variant="secondary">Words</.badge_button>
+    <.button type="submit" size="sm">Publish</.button>
+  </:actions>
+</.textarea_with_actions>
+```
+
+### split_textarea
+
+Side-by-side Write / Preview split view.
+
+```heex
+<.split_textarea name="body" value={@markdown}>
+  <:preview>
+    <div class="prose dark:prose-invert">
+      <%= raw(@preview_html) %>
+    </div>
+  </:preview>
+</.split_textarea>
+```
+
+### ghost_textarea
+
+Borderless, transparent — use for inline note editing.
+
+```heex
+<.ghost_textarea id="inline-note" name="note" value={@note} phx-blur="save_note"
+  placeholder="Add a note…" />
+```
+
+### expandable_textarea
+
+Starts collapsed; expands to full height on button click — no round-trip needed.
+
+```heex
+<.expandable_textarea
+  id="desc-input"
+  name="description"
+  value={@description}
+  collapsed_rows={3}
+  expanded_rows={12}
+/>
+```
+
+**Attrs (common)**: `id`, `name`, `value`, `placeholder`, `class`, `phx-change`, `phx-blur`

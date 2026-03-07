@@ -1,587 +1,424 @@
 # Animation
 
-CSS and canvas animation primitives for landing pages, dashboards, and interactive UIs. All 22 components live in `PhiaUi.Components.Animation` and belong to the `:animation` tier. Every component respects `prefers-reduced-motion` via the `.phia-chart-animate` guard and requires no npm dependencies — vanilla JS hooks only.
+22 animation primitives — marquee, typewriter, particle systems, text effects, number tickers, and motion wrappers for landing pages, dashboards, and interactive UIs.
+
+**Module**: `PhiaUi.Components.Animation`
 
 ```elixir
 import PhiaUi.Components.Animation
 ```
 
+All components:
+- Respect `prefers-reduced-motion` — animations disable automatically for users who prefer reduced motion
+- Use vanilla JS hooks — no npm packages
+- Are server-rendered — content is in the DOM before JavaScript runs
+
+> **Background patterns** (gradient mesh, dot grids, bokeh, SVG waves, etc.) live in their own module — see [Background](background.md).
+
 ---
 
-## marquee/1
+## Table of Contents
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaMarquee`
+**Marquee & Orbit**
+- [marquee](#marquee)
+- [orbit](#orbit)
 
-Infinite horizontal scrolling ticker. Loops child content seamlessly. Useful for logo clouds, news tickers, and announcement banners.
+**Background Effects**
+- [aurora](#aurora)
+- [meteor_shower](#meteor_shower)
+- [dot_pattern](#dot_pattern)
+- [grid_pattern](#grid_pattern)
+- [ripple_bg](#ripple_bg)
+- [particle_bg](#particle_bg)
 
-### Attributes
+**Text Effects**
+- [shimmer_text](#shimmer_text)
+- [typewriter](#typewriter)
+- [word_rotate](#word_rotate)
+- [text_scramble](#text_scramble)
+- [gradient_text](#gradient_text) — see [Typography](typography.md)
 
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `speed` | `:integer` | `30` | Scroll speed in seconds for one full loop |
-| `direction` | `:string` | `"left"` | Scroll direction: `"left"` or `"right"` |
-| `gap` | `:string` | `"1rem"` | Gap between items |
-| `pause_on_hover` | `:boolean` | `true` | Pause animation on mouse hover |
-| `class` | `:string` | `nil` | Additional CSS classes |
+**Motion Wrappers**
+- [fade_in](#fade_in)
+- [float](#float)
+- [tilt_card](#tilt_card)
+- [spotlight](#spotlight)
+- [animated_border](#animated_border)
+- [pulse_ring](#pulse_ring)
 
-### Usage
+**UI Animations**
+- [number_ticker](#number_ticker)
+- [typing_indicator](#typing_indicator)
+- [wave_loader](#wave_loader)
+- [confetti_burst](#confetti_burst)
+
+---
+
+## marquee
+
+Infinite horizontal scrolling ticker. Loops child content seamlessly. Hook: `PhiaMarquee`.
 
 ```heex
-<.marquee speed={20}>
-  <span class="px-8">Elixir</span>
-  <span class="px-8">Phoenix</span>
-  <span class="px-8">LiveView</span>
+<%!-- Logo cloud --%>
+<.marquee speed={40} gap={32} class="py-4">
+  <%= for logo <- @logos do %>
+    <img src={logo.url} alt={logo.name} class="h-8 grayscale hover:grayscale-0 transition-all" />
+  <% end %>
+</.marquee>
+
+<%!-- Testimonial ticker --%>
+<.marquee speed={30} pause_on_hover={true}>
+  <%= for quote <- @quotes do %>
+    <.testimonial_card {quote} class="w-72 mx-4 shrink-0" />
+  <% end %>
+</.marquee>
+
+<%!-- Reverse direction --%>
+<.marquee reverse={true} speed={25}>
+  <%= for tag <- @tags do %>
+    <.badge class="mx-2"><%= tag %></.badge>
+  <% end %>
 </.marquee>
 ```
 
-### Use Cases
-
-- Logo cloud / partner strip
-- News ticker or announcement banner
-- Infinite tag cloud
+**Attrs**: `speed` (px/s, default 30), `gap` (px), `reverse` (boolean), `pause_on_hover` (boolean), `class`
 
 ---
 
-## orbit/1
+## orbit
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Elements orbiting a fixed center point with CSS animation. Supports multiple items at configurable radii and speeds.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `radius` | `:integer` | `80` | Orbit radius in pixels |
-| `duration` | `:integer` | `8` | Seconds for one full orbit |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Elements orbit around a central point. Hook: `PhiaOrbit`.
 
 ```heex
-<.orbit radius={100} duration={6}>
-  <:center><.icon name="zap" size={:lg} /></:center>
-  <:item><img src="/logo1.png" class="size-8 rounded-full" /></:item>
-  <:item><img src="/logo2.png" class="size-8 rounded-full" /></:item>
+<.orbit id="skills-orbit" radius={120} speed={20}>
+  <:center>
+    <.avatar size="xl"><.avatar_image src={@profile.avatar} /></.avatar>
+  </:center>
+  <:items>
+    <img src="/icons/elixir.svg" class="h-8 w-8" />
+    <img src="/icons/phoenix.svg" class="h-8 w-8" />
+    <img src="/icons/tailwind.svg" class="h-8 w-8" />
+    <img src="/icons/postgresql.svg" class="h-8 w-8" />
+  </:items>
 </.orbit>
 ```
 
-### Use Cases
-
-- Hero section "ecosystem" animation
-- Technology showcase
+**Attrs**: `id` (required), `radius` (px), `speed` (seconds for full orbit), `class`
 
 ---
 
-## aurora/1
+## aurora
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Animated northern-lights gradient backdrop. Soft blobs of color that shift and blend using CSS keyframe animations.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `colors` | `:list` | `["#3b82f6", "#8b5cf6", "#06b6d4"]` | List of aurora blob colors |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
+Animated aurora borealis gradient — soft, shifting colours. Reuses the `--animate-aurora` theme token.
 
 ```heex
-<.aurora>
-  <div class="relative z-10 text-center">
-    <h1 class="text-5xl font-bold">Hero Title</h1>
+<div class="relative h-64 overflow-hidden rounded-xl bg-zinc-900">
+  <.aurora colors={["#3b82f6", "#8b5cf6", "#ec4899"]} />
+  <div class="relative z-10 p-8 text-white">Hero content</div>
+</div>
+```
+
+**Attrs**: `colors` (list of CSS colors), `class`
+
+---
+
+## meteor_shower
+
+Animated shooting meteors across a dark background. Hook: `PhiaMeteor`.
+
+```heex
+<div class="relative h-96 bg-black overflow-hidden rounded-xl">
+  <.meteor_shower count={30} color="rgba(255,255,255,0.8)" />
+  <div class="relative z-10">Content</div>
+</div>
+```
+
+**Attrs**: `count` (integer, default 20), `color`, `class`
+
+---
+
+## dot_pattern
+
+Repeating SVG dot pattern background with optional radial fade mask.
+
+```heex
+<div class="relative bg-white dark:bg-zinc-950">
+  <.dot_pattern class="opacity-50" />
+  <div class="relative z-10 p-12">Page content</div>
+</div>
+```
+
+---
+
+## grid_pattern
+
+SVG grid line pattern with optional fade mask.
+
+```heex
+<div class="relative">
+  <.grid_pattern stroke_color="rgba(0,0,0,0.08)" />
+  <div class="relative z-10">Content</div>
+</div>
+```
+
+---
+
+## ripple_bg
+
+Expanding concentric circle ripples from a centre point.
+
+```heex
+<div class="relative h-64 flex items-center justify-center bg-primary/5 rounded-xl overflow-hidden">
+  <.ripple_bg color="rgba(99,102,241,0.15)" count={4} duration={3} />
+  <.icon name="wifi" size="lg" class="relative z-10 text-primary" />
+</div>
+```
+
+---
+
+## particle_bg
+
+Canvas particle system with connecting lines. Hook: `PhiaParticleBg`.
+
+```heex
+<div class="relative h-screen bg-zinc-950">
+  <.particle_bg
+    id="hero-particles"
+    count={80}
+    color="rgba(99,102,241,0.5)"
+    connect={true}
+  />
+  <div class="relative z-10 flex items-center justify-center h-full">
+    <h1 class="text-white text-5xl font-bold">PhiaUI</h1>
   </div>
-</.aurora>
+</div>
 ```
+
+**Attrs**: `id` (required), `count` (integer), `color`, `connect` (boolean), `speed` (float)
 
 ---
 
-## meteor_shower/1
+## shimmer_text
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-CSS animated diagonal meteor streaks. Generates configurable number of `<span>` meteors at random horizontal positions with staggered delays.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `count` | `:integer` | `20` | Number of meteor streaks |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
-
-```heex
-<.meteor_shower count={30} class="absolute inset-0" />
-```
-
----
-
-## dot_pattern/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-SVG repeating dot grid background pattern. Zero JS, pure SVG `<pattern>` element.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `dot_size` | `:integer` | `2` | Dot radius in pixels |
-| `spacing` | `:integer` | `20` | Grid cell size in pixels |
-| `color` | `:string` | `"currentColor"` | Dot fill color |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
-
-```heex
-<.dot_pattern spacing={24} color="#e5e7eb" class="absolute inset-0 opacity-50" />
-```
-
----
-
-## grid_pattern/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-SVG repeating grid line background pattern. Similar to `dot_pattern` but renders grid lines instead of dots.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `cell_size` | `:integer` | `40` | Grid cell size in pixels |
-| `stroke` | `:string` | `"currentColor"` | Line stroke color |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
-
-```heex
-<.grid_pattern cell_size={32} stroke="#f3f4f6" class="absolute inset-0" />
-```
-
----
-
-## ripple_bg/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Concentric ripple rings expanding from center. Multiple rings animate with staggered delays via `phia-ripple` keyframes.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `rings` | `:integer` | `4` | Number of concentric ripple rings |
-| `color` | `:string` | `"primary"` | Ring color (CSS color or theme variable) |
-| `duration` | `:integer` | `3` | Seconds for one ripple expansion |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
-
-```heex
-<.ripple_bg rings={5} color="hsl(var(--primary))" class="size-48">
-  <.icon name="bell" size={:lg} />
-</.ripple_bg>
-```
-
----
-
-## shimmer_text/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Gradient shimmer sweep across text. Uses a moving linear-gradient over `background-clip: text`.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Text with a sweeping shimmer highlight.
 
 ```heex
 <.shimmer_text class="text-4xl font-bold">
-  Building the future
+  PhiaUI
 </.shimmer_text>
 ```
 
 ---
 
-## typewriter/1
+## typewriter
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaTypewriter`
-
-Character-by-character text typing animation with configurable speed and optional loop.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `text` | `:string` | required | Text to type |
-| `speed` | `:integer` | `60` | Milliseconds per character |
-| `loop` | `:boolean` | `false` | Loop after completion |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Types text character by character, with optional blinking cursor. Hook: `PhiaTypewriter`.
 
 ```heex
-<.typewriter id="hero-typer" text="Hello, Phoenix LiveView." speed={50} loop={true} />
+<.typewriter
+  id="hero-type"
+  phrases={["Build faster.", "Ship confidently.", "Own your UI."]}
+  speed={80}
+  pause={2000}
+/>
+```
+
+**Attrs**: `id` (required), `phrases` (list of strings), `speed` (ms per char), `pause` (ms between phrases), `loop` (boolean)
+
+---
+
+## word_rotate
+
+Rotates through a list of words with a fade transition. Hook: `PhiaWordRotate`.
+
+```heex
+<h1 class="text-4xl font-bold flex gap-3 items-center">
+  Build
+  <.word_rotate
+    id="rotating-word"
+    words={["faster", "smarter", "better", "with confidence"]}
+    class="text-primary"
+  />
+</.h1>
 ```
 
 ---
 
-## word_rotate/1
+## text_scramble
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaWordRotate`
-
-Cycles through a list of words with fade-in/fade-out transition.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `words` | `:list` | required | List of words to cycle through |
-| `interval` | `:integer` | `2000` | Milliseconds between word changes |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Scrambles and resolves text character by character (Matrix-style). Hook: `PhiaTextScramble`.
 
 ```heex
-<.word_rotate id="hero-words" words={["Fast", "Reliable", "Beautiful"]} interval={1500} />
+<.text_scramble id="scramble-1" text="PhiaUI" class="text-5xl font-mono font-bold" />
 ```
 
 ---
 
-## text_scramble/1
+## fade_in
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaTextScramble`
-
-Characters scramble randomly then resolve to the final target text.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `text` | `:string` | required | Final resolved text |
-| `duration` | `:integer` | `1000` | Total animation duration in ms |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Fades and slides content into view on scroll. Hook: `PhiaScrollReveal`.
 
 ```heex
-<.text_scramble id="scramble-1" text="PhiaUI Components" duration={1200} />
-```
-
----
-
-## fade_in/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Opacity + translate-Y entrance animation with configurable delay. Pure CSS, respects `prefers-reduced-motion`.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `delay` | `:integer` | `0` | Animation delay in milliseconds |
-| `duration` | `:integer` | `500` | Animation duration in milliseconds |
-| `direction` | `:string` | `"up"` | Entry direction: `"up"`, `"down"`, `"left"`, `"right"` |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
-
-```heex
-<.fade_in delay={200}>
-  <.card>Content</.card>
+<.fade_in id="feature-1" direction={:up} delay={0}>
+  <.feature_card title="Fast" description="534 components, zero bloat." />
+</.fade_in>
+<.fade_in id="feature-2" direction={:up} delay={100}>
+  <.feature_card title="Accessible" description="Full WAI-ARIA on all interactive components." />
 </.fade_in>
 ```
 
+**Attrs**: `id` (required), `direction` (`:up` | `:down` | `:left` | `:right`), `delay` (ms), `duration` (ms)
+
 ---
 
-## float/1
+## float
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Gentle CSS floating/bobbing animation wrapper. Uses `phia-float` keyframes.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `amplitude` | `:integer` | `10` | Float amplitude in pixels |
-| `duration` | `:integer` | `3` | Seconds per float cycle |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Gently floats content up and down continuously.
 
 ```heex
-<.float amplitude={12} duration={4}>
-  <.icon name="arrow-up" size={:lg} />
+<.float amplitude={8} duration={3}>
+  <img src="/hero-graphic.svg" class="w-64" />
 </.float>
 ```
 
----
-
-## spotlight/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaSpotlight`
-
-Mouse-following radial gradient spotlight overlay. The gradient tracks cursor position within the wrapper element.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `size` | `:integer` | `600` | Spotlight diameter in pixels |
-| `color` | `:string` | `"hsl(var(--primary) / 0.15)"` | Spotlight gradient color |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
-
-```heex
-<.spotlight id="hero-spotlight" size={500} class="relative min-h-screen">
-  <div class="relative z-10">Hero content</div>
-</.spotlight>
-```
+**Attrs**: `amplitude` (px, default 6), `duration` (seconds, default 4), `class`
 
 ---
 
-## tilt_card/1
+## tilt_card
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaTiltCard`
-
-3D perspective tilt effect on mouse-move. The card tilts toward the cursor position within bounds.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `max_tilt` | `:integer` | `15` | Maximum tilt angle in degrees |
-| `scale` | `:any` | `1.05` | Scale factor on hover |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Card that tilts in 3D on mouse movement. Hook: `PhiaTiltCard`.
 
 ```heex
-<.tilt_card id="feature-card" max_tilt={10}>
-  <.card class="p-6">
-    <h3>Feature Title</h3>
-  </.card>
+<.tilt_card id="product-card" max_tilt={15} class="rounded-xl overflow-hidden">
+  <.image_card src="/product.jpg" title="Product Name" />
 </.tilt_card>
 ```
 
 ---
 
-## number_ticker/1
+## spotlight
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaNumberTicker`
-
-Animated number count-up from 0 to a target value on mount.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `value` | `:integer` | required | Target number to count up to |
-| `duration` | `:integer` | `1500` | Animation duration in ms |
-| `prefix` | `:string` | `nil` | Text before number (e.g., `"$"`) |
-| `suffix` | `:string` | `nil` | Text after number (e.g., `"+"`) |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Radial spotlight that follows cursor inside the container. Hook: `PhiaSpotlight`.
 
 ```heex
-<.number_ticker id="user-count" value={12500} duration={2000} suffix="+" class="text-5xl font-bold" />
+<.spotlight id="hero-spotlight" color="rgba(99,102,241,0.15)">
+  <div class="p-12">
+    <.heading level={1}>Build something great</.heading>
+  </div>
+</.spotlight>
 ```
 
 ---
 
-## animated_border/1
+## animated_border
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Rotating conic-gradient border animation. Wraps content with a visible animated border.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `duration` | `:integer` | `4` | Seconds per rotation cycle |
-| `colors` | `:list` | `["#3b82f6", "#8b5cf6", "#ec4899"]` | Gradient color stops |
-| `border_width` | `:integer` | `2` | Border thickness in pixels |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Animates a gradient around the element border.
 
 ```heex
-<.animated_border duration={3} class="rounded-xl">
-  <.button>Premium Feature</.button>
+<.animated_border class="rounded-xl p-0.5">
+  <div class="bg-card rounded-xl p-6">
+    <h3>Special offer</h3>
+  </div>
 </.animated_border>
 ```
 
 ---
 
-## pulse_ring/1
+## pulse_ring
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Expanding pulse ring animation, useful as a notification beacon or "live" indicator.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `color` | `:string` | `"primary"` | Ring color variant |
-| `size` | `:integer` | `12` | Inner dot size in pixels |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Pulsing ring around an element — draws attention.
 
 ```heex
-<.pulse_ring color="emerald" class="absolute top-0 right-0" />
+<div class="relative">
+  <.pulse_ring color="rgba(99,102,241,0.4)" />
+  <.button variant="default">New feature</.button>
+</div>
 ```
 
 ---
 
-## typing_indicator/1
+## number_ticker
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Three-dot animated chat typing indicator. Uses staggered `phia-bounce` keyframes.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Counts up to a target value with easing. Hook: `PhiaNumberTicker`.
 
 ```heex
-<.typing_indicator class="px-4 py-2" />
+<.number_ticker id="mrr" value={24500} prefix="$" duration={1500} />
+<.number_ticker id="users" value={18723} suffix=" users" duration={2000} />
 ```
+
+**Attrs**: `id` (required), `value` (number), `prefix`, `suffix`, `duration` (ms), `start` (initial value)
 
 ---
 
-## wave_loader/1
+## typing_indicator
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-
-Animated vertical wave bar loading indicator. Five bars animate with staggered heights.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `bars` | `:integer` | `5` | Number of wave bars |
-| `color` | `:string` | `"primary"` | Bar color class |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
+Three animated dots — for chat "is typing" states.
 
 ```heex
-<.wave_loader bars={6} class="h-8" />
-```
-
----
-
-## confetti_burst/1
-
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaConfetti`
-
-Canvas confetti explosion on mount. Fires a burst of colored particles from the center of the element.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `count` | `:integer` | `150` | Number of confetti particles |
-| `duration` | `:integer` | `3000` | Animation duration in ms |
-| `class` | `:string` | `nil` | Additional CSS classes |
-
-### Usage
-
-```heex
-<.confetti_burst id="celebration" count={200} />
-```
-
-### LiveView Example
-
-```elixir
-def handle_event("payment_success", _params, socket) do
-  {:noreply, assign(socket, show_confetti: true)}
-end
-```
-
-```heex
-<%= if @show_confetti do %>
-  <.confetti_burst id="payment-confetti" />
+<%= if @contact_is_typing do %>
+  <div class="flex items-center gap-2">
+    <.avatar size="xs"><.avatar_fallback name={@contact.name} /></.avatar>
+    <.typing_indicator />
+  </div>
 <% end %>
 ```
 
 ---
 
-## particle_bg/1
+## wave_loader
 
-**Module**: `PhiaUi.Components.Animation`
-**Tier**: animation
-**Hook**: `PhiaParticleBg`
-
-Canvas floating particles background. Particles drift with random velocities and connect with lines when close.
-
-### Attributes
-
-| Attr | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `:string` | required | Required for hook |
-| `count` | `:integer` | `80` | Number of particles |
-| `color` | `:string` | `"#3b82f6"` | Particle and line color |
-| `speed` | `:any` | `0.5` | Particle movement speed |
-| `class` | `:string` | `nil` | Wrapper CSS classes |
-
-### Usage
+Five vertical bars that animate like a sound wave.
 
 ```heex
-<.particle_bg id="hero-particles" count={60} color="hsl(var(--primary))" class="absolute inset-0" />
+<.wave_loader class="text-primary" />
+<.wave_loader size="lg" class="text-muted-foreground" />
+```
+
+---
+
+## confetti_burst
+
+Canvas confetti explosion. Hook: `PhiaConfetti`.
+
+```heex
+<.confetti_burst id="success-confetti" />
+
+<%!-- Trigger from LiveView --%>
+<%!-- push_event(socket, "confetti", %{id: "success-confetti"}) --%>
+```
+
+---
+
+## Real-world: Hero section with animation stack
+
+```heex
+<section class="relative min-h-screen overflow-hidden bg-zinc-950">
+  <%!-- Background layers --%>
+  <.particle_bg id="hero-bg" count={60} color="rgba(99,102,241,0.3)" connect={true} />
+
+  <%!-- Foreground content --%>
+  <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
+    <.fade_in id="hero-badge" direction={:down} delay={0}>
+      <.badge variant="outline" class="text-white border-white/20 mb-6">
+        v0.1.11 — 534 components
+      </.badge>
+    </.fade_in>
+
+    <.fade_in id="hero-title" direction={:up} delay={100}>
+      <h1 class="text-6xl font-bold text-white mb-4">
+        Build Phoenix UIs
+        <br />
+        <.shimmer_text class="text-indigo-400">in minutes</.shimmer_text>
+      </h1>
+    </.fade_in>
+
+    <.fade_in id="hero-cta" direction={:up} delay={300}>
+      <div class="flex gap-4 mt-8">
+        <.glow_button color="#6366f1" phx-click="get_started">Get started</.glow_button>
+        <.button variant="outline" class="text-white border-white/20">View docs</.button>
+      </div>
+    </.fade_in>
+  </div>
+</section>
 ```
