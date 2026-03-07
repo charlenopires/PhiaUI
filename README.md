@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="PhiaUI" width="900" />
+  <img src="https://raw.githubusercontent.com/charlenopires/PhiaUI/main/docs/assets/banner.svg" alt="PhiaUI" width="900" />
 </p>
 
 # PhiaUI
