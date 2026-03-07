@@ -284,49 +284,6 @@ defmodule PhiaUi.Components.Avatar do
   end
 
   # ---------------------------------------------------------------------------
-  # avatar_group/1 — overlapping stack
-  # ---------------------------------------------------------------------------
-
-  attr(:class, :string, default: nil, doc: "Additional CSS classes merged via `cn/1`.")
-  attr(:rest, :global, doc: "HTML attributes forwarded to the root `<div>` element.")
-
-  slot(:inner_block,
-    required: true,
-    doc: "`avatar/1` components to display as an overlapping group."
-  )
-
-  @doc """
-  Renders a horizontal group of overlapping avatars.
-
-  Uses `-space-x-2` (negative left margin) so each subsequent avatar
-  overlaps its predecessor by 8px. Apply `ring-2 ring-background` on each
-  individual `avatar/1` to create a visible border between overlapping items.
-
-  ## Example
-
-      <.avatar_group>
-        <.avatar class="ring-2 ring-background">
-          <.avatar_fallback name="Alice Adams" />
-        </.avatar>
-        <.avatar class="ring-2 ring-background">
-          <.avatar_fallback name="Bob Baker" />
-        </.avatar>
-        <.avatar class="ring-2 ring-background">
-          <.avatar_fallback name="Carl Chen" />
-        </.avatar>
-      </.avatar_group>
-  """
-  def avatar_group(assigns) do
-    ~H"""
-    <div role="list" class={cn(["flex -space-x-2", @class])} {@rest}>
-      <div :for={item <- @inner_block} role="listitem">
-        {render_slot(item)}
-      </div>
-    </div>
-    """
-  end
-
-  # ---------------------------------------------------------------------------
   # Private helpers — pattern matching only, no case/cond
   # ---------------------------------------------------------------------------
 

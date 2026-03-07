@@ -291,7 +291,11 @@ defmodule PhiaUi.Components.Calendar do
         >
           <button
             type="button"
-            class="w-full h-full flex items-center justify-center text-sm rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            class={cn([
+              "w-full h-full flex items-center justify-center text-sm rounded-md",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              day_button_classes(@cell_states[date])
+            ])}
             phx-click={@on_change}
             phx-value-date={Date.to_iso8601(date)}
             tabindex={if @cell_states[date].selected, do: "0", else: "-1"}
@@ -371,6 +375,14 @@ defmodule PhiaUi.Components.Calendar do
   # ---------------------------------------------------------------------------
   # CSS class helpers
   # ---------------------------------------------------------------------------
+
+  # Hover classes for individual day buttons, conditional on cell state.
+  # - selected: slight primary darkening on hover (already has bg-primary on the cell)
+  # - disabled: no hover (pointer-events-none is on the parent cell, but keep clean)
+  # - normal/outside: standard accent hover so the user can preview the target date
+  defp day_button_classes(%{selected: true}), do: "hover:bg-primary/80"
+  defp day_button_classes(%{disabled: true}), do: ""
+  defp day_button_classes(_), do: "hover:bg-accent hover:text-accent-foreground transition-colors"
 
   defp cell_classes(date, cell_states) do
     %{outside: outside, selected: selected, in_range: in_range, disabled: disabled} =

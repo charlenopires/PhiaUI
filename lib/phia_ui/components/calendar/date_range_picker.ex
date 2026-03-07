@@ -196,6 +196,10 @@ defmodule PhiaUi.Components.DateRangePicker do
           >
             <.icon name="chevron-left" size={:sm} />
           </button>
+          <div class="flex flex-1 justify-around px-2">
+            <span class="text-sm font-medium"><%= month_label(@month1) %></span>
+            <span class="text-sm font-medium"><%= month_label(@month2) %></span>
+          </div>
           <button
             type="button"
             phx-click={@on_month_change}
@@ -252,10 +256,6 @@ defmodule PhiaUi.Components.DateRangePicker do
 
     ~H"""
     <div class="calendar-month">
-      <%!-- Month name header --%>
-      <div class="mb-2 text-center text-sm font-medium">
-        <%= month_label(@month) %>
-      </div>
       <table class="w-full border-collapse">
         <thead>
           <tr>
