@@ -39,6 +39,14 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 
 ---
 
+### See it in action
+
+[![PhiaUI Dashboard Demo](https://raw.githubusercontent.com/charlenopires/PhiaUI/main/docs/assets/dashboard.png)](https://github.com/charlenopires/PhiaUI-samples)
+
+> **[PhiaUI-samples](https://github.com/charlenopires/PhiaUI-samples)** — 16 complete Phoenix LiveView demo apps built entirely with PhiaUI components.
+
+---
+
 ## Quick Start
 
 ### 1. Add dependency

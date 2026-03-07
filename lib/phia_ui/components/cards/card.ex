@@ -153,7 +153,7 @@ defmodule PhiaUi.Components.Card do
   """
   def card_header(assigns) do
     ~H"""
-    <div class={cn(["relative flex flex-col space-y-1.5 p-6", @class])} {@rest}>
+    <div class={cn(["relative flex flex-col space-y-1.5 px-6 pt-6", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -311,7 +311,7 @@ defmodule PhiaUi.Components.Card do
   """
   def card_content(assigns) do
     ~H"""
-    <div class={cn(["p-6 pt-0", @class])} {@rest}>
+    <div class={cn(["p-6", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -358,7 +358,7 @@ defmodule PhiaUi.Components.Card do
   """
   def card_footer(assigns) do
     ~H"""
-    <div class={cn(["flex items-center p-6 pt-0", @class])} {@rest}>
+    <div class={cn(["flex items-center px-6 pb-6", @class])} {@rest}>
       <%= render_slot(@inner_block) %>
     </div>
     """
