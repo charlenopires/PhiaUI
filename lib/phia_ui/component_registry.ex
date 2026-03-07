@@ -2639,6 +2639,220 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Editor Suite — 19 new components (v0.1.7+) ───────────────────────────
+    # TipTap-inspired (most popular rich text editor, 2.5M+ weekly npm downloads)
+    # All components in PhiaUi.Components.Editor — priv/templates/components/editor/editor.ex
+
+    # Group A — Toolbar Primitives (no JS hooks)
+    editor_toolbar: %{
+      name: "editor_toolbar",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    toolbar_button: %{
+      name: "toolbar_button",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [:editor_toolbar],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    toolbar_group: %{
+      name: "toolbar_group",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [:editor_toolbar],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    toolbar_separator: %{
+      name: "toolbar_separator",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group B — Floating / Contextual (JS hooks)
+    bubble_menu: %{
+      name: "bubble_menu",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaBubbleMenu"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    floating_menu: %{
+      name: "floating_menu",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaFloatingMenu"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    slash_command_menu: %{
+      name: "slash_command_menu",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaSlashCommand"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group C — Enhanced Inline Editing
+    inline_edit: %{
+      name: "inline_edit",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaEditable"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    inline_edit_group: %{
+      name: "inline_edit_group",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [:inline_edit],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group D — Rich Text Utilities
+    editor_color_picker: %{
+      name: "editor_color_picker",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaEditorColorPicker"],
+      dependencies: [:editor_toolbar],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editor_toolbar_dropdown: %{
+      name: "editor_toolbar_dropdown",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaEditorDropdown"],
+      dependencies: [:editor_toolbar],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editor_link_dialog: %{
+      name: "editor_link_dialog",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editor_code_block: %{
+      name: "editor_code_block",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaCopyButton"],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editor_character_count: %{
+      name: "editor_character_count",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    markdown_editor: %{
+      name: "markdown_editor",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaMarkdownEditor"],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    rich_text_viewer: %{
+      name: "rich_text_viewer",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editor_find_replace: %{
+      name: "editor_find_replace",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: ["PhiaEditorFindReplace"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    editor_word_count: %{
+      name: "editor_word_count",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Bonus — TipTap-Inspired Full Editor
+    advanced_editor: %{
+      name: "advanced_editor",
+      module: PhiaUi.Components.Editor,
+      template_file: "priv/templates/components/editor/editor.ex",
+      js_hooks: [
+        "PhiaAdvancedEditor",
+        "PhiaBubbleMenu",
+        "PhiaEditorColorPicker",
+        "PhiaEditorDropdown",
+        "PhiaEditorFindReplace"
+      ],
+      dependencies: [
+        :editor_toolbar, :toolbar_button, :toolbar_group, :toolbar_separator,
+        :bubble_menu, :editor_toolbar_dropdown, :editor_color_picker,
+        :editor_link_dialog, :editor_find_replace, :editor_word_count
+      ],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -2646,7 +2860,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 254 component metadata entries."
+  @doc "Returns the full registry map — all 273 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

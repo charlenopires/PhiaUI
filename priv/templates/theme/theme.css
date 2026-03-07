@@ -321,6 +321,43 @@
   }
 }
 
+/* ── Editor Suite ─────────────────────────────────────────────────────────── */
+
+@keyframes phia-bubble-in {
+  from { opacity: 0; transform: translateY(4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes phia-slash-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes phia-find-slide {
+  from { opacity: 0; max-height: 0; }
+  to   { opacity: 1; max-height: 60px; }
+}
+
+@keyframes phia-dropdown-in {
+  from { opacity: 0; transform: scaleY(0.95); transform-origin: top; }
+  to   { opacity: 1; transform: scaleY(1); }
+}
+
+.phia-bubble-menu-open { animation: phia-bubble-in 120ms ease-out forwards; }
+.phia-slash-menu-open  { animation: phia-slash-in 100ms ease-out forwards; }
+.phia-find-bar-open    { animation: phia-find-slide 150ms ease-out forwards; }
+
+/* Active swatch indicator — ring around currently selected color */
+.phia-swatch-active {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Find/replace mark highlight */
+.phia-find-mark {
+  border-radius: 2px;
+}
+
 /* ── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {
   * {
