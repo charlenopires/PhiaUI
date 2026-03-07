@@ -1,8 +1,8 @@
 # PhiaUI
 
-**Enterprise-ready Phoenix LiveView component library — 119 components, inspired by shadcn/ui.**
+**Enterprise-ready Phoenix LiveView component library — 154 components, inspired by shadcn/ui.**
 
-Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets, enterprise data components, full Calendar & Scheduling Suite, and AI-ready chat UI for financial terminals, BI dashboards, booking platforms, and KPI monitors.
+Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibility, TailwindCSS v4 semantic tokens, and built-in analytics widgets, enterprise data components, full Calendar & Scheduling Suite, comprehensive Card Suite, and AI-ready chat UI for financial terminals, BI dashboards, booking platforms, and KPI monitors.
 
 [![Hex.pm](https://img.shields.io/hexpm/v/phia_ui.svg)](https://hex.pm/packages/phia_ui)
 [![Elixir](https://img.shields.io/badge/elixir-%3E%3D1.17-purple)](https://elixir-lang.org)
@@ -15,7 +15,7 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 | Feature | **PhiaUI** | [DaisyUI](https://github.com/saadeghi/daisyui) | [Salad UI](https://github.com/bluzky/salad_ui) | [ShadCN/ui](https://github.com/shadcn-ui/ui) | [Doggo](https://github.com/woylie/doggo) | [Mishka Chelekom](https://github.com/mishka-group/mishka_chelekom) | [Primer Live](https://github.com/ArthurClemens/primer_live) |
 |---------|:----------:|:-------:|:--------:|:---------:|:-----:|:---------------:|:-----------:|
 | **Platform** | Phoenix LiveView | CSS / Any | Phoenix LiveView | React | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView |
-| **Components** | **119** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
+| **Components** | **154** | 40+ | ~30 | 50+ | 40+ | ~90 | ~40 |
 | Copy-paste ownership | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✗ |
 | LiveView-native (`phx-*`, streams) | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ | ✓ |
 | Zero npm runtime deps | ✓ | ✓ | Partial | ✗ | ✓ | ✓ | Partial |
@@ -39,7 +39,7 @@ Ejectable components with zero heavy JS dependencies, full WAI-ARIA accessibilit
 
 ---
 
-## Component Library — 119 Components
+## Component Library — 154 Components
 
 ### Buttons — 7 components
 
@@ -101,9 +101,11 @@ The most comprehensive calendar and scheduling suite for Phoenix LiveView, cover
 
 ---
 
-### Cards — 5 components
+### Cards — 20 components
 
-Structured surface components for metrics, selection, and e-commerce receipts.
+Structured surface components covering the full spectrum of card patterns: metrics, content, marketing, e-commerce, dashboard, and utility cards. All zero-JS, pure Elixir/Tailwind, composing existing PhiaUI primitives.
+
+#### Core card primitives
 
 | Component | Function | Description |
 |-----------|----------|-------------|
@@ -112,6 +114,36 @@ Structured surface components for metrics, selection, and e-commerce receipts.
 | ReceiptCard | `receipt_card/1` | Transaction/purchase receipt: line items, totals, merchant info, QR slot |
 | SelectableCard | `selectable_card/1` | Card with checkbox/radio selection state, border highlight when selected |
 | StatCard | `stat_card/1` | KPI card with value, trend indicator (up/down/neutral), and trend value |
+
+#### Content cards (new in 0.1.6)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| ArticleCard | `article_card/1` | Blog/news card: cover image, category badge, date, excerpt, author avatar; optional `href` links title |
+| CtaCard | `cta_card/1` | Call-to-action / empty-state card: illustration, headline, description, primary + secondary actions; 4 variants |
+| FeatureCard | `feature_card/1` | Icon + title + description landing-page block; 3 variants (default/bordered/ghost), 2 icon positions (top/left) |
+| ImageCard | `image_card/1` | Hero cover image card; 4 aspect ratios (video/square/wide/tall), optional gradient overlay, badge slot |
+| ProfileCard | `profile_card/1` | User profile card: large avatar, name, role, bio, tags, actions; presence status dot; vertical/horizontal layout |
+| TestimonialCard | `testimonial_card/1` | Quote + star rating (1–5) + author avatar + name + company; 3 variants (default/bordered/minimal) |
+
+#### Dashboard & operational cards (new in 0.1.6)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| EventCard | `event_card/1` | Large date badge + title + time + location + stacked attendee avatars; 6 category colors |
+| FileCard | `file_card/1` | File icon (by extension type) + filename + size + uploaded_at; default/compact variant; download href |
+| NotificationCard | `notification_card/1` | Type icon + title + message + timestamp; 4 severity types (info/success/warning/error); dismissible |
+| ProgressCard | `progress_card/1` | Title + progress bar; 4 variants (default/success/warning/destructive), 3 sizes; label override; icon slot |
+| TeamCard | `team_card/1` | Member directory card: avatar + name + role + department + email; 3 variants (default/compact/horizontal) |
+
+#### Utility & specialty cards (new in 0.1.6)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| ColorSwatchCard | `color_swatch_card/1` | Color block + name + hex value; 3 sizes; optional CopyButton (PhiaCopyButton hook); rgb/hsl display |
+| LinkPreviewCard | `link_preview_card/1` | URL unfurl: favicon + site name + title + description + og-image; 3 variants (default/compact/minimal) |
+| PricingCard | `pricing_card/1` | SaaS plan card: price, period, feature list (available/unavailable), CTA; highlighted variant with ring |
+| ProductCard | `product_card/1` | E-commerce: product image, price, original price (crossed out), star rating, badge, sold-out state, add-to-cart |
 
 → [Full documentation](docs/components/cards.md)
 
@@ -235,9 +267,11 @@ Every input primitive with full Ecto / `Phoenix.HTML.FormField` integration.
 
 ---
 
-### Layout — 7 components
+### Layout — 27 components
 
-Structural composition components for panels, scroll areas, and collapsible regions.
+Structural composition components for panels, scroll areas, collapsible regions, and a full layout primitive suite.
+
+#### Interactive layout
 
 | Component | Function | Description |
 |-----------|----------|-------------|
@@ -248,6 +282,30 @@ Structural composition components for panels, scroll areas, and collapsible regi
 | ScrollArea | `scroll_area/1` | Custom scrollbar overlay, horizontal / vertical / both orientations |
 | Separator | `separator/1` | Horizontal or vertical divider, `role="separator"` |
 | Shell | `shell/1` | CSS Grid desktop layout: fixed sidebar 240px + fluid main 1fr |
+
+#### Layout primitives (new in 0.1.5)
+
+| Component | Function | Description |
+|-----------|----------|-------------|
+| Box | `box/1` | Generic block container, any HTML tag via `:as` attr |
+| Center | `center/1` | Flex centering wrapper, horizontal-only or both axes |
+| Container | `container/1` | Responsive max-width wrapper with configurable size and padding |
+| DescriptionList | `description_list/1` | `<dl>` with responsive term/detail layout |
+| Divider | `divider/1` | Horizontal or vertical divider with optional label text |
+| FixedBar | `fixed_bar/1` | Fixed-position top/bottom bar for persistent UI chrome |
+| Flex | `flex/1` | Flex container with gap, direction, align, justify props |
+| Grid | `grid/1` | CSS Grid container with configurable cols, rows, and gap |
+| MasonryGrid | `masonry_grid/1` | CSS column-count masonry layout |
+| MediaObject | `media_object/1` | Horizontal image/icon + text layout (email-client safe) |
+| NavList | `nav_list/1` | Styled vertical navigation list with item and group slots |
+| PageHeader | `page_header/1` | Page title + breadcrumb + action slot, consistent heading region |
+| PageLayout | `page_layout/1` | Two-column or three-column content/sidebar page layout |
+| SimpleGrid | `simple_grid/1` | Responsive equal-column grid, auto-fill/auto-fit |
+| Spacer | `spacer/1` | Flex spacer / fixed-size gap element |
+| SplitLayout | `split_layout/1` | Two-pane resizable split panel with configurable ratio |
+| Stack | `stack/1` | Vertical flex stack with uniform gap |
+| Sticky | `sticky/1` | `position: sticky` wrapper with configurable `top`/`bottom` |
+| Wrap | `wrap/1` | Flex-wrap container for tag clouds, button groups, pill rows |
 
 → [Full documentation](docs/components/layout.md)
 
@@ -326,7 +384,7 @@ Add PhiaUI to `mix.exs`:
 ```elixir
 def deps do
   [
-    {:phia_ui, "~> 0.1.5"}
+    {:phia_ui, "~> 0.1.6"}
   ]
 end
 ```

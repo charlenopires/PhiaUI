@@ -1473,6 +1473,160 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :layout,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # -------------------------------------------------------------------------
+    # Card Suite — 15 new components (2026-03-06)
+    # -------------------------------------------------------------------------
+    image_card: %{
+      name: "image_card",
+      module: PhiaUi.Components.ImageCard,
+      template_file: "priv/templates/components/cards/image_card.ex",
+      js_hooks: [],
+      dependencies: [:card],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    profile_card: %{
+      name: "profile_card",
+      module: PhiaUi.Components.ProfileCard,
+      template_file: "priv/templates/components/cards/profile_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :avatar],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    feature_card: %{
+      name: "feature_card",
+      module: PhiaUi.Components.FeatureCard,
+      template_file: "priv/templates/components/cards/feature_card.ex",
+      js_hooks: [],
+      dependencies: [:card],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    article_card: %{
+      name: "article_card",
+      module: PhiaUi.Components.ArticleCard,
+      template_file: "priv/templates/components/cards/article_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :badge, :avatar],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    testimonial_card: %{
+      name: "testimonial_card",
+      module: PhiaUi.Components.TestimonialCard,
+      template_file: "priv/templates/components/cards/testimonial_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :avatar],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pricing_card: %{
+      name: "pricing_card",
+      module: PhiaUi.Components.PricingCard,
+      template_file: "priv/templates/components/cards/pricing_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :badge, :button],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    product_card: %{
+      name: "product_card",
+      module: PhiaUi.Components.ProductCard,
+      template_file: "priv/templates/components/cards/product_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :badge, :button],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    progress_card: %{
+      name: "progress_card",
+      module: PhiaUi.Components.ProgressCard,
+      template_file: "priv/templates/components/cards/progress_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :progress],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    notification_card: %{
+      name: "notification_card",
+      module: PhiaUi.Components.NotificationCard,
+      template_file: "priv/templates/components/cards/notification_card.ex",
+      js_hooks: [],
+      dependencies: [:card],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    file_card: %{
+      name: "file_card",
+      module: PhiaUi.Components.FileCard,
+      template_file: "priv/templates/components/cards/file_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :badge],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    event_card: %{
+      name: "event_card",
+      module: PhiaUi.Components.EventCard,
+      template_file: "priv/templates/components/cards/event_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :avatar],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    team_card: %{
+      name: "team_card",
+      module: PhiaUi.Components.TeamCard,
+      template_file: "priv/templates/components/cards/team_card.ex",
+      js_hooks: [],
+      dependencies: [:card, :avatar, :badge],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    link_preview_card: %{
+      name: "link_preview_card",
+      module: PhiaUi.Components.LinkPreviewCard,
+      template_file: "priv/templates/components/cards/link_preview_card.ex",
+      js_hooks: [],
+      dependencies: [:card],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    color_swatch_card: %{
+      name: "color_swatch_card",
+      module: PhiaUi.Components.ColorSwatchCard,
+      template_file: "priv/templates/components/cards/color_swatch_card.ex",
+      js_hooks: [],
+      dependencies: [:copy_button],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    cta_card: %{
+      name: "cta_card",
+      module: PhiaUi.Components.CtaCard,
+      template_file: "priv/templates/components/cards/cta_card.ex",
+      js_hooks: [],
+      dependencies: [:card],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -1480,7 +1634,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 139 component metadata entries."
+  @doc "Returns the full registry map — all 154 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

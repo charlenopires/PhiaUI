@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 139 components" do
-      assert map_size(ComponentRegistry.all()) == 139
+    test "contains exactly 154 components" do
+      assert map_size(ComponentRegistry.all()) == 154
     end
 
     test "all keys are atom component names" do
@@ -360,6 +360,96 @@ defmodule PhiaUi.ComponentRegistryTest do
 
     test "multi_month_calendar is registered as widget" do
       meta = ComponentRegistry.get(:multi_month_calendar)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "image_card is registered as widget" do
+      meta = ComponentRegistry.get(:image_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "profile_card is registered as widget" do
+      meta = ComponentRegistry.get(:profile_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "feature_card is registered as widget" do
+      meta = ComponentRegistry.get(:feature_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "article_card is registered as widget" do
+      meta = ComponentRegistry.get(:article_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "testimonial_card is registered as widget" do
+      meta = ComponentRegistry.get(:testimonial_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "pricing_card is registered as widget" do
+      meta = ComponentRegistry.get(:pricing_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "product_card is registered as widget" do
+      meta = ComponentRegistry.get(:product_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "progress_card is registered as widget" do
+      meta = ComponentRegistry.get(:progress_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "notification_card is registered as widget" do
+      meta = ComponentRegistry.get(:notification_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "file_card is registered as widget" do
+      meta = ComponentRegistry.get(:file_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "event_card is registered as widget" do
+      meta = ComponentRegistry.get(:event_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "team_card is registered as widget" do
+      meta = ComponentRegistry.get(:team_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "link_preview_card is registered as widget" do
+      meta = ComponentRegistry.get(:link_preview_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "color_swatch_card is registered as widget" do
+      meta = ComponentRegistry.get(:color_swatch_card)
+      assert meta != nil
+      assert meta.tier == :widget
+    end
+
+    test "cta_card is registered as widget" do
+      meta = ComponentRegistry.get(:cta_card)
       assert meta != nil
       assert meta.tier == :widget
     end

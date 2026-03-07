@@ -2,6 +2,57 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.6 — 2026-03-06
+
+### Added — 15 new card components (Card Suite)
+
+Full-spectrum card library covering content, marketing, dashboard, e-commerce, and utility patterns. Every component is zero-JS, pure Elixir/HEEx + TailwindCSS v4, composing existing PhiaUI primitives (Card, Badge, Avatar, Icon, Progress, Button, CopyButton). Registry grew from 139 to 154 entries — all implemented.
+
+#### Content Cards (7 components)
+
+- **ImageCard** (`image_card/1`) — Hero cover-image card. Full-bleed `<img>` with 4 aspect ratio options (`:video` → `aspect-video`, `:square` → `aspect-square`, `:wide` → `aspect-[2/1]`, `:tall` → `aspect-[3/4]`). Optional dark gradient overlay via CSS `after:` pseudo-element (`after:bg-gradient-to-t after:from-black/60`). Badge slot for overlaid labels (top-left, `absolute z-10`). Inner block renders as `card_content`. **12 tests**.
+
+- **ProfileCard** (`profile_card/1`) — User profile card with two layout variants. `:vertical` (default): centered avatar + name + role + bio + tags + actions. `:horizontal`: flex-row with avatar left and content right. Avatar uses `PhiaUi.Components.Avatar` with size `:lg`. Presence status dot overlaid on avatar: `:online` → `bg-emerald-500`, `:offline` → `bg-gray-400`, `:busy` → `bg-red-500`, `:away` → `bg-amber-500`. Slots: `:bio`, `:tags`, `:actions`. **16 tests**.
+
+- **FeatureCard** (`feature_card/1`) — Landing-page feature block: icon + title + description. Three card style variants: `:default` (border + shadow), `:bordered` (border-2, no shadow), `:ghost` (no border, no shadow — renders plain `<div>`). Two icon positions: `:top` (flex-col, icon above title) and `:left` (flex-row, icon beside text block). Slots: `:icon`, `:inner_block`. **14 tests**.
+
+- **ArticleCard** (`article_card/1`) — Blog/news article card. Optional cover image (`aspect-video`), category badge, meta row (`date · read_time`), title (with optional `href` link), excerpt (`line-clamp-3`), and author row (avatar + name). All fields are optional except `:title`. **19 tests**.
+
+- **TestimonialCard** (`testimonial_card/1`) — Customer testimonial card. Star rating 1–5 (Unicode `★`/`☆`), rendered only when `:rating` is set. Large decorative quotation mark (`text-6xl text-muted-foreground/20`). Italic quote body. Author row with optional avatar, name, role, and company. Three variants: `:default` (card + shadow), `:bordered` (card + border-2), `:minimal` (plain div, no card). **17 tests**.
+
+- **PricingCard** (`pricing_card/1`) — SaaS pricing plan card. Attrs: `plan`, `price`, `period` (`/month`), `description`, `features` (list of strings; prefix `—` marks unavailable items). Feature list rendered with check icons (`text-emerald-500`) for available and `—` for unavailable items. `highlighted=true` applies `ring-2 ring-primary bg-primary/5`. Optional `badge` label (rendered above plan name). Full-width CTA button with `cta_href`. `disabled` state. Slots: `:header_extra`, `:footer`. **17 tests**.
+
+- **ProductCard** (`product_card/1`) — E-commerce product card. Product image (`aspect-square`), optional `badge` overlay (top-left, configurable variant). Price with optional `original_price` (line-through). Star rating from float (0.0–5.0, rounded and rendered as `★`/`☆` text). Review count. `sold_out=true` disables CTA and shows "Sold Out" badge. Default CTA "Add to cart" with `on_add_to_cart` event, overridable via `:actions` slot. Optional `href` link on image/title. **15 tests**.
+
+#### Dashboard & Operational Cards (5 components)
+
+- **ProgressCard** (`progress_card/1`) — Goal / task progress card. Uses existing `<.progress>` component internally. Four color variants: `:default` (primary bar), `:success` (`[&>div]:bg-emerald-500`), `:warning` (`[&>div]:bg-amber-500`), `:destructive` (`[&>div]:bg-destructive`). Three progress bar sizes: `:sm` (h-1), `:md` (h-2), `:lg` (h-3). `show_value=false` hides the percentage label. `label` attr overrides the default `"N%"` display. Slots: `:icon` (in header), `:footer`. **18 tests**.
+
+- **NotificationCard** (`notification_card/1`) — Notification / alert card. Left accent border (`border-l-4`) colored by type: `:info` (blue), `:success` (emerald), `:warning` (amber), `:error` (red). Type icon from Lucide sprite beside content. `read=true` applies `opacity-60`. `dismissible=true` shows an × button in the top-right corner with `phx-click={@on_dismiss}`. Timestamp row in `text-xs text-muted-foreground`. Slots: `:icon` (override default type icon), `:actions`. **20 tests**.
+
+- **FileCard** (`file_card/1`) — File attachment card. Extension-based icon color coding via `file_type/1` pattern-matching: PDF → `bg-red-100 text-red-600`; DOC/DOCX → `bg-blue-100 text-blue-600`; XLS/XLSX → `bg-emerald-100 text-emerald-600`; PPT/PPTX → `bg-orange-100 text-orange-600`; images → `bg-violet-100 text-violet-600`; archives → `bg-yellow-100 text-yellow-600`; media → `bg-pink-100 text-pink-600`. Uppercase extension badge. Two variants: `:default` (stacked, larger icon) and `:compact` (single-row). `href` renders filename as `<a download>`. Slot: `:actions`. **22 tests**.
+
+- **EventCard** (`event_card/1`) — Calendar event card with prominent date badge. Left-panel: colored by `category_color` (`:primary`, `:blue`, `:emerald`, `:amber`, `:rose`, `:violet`), shows 3-letter month abbrev + day number (3xl bold). Right panel: title, time row, location row (`map-pin` or `video-camera` icon based on `virtual`), stacked attendee avatars with `+N` overflow. `max_attendees` controls visible count. Slot: `:actions`. **20 tests**.
+
+- **TeamCard** (`team_card/1`) — Team member directory card. Three layout variants: `:default` (centered avatar top, content below), `:compact` (smaller avatar, denser spacing), `:horizontal` (flex-row, avatar left, content right). Avatar from `PhiaUi.Components.Avatar`. Optional department badge, email link (`mailto:`). Slots: `:badges`, `:actions`. **15 tests**.
+
+#### Utility & Specialty Cards (3 components)
+
+- **LinkPreviewCard** (`link_preview_card/1`) — URL link-unfurl embed card (Slack/Twitter style). Domain extracted server-side via `URI.parse/1`. Three variants: `:default` (full card with optional og-image, favicon, site name, title, description, domain), `:compact` (single row: favicon + title + domain, no image), `:minimal` (plain title + domain, no border). External link icon (`external-link`) shown in `:default` and `:compact`. **16 tests**.
+
+- **ColorSwatchCard** (`color_swatch_card/1`) — Color palette swatch card. Color block at top with `style="background-color: #{hex}"`. Three sizes: `:sm` (h-16), `:md` (h-24), `:lg` (h-32). Color name (`text-sm font-medium`) below block. Hex value in monospace (`text-xs text-muted-foreground`). `copyable=true` renders `<.copy_button>` using existing `PhiaCopyButton` hook. Optional `rgb` and `hsl` secondary rows. Slot: `:tags`. **14 tests**.
+
+- **CtaCard** (`cta_card/1`) — Call-to-action / empty-state / onboarding card. Four variants: `:default` (border + shadow), `:bordered` (border-2), `:filled` (`bg-muted`), `:minimal` (plain `<div>`, no card chrome). Two alignment modes: `:center` (`text-center items-center`) and `:start` (`text-start items-start`). Slots: `:illustration` (icon, SVG, or image above title), `:actions` (primary + secondary buttons), `:footer` (fine print). **16 tests**.
+
+### Test Coverage
+
+- **344 new tests** across 15 new components — **0 failures**
+- **4604+ total tests** — **0 new failures** (2 pre-existing failures in unrelated tests)
+- Component registry: **154 entries** (139 → 154, all implemented)
+- `mix credo --strict` — 0 issues
+
+---
+
 ## 0.1.5 — 2026-03-05
 
 ### Added — 44 new components (Calendar Suite + Advanced Widgets + Media)
