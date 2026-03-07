@@ -25,7 +25,7 @@ defmodule PhiaUi.ComponentRegistry do
       PhiaUi.ComponentRegistry.by_tier(:primitive)
   """
 
-  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget
+  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout
   @type status :: :planned | :implemented
 
   @type component_meta :: %{
@@ -1271,6 +1271,208 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Layout Primitives (v0.1.6) ────────────────────────────────────────────
+    box: %{
+      name: "box",
+      module: PhiaUi.Components.Layout.Box,
+      template_file: "priv/templates/components/layout/box.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    spacer: %{
+      name: "spacer",
+      module: PhiaUi.Components.Layout.Spacer,
+      template_file: "priv/templates/components/layout/spacer.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    center: %{
+      name: "center",
+      module: PhiaUi.Components.Layout.Center,
+      template_file: "priv/templates/components/layout/center.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    section: %{
+      name: "section",
+      module: PhiaUi.Components.Layout.Section,
+      template_file: "priv/templates/components/layout/section.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sticky: %{
+      name: "sticky",
+      module: PhiaUi.Components.Layout.Sticky,
+      template_file: "priv/templates/components/layout/sticky.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    fixed_bar: %{
+      name: "fixed_bar",
+      module: PhiaUi.Components.Layout.FixedBar,
+      template_file: "priv/templates/components/layout/fixed_bar.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    layout_flex: %{
+      name: "flex",
+      module: PhiaUi.Components.Layout.Flex,
+      template_file: "priv/templates/components/layout/flex.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    stack: %{
+      name: "stack",
+      module: PhiaUi.Components.Layout.Stack,
+      template_file: "priv/templates/components/layout/stack.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    layout_wrap: %{
+      name: "wrap",
+      module: PhiaUi.Components.Layout.Wrap,
+      template_file: "priv/templates/components/layout/wrap.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    layout_grid: %{
+      name: "grid",
+      module: PhiaUi.Components.Layout.Grid,
+      template_file: "priv/templates/components/layout/grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    simple_grid: %{
+      name: "simple_grid",
+      module: PhiaUi.Components.Layout.SimpleGrid,
+      template_file: "priv/templates/components/layout/simple_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    container: %{
+      name: "container",
+      module: PhiaUi.Components.Layout.Container,
+      template_file: "priv/templates/components/layout/container.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    layout_divider: %{
+      name: "divider",
+      module: PhiaUi.Components.Layout.Divider,
+      template_file: "priv/templates/components/layout/divider.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: "Separator",
+      status: :implemented
+    },
+    media_object: %{
+      name: "media_object",
+      module: PhiaUi.Components.Layout.MediaObject,
+      template_file: "priv/templates/components/layout/media_object.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    masonry_grid: %{
+      name: "masonry_grid",
+      module: PhiaUi.Components.Layout.MasonryGrid,
+      template_file: "priv/templates/components/layout/masonry_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    description_list: %{
+      name: "description_list",
+      module: PhiaUi.Components.Layout.DescriptionList,
+      template_file: "priv/templates/components/layout/description_list.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    page_layout: %{
+      name: "page_layout",
+      module: PhiaUi.Components.Layout.PageLayout,
+      template_file: "priv/templates/components/layout/page_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    split_layout: %{
+      name: "split_layout",
+      module: PhiaUi.Components.Layout.SplitLayout,
+      template_file: "priv/templates/components/layout/split_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    page_header: %{
+      name: "page_header",
+      module: PhiaUi.Components.Layout.PageHeader,
+      template_file: "priv/templates/components/layout/page_header.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    nav_list: %{
+      name: "nav_list",
+      module: PhiaUi.Components.Layout.NavList,
+      template_file: "priv/templates/components/layout/nav_list.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -1278,7 +1480,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 119 component metadata entries."
+  @doc "Returns the full registry map — all 139 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

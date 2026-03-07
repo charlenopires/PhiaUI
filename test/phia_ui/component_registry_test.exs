@@ -13,7 +13,7 @@ defmodule PhiaUi.ComponentRegistryTest do
     :shadcn_equivalent,
     :status
   ]
-  @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget]
+  @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget, :layout]
   @valid_statuses [:planned, :implemented]
 
   describe "all/0" do
@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 119 components" do
-      assert map_size(ComponentRegistry.all()) == 119
+    test "contains exactly 139 components" do
+      assert map_size(ComponentRegistry.all()) == 139
     end
 
     test "all keys are atom component names" do
