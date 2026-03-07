@@ -45,26 +45,79 @@ defmodule PhiaUi.Components.GaugeChart do
     doc: "Size of the gauge: `:sm` (h-24 w-24), `:default` (h-32 w-32), `:lg` (h-40 w-40)."
   )
 
+  attr(:zones, :list,
+    default: [],
+    doc: """
+    Optional colored zones rendered as arc segments behind the value arc.
+    Each zone: `%{from: number, to: number, color: atom}`.
+    Same color atoms as `:color`.
+    """
+  )
+
+  attr(:threshold, :any,
+    default: nil,
+    doc: "Optional numeric threshold marker rendered as a radial line on the arc."
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the root element.")
   attr(:rest, :global, doc: "HTML attributes forwarded to the root `<div>` element.")
+
+  slot(:center_label,
+    doc: "Optional slot to override the center label text rendered below the value."
+  )
 
   # ---------------------------------------------------------------------------
   # Component
   # ---------------------------------------------------------------------------
 
   def gauge_chart(assigns) do
+    arc_d = "M #{@cx - @r},#{@cy} A #{@r},#{@r} 0 0,1 #{@cx + @r},#{@cy}"
+
+    zones_meta =
+      Enum.map(assigns.zones, fn z ->
+        zone_length = Float.round((z.to - z.from) / max(assigns.max, 1) * @half_circ, 2)
+        zone_offset = Float.round(@half_circ - z.from / max(assigns.max, 1) * @half_circ, 2)
+        Map.merge(z, %{zone_length: zone_length, zone_offset: zone_offset})
+      end)
+
+    threshold_line =
+      if assigns.threshold do
+        angle = :math.pi() * assigns.threshold / max(assigns.max, 1)
+        x_end = Float.round(@cx + @r * :math.cos(:math.pi() - angle), 2)
+        y_end = Float.round(@cy - @r * :math.sin(angle), 2)
+        %{x1: @cx, y1: @cy, x2: x_end, y2: y_end}
+      else
+        nil
+      end
+
     assigns =
       assigns
-      |> assign(:arc_d, "M #{@cx - @r},#{@cy} A #{@r},#{@r} 0 0,1 #{@cx + @r},#{@cy}")
+      |> assign(:arc_d, arc_d)
       |> assign(:filled_dash, arc_length(assigns.value, assigns.max))
       |> assign(:half_circ, @half_circ)
+      |> assign(:zones_meta, zones_meta)
+      |> assign(:threshold_line, threshold_line)
 
     ~H"""
     <div class={cn(["flex flex-col items-center", @class])} {@rest}>
       <div class={size_class(@size)}>
         <svg viewBox="0 0 120 70" aria-hidden="true" class="w-full h-full overflow-visible">
-          <%!-- Track arc (always full 180°, muted) --%>
+          <%!-- Zone arcs (rendered first, behind value arc) --%>
           <path
+            :for={zone <- @zones_meta}
+            d={@arc_d}
+            fill="none"
+            stroke="currentColor"
+            stroke-width="10"
+            stroke-linecap="butt"
+            stroke-dasharray={"#{zone.zone_length} #{@half_circ}"}
+            stroke-dashoffset={zone.zone_offset}
+            class={arc_color_class(zone.color)}
+          />
+
+          <%!-- Track arc (always full 180°, muted) — shown only when no zones --%>
+          <path
+            :if={@zones == []}
             d={@arc_d}
             fill="none"
             stroke="currentColor"
@@ -85,6 +138,18 @@ defmodule PhiaUi.Components.GaugeChart do
             class={arc_color_class(@color)}
           />
 
+          <%!-- Threshold marker (radial line from center to arc edge) --%>
+          <line
+            :if={@threshold_line}
+            x1={@threshold_line.x1}
+            y1={@threshold_line.y1}
+            x2={@threshold_line.x2}
+            y2={@threshold_line.y2}
+            stroke="currentColor"
+            stroke-width="2"
+            class="text-foreground"
+          />
+
           <%!-- Center value --%>
           <text
             x="60"
@@ -98,9 +163,9 @@ defmodule PhiaUi.Components.GaugeChart do
             {@value}
           </text>
 
-          <%!-- Optional label below value --%>
+          <%!-- Label: slot takes precedence over attr --%>
           <text
-            :if={@label}
+            :if={@center_label != [] || @label}
             x="60"
             y="64"
             text-anchor="middle"
@@ -108,7 +173,7 @@ defmodule PhiaUi.Components.GaugeChart do
             font-size="7"
             class="fill-muted-foreground"
           >
-            {@label}
+            <%= if @center_label != [], do: render_slot(@center_label), else: @label %>
           </text>
         </svg>
       </div>

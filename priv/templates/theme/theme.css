@@ -91,6 +91,21 @@
   --color-sidebar-accent:         oklch(0.967 0.001 286.38);
   --color-sidebar-accent-foreground: oklch(0.211 0.005 285.82);
   --color-sidebar-border:         oklch(0.922 0 0);
+
+  /* ── Animation Tokens ───────────────────────────────────────────────────── */
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-vertical: marquee-vertical 20s linear infinite;
+  --animate-orbit: orbit 10s linear infinite;
+  --animate-aurora: aurora 8s ease infinite;
+  --animate-meteor: meteor 5s linear infinite;
+  --animate-float: float 3s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-shiny-text: shiny-text 8s ease-in-out infinite;
+  --animate-ripple-wave: ripple-wave 2s ease-out infinite;
+  --animate-typing-bounce: typing-bounce 1.2s ease-in-out infinite;
+  --animate-wave-bar: wave-bar 1.2s ease-in-out infinite;
+  --animate-blink-cursor: blink-cursor 1s step-end infinite;
+  --animate-border-spin: border-spin 4s linear infinite;
 }
 
 /* ── CSS Variable Aliases ─────────────────────────────────────────────────── */
@@ -156,6 +171,75 @@
   --color-sidebar-accent:         oklch(0.279 0.007 285.82);
   --color-sidebar-accent-foreground: oklch(0.985 0 0);
   --color-sidebar-border:         oklch(1 0 0 / 10%);
+}
+
+/* ── Animation Keyframes ─────────────────────────────────────────────────── */
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit-radius, 60px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--orbit-radius, 60px)) rotate(-360deg); }
+}
+
+@keyframes aurora {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes meteor {
+  0%   { transform: rotate(215deg) translateX(0); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: rotate(215deg) translateX(-500px); opacity: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(var(--float-y, -10px)); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes shiny-text {
+  0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width, 40%)) 0; }
+  30%, 60%      { background-position: calc(100% + var(--shiny-width, 40%)) 0; }
+}
+
+@keyframes ripple-wave {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-6px); }
+}
+
+@keyframes wave-bar {
+  0%, 40%, 100% { transform: scaleY(0.4); }
+  20%           { transform: scaleY(1); }
+}
+
+@keyframes blink-cursor {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes border-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 /* ── Base Layer ───────────────────────────────────────────────────────────── */

@@ -147,7 +147,7 @@ defmodule PhiaUi.Components.FileUpload do
         <% end %>
 
         <%!-- Live file input (Phoenix-wired) or plain fallback --%>
-        <%= if @upload != nil do %>
+        <%= if is_struct(@upload, Phoenix.LiveView.UploadConfig) do %>
           <.live_file_input upload={@upload} class="sr-only" />
         <% else %>
           <input type="file" class="sr-only" accept={@accept} />

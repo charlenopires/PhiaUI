@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 119 PhiaUI components.
+  Source of truth for all 224 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -25,7 +25,7 @@ defmodule PhiaUi.ComponentRegistry do
       PhiaUi.ComponentRegistry.by_tier(:primitive)
   """
 
-  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout
+  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout | :animation
   @type status :: :planned | :implemented
 
   @type component_meta :: %{
@@ -1809,6 +1809,532 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :primitive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── v0.1.7 Widget Wave — 12 new components (2026-03-06) ──────────────────
+    badge_delta: %{
+      name: "badge_delta",
+      module: PhiaUi.Components.BadgeDelta,
+      template_file: "priv/templates/components/data/badge_delta.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bar_list: %{
+      name: "bar_list",
+      module: PhiaUi.Components.BarList,
+      template_file: "priv/templates/components/data/bar_list.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    category_bar: %{
+      name: "category_bar",
+      module: PhiaUi.Components.CategoryBar,
+      template_file: "priv/templates/components/data/category_bar.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    meter_group: %{
+      name: "meter_group",
+      module: PhiaUi.Components.MeterGroup,
+      template_file: "priv/templates/components/data/meter_group.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    funnel_chart: %{
+      name: "funnel_chart",
+      module: PhiaUi.Components.FunnelChart,
+      template_file: "priv/templates/components/data/funnel_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    nps_widget: %{
+      name: "nps_widget",
+      module: PhiaUi.Components.NpsWidget,
+      template_file: "priv/templates/components/data/nps_widget.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    comparison_table: %{
+      name: "comparison_table",
+      module: PhiaUi.Components.ComparisonTable,
+      template_file: "priv/templates/components/data/comparison_table.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    leaderboard: %{
+      name: "leaderboard",
+      module: PhiaUi.Components.Leaderboard,
+      template_file: "priv/templates/components/data/leaderboard.ex",
+      js_hooks: [],
+      dependencies: [:badge_delta],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    watermark: %{
+      name: "watermark",
+      module: PhiaUi.Components.Watermark,
+      template_file: "priv/templates/components/media/watermark.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    result_state: %{
+      name: "result_state",
+      module: PhiaUi.Components.ResultState,
+      template_file: "priv/templates/components/feedback/result_state.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    popconfirm: %{
+      name: "popconfirm",
+      module: PhiaUi.Components.Popconfirm,
+      template_file: "priv/templates/components/feedback/popconfirm.ex",
+      js_hooks: [],
+      dependencies: [:icon, :button],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    image_comparison: %{
+      name: "image_comparison",
+      module: PhiaUi.Components.ImageComparison,
+      template_file: "priv/templates/components/media/image_comparison.ex",
+      js_hooks: ["PhiaImageComparison"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Input & Upload Wave (v0.1.7+) ─────────────────────────────────────────
+    search_input: %{
+      name: "search_input",
+      module: PhiaUi.Components.SearchInput,
+      template_file: "priv/templates/components/inputs/search_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    clearable_input: %{
+      name: "clearable_input",
+      module: PhiaUi.Components.ClearableInput,
+      template_file: "priv/templates/components/inputs/clearable_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    textarea_counter: %{
+      name: "textarea_counter",
+      module: PhiaUi.Components.TextareaCounter,
+      template_file: "priv/templates/components/inputs/textarea_counter.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    copy_input: %{
+      name: "copy_input",
+      module: PhiaUi.Components.CopyInput,
+      template_file: "priv/templates/components/inputs/copy_input.ex",
+      js_hooks: ["PhiaCopyButton"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    url_input: %{
+      name: "url_input",
+      module: PhiaUi.Components.UrlInput,
+      template_file: "priv/templates/components/inputs/url_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    phone_input: %{
+      name: "phone_input",
+      module: PhiaUi.Components.PhoneInput,
+      template_file: "priv/templates/components/inputs/phone_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    input_group: %{
+      name: "input_group",
+      module: PhiaUi.Components.InputGroup,
+      template_file: "priv/templates/components/inputs/input_group.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: "InputGroup",
+      status: :implemented
+    },
+    inline_search: %{
+      name: "inline_search",
+      module: PhiaUi.Components.InlineSearch,
+      template_file: "priv/templates/components/inputs/inline_search.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    unit_input: %{
+      name: "unit_input",
+      module: PhiaUi.Components.UnitInput,
+      template_file: "priv/templates/components/inputs/unit_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    autocomplete_input: %{
+      name: "autocomplete_input",
+      module: PhiaUi.Components.AutocompleteInput,
+      template_file: "priv/templates/components/inputs/autocomplete_input.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: "Combobox",
+      status: :implemented
+    },
+    avatar_upload: %{
+      name: "avatar_upload",
+      module: PhiaUi.Components.AvatarUpload,
+      template_file: "priv/templates/components/inputs/avatar_upload.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    upload_button: %{
+      name: "upload_button",
+      module: PhiaUi.Components.UploadButton,
+      template_file: "priv/templates/components/inputs/upload_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    image_gallery_upload: %{
+      name: "image_gallery_upload",
+      module: PhiaUi.Components.ImageGalleryUpload,
+      template_file: "priv/templates/components/inputs/image_gallery_upload.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    document_upload: %{
+      name: "document_upload",
+      module: PhiaUi.Components.DocumentUpload,
+      template_file: "priv/templates/components/inputs/document_upload.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    upload_progress: %{
+      name: "upload_progress",
+      module: PhiaUi.Components.UploadProgress,
+      template_file: "priv/templates/components/inputs/upload_progress.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    upload_card: %{
+      name: "upload_card",
+      module: PhiaUi.Components.UploadCard,
+      template_file: "priv/templates/components/inputs/upload_card.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    upload_queue: %{
+      name: "upload_queue",
+      module: PhiaUi.Components.UploadQueue,
+      template_file: "priv/templates/components/inputs/upload_queue.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    fullscreen_drop: %{
+      name: "fullscreen_drop",
+      module: PhiaUi.Components.FullscreenDrop,
+      template_file: "priv/templates/components/inputs/fullscreen_drop.ex",
+      js_hooks: ["PhiaFullscreenDrop"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Animation Suite (v0.1.7) ──────────────────────────────────────────────
+    marquee: %{
+      name: "marquee",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaMarquee"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    orbit: %{
+      name: "orbit",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    aurora: %{
+      name: "aurora",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    meteor_shower: %{
+      name: "meteor_shower",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    dot_pattern: %{
+      name: "dot_pattern",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    grid_pattern: %{
+      name: "grid_pattern",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    ripple_bg: %{
+      name: "ripple_bg",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    shimmer_text: %{
+      name: "shimmer_text",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    typewriter: %{
+      name: "typewriter",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaTypewriter"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    word_rotate: %{
+      name: "word_rotate",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaWordRotate"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    text_scramble: %{
+      name: "text_scramble",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaTextScramble"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    fade_in: %{
+      name: "fade_in",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaScrollReveal"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    float: %{
+      name: "float",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    spotlight: %{
+      name: "spotlight",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaSpotlight"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tilt_card: %{
+      name: "tilt_card",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaTiltCard"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    number_ticker: %{
+      name: "number_ticker",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaNumberTicker"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    animated_border: %{
+      name: "animated_border",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pulse_ring: %{
+      name: "pulse_ring",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    typing_indicator: %{
+      name: "typing_indicator",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    wave_loader: %{
+      name: "wave_loader",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    confetti_burst: %{
+      name: "confetti_burst",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaConfetti"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    particle_bg: %{
+      name: "particle_bg",
+      module: PhiaUi.Components.Animation,
+      template_file: "priv/templates/components/animation/animation.ex",
+      js_hooks: ["PhiaParticleBg"],
+      dependencies: [],
+      tier: :animation,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -1816,7 +2342,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 172 component metadata entries."
+  @doc "Returns the full registry map — all 224 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

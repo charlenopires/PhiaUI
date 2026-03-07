@@ -69,6 +69,7 @@ defmodule PhiaUi.Components.StatCard do
   import PhiaUi.Components.Card
   import PhiaUi.Components.Badge
   import PhiaUi.Components.Icon, only: [icon: 1]
+  import PhiaUi.Components.BadgeDelta, only: [badge_delta: 1]
   import PhiaUi.ClassMerger, only: [cn: 1]
 
   attr(:title, :string,
@@ -115,6 +116,27 @@ defmodule PhiaUi.Components.StatCard do
     Typically a comparison period: `"vs. last month"`, `"year to date"`, `"30-day avg"`.
     When `nil`, no description paragraph is rendered.
     """
+  )
+
+  attr(:delta, :string,
+    default: nil,
+    doc: "Delta value for `BadgeDelta` (e.g. \"+12%\"). Requires `delta_type` to render."
+  )
+
+  attr(:delta_type, :atom,
+    default: nil,
+    values: [:increase, :moderate_increase, :decrease, :moderate_decrease, :unchanged, nil],
+    doc: "Delta type for `BadgeDelta`. Rendered only when both `delta` and `delta_type` are set."
+  )
+
+  attr(:sparkline_data, :list,
+    default: [],
+    doc: "List of numbers for a mini sparkline SVG in the card footer."
+  )
+
+  attr(:href, :string,
+    default: nil,
+    doc: "Optional URL. When set, wraps the card in an `<a>` link."
   )
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes applied to the outer card")
@@ -165,6 +187,22 @@ defmodule PhiaUi.Components.StatCard do
       └──────────────────────────────────────────────┘
   """
   def stat_card(assigns) do
+    sparkline_points =
+      if assigns.sparkline_data != [],
+        do: build_sparkline_points(assigns.sparkline_data, 120, 32),
+        else: ""
+
+    assigns = assign(assigns, :sparkline_points, sparkline_points)
+
+    ~H"""
+    <a :if={@href} href={@href} class="block">
+      <.stat_card_body {assigns} />
+    </a>
+    <.stat_card_body :if={!@href} {assigns} />
+    """
+  end
+
+  defp stat_card_body(assigns) do
     ~H"""
     <.card class={cn(["shadow-sm", @class])} {@rest}>
       <.card_header class="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -176,8 +214,15 @@ defmodule PhiaUi.Components.StatCard do
           <span :if={@icon != []} class="text-muted-foreground">
             <%= render_slot(@icon) %>
           </span>
+          <%!-- Delta badge (new) — rendered when both delta + delta_type present --%>
+          <.badge_delta
+            :if={@delta && @delta_type}
+            value={@delta}
+            delta_type={@delta_type}
+            size={:sm}
+          />
           <%!-- Trend badge: only rendered when trend_value is provided --%>
-          <.badge :if={@trend_value} variant={trend_badge_variant(@trend)}>
+          <.badge :if={@trend_value && !(@delta && @delta_type)} variant={trend_badge_variant(@trend)}>
             <.icon name={trend_icon_name(@trend)} size={:xs} /> <%= @trend_value %>
           </.badge>
         </div>
@@ -189,8 +234,27 @@ defmodule PhiaUi.Components.StatCard do
           <%= @description %>
         </p>
       </.card_content>
-      <.card_footer :if={@footer != []} class="pt-0 text-xs text-muted-foreground">
+      <.card_footer :if={@footer != [] || @sparkline_points != ""} class="pt-0 text-xs text-muted-foreground flex items-center">
         <%= render_slot(@footer) %>
+        <svg
+          :if={@sparkline_points != ""}
+          width="120"
+          height="32"
+          viewBox="0 0 120 32"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          class="ml-auto"
+        >
+          <polyline
+            points={@sparkline_points}
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="text-primary"
+          />
+        </svg>
       </.card_footer>
     </.card>
     """
@@ -211,4 +275,24 @@ defmodule PhiaUi.Components.StatCard do
   defp trend_icon_name(:up), do: "trending-up"
   defp trend_icon_name(:down), do: "trending-down"
   defp trend_icon_name(:neutral), do: "minus"
+
+  # Sparkline polyline math — adapted from SparklineCard.build_points/3
+  defp build_sparkline_points([], _w, _h), do: ""
+  defp build_sparkline_points([_single], w, h), do: "0,#{h / 2} #{w},#{h / 2}"
+
+  defp build_sparkline_points(data, w, h) do
+    min_v = Enum.min(data)
+    max_v = Enum.max(data)
+    range = if max_v == min_v, do: 1, else: max_v - min_v
+    count = length(data)
+    padding = 2
+
+    data
+    |> Enum.with_index()
+    |> Enum.map_join(" ", fn {v, i} ->
+      x = Float.round(i / (count - 1) * w, 2)
+      y = Float.round(padding + (1 - (v - min_v) / range) * (h - padding * 2), 2)
+      "#{x},#{y}"
+    end)
+  end
 end

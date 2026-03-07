@@ -13,7 +13,7 @@ defmodule PhiaUi.ComponentRegistryTest do
     :shadcn_equivalent,
     :status
   ]
-  @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget, :layout]
+  @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget, :layout, :animation]
   @valid_statuses [:planned, :implemented]
 
   describe "all/0" do
@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 172 components" do
-      assert map_size(ComponentRegistry.all()) == 172
+    test "contains exactly 224 components" do
+      assert map_size(ComponentRegistry.all()) == 224
     end
 
     test "all keys are atom component names" do
@@ -452,6 +452,59 @@ defmodule PhiaUi.ComponentRegistryTest do
       meta = ComponentRegistry.get(:cta_card)
       assert meta != nil
       assert meta.tier == :widget
+    end
+
+    test "marquee is registered as animation" do
+      meta = ComponentRegistry.get(:marquee)
+      assert meta != nil
+      assert meta.tier == :animation
+    end
+
+    test "aurora is registered as animation" do
+      meta = ComponentRegistry.get(:aurora)
+      assert meta != nil
+      assert meta.tier == :animation
+    end
+
+    test "fade_in is registered as animation" do
+      meta = ComponentRegistry.get(:fade_in)
+      assert meta != nil
+      assert meta.tier == :animation
+    end
+
+    test "number_ticker is registered as animation" do
+      meta = ComponentRegistry.get(:number_ticker)
+      assert meta != nil
+      assert meta.tier == :animation
+    end
+
+    test "confetti_burst is registered as animation with hook" do
+      meta = ComponentRegistry.get(:confetti_burst)
+      assert meta != nil
+      assert meta.tier == :animation
+      assert "PhiaConfetti" in meta.js_hooks
+    end
+
+    test "particle_bg is registered as animation with hook" do
+      meta = ComponentRegistry.get(:particle_bg)
+      assert meta != nil
+      assert meta.tier == :animation
+      assert "PhiaParticleBg" in meta.js_hooks
+    end
+
+    test "typewriter has PhiaTypewriter hook" do
+      meta = ComponentRegistry.get(:typewriter)
+      assert "PhiaTypewriter" in meta.js_hooks
+    end
+
+    test "word_rotate has PhiaWordRotate hook" do
+      meta = ComponentRegistry.get(:word_rotate)
+      assert "PhiaWordRotate" in meta.js_hooks
+    end
+
+    test "spotlight has PhiaSpotlight hook" do
+      meta = ComponentRegistry.get(:spotlight)
+      assert "PhiaSpotlight" in meta.js_hooks
     end
   end
 end
