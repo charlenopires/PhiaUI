@@ -1,7 +1,7 @@
 defmodule PhiaUi.MixProject do
   use Mix.Project
 
-  @version "0.1.7"
+  @version "0.1.11"
 
   def project do
     [
@@ -83,7 +83,7 @@ defmodule PhiaUi.MixProject do
     [
       name: "phia_ui",
       description:
-        "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. CSS-first theme system, 343 components across 16 categories, full Calendar Suite, Chart Suite, Animation Suite, DnD Suite, Editor Suite, Typography Suite, and enterprise analytics widgets.",
+        "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. CSS-first theme system, 534 components across 18 categories — Calendar, Chart, Animation, DnD, Editor, Typography, Navigation, Background, Surface, and more.",
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/phiaui/phia_ui"},
       files: ~w(lib priv docs mix.exs README.md CHANGELOG.md LICENSE)
