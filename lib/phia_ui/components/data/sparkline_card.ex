@@ -48,11 +48,19 @@ defmodule PhiaUi.Components.SparklineCard do
 
   attr(:width, :integer, default: 120, doc: "SVG width in pixels.")
   attr(:height, :integer, default: 40, doc: "SVG height in pixels.")
+  attr(:animate, :boolean, default: true, doc: "Enable line-draw entrance animation.")
+  attr(:animation_duration, :integer, default: 700, doc: "Animation duration in ms.")
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the root card element.")
   attr(:rest, :global, doc: "HTML attributes forwarded to the root `<div>` element.")
 
   def sparkline_card(assigns) do
-    assigns = assign(assigns, :points, build_points(assigns.data, assigns.width, assigns.height))
+    points = build_points(assigns.data, assigns.width, assigns.height)
+    line_len = polyline_length(points)
+
+    assigns =
+      assigns
+      |> assign(:points, points)
+      |> assign(:line_len, Float.round(line_len, 2))
 
     ~H"""
     <div
@@ -73,6 +81,7 @@ defmodule PhiaUi.Components.SparklineCard do
           viewBox={"0 0 #{@width} #{@height}"}
           preserveAspectRatio="none"
           aria-hidden="true"
+          class={if @animate, do: "phia-chart-animate", else: ""}
         >
           <polyline
             :if={@points != ""}
@@ -82,6 +91,13 @@ defmodule PhiaUi.Components.SparklineCard do
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            style={
+              if @animate && @line_len > 0 do
+                "stroke-dasharray: #{@line_len}; stroke-dashoffset: #{@line_len}; animation: phia-line-draw #{@animation_duration}ms ease-out forwards"
+              else
+                ""
+              end
+            }
           />
         </svg>
       </div>
@@ -111,6 +127,36 @@ defmodule PhiaUi.Components.SparklineCard do
       y = Float.round(padding + (1 - (v - min_v) / range) * (h - padding * 2), 2)
       "#{x},#{y}"
     end)
+  end
+
+  defp polyline_length(""), do: 0.0
+
+  defp polyline_length(points_str) do
+    pts =
+      points_str
+      |> String.split(" ")
+      |> Enum.map(fn pair ->
+        case String.split(pair, ",") do
+          [xs, ys] ->
+            {parse_float(xs), parse_float(ys)}
+
+          _ ->
+            {0.0, 0.0}
+        end
+      end)
+
+    pts
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.reduce(0.0, fn [{x1, y1}, {x2, y2}], acc ->
+      acc + :math.sqrt(:math.pow(x2 - x1, 2) + :math.pow(y2 - y1, 2))
+    end)
+  end
+
+  defp parse_float(s) do
+    case Float.parse(s) do
+      {v, _} -> v
+      :error -> 0.0
+    end
   end
 
   # green-500

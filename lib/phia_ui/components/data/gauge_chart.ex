@@ -59,6 +59,16 @@ defmodule PhiaUi.Components.GaugeChart do
     doc: "Optional numeric threshold marker rendered as a radial line on the arc."
   )
 
+  attr(:animate, :boolean,
+    default: true,
+    doc: "Enable arc entrance animation. Adds `phia-chart-animate` class and CSS animation on the value arc."
+  )
+
+  attr(:animation_duration, :integer,
+    default: 800,
+    doc: "Duration in ms for the arc fill animation."
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the root element.")
   attr(:rest, :global, doc: "HTML attributes forwarded to the root `<div>` element.")
 
@@ -99,7 +109,10 @@ defmodule PhiaUi.Components.GaugeChart do
       |> assign(:threshold_line, threshold_line)
 
     ~H"""
-    <div class={cn(["flex flex-col items-center", @class])} {@rest}>
+    <div
+      class={cn(["flex flex-col items-center", if(@animate, do: "phia-chart-animate", else: ""), @class])}
+      {@rest}
+    >
       <div class={size_class(@size)}>
         <svg viewBox="0 0 120 70" aria-hidden="true" class="w-full h-full overflow-visible">
           <%!-- Zone arcs (rendered first, behind value arc) --%>
@@ -134,8 +147,15 @@ defmodule PhiaUi.Components.GaugeChart do
             stroke-width="10"
             stroke-linecap="round"
             stroke-dasharray={"#{@filled_dash} #{@half_circ}"}
-            stroke-dashoffset="0"
+            stroke-dashoffset={if @animate, do: @filled_dash, else: "0"}
             class={arc_color_class(@color)}
+            style={
+              if @animate do
+                "--phia-gauge-len: #{@filled_dash}; animation: phia-gauge-fill #{@animation_duration}ms ease-out forwards"
+              else
+                ""
+              end
+            }
           />
 
           <%!-- Threshold marker (radial line from center to arc edge) --%>

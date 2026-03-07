@@ -26,6 +26,7 @@ const PhiaChart = {
   mounted() {
     this._chart = null;
     this._onThemeChanged = this._onThemeChanged.bind(this);
+    this._reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     window.addEventListener("phia:theme-changed", this._onThemeChanged);
 
@@ -71,6 +72,10 @@ const PhiaChart = {
       const series = this._parseSeries();
       if (config && series) {
         config.series = series;
+        // Disable animations when user prefers reduced motion
+        if (this._reducedMotion) {
+          config.animation = false;
+        }
         this._chart.setOption(config);
       }
       return;
