@@ -312,6 +312,65 @@ defmodule PhiaUi.Components.Sidebar do
   end
 
   # ---------------------------------------------------------------------------
+  # sidebar_item_expandable/1
+  # ---------------------------------------------------------------------------
+
+  attr(:label, :string, required: true, doc: "Section label shown in the summary")
+
+  attr(:active, :boolean,
+    default: false,
+    doc: "When `true`, auto-opens the details element via the `open` attribute"
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the details element")
+  attr(:rest, :global)
+
+  slot(:icon, doc: "Optional icon displayed before the label")
+  slot(:inner_block, required: true, doc: "Nested sidebar_item/1 components")
+
+  @doc """
+  Collapsible sidebar section using native `<details>/<summary>`.
+
+  Uses `details-open:rotate-90` (Tailwind v4) for the animated chevron.
+  Zero JavaScript required — browser handles expand/collapse natively.
+
+  ## Example
+
+      <.sidebar_item_expandable label="Settings" active={@section == :settings}>
+        <.sidebar_item href="/settings/profile">Profile</.sidebar_item>
+        <.sidebar_item href="/settings/security">Security</.sidebar_item>
+      </.sidebar_item_expandable>
+  """
+  def sidebar_item_expandable(assigns) do
+    ~H"""
+    <details open={@active} class={cn(["mb-1", @class])} {@rest}>
+      <summary class={cn([
+        "flex cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+        "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+        @active && "text-foreground"
+      ])}>
+        <span :if={@icon != []} class="shrink-0">{render_slot(@icon)}</span>
+        <span class="flex-1">{@label}</span>
+        <svg
+          class="h-4 w-4 shrink-0 transition-transform details-open:rotate-90"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </summary>
+      <div class="pl-4 mt-0.5 space-y-0.5">
+        {render_slot(@inner_block)}
+      </div>
+    </details>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
 

@@ -645,4 +645,111 @@ defmodule PhiaUi.Components.DropdownMenu do
     </span>
     """
   end
+
+  # ---------------------------------------------------------------------------
+  # dropdown_menu_sub/1
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the sub-menu wrapper")
+  attr(:rest, :global, doc: "Extra HTML attributes forwarded to the wrapper `<div>`")
+
+  slot(:inner_block, required: true, doc: "Must contain a sub_trigger and sub_content")
+
+  @doc """
+  Wraps a submenu — a trigger item that reveals a nested menu panel.
+
+  Place inside `dropdown_menu_content/1`. Requires exactly one
+  `dropdown_menu_sub_trigger/1` and one `dropdown_menu_sub_content/1` child.
+  """
+  def dropdown_menu_sub(assigns) do
+    ~H"""
+    <div class={cn(["relative", @class])} data-dropdown-sub {@rest}>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # dropdown_menu_sub_trigger/1
+  # ---------------------------------------------------------------------------
+
+  attr(:disabled, :boolean, default: false, doc: "Marks the trigger as non-interactive")
+  attr(:class, :string, default: nil, doc: "Additional CSS classes")
+  attr(:rest, :global, doc: "Extra HTML attributes forwarded to the trigger `<div>`")
+
+  slot(:inner_block, required: true, doc: "Trigger label text")
+
+  @doc """
+  Renders an item that opens a submenu on hover or click.
+
+  Displays a chevron-right arrow on the right edge to indicate there are
+  nested items. The arrow is rendered inline — no icon dependency needed.
+  """
+  def dropdown_menu_sub_trigger(assigns) do
+    ~H"""
+    <div
+      role="menuitem"
+      tabindex="-1"
+      data-dropdown-item
+      data-dropdown-sub-trigger
+      aria-haspopup="menu"
+      aria-expanded="false"
+      aria-disabled={@disabled && "true"}
+      class={cn([
+        "relative flex cursor-default select-none items-center justify-between rounded-sm px-2 py-1.5 text-sm outline-none",
+        "transition-colors focus:bg-accent focus:text-accent-foreground",
+        "hover:bg-accent hover:text-accent-foreground",
+        @disabled && "pointer-events-none opacity-50",
+        @class
+      ])}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+      <svg
+        class="ml-2 h-4 w-4 shrink-0 opacity-60"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="9 18 15 12 9 6" />
+      </svg>
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # dropdown_menu_sub_content/1
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the sub-menu panel")
+  attr(:rest, :global, doc: "Extra HTML attributes forwarded to the panel `<div>`")
+
+  slot(:inner_block, required: true, doc: "Nested menu items")
+
+  @doc """
+  Renders the submenu content panel positioned to the right of the trigger.
+
+  Hidden by default via `hidden`. The `PhiaDropdownMenu` hook shows this panel
+  when the parent `dropdown_menu_sub_trigger/1` is hovered or clicked.
+  """
+  def dropdown_menu_sub_content(assigns) do
+    ~H"""
+    <div
+      role="menu"
+      aria-orientation="vertical"
+      data-dropdown-sub-content
+      class={cn([
+        "absolute left-full top-0 z-50 min-w-[180px] hidden",
+        "overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+        @class
+      ])}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
 end

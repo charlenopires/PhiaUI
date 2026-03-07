@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 254 PhiaUI components.
+  Source of truth for all 309 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -2853,6 +2853,393 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Menu Suite (v0.1.7) ───────────────────────────────────────────────────
+    # 39 new components across navigation + overlay extensions
+
+    # Group: Dot Navigation
+    dot_navigation: %{
+      name: "dot_navigation",
+      module: PhiaUi.Components.DotNavigation,
+      template_file: "priv/templates/components/navigation/dot_navigation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    dot_navigation_item: %{
+      name: "dot_navigation_item",
+      module: PhiaUi.Components.DotNavigation,
+      template_file: "priv/templates/components/navigation/dot_navigation.ex",
+      js_hooks: [],
+      dependencies: [:dot_navigation],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Chip Nav
+    chip_nav: %{
+      name: "chip_nav",
+      module: PhiaUi.Components.ChipNav,
+      template_file: "priv/templates/components/navigation/chip_nav.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chip_nav_item: %{
+      name: "chip_nav_item",
+      module: PhiaUi.Components.ChipNav,
+      template_file: "priv/templates/components/navigation/chip_nav.ex",
+      js_hooks: [],
+      dependencies: [:chip_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Floating Nav
+    floating_nav: %{
+      name: "floating_nav",
+      module: PhiaUi.Components.FloatingNav,
+      template_file: "priv/templates/components/navigation/floating_nav.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    floating_nav_item: %{
+      name: "floating_nav_item",
+      module: PhiaUi.Components.FloatingNav,
+      template_file: "priv/templates/components/navigation/floating_nav.ex",
+      js_hooks: [],
+      dependencies: [:floating_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Dock
+    dock: %{
+      name: "dock",
+      module: PhiaUi.Components.Dock,
+      template_file: "priv/templates/components/navigation/dock.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    dock_item: %{
+      name: "dock_item",
+      module: PhiaUi.Components.Dock,
+      template_file: "priv/templates/components/navigation/dock.ex",
+      js_hooks: [],
+      dependencies: [:dock],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Nav Link
+    nav_link: %{
+      name: "nav_link",
+      module: PhiaUi.Components.NavLink,
+      template_file: "priv/templates/components/navigation/nav_link.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Vertical Nav
+    vertical_nav: %{
+      name: "vertical_nav",
+      module: PhiaUi.Components.VerticalNav,
+      template_file: "priv/templates/components/navigation/vertical_nav.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    vertical_nav_item: %{
+      name: "vertical_nav_item",
+      module: PhiaUi.Components.VerticalNav,
+      template_file: "priv/templates/components/navigation/vertical_nav.ex",
+      js_hooks: [],
+      dependencies: [:vertical_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    vertical_nav_group: %{
+      name: "vertical_nav_group",
+      module: PhiaUi.Components.VerticalNav,
+      template_file: "priv/templates/components/navigation/vertical_nav.ex",
+      js_hooks: [],
+      dependencies: [:vertical_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    vertical_nav_separator: %{
+      name: "vertical_nav_separator",
+      module: PhiaUi.Components.VerticalNav,
+      template_file: "priv/templates/components/navigation/vertical_nav.ex",
+      js_hooks: [],
+      dependencies: [:vertical_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: App Shell
+    app_shell: %{
+      name: "app_shell",
+      module: PhiaUi.Components.AppShell,
+      template_file: "priv/templates/components/navigation/app_shell.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    app_shell_header: %{
+      name: "app_shell_header",
+      module: PhiaUi.Components.AppShell,
+      template_file: "priv/templates/components/navigation/app_shell.ex",
+      js_hooks: [],
+      dependencies: [:app_shell],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    app_shell_sidebar: %{
+      name: "app_shell_sidebar",
+      module: PhiaUi.Components.AppShell,
+      template_file: "priv/templates/components/navigation/app_shell.ex",
+      js_hooks: [],
+      dependencies: [:app_shell],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    app_shell_aside: %{
+      name: "app_shell_aside",
+      module: PhiaUi.Components.AppShell,
+      template_file: "priv/templates/components/navigation/app_shell.ex",
+      js_hooks: [],
+      dependencies: [:app_shell],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    app_shell_footer: %{
+      name: "app_shell_footer",
+      module: PhiaUi.Components.AppShell,
+      template_file: "priv/templates/components/navigation/app_shell.ex",
+      js_hooks: [],
+      dependencies: [:app_shell],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    app_shell_main: %{
+      name: "app_shell_main",
+      module: PhiaUi.Components.AppShell,
+      template_file: "priv/templates/components/navigation/app_shell.ex",
+      js_hooks: [],
+      dependencies: [:app_shell],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Mega Menu
+    mega_menu: %{
+      name: "mega_menu",
+      module: PhiaUi.Components.MegaMenu,
+      template_file: "priv/templates/components/navigation/mega_menu.ex",
+      js_hooks: ["PhiaMegaMenu"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    mega_menu_trigger: %{
+      name: "mega_menu_trigger",
+      module: PhiaUi.Components.MegaMenu,
+      template_file: "priv/templates/components/navigation/mega_menu.ex",
+      js_hooks: [],
+      dependencies: [:mega_menu],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    mega_menu_content: %{
+      name: "mega_menu_content",
+      module: PhiaUi.Components.MegaMenu,
+      template_file: "priv/templates/components/navigation/mega_menu.ex",
+      js_hooks: [],
+      dependencies: [:mega_menu],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    mega_menu_section: %{
+      name: "mega_menu_section",
+      module: PhiaUi.Components.MegaMenu,
+      template_file: "priv/templates/components/navigation/mega_menu.ex",
+      js_hooks: [],
+      dependencies: [:mega_menu_content],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    mega_menu_item: %{
+      name: "mega_menu_item",
+      module: PhiaUi.Components.MegaMenu,
+      template_file: "priv/templates/components/navigation/mega_menu.ex",
+      js_hooks: [],
+      dependencies: [:mega_menu_content],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    mega_menu_featured: %{
+      name: "mega_menu_featured",
+      module: PhiaUi.Components.MegaMenu,
+      template_file: "priv/templates/components/navigation/mega_menu.ex",
+      js_hooks: [],
+      dependencies: [:mega_menu_content],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Speed Dial
+    speed_dial: %{
+      name: "speed_dial",
+      module: PhiaUi.Components.SpeedDial,
+      template_file: "priv/templates/components/navigation/speed_dial.ex",
+      js_hooks: ["PhiaSpeedDial"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    speed_dial_item: %{
+      name: "speed_dial_item",
+      module: PhiaUi.Components.SpeedDial,
+      template_file: "priv/templates/components/navigation/speed_dial.ex",
+      js_hooks: [],
+      dependencies: [:speed_dial],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Action Sheet
+    action_sheet: %{
+      name: "action_sheet",
+      module: PhiaUi.Components.ActionSheet,
+      template_file: "priv/templates/components/navigation/action_sheet.ex",
+      js_hooks: ["PhiaActionSheet"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    action_sheet_trigger: %{
+      name: "action_sheet_trigger",
+      module: PhiaUi.Components.ActionSheet,
+      template_file: "priv/templates/components/navigation/action_sheet.ex",
+      js_hooks: [],
+      dependencies: [:action_sheet],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    action_sheet_content: %{
+      name: "action_sheet_content",
+      module: PhiaUi.Components.ActionSheet,
+      template_file: "priv/templates/components/navigation/action_sheet.ex",
+      js_hooks: [],
+      dependencies: [:action_sheet],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    action_sheet_item: %{
+      name: "action_sheet_item",
+      module: PhiaUi.Components.ActionSheet,
+      template_file: "priv/templates/components/navigation/action_sheet.ex",
+      js_hooks: [],
+      dependencies: [:action_sheet_content],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    action_sheet_cancel: %{
+      name: "action_sheet_cancel",
+      module: PhiaUi.Components.ActionSheet,
+      template_file: "priv/templates/components/navigation/action_sheet.ex",
+      js_hooks: [],
+      dependencies: [:action_sheet_content],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Sidebar Extension
+    sidebar_item_expandable: %{
+      name: "sidebar_item_expandable",
+      module: PhiaUi.Components.Sidebar,
+      template_file: "priv/templates/components/navigation/sidebar.ex",
+      js_hooks: [],
+      dependencies: [:sidebar],
+      tier: :shell,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Dropdown Menu Sub (extension)
+    dropdown_menu_sub: %{
+      name: "dropdown_menu_sub",
+      module: PhiaUi.Components.DropdownMenu,
+      template_file: "priv/templates/components/overlay/dropdown_menu.ex",
+      js_hooks: [],
+      dependencies: [:dropdown_menu],
+      tier: :interactive,
+      shadcn_equivalent: "DropdownMenuSub",
+      status: :implemented
+    },
+    dropdown_menu_sub_trigger: %{
+      name: "dropdown_menu_sub_trigger",
+      module: PhiaUi.Components.DropdownMenu,
+      template_file: "priv/templates/components/overlay/dropdown_menu.ex",
+      js_hooks: [],
+      dependencies: [:dropdown_menu_sub],
+      tier: :interactive,
+      shadcn_equivalent: "DropdownMenuSubTrigger",
+      status: :implemented
+    },
+    dropdown_menu_sub_content: %{
+      name: "dropdown_menu_sub_content",
+      module: PhiaUi.Components.DropdownMenu,
+      template_file: "priv/templates/components/overlay/dropdown_menu.ex",
+      js_hooks: [],
+      dependencies: [:dropdown_menu_sub],
+      tier: :interactive,
+      shadcn_equivalent: "DropdownMenuSubContent",
+      status: :implemented
     }
   }
 
@@ -2860,7 +3247,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 273 component metadata entries."
+  @doc "Returns the full registry map — all 309 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
