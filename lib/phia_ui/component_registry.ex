@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 343 PhiaUI components.
+  Source of truth for all 440 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -25,7 +25,7 @@ defmodule PhiaUi.ComponentRegistry do
       PhiaUi.ComponentRegistry.by_tier(:primitive)
   """
 
-  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout | :animation
+  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout | :animation | :surface
   @type status :: :planned | :implemented
 
   @type component_meta :: %{
@@ -4336,6 +4336,268 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :form,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Surface Wave (v0.1.8) ─────────────────────────────────────────────────
+
+    # Group: Surface Primitives (surface.ex)
+    surface: %{
+      name: "surface",
+      module: PhiaUi.Components.Surface,
+      template_file: "priv/templates/components/surface/surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    paper: %{
+      name: "paper",
+      module: PhiaUi.Components.Surface,
+      template_file: "priv/templates/components/surface/surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    inset_surface: %{
+      name: "inset_surface",
+      module: PhiaUi.Components.Surface,
+      template_file: "priv/templates/components/surface/surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    scrollable_surface: %{
+      name: "scrollable_surface",
+      module: PhiaUi.Components.Surface,
+      template_file: "priv/templates/components/surface/surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tonal_surface: %{
+      name: "tonal_surface",
+      module: PhiaUi.Components.Surface,
+      template_file: "priv/templates/components/surface/surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Glass (glass.ex)
+    glass_card: %{
+      name: "glass_card",
+      module: PhiaUi.Components.Glass,
+      template_file: "priv/templates/components/surface/glass.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    glass_panel: %{
+      name: "glass_panel",
+      module: PhiaUi.Components.Glass,
+      template_file: "priv/templates/components/surface/glass.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    acrylic_surface: %{
+      name: "acrylic_surface",
+      module: PhiaUi.Components.Glass,
+      template_file: "priv/templates/components/surface/glass.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    liquid_glass: %{
+      name: "liquid_glass",
+      module: PhiaUi.Components.Glass,
+      template_file: "priv/templates/components/surface/glass.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    neon_glow_card: %{
+      name: "neon_glow_card",
+      module: PhiaUi.Components.Glass,
+      template_file: "priv/templates/components/surface/glass.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Animated Surfaces (animated_surface.ex)
+    border_beam: %{
+      name: "border_beam",
+      module: PhiaUi.Components.AnimatedSurface,
+      template_file: "priv/templates/components/surface/animated_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    shine_border: %{
+      name: "shine_border",
+      module: PhiaUi.Components.AnimatedSurface,
+      template_file: "priv/templates/components/surface/animated_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    magic_card: %{
+      name: "magic_card",
+      module: PhiaUi.Components.AnimatedSurface,
+      template_file: "priv/templates/components/surface/animated_surface.ex",
+      js_hooks: ["PhiaMagicCard"],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    card_spotlight: %{
+      name: "card_spotlight",
+      module: PhiaUi.Components.AnimatedSurface,
+      template_file: "priv/templates/components/surface/animated_surface.ex",
+      js_hooks: ["PhiaCardSpotlight"],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    moving_border: %{
+      name: "moving_border",
+      module: PhiaUi.Components.AnimatedSurface,
+      template_file: "priv/templates/components/surface/animated_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Overlay Surfaces (overlay_surface.ex)
+    scrim: %{
+      name: "scrim",
+      module: PhiaUi.Components.OverlaySurface,
+      template_file: "priv/templates/components/surface/overlay_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    image_scrim: %{
+      name: "image_scrim",
+      module: PhiaUi.Components.OverlaySurface,
+      template_file: "priv/templates/components/surface/overlay_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    gradient_overlay: %{
+      name: "gradient_overlay",
+      module: PhiaUi.Components.OverlaySurface,
+      template_file: "priv/templates/components/surface/overlay_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    spotlight_overlay: %{
+      name: "spotlight_overlay",
+      module: PhiaUi.Components.OverlaySurface,
+      template_file: "priv/templates/components/surface/overlay_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bottom_sheet: %{
+      name: "bottom_sheet",
+      module: PhiaUi.Components.OverlaySurface,
+      template_file: "priv/templates/components/surface/overlay_surface.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bottom_sheet_trigger: %{
+      name: "bottom_sheet_trigger",
+      module: PhiaUi.Components.OverlaySurface,
+      template_file: "priv/templates/components/surface/overlay_surface.ex",
+      js_hooks: [],
+      dependencies: [:bottom_sheet],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Group: Bento Grid (bento.ex)
+    bento_grid: %{
+      name: "bento_grid",
+      module: PhiaUi.Components.Bento,
+      template_file: "priv/templates/components/surface/bento.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bento_item: %{
+      name: "bento_item",
+      module: PhiaUi.Components.Bento,
+      template_file: "priv/templates/components/surface/bento.ex",
+      js_hooks: [],
+      dependencies: [:bento_grid],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bento_header: %{
+      name: "bento_header",
+      module: PhiaUi.Components.Bento,
+      template_file: "priv/templates/components/surface/bento.ex",
+      js_hooks: [],
+      dependencies: [:bento_item],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bento_badge: %{
+      name: "bento_badge",
+      module: PhiaUi.Components.Bento,
+      template_file: "priv/templates/components/surface/bento.ex",
+      js_hooks: [],
+      dependencies: [:bento_item],
+      tier: :surface,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -4343,7 +4605,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 416 component metadata entries."
+  @doc "Returns the full registry map — all 440 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

@@ -358,6 +358,44 @@
   border-radius: 2px;
 }
 
+/* ── Surface Wave Tokens ─────────────────────────────────────────────────── */
+--shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+/* Animated surface @property (for conic-gradient angle) */
+@property --angle {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+/* ── Surface Wave Keyframes ──────────────────────────────────────────────── */
+
+@keyframes phia-border-beam {
+  0%   { --angle: 0; }
+  100% { --angle: 1; }
+}
+
+@keyframes phia-shine-border {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes phia-moving-border {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes phia-neon-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+@keyframes phia-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
 /* ── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {
   * {
