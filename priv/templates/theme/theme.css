@@ -106,6 +106,10 @@
   --animate-wave-bar: wave-bar 1.2s ease-in-out infinite;
   --animate-blink-cursor: blink-cursor 1s step-end infinite;
   --animate-border-spin: border-spin 4s linear infinite;
+
+  /* ── Button Wave Animation Tokens ──────────────────────────────────────── */
+  --animate-shimmer-pass: phia-shimmer-pass 2s ease-in-out infinite;
+  --animate-glow-pulse:   phia-neon-pulse   2s ease-in-out infinite;
 }
 
 /* ── CSS Variable Aliases ─────────────────────────────────────────────────── */
@@ -394,6 +398,13 @@
 @keyframes phia-sheet-up {
   from { transform: translateY(100%); }
   to   { transform: translateY(0); }
+}
+
+/* ── Button Wave Keyframes ───────────────────────────────────────────────── */
+
+@keyframes phia-shimmer-pass {
+  from { transform: translateX(-100%) skewX(-15deg); }
+  to   { transform: translateX(200%)  skewX(-15deg); }
 }
 
 /* ── Base Layer ───────────────────────────────────────────────────────────── */

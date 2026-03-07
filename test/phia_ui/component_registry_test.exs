@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 440 components" do
-      assert map_size(ComponentRegistry.all()) == 440
+    test "contains exactly 452 components" do
+      assert map_size(ComponentRegistry.all()) == 452
     end
 
     test "all keys are atom component names" do
@@ -505,6 +505,81 @@ defmodule PhiaUi.ComponentRegistryTest do
     test "spotlight has PhiaSpotlight hook" do
       meta = ComponentRegistry.get(:spotlight)
       assert "PhiaSpotlight" in meta.js_hooks
+    end
+
+    test "split_button is registered as interactive with hook" do
+      meta = ComponentRegistry.get(:split_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+      assert "PhiaSplitButton" in meta.js_hooks
+    end
+
+    test "icon_button is registered as primitive" do
+      meta = ComponentRegistry.get(:icon_button)
+      assert meta != nil
+      assert meta.tier == :primitive
+    end
+
+    test "social_button is registered as interactive" do
+      meta = ComponentRegistry.get(:social_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "social_button_group is registered as interactive" do
+      meta = ComponentRegistry.get(:social_button_group)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "gradient_button is registered as interactive" do
+      meta = ComponentRegistry.get(:gradient_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "shimmer_button is registered as interactive" do
+      meta = ComponentRegistry.get(:shimmer_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "glow_button is registered as interactive" do
+      meta = ComponentRegistry.get(:glow_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "pulse_button is registered as interactive" do
+      meta = ComponentRegistry.get(:pulse_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "close_button is registered as primitive" do
+      meta = ComponentRegistry.get(:close_button)
+      assert meta != nil
+      assert meta.tier == :primitive
+    end
+
+    test "badge_button is registered as interactive" do
+      meta = ComponentRegistry.get(:badge_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+    end
+
+    test "confirm_button is registered as interactive with hook" do
+      meta = ComponentRegistry.get(:confirm_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+      assert "PhiaConfirmButton" in meta.js_hooks
+    end
+
+    test "countdown_button is registered as interactive with hook" do
+      meta = ComponentRegistry.get(:countdown_button)
+      assert meta != nil
+      assert meta.tier == :interactive
+      assert "PhiaCountdownButton" in meta.js_hooks
     end
   end
 end

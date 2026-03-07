@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 440 PhiaUI components.
+  Source of truth for all 452 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -4598,6 +4598,128 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :surface,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Button Suite Wave (v0.1.9) ────────────────────────────────────────────
+    split_button: %{
+      name: "split_button",
+      module: PhiaUi.Components.SplitButton,
+      template_file: "priv/templates/components/buttons/split_button.ex",
+      js_hooks: ["PhiaSplitButton"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    icon_button: %{
+      name: "icon_button",
+      module: PhiaUi.Components.IconButton,
+      template_file: "priv/templates/components/buttons/icon_button.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    social_button: %{
+      name: "social_button",
+      module: PhiaUi.Components.SocialButton,
+      template_file: "priv/templates/components/buttons/social_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    social_button_group: %{
+      name: "social_button_group",
+      module: PhiaUi.Components.SocialButton,
+      template_file: "priv/templates/components/buttons/social_button.ex",
+      js_hooks: [],
+      dependencies: [:social_button],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    gradient_button: %{
+      name: "gradient_button",
+      module: PhiaUi.Components.FancyButton,
+      template_file: "priv/templates/components/buttons/fancy_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    shimmer_button: %{
+      name: "shimmer_button",
+      module: PhiaUi.Components.FancyButton,
+      template_file: "priv/templates/components/buttons/fancy_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    glow_button: %{
+      name: "glow_button",
+      module: PhiaUi.Components.FancyButton,
+      template_file: "priv/templates/components/buttons/fancy_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pulse_button: %{
+      name: "pulse_button",
+      module: PhiaUi.Components.FancyButton,
+      template_file: "priv/templates/components/buttons/fancy_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    close_button: %{
+      name: "close_button",
+      module: PhiaUi.Components.ActionButton,
+      template_file: "priv/templates/components/buttons/action_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    badge_button: %{
+      name: "badge_button",
+      module: PhiaUi.Components.ActionButton,
+      template_file: "priv/templates/components/buttons/action_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    confirm_button: %{
+      name: "confirm_button",
+      module: PhiaUi.Components.ActionButton,
+      template_file: "priv/templates/components/buttons/action_button.ex",
+      js_hooks: ["PhiaConfirmButton"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    countdown_button: %{
+      name: "countdown_button",
+      module: PhiaUi.Components.ActionButton,
+      template_file: "priv/templates/components/buttons/action_button.ex",
+      js_hooks: ["PhiaCountdownButton"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -4605,7 +4727,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 440 component metadata entries."
+  @doc "Returns the full registry map — all 452 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
