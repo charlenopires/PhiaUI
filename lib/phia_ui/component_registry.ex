@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 452 PhiaUI components.
+  Source of truth for all 471 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -4720,6 +4720,202 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Navigation Wave (v0.1.10) — 19 new components ─────────────────────
+    # command_palette (4), nav_rail (2), stepper_nav (2), toc (2),
+    # back_to_top (1), page_progress (1), link_group (3), context_nav (2),
+    # cursor_pagination (1), load_more (1)
+
+    command_palette: %{
+      name: "command_palette",
+      module: PhiaUi.Components.CommandPalette,
+      template_file: "priv/templates/components/navigation/command_palette.ex",
+      js_hooks: ["PhiaCommand"],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: "Command",
+      status: :implemented
+    },
+    command_palette_group: %{
+      name: "command_palette_group",
+      module: PhiaUi.Components.CommandPalette,
+      template_file: "priv/templates/components/navigation/command_palette.ex",
+      js_hooks: [],
+      dependencies: [:command_palette],
+      tier: :navigation,
+      shadcn_equivalent: "CommandGroup",
+      status: :implemented
+    },
+    command_palette_item: %{
+      name: "command_palette_item",
+      module: PhiaUi.Components.CommandPalette,
+      template_file: "priv/templates/components/navigation/command_palette.ex",
+      js_hooks: [],
+      dependencies: [:command_palette],
+      tier: :navigation,
+      shadcn_equivalent: "CommandItem",
+      status: :implemented
+    },
+    command_palette_empty: %{
+      name: "command_palette_empty",
+      module: PhiaUi.Components.CommandPalette,
+      template_file: "priv/templates/components/navigation/command_palette.ex",
+      js_hooks: [],
+      dependencies: [:command_palette],
+      tier: :navigation,
+      shadcn_equivalent: "CommandEmpty",
+      status: :implemented
+    },
+    nav_rail: %{
+      name: "nav_rail",
+      module: PhiaUi.Components.NavRail,
+      template_file: "priv/templates/components/navigation/nav_rail.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    nav_rail_item: %{
+      name: "nav_rail_item",
+      module: PhiaUi.Components.NavRail,
+      template_file: "priv/templates/components/navigation/nav_rail.ex",
+      js_hooks: [],
+      dependencies: [:nav_rail],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    stepper_nav: %{
+      name: "stepper_nav",
+      module: PhiaUi.Components.StepperNav,
+      template_file: "priv/templates/components/navigation/stepper_nav.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    stepper_nav_item: %{
+      name: "stepper_nav_item",
+      module: PhiaUi.Components.StepperNav,
+      template_file: "priv/templates/components/navigation/stepper_nav.ex",
+      js_hooks: [],
+      dependencies: [:stepper_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    toc: %{
+      name: "toc",
+      module: PhiaUi.Components.Toc,
+      template_file: "priv/templates/components/navigation/toc.ex",
+      js_hooks: ["PhiaToc"],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    toc_item: %{
+      name: "toc_item",
+      module: PhiaUi.Components.Toc,
+      template_file: "priv/templates/components/navigation/toc.ex",
+      js_hooks: [],
+      dependencies: [:toc],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    back_to_top: %{
+      name: "back_to_top",
+      module: PhiaUi.Components.BackToTop,
+      template_file: "priv/templates/components/navigation/back_to_top.ex",
+      js_hooks: ["PhiaBackTop"],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    page_progress: %{
+      name: "page_progress",
+      module: PhiaUi.Components.PageProgress,
+      template_file: "priv/templates/components/navigation/page_progress.ex",
+      js_hooks: ["PhiaPageProgress"],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    link_group: %{
+      name: "link_group",
+      module: PhiaUi.Components.LinkGroup,
+      template_file: "priv/templates/components/navigation/link_group.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    link_group_heading: %{
+      name: "link_group_heading",
+      module: PhiaUi.Components.LinkGroup,
+      template_file: "priv/templates/components/navigation/link_group.ex",
+      js_hooks: [],
+      dependencies: [:link_group],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    link_group_item: %{
+      name: "link_group_item",
+      module: PhiaUi.Components.LinkGroup,
+      template_file: "priv/templates/components/navigation/link_group.ex",
+      js_hooks: [],
+      dependencies: [:link_group],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    context_nav: %{
+      name: "context_nav",
+      module: PhiaUi.Components.ContextNav,
+      template_file: "priv/templates/components/navigation/context_nav.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    context_nav_item: %{
+      name: "context_nav_item",
+      module: PhiaUi.Components.ContextNav,
+      template_file: "priv/templates/components/navigation/context_nav.ex",
+      js_hooks: [],
+      dependencies: [:context_nav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    cursor_pagination: %{
+      name: "cursor_pagination",
+      module: PhiaUi.Components.Pagination,
+      template_file: "priv/templates/components/navigation/pagination.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    load_more: %{
+      name: "load_more",
+      module: PhiaUi.Components.Pagination,
+      template_file: "priv/templates/components/navigation/pagination.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -4727,7 +4923,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 452 component metadata entries."
+  @doc "Returns the full registry map — all 471 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

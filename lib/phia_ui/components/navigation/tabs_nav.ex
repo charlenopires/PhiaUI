@@ -142,7 +142,7 @@ defmodule PhiaUi.Components.TabsNav do
   # ---------------------------------------------------------------------------
 
   attr(:variant, :atom,
-    values: [:underline, :pills, :segment],
+    values: [:underline, :pills, :segment, :scrollable],
     default: :underline,
     doc: """
     Visual style variant for the tab navigation container.
@@ -153,6 +153,7 @@ defmodule PhiaUi.Components.TabsNav do
       text-primary-foreground` filled pill
     - `:segment` — `bg-muted p-1 rounded-lg` container; active tab has
       `bg-background text-foreground shadow-sm`
+    - `:scrollable` — horizontally scrollable underline variant for many tabs
     """
   )
 
@@ -228,7 +229,7 @@ defmodule PhiaUi.Components.TabsNav do
   )
 
   attr(:variant, :atom,
-    values: [:underline, :pills, :segment],
+    values: [:underline, :pills, :segment, :scrollable],
     default: :underline,
     doc: """
     Visual style variant. Must match the parent `tabs_nav/1` variant so the
@@ -310,6 +311,11 @@ defmodule PhiaUi.Components.TabsNav do
     "inline-flex items-center rounded-lg bg-muted p-1 gap-0.5"
   end
 
+  # :scrollable is a full-width underline nav that scrolls horizontally.
+  defp tabs_nav_class(:scrollable) do
+    "flex items-center border-b border-border w-full gap-0 overflow-x-auto scroll-smooth"
+  end
+
   # Base classes shared across all variants and active states.
   # Defines interaction and focus styles; variant-specific colors are
   # added separately by tabs_item_variant_class/2.
@@ -350,5 +356,15 @@ defmodule PhiaUi.Components.TabsNav do
 
   defp tabs_item_variant_class(:segment, false) do
     "rounded-md text-muted-foreground hover:text-foreground px-3 py-1.5"
+  end
+
+  # Scrollable: underline style, shrink-0 to prevent item compression
+  defp tabs_item_variant_class(:scrollable, true) do
+    "border-b-2 border-primary text-foreground -mb-px pb-3 pt-1 px-3 shrink-0"
+  end
+
+  defp tabs_item_variant_class(:scrollable, false) do
+    "border-b-2 border-transparent text-muted-foreground hover:text-foreground " <>
+      "hover:border-border -mb-px pb-3 pt-1 px-3 shrink-0"
   end
 end

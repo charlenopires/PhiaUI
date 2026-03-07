@@ -166,12 +166,13 @@ defmodule PhiaUi.Components.Tabs do
   )
 
   attr(:variant, :atom,
-    values: [:underline, :solid, :pill],
+    values: [:underline, :solid, :pill, :scrollable],
     default: :underline,
     doc: """
     Visual style of the tabs. `:underline` (default) renders a bottom-border
     indicator; `:solid` renders the shadcn segmented-control look with `bg-muted`
-    track; `:pill` renders rounded-full pill triggers.
+    track; `:pill` renders rounded-full pill triggers; `:scrollable` renders a
+    horizontally scrollable underline tab bar for many tabs.
     """
   )
 
@@ -234,7 +235,7 @@ defmodule PhiaUi.Components.Tabs do
   # ---------------------------------------------------------------------------
 
   attr(:variant, :atom,
-    values: [:underline, :solid, :pill],
+    values: [:underline, :solid, :pill, :scrollable],
     default: :underline,
     doc: "Visual style — must match the `variant` on the parent `tabs/1`"
   )
@@ -301,7 +302,7 @@ defmodule PhiaUi.Components.Tabs do
   )
 
   attr(:variant, :atom,
-    values: [:underline, :solid, :pill],
+    values: [:underline, :solid, :pill, :scrollable],
     default: :underline,
     doc: "Visual style — must match the `variant` on the parent `tabs/1`"
   )
@@ -409,6 +410,10 @@ defmodule PhiaUi.Components.Tabs do
   defp list_variant_class(:pill),
     do: "inline-flex items-center gap-1 bg-transparent p-0"
 
+  defp list_variant_class(:scrollable),
+    do:
+      "flex items-center gap-0 border-b border-border bg-transparent p-0 text-muted-foreground overflow-x-auto scroll-smooth"
+
   # trigger base shape per variant
   defp trigger_base_class(:solid),
     do:
@@ -422,15 +427,21 @@ defmodule PhiaUi.Components.Tabs do
     do:
       "inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium"
 
+  defp trigger_base_class(:scrollable),
+    do:
+      "inline-flex items-center justify-center whitespace-nowrap rounded-none px-3 py-2 text-sm font-medium border-b-2 border-transparent shrink-0"
+
   # active trigger classes per variant
   defp trigger_active_class(:solid), do: "bg-background text-foreground shadow-sm"
   defp trigger_active_class(:underline), do: "border-b-2 border-primary text-foreground"
   defp trigger_active_class(:pill), do: "bg-primary text-primary-foreground"
+  defp trigger_active_class(:scrollable), do: "border-b-2 border-primary text-foreground"
 
   # inactive trigger hover classes per variant
   defp trigger_inactive_class(:solid), do: "hover:bg-background/50"
   defp trigger_inactive_class(:underline), do: "text-muted-foreground hover:text-foreground"
   defp trigger_inactive_class(:pill), do: "hover:bg-muted text-muted-foreground"
+  defp trigger_inactive_class(:scrollable), do: "text-muted-foreground hover:text-foreground"
 
   # ---------------------------------------------------------------------------
   # tabs_content/1

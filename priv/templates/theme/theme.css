@@ -110,6 +110,11 @@
   /* ── Button Wave Animation Tokens ──────────────────────────────────────── */
   --animate-shimmer-pass: phia-shimmer-pass 2s ease-in-out infinite;
   --animate-glow-pulse:   phia-neon-pulse   2s ease-in-out infinite;
+
+  /* ── Navigation Wave Animation Tokens ──────────────────────────────────── */
+  --animate-command-in: phia-command-in 150ms ease-out forwards;
+  --animate-step-fill:  phia-step-fill  300ms ease-out forwards;
+  --animate-toc-active: phia-toc-active 150ms ease-out forwards;
 }
 
 /* ── CSS Variable Aliases ─────────────────────────────────────────────────── */
@@ -405,6 +410,23 @@
 @keyframes phia-shimmer-pass {
   from { transform: translateX(-100%) skewX(-15deg); }
   to   { transform: translateX(200%)  skewX(-15deg); }
+}
+
+/* ── Navigation Wave (v0.1.10) Keyframes ────────────────────────────────── */
+
+@keyframes phia-command-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+@keyframes phia-step-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+@keyframes phia-toc-active {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0);    }
 }
 
 /* ── Base Layer ───────────────────────────────────────────────────────────── */

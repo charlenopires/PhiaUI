@@ -417,4 +417,122 @@ defmodule PhiaUi.Components.Pagination do
     </span>
     """
   end
+
+  # ---------------------------------------------------------------------------
+  # cursor_pagination/1 — cursor-based previous/next
+  # ---------------------------------------------------------------------------
+
+  attr(:has_previous_page, :boolean, required: true, doc: "Whether a previous page exists")
+  attr(:has_next_page, :boolean, required: true, doc: "Whether a next page exists")
+  attr(:on_previous, :string, default: "previous-page", doc: "phx-click event for previous")
+  attr(:on_next, :string, default: "next-page", doc: "phx-click event for next")
+  attr(:previous_cursor, :any, default: nil, doc: "Cursor value sent with previous event")
+  attr(:next_cursor, :any, default: nil, doc: "Cursor value sent with next event")
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+
+  @doc """
+  Renders cursor-based pagination with Previous and Next buttons.
+
+  Unlike offset pagination, cursor pagination uses opaque cursor tokens rather
+  than page numbers. Useful for infinite-scroll APIs and large result sets where
+  offset pagination is expensive.
+  """
+  def cursor_pagination(assigns) do
+    ~H"""
+    <nav aria-label="cursor pagination" role="navigation" class={cn(["flex items-center gap-2", @class])} {@rest}>
+      <button
+        type="button"
+        phx-click={if @has_previous_page, do: @on_previous}
+        phx-value-cursor={@previous_cursor}
+        disabled={!@has_previous_page}
+        aria-label="Go to previous page"
+        class={cn([
+          "inline-flex h-9 items-center justify-center gap-1 rounded-md border border-input px-3 text-sm transition-colors",
+          "hover:bg-accent hover:text-accent-foreground",
+          !@has_previous_page && "pointer-events-none opacity-50"
+        ])}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        <span>Previous</span>
+      </button>
+      <button
+        type="button"
+        phx-click={if @has_next_page, do: @on_next}
+        phx-value-cursor={@next_cursor}
+        disabled={!@has_next_page}
+        aria-label="Go to next page"
+        class={cn([
+          "inline-flex h-9 items-center justify-center gap-1 rounded-md border border-input px-3 text-sm transition-colors",
+          "hover:bg-accent hover:text-accent-foreground",
+          !@has_next_page && "pointer-events-none opacity-50"
+        ])}
+      >
+        <span>Next</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </nav>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # load_more/1 — infinite scroll trigger button
+  # ---------------------------------------------------------------------------
+
+  attr(:loading, :boolean, default: false, doc: "Shows spinner and loading_label when true")
+  attr(:on_click, :string, required: true, doc: "phx-click event to load the next batch")
+  attr(:label, :string, default: "Load more")
+  attr(:loading_label, :string, default: "Loading...")
+  attr(:disabled, :boolean, default: false)
+  attr(:class, :string, default: nil)
+  attr(:rest, :global)
+
+  @doc """
+  Renders a centered "Load more" button for append-style infinite scroll.
+
+  When `loading` is `true`, the button shows a spinner icon and the
+  `loading_label` text and is non-interactive.
+  """
+  def load_more(assigns) do
+    ~H"""
+    <div class={cn(["flex justify-center", @class])}>
+      <button
+        type="button"
+        phx-click={@on_click}
+        disabled={@loading || @disabled}
+        class={cn([
+          "inline-flex h-9 items-center justify-center gap-2 rounded-md border border-input px-4 text-sm font-medium transition-colors",
+          "hover:bg-accent hover:text-accent-foreground",
+          (@loading || @disabled) && "pointer-events-none opacity-50"
+        ])}
+        {@rest}
+      >
+        <%= if @loading do %>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="animate-spin"
+            aria-hidden="true"
+          >
+            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+          </svg>
+          {@loading_label}
+        <% else %>
+          {@label}
+        <% end %>
+      </button>
+    </div>
+    """
+  end
 end

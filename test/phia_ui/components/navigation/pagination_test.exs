@@ -8,6 +8,57 @@ defmodule PhiaUi.Components.PaginationTest do
     use Phoenix.Component
     import PhiaUi.Components.Pagination
 
+    def render_cursor_with_both(assigns) do
+      ~H"""
+      <.cursor_pagination
+        has_previous_page={true}
+        has_next_page={true}
+        on_previous="prev"
+        on_next="next"
+        previous_cursor="abc"
+        next_cursor="xyz"
+      />
+      """
+    end
+
+    def render_cursor_first_page(assigns) do
+      ~H"""
+      <.cursor_pagination
+        has_previous_page={false}
+        has_next_page={true}
+        on_previous="prev"
+        on_next="next"
+        previous_cursor={nil}
+        next_cursor="xyz"
+      />
+      """
+    end
+
+    def render_cursor_last_page(assigns) do
+      ~H"""
+      <.cursor_pagination
+        has_previous_page={true}
+        has_next_page={false}
+        on_previous="prev"
+        on_next="next"
+        previous_cursor="abc"
+        next_cursor={nil}
+      />
+      """
+    end
+
+    def render_load_more(assigns) do
+      ~H"""
+      <.load_more on_click="load-items" label="Load more" loading={false} loading_label="Loading..." disabled={false} />
+      """
+    end
+
+    def render_load_more_loading(assigns) do
+      ~H"""
+      <.load_more on_click="load-items" label="Load more" loading={true} loading_label="Loading..." disabled={false} />
+      """
+    end
+
     # Middle page (page 3 of 5)
     def render_middle(assigns) do
       ~H"""
@@ -75,6 +126,11 @@ defmodule PhiaUi.Components.PaginationTest do
   defp render_middle, do: render_component(&H.render_middle/1, %{})
   defp render_first, do: render_component(&H.render_first/1, %{})
   defp render_last, do: render_component(&H.render_last/1, %{})
+  defp render_cursor_with_both, do: render_component(&H.render_cursor_with_both/1, %{})
+  defp render_cursor_first_page, do: render_component(&H.render_cursor_first_page/1, %{})
+  defp render_cursor_last_page, do: render_component(&H.render_cursor_last_page/1, %{})
+  defp render_load_more, do: render_component(&H.render_load_more/1, %{})
+  defp render_load_more_loading, do: render_component(&H.render_load_more_loading/1, %{})
 
   # ---------------------------------------------------------------------------
   # pagination/1
@@ -218,6 +274,92 @@ defmodule PhiaUi.Components.PaginationTest do
 
     test "renders aria-hidden='true'" do
       assert render_middle() =~ ~s(aria-hidden="true")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # cursor_pagination/1
+  # ---------------------------------------------------------------------------
+
+  describe "cursor_pagination/1 — both pages available" do
+    test "renders Previous button" do
+      assert render_cursor_with_both() =~ "Previous"
+    end
+
+    test "renders Next button" do
+      assert render_cursor_with_both() =~ "Next"
+    end
+
+    test "Previous button not disabled when has_previous_page=true" do
+      html = render_cursor_with_both()
+      refute html =~ ~s(disabled="disabled")
+    end
+
+    test "includes phx-value-cursor on previous button" do
+      assert render_cursor_with_both() =~ ~s(phx-value-cursor="abc")
+    end
+
+    test "includes phx-value-cursor on next button" do
+      assert render_cursor_with_both() =~ ~s(phx-value-cursor="xyz")
+    end
+
+    test "fires on_previous event" do
+      assert render_cursor_with_both() =~ ~s(phx-click="prev")
+    end
+
+    test "fires on_next event" do
+      assert render_cursor_with_both() =~ ~s(phx-click="next")
+    end
+  end
+
+  describe "cursor_pagination/1 — first page (no previous)" do
+    test "Previous button is disabled" do
+      assert render_cursor_first_page() =~ "pointer-events-none"
+    end
+
+    test "Next button is not disabled" do
+      html = render_cursor_first_page()
+      # Should only have one pointer-events-none (the Previous button)
+      count = html |> String.split("pointer-events-none") |> length() |> Kernel.-(1)
+      assert count == 1
+    end
+  end
+
+  describe "cursor_pagination/1 — last page (no next)" do
+    test "Next button is disabled" do
+      assert render_cursor_last_page() =~ "pointer-events-none"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # load_more/1
+  # ---------------------------------------------------------------------------
+
+  describe "load_more/1 — idle state" do
+    test "renders the label text" do
+      assert render_load_more() =~ "Load more"
+    end
+
+    test "has phx-click event" do
+      assert render_load_more() =~ ~s(phx-click="load-items")
+    end
+
+    test "does not show spinner when not loading" do
+      refute render_load_more() =~ "animate-spin"
+    end
+  end
+
+  describe "load_more/1 — loading state" do
+    test "renders loading label" do
+      assert render_load_more_loading() =~ "Loading..."
+    end
+
+    test "shows animate-spin spinner" do
+      assert render_load_more_loading() =~ "animate-spin"
+    end
+
+    test "is disabled while loading" do
+      assert render_load_more_loading() =~ "pointer-events-none"
     end
   end
 end
