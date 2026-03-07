@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 309 PhiaUI components.
+  Source of truth for all 343 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -3240,6 +3240,352 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :interactive,
       shadcn_equivalent: "DropdownMenuSubContent",
       status: :implemented
+    },
+
+    # ── Forms Suite — Form Layout (v0.1.7+) ──────────────────────────────────
+    form_section: %{
+      name: "form_section",
+      module: PhiaUi.Components.FormLayout,
+      template_file: "priv/templates/components/forms/form_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_fieldset: %{
+      name: "form_fieldset",
+      module: PhiaUi.Components.FormLayout,
+      template_file: "priv/templates/components/forms/form_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_grid: %{
+      name: "form_grid",
+      module: PhiaUi.Components.FormLayout,
+      template_file: "priv/templates/components/forms/form_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_row: %{
+      name: "form_row",
+      module: PhiaUi.Components.FormLayout,
+      template_file: "priv/templates/components/forms/form_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_actions: %{
+      name: "form_actions",
+      module: PhiaUi.Components.FormLayout,
+      template_file: "priv/templates/components/forms/form_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_summary: %{
+      name: "form_summary",
+      module: PhiaUi.Components.FormLayout,
+      template_file: "priv/templates/components/forms/form_layout.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Forms Suite — Form Selects (v0.1.7+) ─────────────────────────────────
+    checkbox_group: %{
+      name: "checkbox_group",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    checkbox_group_item: %{
+      name: "checkbox_group_item",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [:checkbox_group],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_checkbox_group: %{
+      name: "form_checkbox_group",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [:checkbox_group, :checkbox_group_item],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    radio_card: %{
+      name: "radio_card",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    radio_card_group: %{
+      name: "radio_card_group",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [:radio_card],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_radio_card_group: %{
+      name: "form_radio_card_group",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [:radio_card, :radio_card_group],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    cascader: %{
+      name: "cascader",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: ["PhiaCascader"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_cascader: %{
+      name: "form_cascader",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: ["PhiaCascader"],
+      dependencies: [:cascader],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    button_transfer_list: %{
+      name: "button_transfer_list",
+      module: PhiaUi.Components.FormSelects,
+      template_file: "priv/templates/components/forms/form_selects.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Forms Suite — Special Inputs (v0.1.7+) ───────────────────────────────
+    currency_input: %{
+      name: "currency_input",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_currency_input: %{
+      name: "form_currency_input",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [:currency_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    masked_input: %{
+      name: "masked_input",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: ["PhiaMaskedInput"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_masked_input: %{
+      name: "form_masked_input",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: ["PhiaMaskedInput"],
+      dependencies: [:masked_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    range_slider: %{
+      name: "range_slider",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: ["PhiaRangeSlider"],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_range_slider: %{
+      name: "form_range_slider",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: ["PhiaRangeSlider"],
+      dependencies: [:range_slider],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    signature_pad: %{
+      name: "signature_pad",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: ["PhiaSignaturePad"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    color_swatch_picker: %{
+      name: "color_swatch_picker",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_color_swatch_picker: %{
+      name: "form_color_swatch_picker",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [:color_swatch_picker],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    float_input: %{
+      name: "float_input",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_float_input: %{
+      name: "form_float_input",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [:float_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    float_textarea: %{
+      name: "float_textarea",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_float_textarea: %{
+      name: "form_float_textarea",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [:float_textarea],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_feedback: %{
+      name: "form_feedback",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    input_status: %{
+      name: "input_status",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_stepper: %{
+      name: "form_stepper",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_stepper_item: %{
+      name: "form_stepper_item",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [:form_stepper],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    country_select: %{
+      name: "country_select",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_country_select: %{
+      name: "form_country_select",
+      module: PhiaUi.Components.SpecialInputs,
+      template_file: "priv/templates/components/inputs/special_inputs.ex",
+      js_hooks: [],
+      dependencies: [:country_select],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -3247,7 +3593,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 309 component metadata entries."
+  @doc "Returns the full registry map — all 343 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
