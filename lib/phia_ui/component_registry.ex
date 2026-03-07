@@ -1627,6 +1627,188 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Typography Suite (v0.1.7) ─────────────────────────────────────────────
+    heading: %{
+      name: "heading",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    display_text: %{
+      name: "display_text",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    text: %{
+      name: "text",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    paragraph: %{
+      name: "paragraph",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    lead: %{
+      name: "lead",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    blockquote: %{
+      name: "blockquote",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    inline_code: %{
+      name: "inline_code",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    code_block: %{
+      name: "code_block",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    mark: %{
+      name: "mark",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    text_link: %{
+      name: "text_link",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    overline: %{
+      name: "overline",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    caption: %{
+      name: "caption",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    abbr: %{
+      name: "abbr",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    prose_list: %{
+      name: "prose_list",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    ordered_list: %{
+      name: "ordered_list",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    gradient_text: %{
+      name: "gradient_text",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    truncated_text: %{
+      name: "truncated_text",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    prose: %{
+      name: "prose",
+      module: PhiaUi.Components.Typography,
+      template_file: "priv/templates/components/typography/typography.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -1634,7 +1816,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 154 component metadata entries."
+  @doc "Returns the full registry map — all 172 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
