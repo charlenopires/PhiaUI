@@ -1,6 +1,6 @@
 # Inputs
 
-All 24 input components with full Ecto/FormField integration and WAI-ARIA accessibility.
+All 43 input components with full Ecto/FormField integration and WAI-ARIA accessibility. Includes Upload Wave (8 components) and Special Inputs (11 components with FormField integration) added in v0.1.7.
 
 PhiaUI input components cover every common form pattern from bare `<input>` elements to rich WYSIWYG editors.
 Each component that wraps a form field ships with a companion `form_X/1` variant that accepts a `Phoenix.HTML.FormField`
@@ -33,6 +33,45 @@ and automatically reads the field name, value, errors, and form ID so you never 
 - [image_upload](#image_upload)
 - [rich_text_editor](#rich_text_editor)
 - [color_picker](#color_picker)
+- [mention_input](#mention_input)
+
+### Input Wave (new in 0.1.7)
+
+- [search_input](#search_input)
+- [clearable_input](#clearable_input)
+- [textarea_counter](#textarea_counter)
+- [copy_input](#copy_input)
+- [url_input](#url_input)
+- [phone_input](#phone_input)
+- [input_group](#input_group)
+- [inline_search](#inline_search)
+- [unit_input](#unit_input)
+- [autocomplete_input](#autocomplete_input)
+
+### Upload Components (new in 0.1.7)
+
+- [avatar_upload](#avatar_upload)
+- [upload_button](#upload_button)
+- [image_gallery_upload](#image_gallery_upload)
+- [document_upload](#document_upload)
+- [upload_progress](#upload_progress)
+- [upload_card](#upload_card)
+- [upload_queue](#upload_queue)
+- [fullscreen_drop](#fullscreen_drop)
+
+### Special Inputs (new in 0.1.7)
+
+- [currency_input](#currency_input)
+- [masked_input](#masked_input)
+- [range_slider](#range_slider)
+- [signature_pad](#signature_pad)
+- [color_swatch_picker](#color_swatch_picker)
+- [float_input](#float_input)
+- [float_textarea](#float_textarea)
+- [form_feedback](#form_feedback)
+- [input_status](#input_status)
+- [form_stepper](#form_stepper)
+- [country_select](#country_select)
 - [mention_input](#mention_input)
 
 ---
@@ -1197,5 +1236,330 @@ end
 ```
 
 ---
+
+## Input Wave (new in 0.1.7)
+
+### search_input
+
+Search input with magnifier icon and optional clear button. Emits `phx-change` on keystroke.
+
+```heex
+<.search_input id="user-search" name="q" value={@query} placeholder="Search users..." phx-change="search" phx-debounce="300" />
+```
+
+### clearable_input
+
+Text input with a × clear button that resets the value.
+
+```heex
+<.clearable_input id="filter" name="filter" value={@filter} placeholder="Filter..." phx-change="filter" />
+```
+
+### textarea_counter
+
+Textarea with remaining character counter. Counter updates on input.
+
+**Attrs**: `id`, `name`, `value`, `max_length`, `rows`
+
+```heex
+<.textarea_counter id="bio" name="bio" value={@bio} max_length={280} rows={4} />
+```
+
+### copy_input
+
+Read-only input with an integrated copy button (uses `PhiaCopyButton` hook).
+
+**Attrs**: `id`, `value`, `label`
+
+```heex
+<.copy_input id="api-key" value={@api_key} label="API Key" />
+```
+
+### url_input
+
+URL input with protocol prefix badge (`https://`).
+
+**Attrs**: `id`, `name`, `value`, `placeholder`
+
+```heex
+<.url_input id="website" name="website" value={@website} placeholder="your-site.com" />
+```
+
+### phone_input
+
+Phone number input with country dial-code selector dropdown.
+
+**Attrs**: `id`, `name`, `value`, `default_country` (ISO 2-letter code, default `"US"`)
+
+```heex
+<.phone_input id="phone" name="phone" value={@phone} default_country="BR" />
+```
+
+### input_group
+
+Composite input with prepend/append sections that share a single border radius.
+
+```heex
+<.input_group>
+  <:prepend>https://</:prepend>
+  <.input id="domain" name="domain" value={@domain} />
+  <:append>.com</:append>
+</.input_group>
+```
+
+### inline_search
+
+Compact search bar for in-page filtering. Renders without a visible form border.
+
+```heex
+<.inline_search id="table-search" name="q" value={@q} phx-change="search" phx-debounce="200" />
+```
+
+### unit_input
+
+Numeric input with a unit selector dropdown. Useful for measurements and conversions.
+
+**Attrs**: `id`, `name`, `value`, `units` (list of strings), `selected_unit`, `on_unit_change`
+
+```heex
+<.unit_input id="weight" name="weight" value={@weight}
+  units={["kg", "lb", "oz"]} selected_unit={@weight_unit}
+  on_unit_change="change_unit" />
+```
+
+### autocomplete_input
+
+Text input with a suggestion dropdown list. Keyboard navigable.
+
+**Attrs**: `id`, `name`, `value`, `suggestions` (list of strings), `on_select`
+
+```heex
+<.autocomplete_input id="country" name="country" value={@country}
+  suggestions={@country_suggestions} on_select="select_country"
+  phx-change="search_country" />
+```
+
+---
+
+## Upload Components (new in 0.1.7)
+
+### avatar_upload
+
+Circular avatar upload with preview. Click to replace. Wraps `live_file_input/1`.
+
+**Attrs**: `id`, `upload` (`Phoenix.LiveView.UploadConfig`), `current_url`, `name`
+
+```heex
+<.avatar_upload id="avatar-upload" upload={@uploads.avatar} current_url={@user.avatar_url} />
+```
+
+### upload_button
+
+Minimal button-triggered file upload.
+
+**Attrs**: `id`, `upload`, `label`, `accept`
+
+```heex
+<.upload_button id="doc-upload" upload={@uploads.document} label="Upload document" />
+```
+
+### image_gallery_upload
+
+Multi-image grid upload with inline previews and remove buttons.
+
+**Attrs**: `id`, `upload`, `max_files`
+
+```heex
+<.image_gallery_upload id="gallery" upload={@uploads.images} max_files={10} />
+```
+
+### document_upload
+
+Document upload zone with file type restriction and uploaded entry list.
+
+**Attrs**: `id`, `upload`, `accept`, `label`
+
+```heex
+<.document_upload id="docs" upload={@uploads.documents} accept=".pdf,.docx" />
+```
+
+### upload_progress
+
+Upload progress bar with filename, file size, and cancel button.
+
+**Attrs**: `entry` (`Phoenix.LiveView.UploadEntry`), `on_cancel`
+
+```heex
+<%= for entry <- @uploads.files.entries do %>
+  <.upload_progress entry={entry} on_cancel="cancel_upload" />
+<% end %>
+```
+
+### upload_card
+
+File card with circular progress ring overlay and cancel button.
+
+**Attrs**: `entry`, `on_cancel`
+
+```heex
+<.upload_card entry={entry} on_cancel="cancel_upload" />
+```
+
+### upload_queue
+
+Ordered list of pending uploads with bulk cancel.
+
+**Attrs**: `id`, `upload`, `on_cancel_all`
+
+```heex
+<.upload_queue id="queue" upload={@uploads.files} on_cancel_all="cancel_all" />
+```
+
+### fullscreen_drop
+
+Full-viewport drag-and-drop overlay. Appears when a file is dragged anywhere over the window. Uses depth counter to avoid flicker on `dragenter`/`dragleave`.
+
+**Hook**: `PhiaFullscreenDrop`
+**Attrs**: `id`, `label`, `on_drop`
+
+```heex
+<.fullscreen_drop id="window-drop" label="Drop files to upload" on_drop="files_dropped" />
+```
+
+---
+
+## Special Inputs (new in 0.1.7)
+
+### currency_input
+
+Formatted monetary input with currency symbol prefix. Accepts float value, formats with locale decimal separator.
+
+**Attrs**: `id`, `name`, `value`, `currency` (default `"USD"`), `symbol` (default `"$"`)
+
+```heex
+<.form_currency_input field={@form[:price]} label="Price" currency="USD" />
+```
+
+### masked_input
+
+Input with value mask (phone, SSN, date, custom patterns). Uses `PhiaMaskedInput` hook.
+
+**Hook**: `PhiaMaskedInput`
+**Attrs**: `id`, `name`, `value`, `mask` (e.g. `"(000) 000-0000"`, `"000.000.000-00"`)
+
+```heex
+<.form_masked_input field={@form[:phone]} label="Phone" mask="(000) 000-0000" />
+```
+
+### range_slider
+
+Dual-thumb range slider for min/max selection. Uses `PhiaRangeSlider` hook; initial from/to percentages computed server-side.
+
+**Hook**: `PhiaRangeSlider`
+**Attrs**: `id`, `name_from`, `name_to`, `value_from`, `value_to`, `min`, `max`, `step`
+
+```heex
+<.form_range_slider
+  field={@form[:price_range]}
+  label="Price range"
+  min={0} max={1000} step={10}
+  value_from={@min_price} value_to={@max_price}
+/>
+```
+
+### signature_pad
+
+Canvas signature drawing pad. Outputs base64 PNG on submit. Uses `PhiaSignaturePad` hook.
+
+**Hook**: `PhiaSignaturePad`
+**Attrs**: `id`, `name`, `height`, `stroke_color`, `stroke_width`
+
+```heex
+<.signature_pad id="sig" name="signature" height={200} />
+```
+
+### color_swatch_picker
+
+Click-to-select color swatch grid with FormField integration.
+
+**Attrs**: `id`, `name`, `value`, `colors` (list of hex strings)
+
+```heex
+<.form_color_swatch_picker
+  field={@form[:color]}
+  label="Brand color"
+  colors={["#3b82f6", "#8b5cf6", "#ec4899", "#10b981", "#f59e0b"]}
+/>
+```
+
+### float_input
+
+Floating label text input. Label animates above the input when focused or filled.
+
+```heex
+<.form_float_input field={@form[:name]} label="Full name" />
+```
+
+### float_textarea
+
+Floating label textarea.
+
+```heex
+<.form_float_textarea field={@form[:bio]} label="Bio" rows={4} />
+```
+
+### form_feedback
+
+Contextual feedback message with icon for valid/invalid state.
+
+**Attrs**: `type` (`"valid"`, `"invalid"`, `"info"`), `message`
+
+```heex
+<.form_feedback type="valid" message="Username is available." />
+<.form_feedback type="invalid" message="This email is already taken." />
+```
+
+### input_status
+
+Input status indicator icon suffix: loading spinner, check (valid), or X (invalid).
+
+**Attrs**: `status` (`"loading"`, `"valid"`, `"invalid"`, `nil`)
+
+```heex
+<div class="relative">
+  <.input id="username" name="username" value={@username} phx-change="check_username" />
+  <.input_status status={@username_status} />
+</div>
+```
+
+### form_stepper
+
+Step-based wizard form with numbered item slots.
+
+**Attrs**: `id`, `current_step` (1-based)
+
+```heex
+<.form_stepper id="checkout" current_step={@step}>
+  <:step label="Account">
+    <.phia_input field={@form[:email]} label="Email" />
+  </:step>
+  <:step label="Billing">
+    <.form_currency_input field={@form[:amount]} label="Amount" />
+  </:step>
+  <:step label="Confirm">
+    <.form_summary changeset={@changeset} />
+  </:step>
+</.form_stepper>
+```
+
+### country_select
+
+Country dropdown with flag emojis. Pre-populated with all ISO 3166-1 alpha-2 countries.
+
+**Attrs**: `id`, `name`, `value`, `placeholder`
+
+```heex
+<.form_country_select field={@form[:country]} label="Country" placeholder="Select country..." />
+```
 
 ← [Back to README](../../README.md)

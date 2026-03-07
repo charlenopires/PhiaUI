@@ -2,6 +2,66 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.7 — 2026-03-07
+
+### Added — 189 new components across 9 waves (154 → 343 total)
+
+#### Menu Suite — 36 navigation components
+
+ActionSheet, AppShell, ChipNav, Dock, DotNavigation, FloatingNav, MegaMenu, NavLink, SpeedDial, VerticalNav, WizardNav plus MobileSidebarToggle improvements. Full breakdown → `docs/components/navigation.md`.
+
+#### Editor Suite — 19 components
+
+Full rich-text editor toolkit: EditorToolbar, ToolbarButton, ToolbarGroup, ToolbarSeparator, BubbleMenu, FloatingMenu, SlashCommandMenu, InlineEdit, InlineEditGroup, EditorColorPicker, EditorToolbarDropdown, EditorLinkDialog, EditorCodeBlock, EditorCharacterCount, MarkdownEditor, RichTextViewer, EditorFindReplace, EditorWordCount, AdvancedEditor.
+8 new JS hooks: PhiaBubbleMenu, PhiaFloatingMenu, PhiaSlashCommand, PhiaEditorColorPicker, PhiaEditorDropdown, PhiaMarkdownEditor, PhiaEditorFindReplace, PhiaAdvancedEditor.
+
+#### DnD Suite — 14 interaction components
+
+DragHandle, DropIndicator, SortableList, SortableItem, SortableGrid, SortableGridItem, KanbanBoard (DnD), KanbanColumn, KanbanCard, DropZone, DragTransferList, MultiDragList, DraggableTree, DraggableTreeNode.
+6 new JS hooks: PhiaSortable, PhiaSortableGrid, PhiaKanban, PhiaDropZone, PhiaDragTransferList, PhiaMultiDrag, PhiaDraggableTree.
+
+#### Chart Suite — 16 native SVG charts (zero JS)
+
+BarChart, LineChart, AreaChart, PieChart, DonutChart, RadarChart, ScatterChart, BubbleChart, RadialBarChart, HistogramChart, WaterfallChart, HeatmapChart, BulletChart, SlopeChart, TreemapChart, TimelineChart.
+Shared helpers: `chart_helpers.ex` (normalize_series, pie_slices, donut_slices, histogram_bins, squarify, polyline_length, chart_color, stagger_delay) and `chart_axis_helpers.ex` (nice_ticks, format_tick).
+6 chart `@keyframes` added to `theme.css`: phia-bar-grow, phia-bar-grow-x, phia-line-draw, phia-dot-pop, phia-fade-in, phia-gauge-fill.
+
+#### Animation Suite — 22 components
+
+Marquee, Orbit, Aurora, MeteorShower, DotPattern, GridPattern, RippleBg, ShimmerText, Typewriter, WordRotate, TextScramble, FadeIn, Float, Spotlight, TiltCard, NumberTicker, AnimatedBorder, PulseRing, TypingIndicator, WaveLoader, ConfettiBurst, ParticleBg.
+10 new JS hooks: PhiaMarquee, PhiaTypewriter, PhiaWordRotate, PhiaTextScramble, PhiaScrollReveal, PhiaSpotlight, PhiaTiltCard, PhiaNumberTicker, PhiaConfetti, PhiaParticleBg.
+All hooks respect `prefers-reduced-motion`; canvas hooks resize+cleanup on `destroyed()`.
+
+#### Widget Wave — 12 analytics widgets
+
+BadgeDelta, BarList, CategoryBar, MeterGroup, FunnelChart, NpsWidget, ComparisonTable, Leaderboard, Watermark, ImageComparison, ResultState, Popconfirm.
+`stat_card` enhanced: `delta`, `delta_type`, `sparkline_data`, `href` attrs.
+`gauge_chart` enhanced: `zones`, `threshold` attrs + `center_label` slot.
+1 new JS hook: PhiaImageComparison.
+
+#### Input & Upload Wave — 18 components
+
+SearchInput, ClearableInput, TextareaCounter, CopyInput, UrlInput, PhoneInput, InputGroup, InlineSearch, UnitInput, AutocompleteInput, AvatarUpload, UploadButton, ImageGalleryUpload, DocumentUpload, UploadProgress, UploadCard, UploadQueue, FullscreenDrop.
+1 new JS hook: PhiaFullscreenDrop.
+
+#### Typography Suite — 18 components
+
+Heading, DisplayText, Text, Paragraph, Lead, Blockquote, InlineCode, CodeBlock, Mark, TextLink, Overline, Caption, Abbr, ProseList, OrderedList, GradientText, TruncatedText, Prose.
+
+#### Forms Suite — 34 components
+
+FormLayout (FormSection, FormFieldset, FormGrid, FormRow, FormActions, FormSummary), FormSelects (CheckboxGroup, CheckboxGroupItem, FormCheckboxGroup, RadioCard, RadioCardGroup, FormRadioCardGroup, Cascader, FormCascader, ButtonTransferList), SpecialInputs (CurrencyInput, FormCurrencyInput, MaskedInput, FormMaskedInput, RangeSlider, FormRangeSlider, SignaturePad, ColorSwatchPicker, FormColorSwatchPicker, FloatInput, FormFloatInput, FloatTextarea, FormFloatTextarea, FormFeedback, InputStatus, FormStepper, FormStepperItem, CountrySelect, FormCountrySelect).
+4 new JS hooks: PhiaMaskedInput, PhiaRangeSlider, PhiaSignaturePad, PhiaCascader.
+
+### Infrastructure
+
+- Added `@keyframes` + `--animate-*` CSS tokens for Animation Suite and DnD Suite to `priv/templates/theme/theme.css`
+- `prefers-reduced-motion` guard added to `theme.css` (`.phia-chart-animate` disables all chart animations)
+- Registry grew from 154 → 343 entries (all implemented)
+- Tests: 6183 total, 0 new failures
+
+---
+
 ## 0.1.6 — 2026-03-06
 
 ### Added — 15 new card components (Card Suite)

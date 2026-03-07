@@ -1,8 +1,10 @@
 # Layout
 
-Structural composition components: dashboard shell, collapsible regions, resizable panels, scroll areas, and dividers.
+Structural composition components: dashboard shell, collapsible regions, resizable panels, scroll areas, dividers, and 20 layout primitive components added in v0.1.5.
 
 ## Table of Contents
+
+### Interactive Layout
 
 - [shell](#shell)
 - [accordion](#accordion)
@@ -11,6 +13,29 @@ Structural composition components: dashboard shell, collapsible regions, resizab
 - [scroll_area](#scroll_area)
 - [separator](#separator)
 - [aspect_ratio](#aspect_ratio)
+
+### Layout Primitives (new in 0.1.5)
+
+- [box](#box)
+- [spacer](#spacer)
+- [center](#center)
+- [section](#section)
+- [sticky](#sticky)
+- [fixed_bar](#fixed_bar)
+- [flex](#flex)
+- [stack](#stack)
+- [wrap](#wrap)
+- [grid](#grid)
+- [simple_grid](#simple_grid)
+- [container](#container)
+- [divider](#divider)
+- [media_object](#media_object)
+- [masonry_grid](#masonry_grid)
+- [description_list](#description_list)
+- [page_layout](#page_layout)
+- [split_layout](#split_layout)
+- [page_header](#page_header)
+- [nav_list](#nav_list)
 
 ---
 
@@ -307,6 +332,282 @@ CSS padding-top trick for responsive ratio containers.
 <.aspect_ratio ratio="4/3" class="rounded-xl overflow-hidden border">
   <.skeleton class="w-full h-full" />
 </.aspect_ratio>
+```
+
+---
+
+## Layout Primitives (new in 0.1.5)
+
+### box
+
+Generic block container. Renders as any HTML tag via `:as` attr.
+
+**Attrs**: `as` (default `"div"`), `class`
+
+```heex
+<.box as="section" class="p-6 bg-card rounded-lg">
+  Content
+</.box>
+```
+
+### spacer
+
+Flex spacer that pushes siblings apart, or a fixed-size gap element.
+
+**Attrs**: `size` (Tailwind spacing value, e.g. `"4"`, `"8"`)
+
+```heex
+<div class="flex">
+  <span>Left</span>
+  <.spacer />
+  <span>Right (pushed far right)</span>
+</div>
+```
+
+### center
+
+Flex centering wrapper. Centers children horizontally or both axes.
+
+**Attrs**: `both` (boolean, default `false`)
+
+```heex
+<.center both class="min-h-screen">
+  <.card>Centered content</.card>
+</.center>
+```
+
+### section
+
+Semantic `<section>` wrapper with consistent vertical padding.
+
+**Attrs**: `class`
+
+```heex
+<.section class="bg-muted/20">
+  <.heading level={2}>Features</.heading>
+</.section>
+```
+
+### sticky
+
+`position: sticky` wrapper with configurable `top` or `bottom` offset.
+
+**Attrs**: `top`, `bottom` (Tailwind spacing values), `class`
+
+```heex
+<.sticky top="0" class="z-10 bg-background/90 backdrop-blur">
+  <.topbar />
+</.sticky>
+```
+
+### fixed_bar
+
+Fixed-position top or bottom bar for persistent UI chrome.
+
+**Attrs**: `position` (`"top"`, `"bottom"`), `class`
+
+```heex
+<.fixed_bar position="bottom" class="border-t">
+  <.button class="w-full">Save</.button>
+</.fixed_bar>
+```
+
+### flex
+
+Flex container with gap, direction, align, and justify props.
+
+**Attrs**: `gap`, `direction` (`"row"`, `"col"`), `align`, `justify`, `wrap`, `class`
+
+```heex
+<.flex gap="4" align="center" justify="between">
+  <.heading level={3}>Title</.heading>
+  <.button>Action</.button>
+</.flex>
+```
+
+### stack
+
+Vertical flex stack with uniform gap. Shortcut for `flex direction="col"`.
+
+**Attrs**: `gap` (default `"4"`), `class`
+
+```heex
+<.stack gap="6">
+  <.card>Card 1</.card>
+  <.card>Card 2</.card>
+  <.card>Card 3</.card>
+</.stack>
+```
+
+### wrap
+
+Flex-wrap container for tag clouds, button groups, and pill rows.
+
+**Attrs**: `gap`, `class`
+
+```heex
+<.wrap gap="2">
+  <%= for tag <- @tags do %>
+    <.badge>{tag}</.badge>
+  <% end %>
+</.wrap>
+```
+
+### grid
+
+CSS Grid container with configurable cols, rows, and gap.
+
+**Attrs**: `cols` (e.g. `"3"`, `"4"`), `gap`, `class`
+
+```heex
+<.grid cols="3" gap="6">
+  <%= for card <- @cards do %>
+    <.stat_card {card} />
+  <% end %>
+</.grid>
+```
+
+### simple_grid
+
+Responsive equal-column grid using auto-fill/auto-fit.
+
+**Attrs**: `min_col_width` (default `"200px"`), `gap`, `class`
+
+```heex
+<.simple_grid min_col_width="280px" gap="4">
+  <%= for item <- @items do %>
+    <.card>{item.title}</.card>
+  <% end %>
+</.simple_grid>
+```
+
+### container
+
+Responsive max-width wrapper with configurable size and horizontal padding.
+
+**Attrs**: `size` (`"sm"`, `"md"`, `"lg"`, `"xl"`, `"2xl"`, `"full"`), `class`
+
+```heex
+<.container size="lg" class="py-12">
+  <.heading level={1}>Page Title</.heading>
+</.container>
+```
+
+### divider
+
+Horizontal or vertical divider with optional label text.
+
+**Attrs**: `orientation` (`"horizontal"`, `"vertical"`), `label`, `class`
+
+```heex
+<.divider label="Or continue with" />
+<.divider orientation="vertical" class="h-8 mx-4" />
+```
+
+### media_object
+
+Horizontal image/icon + text layout pattern (email-client compatible).
+
+**Attrs**: `class`
+
+```heex
+<.media_object>
+  <:media><.avatar src={@user.avatar} size={:md} /></:media>
+  <:body>
+    <p class="font-medium">{@user.name}</p>
+    <p class="text-sm text-muted-foreground">{@user.role}</p>
+  </:body>
+</.media_object>
+```
+
+### masonry_grid
+
+CSS column-count masonry layout for unequal-height cards.
+
+**Attrs**: `cols` (default `"3"`), `gap`, `class`
+
+```heex
+<.masonry_grid cols="4" gap="4">
+  <%= for item <- @items do %>
+    <div class="mb-4 break-inside-avoid">
+      <.card>{item.content}</.card>
+    </div>
+  <% end %>
+</.masonry_grid>
+```
+
+### description_list
+
+Semantic `<dl>` with responsive term/detail layout.
+
+**Attrs**: `class`
+
+```heex
+<.description_list>
+  <:item term="Status">Active</:item>
+  <:item term="Created">2026-03-07</:item>
+  <:item term="Plan">Pro</:item>
+</.description_list>
+```
+
+### page_layout
+
+Two-column or three-column content/sidebar page layout.
+
+**Attrs**: `variant` (`"sidebar-right"`, `"sidebar-left"`, `"two-col"`), `class`
+
+```heex
+<.page_layout variant="sidebar-right">
+  <:main>
+    <.heading level={1}>Article Title</.heading>
+    <.prose>{@article.body}</.prose>
+  </:main>
+  <:sidebar>
+    <.card>Related</.card>
+  </:sidebar>
+</.page_layout>
+```
+
+### split_layout
+
+Two-pane resizable split panel with configurable ratio.
+
+**Attrs**: `ratio` (default `"1/2"`), `direction` (`"horizontal"`, `"vertical"`), `class`
+
+```heex
+<.split_layout ratio="1/3">
+  <:left><.sidebar_panel /></:left>
+  <:right><.main_content /></:right>
+</.split_layout>
+```
+
+### page_header
+
+Consistent page heading region with breadcrumb and action slot.
+
+**Attrs**: `title`, `description`, `class`
+
+```heex
+<.page_header title="Users" description="Manage your team members.">
+  <:actions>
+    <.button phx-click="new_user">Invite user</.button>
+  </:actions>
+</.page_header>
+```
+
+### nav_list
+
+Styled vertical navigation list with item and group slots.
+
+**Attrs**: `class`
+
+```heex
+<.nav_list>
+  <:group label="Account">
+    <:item href="/profile" active={@path == "/profile"} icon="user">Profile</:item>
+    <:item href="/settings" active={@path == "/settings"} icon="settings">Settings</:item>
+  </:group>
+</.nav_list>
 ```
 
 ← [Back to README](../../README.md)

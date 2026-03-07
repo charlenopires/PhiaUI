@@ -1,6 +1,6 @@
 # Feedback
 
-Loading states, alerts, progress indicators, and notification systems.
+Loading states, alerts, progress indicators, notification systems, and confirmation patterns.
 
 ## Table of Contents
 
@@ -15,6 +15,8 @@ Loading states, alerts, progress indicators, and notification systems.
 - [toast](#toast)
 - [snackbar](#snackbar)
 - [sonner](#sonner)
+- [popconfirm](#popconfirm) _(new in 0.1.7)_
+- [result_state](#result_state) _(new in 0.1.7)_
 
 ---
 
@@ -405,5 +407,70 @@ Rich stacking toast notifications (Sonner-style). Push multiple toasts; they sta
   type: "error"
 })}
 ```
+
+---
+
+## popconfirm
+
+_(new in 0.1.7)_
+
+Inline confirmation popover that appears before a destructive action is committed. Avoids full modal dialogs for lightweight confirmations.
+
+**Module**: `PhiaUi.Components.Feedback`
+**Attrs**: `id`, `message`, `on_confirm`, `on_cancel`, `placement` (`"top"`, `"bottom"`, `"left"`, `"right"`)
+
+```heex
+<.popconfirm
+  id="delete-confirm"
+  message="Delete this record? This cannot be undone."
+  on_confirm="delete_record"
+  placement="top"
+>
+  <.button variant="destructive">Delete</.button>
+</.popconfirm>
+```
+
+### Use Cases
+
+- Delete row confirmation
+- Archive/unarchive actions
+- Disconnect confirmation
+
+---
+
+## result_state
+
+_(new in 0.1.7)_
+
+Full-page outcome display component for success, error, warning, and info states. Renders a centered icon, title, description, and action buttons.
+
+**Module**: `PhiaUi.Components.Feedback`
+**Attrs**: `type` (`"success"`, `"error"`, `"warning"`, `"info"`), `title`, `description`
+
+```heex
+<.result_state type="success" title="Payment successful!" description="Your order has been confirmed.">
+  <:primary_action>
+    <.button phx-click="go_home">Back to home</.button>
+  </:primary_action>
+  <:secondary_action>
+    <.button variant="outline" phx-click="view_order">View order</.button>
+  </:secondary_action>
+</.result_state>
+```
+
+```heex
+<.result_state type="error" title="Payment failed" description="Your card was declined.">
+  <:primary_action>
+    <.button phx-click="retry">Try again</.button>
+  </:primary_action>
+</.result_state>
+```
+
+### Use Cases
+
+- Payment outcome pages
+- Form submission confirmations
+- Permission denied / 403 pages
+- Empty state with action
 
 ← [Back to README](../../README.md)

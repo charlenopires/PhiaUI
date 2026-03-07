@@ -419,4 +419,152 @@ Mobile fixed bottom navigation bar. Use on small screens as an alternative to a 
 
 > **Tip:** Combine `bottom_navigation` with `shell/1` for responsive layouts — show `sidebar` on desktop and `bottom_navigation` on mobile using Tailwind's `md:hidden` / `hidden md:block` classes.
 
+---
+
+## Menu Suite (new in 0.1.7)
+
+### mega_menu
+
+Full-width dropdown navigation panel with multi-column layout. Replaces simple dropdowns in primary navigation bars.
+
+**Attrs**: `id`, `trigger_label`, `cols` (number of columns)
+
+```heex
+<.mega_menu id="products-menu" trigger_label="Products" cols={3}>
+  <:column title="Analytics">
+    <.nav_link href="/analytics/overview">Overview</.nav_link>
+    <.nav_link href="/analytics/reports">Reports</.nav_link>
+  </:column>
+  <:column title="Operations">
+    <.nav_link href="/ops/deployments">Deployments</.nav_link>
+  </:column>
+</.mega_menu>
+```
+
+---
+
+### speed_dial
+
+FAB-style expandable action menu. Primary button expands to show labeled icon items on click.
+
+**Attrs**: `id`, `icon`, `label`, `direction` (`"up"`, `"down"`, `"left"`, `"right"`)
+
+```heex
+<.speed_dial id="create-dial" icon="plus" label="Create" direction="up">
+  <:item icon="file-text" label="Document" on_click="new_doc" />
+  <:item icon="image" label="Image" on_click="new_image" />
+  <:item icon="folder" label="Folder" on_click="new_folder" />
+</.speed_dial>
+```
+
+---
+
+### action_sheet
+
+Mobile-style bottom action sheet with icon items and cancel button.
+
+**Attrs**: `id`, `open`, `title`
+
+```heex
+<.action_sheet id="file-actions" open={@sheet_open} title="File actions">
+  <:item icon="edit" label="Rename" on_click="rename" />
+  <:item icon="trash" label="Delete" on_click="delete" class="text-destructive" />
+</.action_sheet>
+```
+
+---
+
+### app_shell
+
+Full-page app shell composing sidebar, topbar, and main content in a single wrapper.
+
+```heex
+<.app_shell>
+  <:sidebar>...</:sidebar>
+  <:topbar>...</:topbar>
+  <:main>...</:main>
+</.app_shell>
+```
+
+---
+
+### chip_nav
+
+Horizontal pill/chip navigation bar with active fill state.
+
+```heex
+<.chip_nav>
+  <:item href="/all" active={@filter == "all"}>All</:item>
+  <:item href="/active" active={@filter == "active"}>Active</:item>
+</.chip_nav>
+```
+
+---
+
+### dock
+
+macOS-style centered icon dock with tooltip labels.
+
+**Attrs**: `position` (`"bottom"`, `"left"`, `"right"`)
+
+```heex
+<.dock position="bottom">
+  <:item icon="home" label="Home" href="/" />
+  <:item icon="search" label="Search" href="/search" />
+</.dock>
+```
+
+---
+
+### dot_navigation
+
+Minimal dot indicator navigation for carousels and slides.
+
+**Attrs**: `count`, `current` (0-based), `on_change`
+
+```heex
+<.dot_navigation count={@slides_count} current={@current} on_change="go_slide" />
+```
+
+---
+
+### floating_nav
+
+Floating pill navigation bar with `backdrop-blur` glass morphism style.
+
+```heex
+<.floating_nav class="fixed bottom-6 left-1/2 -translate-x-1/2">
+  <:item icon="home" href="/" active={@path == "/"} />
+  <:item icon="users" href="/team" active={@path == "/team"} />
+</.floating_nav>
+```
+
+---
+
+### nav_link
+
+Styled navigation anchor with active state and icon slot.
+
+**Attrs**: `href`, `active`, `icon`
+
+```heex
+<.nav_link href="/dashboard" active={@current_path == "/dashboard"} icon="layout-dashboard">
+  Dashboard
+</.nav_link>
+```
+
+---
+
+### vertical_nav
+
+Vertical navigation list with collapsible section groups.
+
+```heex
+<.vertical_nav>
+  <:group label="Analytics">
+    <.nav_link href="/analytics" icon="bar-chart">Overview</.nav_link>
+  </:group>
+</.vertical_nav>
+```
+
 ← [Back to README](../../README.md)

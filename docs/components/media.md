@@ -1,12 +1,14 @@
 # Media
 
-Audio playback, image carousels, and server-side QR code generation.
+Audio playback, image carousels, QR code generation, image comparison, and content watermarking.
 
 ## Table of Contents
 
 - [audio_player](#audio_player)
 - [carousel](#carousel)
 - [qr_code](#qr_code)
+- [image_comparison](#image_comparison) _(new in 0.1.7)_
+- [watermark](#watermark) _(new in 0.1.7)_
 
 ---
 
@@ -190,5 +192,66 @@ Server-side SVG QR code generation using `eqrcode`. No JavaScript required.
 - Event check-in codes
 - Share URLs on mobile
 - 2FA enrollment (TOTP secrets)
+
+---
+
+## image_comparison
+
+_(new in 0.1.7)_
+
+Before/after image slider for visual comparisons. A draggable divider reveals the "after" image as it moves. Uses `PhiaImageComparison` hook.
+
+**Hook**: `PhiaImageComparison`
+**Attrs**: `id`, `before_src`, `after_src`, `before_label`, `after_label`, `initial_position` (0–100, default 50)
+
+```heex
+<.image_comparison
+  id="photo-compare"
+  before_src="/images/before.jpg"
+  after_src="/images/after.jpg"
+  before_label="Original"
+  after_label="Enhanced"
+  initial_position={40}
+/>
+```
+
+### Use Cases
+
+- Photo editing before/after
+- A/B design comparisons
+- Map layer toggles
+- Medical image comparison
+
+---
+
+## watermark
+
+_(new in 0.1.7)_
+
+SVG tiled watermark overlay. Renders repeating diagonal text over content. Uses `:crypto.strong_rand_bytes/1` for unique pattern IDs to avoid SVG ID collisions.
+
+**Attrs**: `text`, `opacity` (0.0–1.0, default 0.15), `angle` (degrees, default -45), `font_size` (default 14), `gap` (tile size, default 120)
+
+```heex
+<.watermark text="CONFIDENTIAL" opacity={0.1} angle={-30}>
+  <div class="p-8">
+    <h2>Sensitive Report</h2>
+    <p>Internal use only...</p>
+  </div>
+</.watermark>
+```
+
+```heex
+<%!-- User-specific watermark --%>
+<.watermark text={@current_user.email} opacity={0.08}>
+  {@inner_content}
+</.watermark>
+```
+
+### Use Cases
+
+- Confidential document preview
+- Draft/preview content marking
+- User-traceable document exports
 
 ← [Back to README](../../README.md)

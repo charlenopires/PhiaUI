@@ -11,6 +11,19 @@ Form layout primitives. Integrate with `Phoenix.HTML.Form` and Ecto changesets. 
 - [Error Translation](#error-translation)
 - [Recipes](#recipes)
 
+### Forms Suite (new in 0.1.7)
+
+- [form_section](#form_section)
+- [form_fieldset](#form_fieldset)
+- [form_grid](#form_grid)
+- [form_row](#form_row)
+- [form_actions](#form_actions)
+- [form_summary](#form_summary)
+- [checkbox_group](#checkbox_group)
+- [radio_card](#radio_card)
+- [cascader](#cascader)
+- [button_transfer_list](#button_transfer_list)
+
 ---
 
 ## form
@@ -238,6 +251,167 @@ end
     </div>
   </.form>
 </div>
+```
+
+---
+
+## Forms Suite (new in 0.1.7)
+
+### form_section
+
+Titled form section with optional description and horizontal divider. Groups related fields under a heading.
+
+**Attrs**: `title`, `description`
+
+```heex
+<.form_section title="Personal Information" description="Your basic account details.">
+  <.phia_input field={@form[:name]} label="Full name" />
+  <.phia_input field={@form[:email]} type="email" label="Email" />
+</.form_section>
+```
+
+---
+
+### form_fieldset
+
+Semantic `<fieldset>` with `<legend>`. Use for groups of checkboxes or radio buttons.
+
+**Attrs**: `legend`
+
+```heex
+<.form_fieldset legend="Notification preferences">
+  <.form_checkbox_group field={@form[:notifications]} options={@notification_options} />
+</.form_fieldset>
+```
+
+---
+
+### form_grid
+
+Responsive multi-column form grid.
+
+**Attrs**: `cols` (default 2), `gap` (default 4)
+
+```heex
+<.form_grid cols={2}>
+  <.phia_input field={@form[:first_name]} label="First name" />
+  <.phia_input field={@form[:last_name]} label="Last name" />
+  <.phia_input field={@form[:city]} label="City" />
+  <.phia_input field={@form[:postal_code]} label="Postal code" />
+</.form_grid>
+```
+
+---
+
+### form_row
+
+Single horizontal row for side-by-side inputs.
+
+```heex
+<.form_row>
+  <.phia_input field={@form[:start_date]} type="date" label="Start" />
+  <.phia_input field={@form[:end_date]} type="date" label="End" />
+</.form_row>
+```
+
+---
+
+### form_actions
+
+Standardized submit/cancel button row with configurable alignment.
+
+**Attrs**: `align` (`"left"`, `"right"`, `"center"`, `"between"`)
+
+```heex
+<.form_actions align="right">
+  <.button variant="outline" phx-click="cancel">Cancel</.button>
+  <.button type="submit">Save changes</.button>
+</.form_actions>
+```
+
+---
+
+### form_summary
+
+Error summary block displayed at the top of a form. Lists all validation errors from a changeset.
+
+**Attrs**: `changeset` (Ecto.Changeset), `title`
+
+```heex
+<.form_summary changeset={@changeset} title="Please fix the following errors:" />
+```
+
+---
+
+### checkbox_group
+
+Grouped checkbox list with FormField integration. Renders `checkbox_group_item/1` for each option.
+
+**Attrs**: `id`, `name`, `options` (list of `%{value, label}`), `value` (list of selected values)
+
+```heex
+<.form_checkbox_group field={@form[:features]} options={[
+  %{value: "analytics", label: "Analytics"},
+  %{value: "exports", label: "Data exports"},
+  %{value: "api", label: "API access"}
+]} />
+```
+
+---
+
+### radio_card
+
+Card-style radio option. Uses CSS `peer` trick: `input.peer.sr-only` + sibling ring overlay for selected state. The `input` must be a **direct** sibling of the ring/check elements.
+
+**Attrs**: `id`, `name`, `value`, `checked`
+
+```heex
+<.radio_card_group field={@form[:plan]} options={[
+  %{value: "starter", label: "Starter", description: "$9/mo", icon: "zap"},
+  %{value: "pro", label: "Pro", description: "$29/mo", icon: "star"},
+  %{value: "enterprise", label: "Enterprise", description: "Custom", icon: "building"}
+]} />
+```
+
+---
+
+### cascader
+
+Multi-level cascading select. Passes options as JSON via `data-options`; the `PhiaCascader` hook builds all panels client-side.
+
+**Hook**: `PhiaCascader`
+**Attrs**: `id`, `name`, `options` (nested list), `value`, `placeholder`
+
+```heex
+<.form_cascader
+  field={@form[:category]}
+  options={[
+    %{value: "electronics", label: "Electronics", children: [
+      %{value: "phones", label: "Phones"},
+      %{value: "laptops", label: "Laptops"}
+    ]},
+    %{value: "clothing", label: "Clothing"}
+  ]}
+  placeholder="Select category..."
+/>
+```
+
+---
+
+### button_transfer_list
+
+Two-column available/selected transfer list with move buttons (→ / ← / → All / ← All).
+
+**Attrs**: `id`, `name`, `available`, `selected` (lists of `%{value, label}`), `on_change`
+
+```heex
+<.button_transfer_list
+  id="role-picker"
+  name="user[role_ids]"
+  available={@available_roles}
+  selected={@selected_roles}
+  on_change="update_roles"
+/>
 ```
 
 ← [Back to README](../../README.md)

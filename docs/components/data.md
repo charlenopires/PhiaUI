@@ -1,6 +1,6 @@
 # Data
 
-Enterprise data management: tables, sortable grids, charts, Gantt timelines, Kanban boards, advanced filters, and visualizations.
+Enterprise data management: tables, sortable grids, charts, Gantt timelines, Kanban boards, advanced filters, and 16 native SVG charts plus 8 analytics widgets.
 
 ## Table of Contents
 
@@ -17,6 +17,36 @@ Enterprise data management: tables, sortable grids, charts, Gantt timelines, Kan
 - [gauge_chart](#gauge_chart)
 - [sparkline_card](#sparkline_card)
 - [uptime_bar](#uptime_bar)
+
+### Chart Suite (new in 0.1.7)
+
+- [bar_chart](#bar_chart)
+- [line_chart](#line_chart)
+- [area_chart](#area_chart)
+- [pie_chart](#pie_chart)
+- [donut_chart](#donut_chart)
+- [radar_chart](#radar_chart)
+- [scatter_chart](#scatter_chart)
+- [bubble_chart](#bubble_chart)
+- [radial_bar_chart](#radial_bar_chart)
+- [histogram_chart](#histogram_chart)
+- [waterfall_chart](#waterfall_chart)
+- [heatmap_chart](#heatmap_chart)
+- [bullet_chart](#bullet_chart)
+- [slope_chart](#slope_chart)
+- [treemap_chart](#treemap_chart)
+- [timeline_chart](#timeline_chart)
+
+### Analytics Widgets (new in 0.1.7)
+
+- [badge_delta](#badge_delta)
+- [bar_list](#bar_list)
+- [category_bar](#category_bar)
+- [meter_group](#meter_group)
+- [funnel_chart](#funnel_chart)
+- [nps_widget](#nps_widget)
+- [comparison_table](#comparison_table)
+- [leaderboard](#leaderboard)
 
 ---
 
@@ -514,3 +544,236 @@ end
 ```
 
 ← [Back to README](../../README.md)
+
+---
+
+## Chart Suite (new in 0.1.7)
+
+All 16 charts are zero-JS, pure SVG rendered in Elixir/HEEx. Shared helpers: `chart_helpers.ex` (normalize_series, pie_slices, squarify) and `chart_axis_helpers.ex` (nice_ticks, format_tick). All support `animate={true}` and respect `prefers-reduced-motion`.
+
+### bar_chart
+
+Vertical bar chart with grouped/stacked variants.
+
+**Attrs**: `series` (list of `%{name, data}`), `labels`, `variant` (`"grouped"`, `"stacked"`), `animate`, `height`
+
+```heex
+<.bar_chart
+  series={[%{name: "Revenue", data: [120, 145, 98, 210, 178]}]}
+  labels={["Jan", "Feb", "Mar", "Apr", "May"]}
+  animate={true}
+  height={300}
+/>
+```
+
+### line_chart
+
+Multi-series polyline with dot markers and optional smooth curves.
+
+```heex
+<.line_chart
+  series={[%{name: "Users", data: [100, 130, 115, 180, 210]}]}
+  labels={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+/>
+```
+
+### area_chart
+
+Filled area chart with optional gradient and stacking.
+
+```heex
+<.area_chart
+  series={[%{name: "Traffic", data: [400, 520, 480, 630, 710]}]}
+  labels={["Q1", "Q2", "Q3", "Q4", "Q5"]}
+  filled={true}
+/>
+```
+
+### pie_chart / donut_chart
+
+SVG pie slices with arc labels. `donut_chart` adds a center hole with an optional `:center` slot.
+
+```heex
+<.pie_chart data={[%{label: "Direct", value: 45}, %{label: "Organic", value: 55}]} />
+
+<.donut_chart data={[%{label: "Complete", value: 68}, %{label: "Pending", value: 32}]}>
+  <:center>68%</:center>
+</.donut_chart>
+```
+
+### radar_chart
+
+Spider/radar chart with filled polygon and configurable axes.
+
+```heex
+<.radar_chart
+  axes={["Speed", "Reliability", "Security", "Scalability", "DX"]}
+  series={[%{name: "PhiaUI", data: [90, 85, 95, 88, 92]}]}
+/>
+```
+
+### scatter_chart / bubble_chart
+
+XY scatter plot. `bubble_chart` adds variable radius (`:r`) for a third dimension.
+
+```heex
+<.scatter_chart points={[%{x: 10, y: 20, label: "A"}, %{x: 40, y: 60, label: "B"}]} />
+<.bubble_chart points={[%{x: 10, y: 20, r: 15, label: "A"}]} />
+```
+
+### radial_bar_chart
+
+Circular bar segments for part-to-whole comparisons.
+
+```heex
+<.radial_bar_chart segments={[%{label: "Completion", value: 72, max: 100}]} />
+```
+
+### histogram_chart
+
+Frequency histogram with configurable bin count.
+
+```heex
+<.histogram_chart data={[12, 34, 28, 45, 19, 52, 31]} bins={10} />
+```
+
+### waterfall_chart
+
+Cumulative running-total bar chart (bridge chart) with increase/decrease/total bars.
+
+```heex
+<.waterfall_chart items={[
+  %{label: "Start", value: 0, type: :total},
+  %{label: "Sales", value: 450, type: :increase},
+  %{label: "Refunds", value: -80, type: :decrease},
+  %{label: "Net", value: 370, type: :total}
+]} />
+```
+
+### heatmap_chart
+
+Calendar-style heatmap grid with intensity color scale.
+
+```heex
+<.heatmap_chart data={@daily_activity} rows={7} cols={52} />
+```
+
+### bullet_chart
+
+Horizontal bullet gauge with target marker and range bands.
+
+```heex
+<.bullet_chart value={72} target={80} ranges={[40, 70, 100]} label="Completion" />
+```
+
+### slope_chart
+
+Before/after comparison with labeled slope lines.
+
+```heex
+<.slope_chart
+  items={[%{label: "Product A", before: 42, after: 68}]}
+  before_label="2025" after_label="2026"
+/>
+```
+
+### treemap_chart
+
+Squarified treemap for proportional hierarchical data.
+
+```heex
+<.treemap_chart data={[%{label: "Elixir", value: 45}, %{label: "JS", value: 30}]} height={300} />
+```
+
+### timeline_chart
+
+Horizontal event timeline with time axis.
+
+```heex
+<.timeline_chart events={[%{label: "v0.1.7", date: ~D[2026-03-07]}]} />
+```
+
+---
+
+## Analytics Widgets (new in 0.1.7)
+
+### badge_delta
+
+Trend badge with colored arrow indicator.
+
+**Attrs**: `value`, `type` (`"increase"`, `"decrease"`, `"unchanged"`)
+
+```heex
+<.badge_delta value="+12.5%" type="increase" />
+```
+
+### bar_list
+
+Ranked list with inline horizontal proportion bars.
+
+```heex
+<.bar_list items={[%{label: "Homepage", value: 3245}, %{label: "Pricing", value: 1820}]} />
+```
+
+### category_bar
+
+Segmented horizontal bar showing category proportions.
+
+```heex
+<.category_bar categories={[
+  %{label: "Desktop", value: 55, color: "blue"},
+  %{label: "Mobile", value: 35, color: "violet"}
+]} />
+```
+
+### meter_group
+
+Multiple labeled progress meters.
+
+```heex
+<.meter_group meters={[
+  %{label: "CPU", value: 68, max: 100, color: "blue"},
+  %{label: "Memory", value: 45, max: 100, color: "violet"}
+]} />
+```
+
+### funnel_chart
+
+Conversion funnel with step labels and drop-off rates.
+
+```heex
+<.funnel_chart steps={[
+  %{label: "Visitors", value: 10000},
+  %{label: "Signups", value: 2400},
+  %{label: "Paid", value: 310}
+]} />
+```
+
+### nps_widget
+
+Net Promoter Score input (0–10) with Detractor/Passive/Promoter legend.
+
+```heex
+<.nps_widget id="nps" name="score" value={@nps_score} on_change="set_nps" />
+```
+
+### comparison_table
+
+Feature comparison matrix for SaaS pricing or product comparison.
+
+```heex
+<.comparison_table
+  products={[%{name: "Starter"}, %{name: "Pro", highlighted: true}]}
+  features={[%{name: "Users", values: ["5", "Unlimited"]}]}
+/>
+```
+
+### leaderboard
+
+Ranked list with avatar, name, score, and delta.
+
+```heex
+<.leaderboard entries={[
+  %{rank: 1, name: "Alice", score: 9842, delta: +120}
+]} />
+```
