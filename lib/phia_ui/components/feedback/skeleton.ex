@@ -285,6 +285,198 @@ defmodule PhiaUi.Components.Skeleton do
   end
 
   # ---------------------------------------------------------------------------
+  # skeleton_list/1 — list of items placeholder
+  # ---------------------------------------------------------------------------
+
+  attr(:items, :integer,
+    default: 5,
+    doc: "Number of list item rows to render."
+  )
+
+  attr(:show_avatar, :boolean,
+    default: true,
+    doc: "When `true`, each row has a circular avatar placeholder on the left."
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the wrapper.")
+
+  @doc """
+  Renders a list of skeleton rows simulating a user list, contact list, or feed.
+
+  Each row has an optional avatar circle on the left and two text lines
+  (title + subtitle) on the right.
+
+  ## Example
+
+      <%= if @loading do %>
+        <.skeleton_list items={8} />
+      <% else %>
+        <%= for user <- @users do %>
+          <.user_row user={user} />
+        <% end %>
+      <% end %>
+  """
+  def skeleton_list(assigns) do
+    ~H"""
+    <div class={cn(["space-y-3", @class])}>
+      <%= for _ <- 1..@items do %>
+        <div class="flex items-center gap-3">
+          <.skeleton_avatar :if={@show_avatar} size="10" />
+          <div class="flex-1 space-y-1.5">
+            <.skeleton class="h-3.5 w-3/4" />
+            <.skeleton class="h-3 w-1/2" />
+          </div>
+        </div>
+      <% end %>
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # skeleton_form/1 — form skeleton
+  # ---------------------------------------------------------------------------
+
+  attr(:fields, :integer,
+    default: 4,
+    doc: "Number of label + input field pairs to render."
+  )
+
+  attr(:show_submit, :boolean,
+    default: true,
+    doc: "When `true`, renders a button skeleton at the bottom."
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes.")
+
+  @doc """
+  Renders a form-shaped skeleton with label + input pairs.
+
+  Useful as a placeholder while a form's initial values are loading (e.g.
+  an edit form waiting for a record to be fetched).
+
+  ## Example
+
+      <%= if @loading do %>
+        <.skeleton_form fields={6} />
+      <% else %>
+        <.my_form changeset={@changeset} />
+      <% end %>
+  """
+  def skeleton_form(assigns) do
+    ~H"""
+    <div class={cn(["space-y-4", @class])}>
+      <%= for _ <- 1..@fields do %>
+        <div class="space-y-1.5">
+          <%!-- Label --%>
+          <.skeleton class="h-3.5 w-24" />
+          <%!-- Input --%>
+          <.skeleton class="h-10 w-full" />
+        </div>
+      <% end %>
+      <%!-- Submit button --%>
+      <.skeleton :if={@show_submit} class="h-10 w-28 mt-2" />
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # skeleton_table_row/1 — table row placeholder
+  # ---------------------------------------------------------------------------
+
+  attr(:columns, :integer,
+    default: 4,
+    doc: "Number of cell placeholders per row."
+  )
+
+  attr(:rows, :integer,
+    default: 5,
+    doc: "Number of rows to render."
+  )
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes for the wrapper.")
+
+  @doc """
+  Renders skeleton rows for a table body.
+
+  Use inside a `<tbody>` while table data is loading. The `:columns` attr
+  controls how many cells to render per row.
+
+  ## Example
+
+      <tbody>
+        <%= if @loading do %>
+          <.skeleton_table_row columns={5} rows={8} />
+        <% else %>
+          <%= for row <- @rows do %>
+            <tr>...</tr>
+          <% end %>
+        <% end %>
+      </tbody>
+  """
+  def skeleton_table_row(assigns) do
+    ~H"""
+    <%= for _ <- 1..@rows do %>
+      <tr class={@class}>
+        <%= for _ <- 1..@columns do %>
+          <td class="p-4">
+            <.skeleton class="h-4 w-full" />
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
+  # skeleton_profile/1 — profile page placeholder
+  # ---------------------------------------------------------------------------
+
+  attr(:class, :string, default: nil, doc: "Additional CSS classes.")
+
+  @doc """
+  Renders a profile-page-shaped skeleton.
+
+  Simulates the typical layout of a user profile: large avatar, name, bio,
+  and a row of stats (posts, followers, following).
+
+  ## Example
+
+      <%= if @loading do %>
+        <.skeleton_profile />
+      <% else %>
+        <.user_profile user={@user} />
+      <% end %>
+  """
+  def skeleton_profile(assigns) do
+    ~H"""
+    <div class={cn(["flex flex-col items-center gap-4 py-8", @class])}>
+      <%!-- Large avatar --%>
+      <.skeleton_avatar size="20" />
+      <%!-- Name + handle --%>
+      <div class="flex flex-col items-center gap-2 w-full max-w-xs">
+        <.skeleton class="h-5 w-36" />
+        <.skeleton class="h-3.5 w-24" />
+      </div>
+      <%!-- Bio --%>
+      <div class="w-full max-w-sm space-y-1.5">
+        <.skeleton class="h-3.5 w-full" />
+        <.skeleton class="h-3.5 w-5/6" />
+        <.skeleton class="h-3.5 w-4/6" />
+      </div>
+      <%!-- Stats row --%>
+      <div class="flex gap-8 mt-2">
+        <%= for _ <- 1..3 do %>
+          <div class="flex flex-col items-center gap-1">
+            <.skeleton class="h-5 w-10" />
+            <.skeleton class="h-3 w-14" />
+          </div>
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
+  # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
 

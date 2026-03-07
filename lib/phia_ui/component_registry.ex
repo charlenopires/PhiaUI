@@ -1922,6 +1922,306 @@ defmodule PhiaUi.ComponentRegistry do
       shadcn_equivalent: nil,
       status: :implemented
     },
+    notification: %{
+      name: "notification",
+      module: PhiaUi.Components.Notification,
+      template_file: "priv/templates/components/feedback/notification.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    notification_item: %{
+      name: "notification_item",
+      module: PhiaUi.Components.Notification,
+      template_file: "priv/templates/components/feedback/notification.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    notification_center: %{
+      name: "notification_center",
+      module: PhiaUi.Components.Notification,
+      template_file: "priv/templates/components/feedback/notification.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    notification_badge: %{
+      name: "notification_badge",
+      module: PhiaUi.Components.Notification,
+      template_file: "priv/templates/components/feedback/notification.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    banner: %{
+      name: "banner",
+      module: PhiaUi.Components.Banner,
+      template_file: "priv/templates/components/feedback/banner.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    announcement_bar: %{
+      name: "announcement_bar",
+      module: PhiaUi.Components.Banner,
+      template_file: "priv/templates/components/feedback/banner.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    cookie_consent: %{
+      name: "cookie_consent",
+      module: PhiaUi.Components.Banner,
+      template_file: "priv/templates/components/feedback/banner.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    loading_overlay: %{
+      name: "loading_overlay",
+      module: PhiaUi.Components.LoadingOverlay,
+      template_file: "priv/templates/components/feedback/loading_overlay.ex",
+      js_hooks: [],
+      dependencies: [:spinner],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    loading_dots: %{
+      name: "loading_dots",
+      module: PhiaUi.Components.LoadingOverlay,
+      template_file: "priv/templates/components/feedback/loading_overlay.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    loading_bar: %{
+      name: "loading_bar",
+      module: PhiaUi.Components.LoadingOverlay,
+      template_file: "priv/templates/components/feedback/loading_overlay.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    status_indicator: %{
+      name: "status_indicator",
+      module: PhiaUi.Components.StatusIndicator,
+      template_file: "priv/templates/components/feedback/status_indicator.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    connection_status: %{
+      name: "connection_status",
+      module: PhiaUi.Components.StatusIndicator,
+      template_file: "priv/templates/components/feedback/status_indicator.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    live_indicator: %{
+      name: "live_indicator",
+      module: PhiaUi.Components.StatusIndicator,
+      template_file: "priv/templates/components/feedback/status_indicator.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    service_status_row: %{
+      name: "service_status_row",
+      module: PhiaUi.Components.StatusIndicator,
+      template_file: "priv/templates/components/feedback/status_indicator.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    labeled_progress: %{
+      name: "labeled_progress",
+      module: PhiaUi.Components.ProgressEnhanced,
+      template_file: "priv/templates/components/feedback/progress_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    segmented_progress: %{
+      name: "segmented_progress",
+      module: PhiaUi.Components.ProgressEnhanced,
+      template_file: "priv/templates/components/feedback/progress_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    quota_bar: %{
+      name: "quota_bar",
+      module: PhiaUi.Components.ProgressEnhanced,
+      template_file: "priv/templates/components/feedback/progress_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    step_progress_bar: %{
+      name: "step_progress_bar",
+      module: PhiaUi.Components.ProgressEnhanced,
+      template_file: "priv/templates/components/feedback/progress_enhanced.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    global_message: %{
+      name: "global_message",
+      module: PhiaUi.Components.GlobalMessage,
+      template_file: "priv/templates/components/feedback/global_message.ex",
+      js_hooks: ["PhiaGlobalMessage"],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    feedback_thumb: %{
+      name: "feedback_thumb",
+      module: PhiaUi.Components.FeedbackWidget,
+      template_file: "priv/templates/components/feedback/feedback_widget.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    feedback_reaction: %{
+      name: "feedback_reaction",
+      module: PhiaUi.Components.FeedbackWidget,
+      template_file: "priv/templates/components/feedback/feedback_widget.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    feedback_nps: %{
+      name: "feedback_nps",
+      module: PhiaUi.Components.FeedbackWidget,
+      template_file: "priv/templates/components/feedback/feedback_widget.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    feedback_survey_card: %{
+      name: "feedback_survey_card",
+      module: PhiaUi.Components.FeedbackWidget,
+      template_file: "priv/templates/components/feedback/feedback_widget.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    error_display: %{
+      name: "error_display",
+      module: PhiaUi.Components.ErrorDisplay,
+      template_file: "priv/templates/components/feedback/error_display.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    error_boundary: %{
+      name: "error_boundary",
+      module: PhiaUi.Components.ErrorDisplay,
+      template_file: "priv/templates/components/feedback/error_display.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    http_error: %{
+      name: "http_error",
+      module: PhiaUi.Components.ErrorDisplay,
+      template_file: "priv/templates/components/feedback/error_display.ex",
+      js_hooks: [],
+      dependencies: [:icon],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    skeleton_list: %{
+      name: "skeleton_list",
+      module: PhiaUi.Components.Skeleton,
+      template_file: "priv/templates/components/feedback/skeleton.ex",
+      js_hooks: [],
+      dependencies: [:skeleton],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    skeleton_form: %{
+      name: "skeleton_form",
+      module: PhiaUi.Components.Skeleton,
+      template_file: "priv/templates/components/feedback/skeleton.ex",
+      js_hooks: [],
+      dependencies: [:skeleton],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    skeleton_table_row: %{
+      name: "skeleton_table_row",
+      module: PhiaUi.Components.Skeleton,
+      template_file: "priv/templates/components/feedback/skeleton.ex",
+      js_hooks: [],
+      dependencies: [:skeleton],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    skeleton_profile: %{
+      name: "skeleton_profile",
+      module: PhiaUi.Components.Skeleton,
+      template_file: "priv/templates/components/feedback/skeleton.ex",
+      js_hooks: [],
+      dependencies: [:skeleton],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
     image_comparison: %{
       name: "image_comparison",
       module: PhiaUi.Components.ImageComparison,
