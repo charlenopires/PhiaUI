@@ -4118,6 +4118,224 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :primitive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Input Enhancement Wave (v0.1.8) ─────────────────────────────────────
+
+    # Advanced Selects
+    tree_select: %{
+      name: "tree_select",
+      module: PhiaUi.Components.AdvancedSelects,
+      template_file: "priv/templates/components/inputs/advanced_selects.ex",
+      js_hooks: ["PhiaTreeSelect"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tree_select_option: %{
+      name: "tree_select_option",
+      module: PhiaUi.Components.AdvancedSelects,
+      template_file: "priv/templates/components/inputs/advanced_selects.ex",
+      js_hooks: [],
+      dependencies: [:tree_select],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    rich_select: %{
+      name: "rich_select",
+      module: PhiaUi.Components.AdvancedSelects,
+      template_file: "priv/templates/components/inputs/advanced_selects.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    rich_select_option: %{
+      name: "rich_select_option",
+      module: PhiaUi.Components.AdvancedSelects,
+      template_file: "priv/templates/components/inputs/advanced_selects.ex",
+      js_hooks: [],
+      dependencies: [:rich_select],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    visual_select: %{
+      name: "visual_select",
+      module: PhiaUi.Components.AdvancedSelects,
+      template_file: "priv/templates/components/inputs/advanced_selects.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    visual_select_item: %{
+      name: "visual_select_item",
+      module: PhiaUi.Components.AdvancedSelects,
+      template_file: "priv/templates/components/inputs/advanced_selects.ex",
+      js_hooks: [],
+      dependencies: [:visual_select],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Special Entry Inputs
+    verifiable_input: %{
+      name: "verifiable_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_verifiable_input: %{
+      name: "form_verifiable_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: [],
+      dependencies: [:verifiable_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    duration_input: %{
+      name: "duration_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_duration_input: %{
+      name: "form_duration_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: [],
+      dependencies: [:duration_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    split_input: %{
+      name: "split_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: ["PhiaSplitInput"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    split_input_field: %{
+      name: "split_input_field",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: [],
+      dependencies: [:split_input],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    credit_card_input: %{
+      name: "credit_card_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: ["PhiaCreditCard"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_credit_card_input: %{
+      name: "form_credit_card_input",
+      module: PhiaUi.Components.SpecialEntry,
+      template_file: "priv/templates/components/inputs/special_entry.ex",
+      js_hooks: ["PhiaCreditCard"],
+      dependencies: [:credit_card_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Smart / Interactive Inputs
+    drag_number: %{
+      name: "drag_number",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaDragNumber"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_drag_number: %{
+      name: "form_drag_number",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaDragNumber"],
+      dependencies: [:drag_number],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    suggestion_input: %{
+      name: "suggestion_input",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaSuggestionInput"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_suggestion_input: %{
+      name: "form_suggestion_input",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaSuggestionInput"],
+      dependencies: [:suggestion_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    emoji_picker: %{
+      name: "emoji_picker",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaEmojiPicker"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    keyboard_shortcut_input: %{
+      name: "keyboard_shortcut_input",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaKeyShortcut"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    form_keyboard_shortcut_input: %{
+      name: "form_keyboard_shortcut_input",
+      module: PhiaUi.Components.SmartInputs,
+      template_file: "priv/templates/components/inputs/smart_inputs.ex",
+      js_hooks: ["PhiaKeyShortcut"],
+      dependencies: [:keyboard_shortcut_input],
+      tier: :form,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -4125,7 +4343,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 364 component metadata entries."
+  @doc "Returns the full registry map — all 416 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

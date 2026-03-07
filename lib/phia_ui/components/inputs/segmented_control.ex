@@ -7,6 +7,11 @@ defmodule PhiaUi.Components.SegmentedControl do
   The active segment is highlighted server-side based on the `:value` attribute —
   no JavaScript required.
 
+  ## Enhancements
+
+  - `:orientation` — `:horizontal` (default) or `:vertical` (stacks segments)
+  - `icon` key in segment maps — renders an icon before the label
+
   ## API
 
       <.segmented_control
@@ -16,80 +21,21 @@ defmodule PhiaUi.Components.SegmentedControl do
         on_change="change_view"
         segments={[
           %{value: "list", label: "List"},
-          %{value: "grid", label: "Grid"},
+          %{value: "grid", label: "Grid", icon: "grid-2x2"},
           %{value: "kanban", label: "Kanban"}
         ]}
       />
 
-  When a label is clicked, the `on_change` event is dispatched via `phx-click`
-  with `phx-value-value` set to the segment value, so the LiveView handler
-  receives `%{"value" => "grid"}` in `handle_event/3`.
-
-  ## Segments list
-
-  Each segment map must have `:value` and `:label` keys. An optional `:disabled`
-  boolean key (default `false`) disables the individual option:
-
-      segments={[
-        %{value: "active", label: "Active"},
-        %{value: "archived", label: "Archived", disabled: true}
-      ]}
-
-  ## Sizes
-
-  | Size       | Label classes           |
-  |------------|-------------------------|
-  | `:sm`      | `text-xs px-2 py-0.5`   |
-  | `:default` | `text-sm px-3 py-1`     |
-  | `:lg`      | `text-base px-4 py-1.5` |
-
-  ## Accessibility
-
-  - `role="group"` on the container groups items for assistive technologies
-  - Native `<input type="radio">` hidden with `sr-only` handles keyboard
-    navigation and screen reader announcements
-  - Labels are associated to inputs via `for`/`id`
-  - Disabled segments have the native `disabled` attribute on the input and
-    `cursor-not-allowed opacity-50` on the label
-
-  ## Examples
-
-      <%!-- Basic view switcher --%>
+      <%!-- Vertical layout --%>
       <.segmented_control
-        id="view"
-        name="view"
-        value={@view_mode}
-        on_change="set_view"
+        id="nav"
+        name="nav"
+        value={@section}
+        orientation={:vertical}
+        on_change="set_section"
         segments={[
-          %{value: "list", label: "List"},
-          %{value: "grid", label: "Grid"}
-        ]}
-      />
-
-      <%!-- Compact size --%>
-      <.segmented_control
-        id="density"
-        name="density"
-        value={@density}
-        size={:sm}
-        on_change="set_density"
-        segments={[
-          %{value: "compact", label: "Compact"},
-          %{value: "comfortable", label: "Comfortable"}
-        ]}
-      />
-
-      <%!-- With a disabled option --%>
-      <.segmented_control
-        id="period"
-        name="period"
-        value={@period}
-        on_change="set_period"
-        segments={[
-          %{value: "day", label: "Day"},
-          %{value: "week", label: "Week"},
-          %{value: "month", label: "Month"},
-          %{value: "year", label: "Year", disabled: true}
+          %{value: "profile", label: "Profile"},
+          %{value: "security", label: "Security"}
         ]}
       />
   """
@@ -97,36 +43,23 @@ defmodule PhiaUi.Components.SegmentedControl do
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.Components.Icon, only: [icon: 1]
 
   # ---------------------------------------------------------------------------
   # segmented_control/1
   # ---------------------------------------------------------------------------
 
-  attr(:id, :string,
-    required: true,
-    doc: """
-    Unique HTML id for the container. Also used as a prefix for individual
-    segment input ids: `\#{id}-\#{segment.value}`.
-    """
-  )
-
-  attr(:name, :string,
-    required: true,
-    doc: "HTML `name` attribute shared by all radio inputs in the group."
-  )
+  attr(:id, :string, required: true, doc: "Unique HTML id for the container.")
+  attr(:name, :string, required: true, doc: "HTML `name` attribute shared by all radio inputs.")
 
   attr(:value, :string,
     default: nil,
-    doc: "The currently selected segment value. Segment with matching value renders as active."
+    doc: "The currently selected segment value."
   )
 
   attr(:on_change, :string,
     default: nil,
-    doc: """
-    LiveView event name dispatched via `phx-click` when a segment label is
-    clicked. The event is sent with `phx-value-value` set to the clicked
-    segment's value. Pass `nil` (default) to render a static control.
-    """
+    doc: "LiveView event name dispatched via `phx-click` when a segment label is clicked."
   )
 
   attr(:size, :atom,
@@ -135,57 +68,42 @@ defmodule PhiaUi.Components.SegmentedControl do
     doc: "Size variant controlling label padding and font size."
   )
 
+  attr(:orientation, :atom,
+    values: [:horizontal, :vertical],
+    default: :horizontal,
+    doc: "Layout orientation — `:horizontal` (default) or `:vertical` (stacks segments)."
+  )
+
   attr(:segments, :list,
     default: [],
     doc: """
-    List of segment maps. Each map must have `:value` and `:label` keys.
-    An optional `:disabled` boolean key (default `false`) disables that option.
-
-    Example: `[%{value: "a", label: "Alpha"}, %{value: "b", label: "Beta", disabled: true}]`
+    List of segment maps. Required keys: `:value`, `:label`.
+    Optional keys: `:disabled` (boolean), `:icon` (Lucide icon name string).
+    Example: `[%{value: "a", label: "Alpha", icon: "star"}, %{value: "b", label: "Beta"}]`
     """
   )
 
-  attr(:class, :string,
-    default: nil,
-    doc: "Additional CSS classes merged onto the container `<div>`."
-  )
+  attr(:class, :string, default: nil, doc: "Additional CSS classes merged onto the container `<div>`.")
 
   attr(:rest, :global,
-    doc: "HTML attributes forwarded to the container `<div>` (aria-label, data-*, etc.)"
+    doc: "HTML attributes forwarded to the container `<div>`."
   )
 
   @doc """
   Renders a segmented control — a group of mutually-exclusive tab-style buttons.
-
-  Each segment is rendered as a hidden `<input type="radio">` paired with a
-  visible `<label>`. The active segment is highlighted server-side based on the
-  `:value` attribute. Use `:on_change` to wire up LiveView events.
-
-  ## Examples
-
-      <.segmented_control
-        id="view"
-        name="view"
-        value={@view}
-        on_change="set_view"
-        segments={[
-          %{value: "list", label: "List"},
-          %{value: "grid", label: "Grid"},
-          %{value: "kanban", label: "Kanban"}
-        ]}
-      />
   """
   def segmented_control(assigns) do
     ~H"""
     <div
       role="group"
-      class={cn(["inline-flex items-center rounded-lg bg-muted p-1 gap-1", @class])}
+      class={cn([container_class(@orientation), @class])}
       {@rest}
     >
       <%= for segment <- @segments do %>
         <% seg_value = Map.get(segment, :value)
            seg_label = Map.get(segment, :label)
            seg_disabled = Map.get(segment, :disabled, false)
+           seg_icon = Map.get(segment, :icon)
            seg_id = "#{@id}-#{seg_value}"
            active = seg_value == @value %>
         <input
@@ -202,8 +120,9 @@ defmodule PhiaUi.Components.SegmentedControl do
           phx-click={@on_change}
           phx-value-value={seg_value}
           class={cn([
-            "cursor-pointer rounded-md font-medium transition-all",
+            "cursor-pointer rounded-md font-medium transition-all flex items-center gap-1",
             size_class(@size),
+            @orientation == :vertical && "w-full justify-start",
             if(active,
               do: "bg-background text-foreground shadow-sm",
               else: "text-muted-foreground hover:text-foreground"
@@ -211,6 +130,7 @@ defmodule PhiaUi.Components.SegmentedControl do
             seg_disabled && "cursor-not-allowed opacity-50 pointer-events-none"
           ])}
         >
+          <.icon :if={seg_icon} name={seg_icon} class="h-4 w-4 shrink-0" />
           {seg_label}
         </label>
       <% end %>
@@ -221,6 +141,12 @@ defmodule PhiaUi.Components.SegmentedControl do
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------
+
+  defp container_class(:vertical),
+    do: "inline-flex flex-col rounded-lg bg-muted p-1 gap-1"
+
+  defp container_class(_),
+    do: "inline-flex items-center rounded-lg bg-muted p-1 gap-1"
 
   defp size_class(:sm), do: "text-xs px-2 py-0.5"
   defp size_class(:default), do: "text-sm px-3 py-1"

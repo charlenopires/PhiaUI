@@ -96,6 +96,67 @@ defmodule PhiaUi.Components.SegmentedControlTest do
       />
       """
     end
+
+    def render_with_icons(assigns) do
+      ~H"""
+      <.segmented_control
+        id="icon-test"
+        name="mode"
+        value="grid"
+        segments={[
+          %{value: "list", label: "List", icon: "list"},
+          %{value: "grid", label: "Grid", icon: "grid-2x2"}
+        ]}
+      />
+      """
+    end
+
+    def render_no_icon(assigns) do
+      ~H"""
+      <.segmented_control
+        id="no-icon-test"
+        name="tab"
+        value="a"
+        segments={[%{value: "a", label: "Alpha"}]}
+      />
+      """
+    end
+
+    def render_vertical(assigns) do
+      ~H"""
+      <.segmented_control
+        id="vertical"
+        name="nav"
+        value="one"
+        orientation={:vertical}
+        segments={[%{value: "one", label: "One"}, %{value: "two", label: "Two"}]}
+      />
+      """
+    end
+
+    def render_vertical2(assigns) do
+      ~H"""
+      <.segmented_control
+        id="vert2"
+        name="nav2"
+        value="a"
+        orientation={:vertical}
+        segments={[%{value: "a", label: "A"}]}
+      />
+      """
+    end
+
+    def render_vertical3(assigns) do
+      ~H"""
+      <.segmented_control
+        id="vert3"
+        name="nav3"
+        value="a"
+        orientation={:vertical}
+        segments={[%{value: "a", label: "A"}, %{value: "b", label: "B"}]}
+      />
+      """
+    end
   end
 
   defp render_default(attrs \\ %{}) do
@@ -276,6 +337,47 @@ defmodule PhiaUi.Components.SegmentedControlTest do
     test "applies px-3 class to labels" do
       html = render_component(&H.render_size_default/1, %{})
       assert html =~ "px-3"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # segmented_control/1 — icon support
+  # ---------------------------------------------------------------------------
+
+  describe "segmented_control/1 icon in segments" do
+    test "segment with icon renders icon element" do
+      html = render_component(&H.render_with_icons/1, %{})
+      assert html =~ "gap-1"
+    end
+
+    test "segment without icon still renders label" do
+      html = render_component(&H.render_no_icon/1, %{})
+      assert html =~ "Alpha"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # segmented_control/1 — orientation
+  # ---------------------------------------------------------------------------
+
+  describe "segmented_control/1 orientation" do
+    test "orientation=:horizontal (default) renders inline-flex items-center" do
+      assert render_default() =~ "items-center"
+    end
+
+    test "orientation=:vertical renders flex-col" do
+      html = render_component(&H.render_vertical/1, %{})
+      assert html =~ "flex-col"
+    end
+
+    test "orientation=:vertical renders inline-flex" do
+      html = render_component(&H.render_vertical2/1, %{})
+      assert html =~ "inline-flex"
+    end
+
+    test "orientation=:vertical label has w-full class" do
+      html = render_component(&H.render_vertical3/1, %{})
+      assert html =~ "w-full"
     end
   end
 

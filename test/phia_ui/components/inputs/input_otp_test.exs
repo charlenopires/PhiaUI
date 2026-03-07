@@ -107,6 +107,48 @@ defmodule PhiaUi.Components.InputOtpTest do
       </.input_otp_group>
       """
     end
+
+    def render_alphanumeric(assigns) do
+      ~H"""
+      <.input_otp id="alnum" name="code" value="" type={:alphanumeric} />
+      """
+    end
+
+    def render_alphanumeric_pattern(assigns) do
+      ~H"""
+      <.input_otp id="alnum2" name="code" value="" type={:alphanumeric} />
+      """
+    end
+
+    def render_with_separator(assigns) do
+      ~H"""
+      <.input_otp id="sep-otp" name="code" value="" length={6} separator="-" />
+      """
+    end
+
+    def render_with_separator_dot(assigns) do
+      ~H"""
+      <.input_otp id="sep-otp2" name="code" value="" length={4} separator="·" />
+      """
+    end
+
+    def render_grouped(assigns) do
+      ~H"""
+      <.input_otp id="grp" name="code" value="" length={4} grouped={true} separator="-" />
+      """
+    end
+
+    def render_grouped2(assigns) do
+      ~H"""
+      <.input_otp id="grp2" name="code" value="" length={4} grouped={true} separator="-" />
+      """
+    end
+
+    def render_slot_alphanumeric(assigns) do
+      ~H"""
+      <.input_otp_slot index={0} name="code[0]" value="" input_type={:alphanumeric} />
+      """
+    end
   end
 
   # ---------------------------------------------------------------------------
@@ -246,6 +288,90 @@ defmodule PhiaUi.Components.InputOtpTest do
   # ---------------------------------------------------------------------------
   # input_otp_separator/1
   # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # input_otp/1 — type attr
+  # ---------------------------------------------------------------------------
+
+  describe "input_otp/1 — type=:alphanumeric" do
+    test "type=:alphanumeric sets inputmode=text on slots" do
+      html = render_component(&H.render_alphanumeric/1, %{})
+      assert html =~ ~s(inputmode="text")
+    end
+
+    test "type=:alphanumeric adds pattern=[A-Za-z0-9] on slots" do
+      html = render_component(&H.render_alphanumeric_pattern/1, %{})
+      assert html =~ ~s(pattern="[A-Za-z0-9]")
+    end
+
+    test "type=:numeric (default) uses inputmode=numeric" do
+      html = render_component(&H.render_simple/1, %{})
+      assert html =~ ~s(inputmode="numeric")
+    end
+
+    test "type=:numeric does not add pattern attribute" do
+      html = render_component(&H.render_simple/1, %{})
+      refute html =~ "pattern="
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # input_otp/1 — separator attr
+  # ---------------------------------------------------------------------------
+
+  describe "input_otp/1 — separator" do
+    test "separator renders a divider element between slot halves" do
+      html = render_component(&H.render_with_separator/1, %{})
+      assert html =~ "-"
+    end
+
+    test "separator uses the provided character" do
+      html = render_component(&H.render_with_separator_dot/1, %{})
+      assert html =~ "·"
+    end
+
+    test "no separator when separator=nil (default)" do
+      html = render_component(&H.render_simple/1, %{})
+      refute html =~ "data-separator"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # input_otp/1 — grouped attr
+  # ---------------------------------------------------------------------------
+
+  describe "input_otp/1 — grouped" do
+    test "grouped=true removes inner rounded corners on first slot" do
+      html = render_component(&H.render_grouped/1, %{})
+      assert html =~ "rounded-l-md"
+    end
+
+    test "grouped=true last slot in group has rounded-r-md" do
+      html = render_component(&H.render_grouped2/1, %{})
+      assert html =~ "rounded-r-md"
+    end
+
+    test "grouped=false (default) all slots have rounded-md" do
+      html = render_component(&H.render_simple/1, %{})
+      assert html =~ "rounded-md"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # input_otp_slot/1 — input_type attr
+  # ---------------------------------------------------------------------------
+
+  describe "input_otp_slot/1 — input_type" do
+    test "input_type=:alphanumeric sets inputmode=text" do
+      html = render_component(&H.render_slot_alphanumeric/1, %{})
+      assert html =~ ~s(inputmode="text")
+    end
+
+    test "input_type=:numeric (default) sets inputmode=numeric" do
+      html = render_component(&H.render_slot_basic/1, %{})
+      assert html =~ ~s(inputmode="numeric")
+    end
+  end
 
   describe "input_otp_separator/1" do
     test "renders a separator div" do

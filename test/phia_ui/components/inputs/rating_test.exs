@@ -12,12 +12,15 @@ defmodule PhiaUi.Components.RatingTest do
     use Phoenix.Component
     import PhiaUi.Components.Rating
 
-    attr(:value, :integer, default: 0)
+    attr(:value, :any, default: 0)
     attr(:max, :integer, default: 5)
     attr(:readonly, :boolean, default: false)
     attr(:size, :string, default: "default")
     attr(:name, :string, default: "rating")
     attr(:class, :string, default: nil)
+    attr(:half, :boolean, default: false)
+    attr(:icon, :atom, default: :star)
+    attr(:labels, :list, default: [])
 
     def render_rating(assigns) do
       ~H"""
@@ -28,6 +31,9 @@ defmodule PhiaUi.Components.RatingTest do
         size={@size}
         name={@name}
         class={@class}
+        half={@half}
+        icon={@icon}
+        labels={@labels}
       />
       """
     end
@@ -321,6 +327,98 @@ defmodule PhiaUi.Components.RatingTest do
     test "empty string value marks no stars checked" do
       html = render_component(&H.render_form_rating/1, %{field: make_field("")})
       refute html =~ "checked"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # rating/1 — half-star display (half=true)
+  # ---------------------------------------------------------------------------
+
+  describe "rating/1 — half=true overlay rendering" do
+    test "half=true renders overlay spans for clip approach" do
+      html = render_component(&H.render_rating/1, %{half: true, value: 2.5, max: 5})
+      # overlay span with inline style for width percentage
+      assert html =~ "overflow-hidden"
+    end
+
+    test "half=true with integer value still renders" do
+      html = render_component(&H.render_rating/1, %{half: true, value: 3, max: 5})
+      assert html =~ "<fieldset"
+    end
+
+    test "half=true renders two SVGs per star (background + foreground)" do
+      html = render_component(&H.render_rating/1, %{half: true, value: 3, max: 3})
+      # At least 6 svg elements for 3 stars (2 each)
+      count = html |> String.split("<svg") |> length() |> Kernel.-(1)
+      assert count >= 6
+    end
+
+    test "half=true value=2.5 shows 50% fill width on third star" do
+      html = render_component(&H.render_rating/1, %{half: true, value: 2.5, max: 5})
+      assert html =~ "width: 50%"
+    end
+
+    test "half=true value=3.0 shows 100% fill on stars 1-3" do
+      html = render_component(&H.render_rating/1, %{half: true, value: 3.0, max: 5})
+      assert html =~ "width: 100%"
+    end
+
+    test "half=true value=0.0 shows 0% fill on all stars" do
+      html = render_component(&H.render_rating/1, %{half: true, value: 0.0, max: 3})
+      assert html =~ "width: 0%"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # rating/1 — icon variants
+  # ---------------------------------------------------------------------------
+
+  describe "rating/1 — icon variants" do
+    test "icon=:star renders the star SVG path (default)" do
+      html = render_component(&H.render_rating/1, %{icon: :star})
+      assert html =~ "M12 2l3.09 6.26"
+    end
+
+    test "icon=:heart renders heart SVG path" do
+      html = render_component(&H.render_rating/1, %{icon: :heart})
+      assert html =~ "M20.84 4.61"
+    end
+
+    test "icon=:thumb renders thumb SVG path" do
+      html = render_component(&H.render_rating/1, %{icon: :thumb})
+      assert html =~ "M7 22H4"
+    end
+
+    test "icon=:heart does not render star path" do
+      html = render_component(&H.render_rating/1, %{icon: :heart})
+      refute html =~ "M12 2l3.09 6.26"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # rating/1 — hover labels
+  # ---------------------------------------------------------------------------
+
+  describe "rating/1 — labels" do
+    test "labels adds title attribute to star labels" do
+      html =
+        render_component(&H.render_rating/1, %{
+          labels: ["Poor", "Fair", "Good", "Great", "Excellent"]
+        })
+
+      assert html =~ ~s(title="Poor")
+      assert html =~ ~s(title="Excellent")
+    end
+
+    test "labels=[] does not add title attribute" do
+      html = render_component(&H.render_rating/1, %{labels: []})
+      refute html =~ "title="
+    end
+
+    test "partial labels list only fills provided positions" do
+      html = render_component(&H.render_rating/1, %{labels: ["Bad", "OK"]})
+      assert html =~ ~s(title="Bad")
+      assert html =~ ~s(title="OK")
     end
   end
 

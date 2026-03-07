@@ -30,11 +30,24 @@ defmodule PhiaUi.Components.SliderTest do
     attr(:max, :integer, default: 100)
     attr(:step, :integer, default: 1)
     attr(:disabled, :boolean, default: false)
+    attr(:marks, :list, default: [])
+    attr(:vertical, :boolean, default: false)
+    attr(:show_value, :boolean, default: false)
     attr(:class, :string, default: nil)
 
     def render_slider_attrs(assigns) do
       ~H"""
-      <.slider value={@value} min={@min} max={@max} step={@step} disabled={@disabled} class={@class} />
+      <.slider
+        value={@value}
+        min={@min}
+        max={@max}
+        step={@step}
+        disabled={@disabled}
+        marks={@marks}
+        vertical={@vertical}
+        show_value={@show_value}
+        class={@class}
+      />
       """
     end
 
@@ -327,6 +340,99 @@ defmodule PhiaUi.Components.SliderTest do
   # ---------------------------------------------------------------------------
   # form_slider/1 — min, max, step
   # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # slider/1 — marks
+  # ---------------------------------------------------------------------------
+
+  describe "slider/1 — marks" do
+    test "marks renders a wrapper div (relative container)" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{
+          value: 50,
+          marks: [%{value: 0, label: "Min"}, %{value: 100, label: "Max"}]
+        })
+
+      assert html =~ "relative"
+    end
+
+    test "marks renders tick labels" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{
+          value: 50,
+          marks: [%{value: 0, label: "Min"}, %{value: 100, label: "Max"}]
+        })
+
+      assert html =~ "Min"
+      assert html =~ "Max"
+    end
+
+    test "marks positions labels with left: style" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{
+          value: 50,
+          marks: [%{value: 50, label: "Mid"}]
+        })
+
+      assert html =~ "left:"
+    end
+
+    test "marks=[] (default) renders bare input without wrapper div" do
+      html = render_slider()
+      refute html =~ "<div"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # slider/1 — vertical
+  # ---------------------------------------------------------------------------
+
+  describe "slider/1 — vertical" do
+    test "vertical=true renders wrapper container" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{value: 50, vertical: true})
+
+      assert html =~ "<div"
+    end
+
+    test "vertical=true adds rotate class on input" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{value: 50, vertical: true})
+
+      assert html =~ "-rotate-90"
+    end
+
+    test "vertical=false (default) renders bare input" do
+      html = render_slider()
+      refute html =~ "-rotate-90"
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # slider/1 — show_value
+  # ---------------------------------------------------------------------------
+
+  describe "slider/1 — show_value" do
+    test "show_value=true renders value badge" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{value: 42, show_value: true})
+
+      assert html =~ "42"
+      assert html =~ "-translate-x-1/2"
+    end
+
+    test "show_value=true positions badge with left: style" do
+      html =
+        render_component(&H.render_slider_attrs/1, %{value: 50, show_value: true})
+
+      assert html =~ "left:"
+    end
+
+    test "show_value=false (default) does not render badge" do
+      html = render_slider(%{value: 50})
+      refute html =~ "-translate-x-1/2"
+    end
+  end
 
   describe "form_slider/1 — min, max, step attrs" do
     test "renders custom min attribute" do
