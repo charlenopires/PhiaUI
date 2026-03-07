@@ -6,7 +6,7 @@
 
 **534 production-ready Phoenix LiveView components — the most complete UI library in the Elixir ecosystem.**
 
-PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadcn/ui. Every component is ejected directly into your project — you own the code, customise freely, and never fight an abstraction layer. Built on TailwindCSS v4 semantic tokens with full WAI-ARIA accessibility, zero heavy npm dependencies, and first-class dark mode.
+PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadcn/ui. Components are ejected directly into your project — you own the code, customise every detail, and never fight a black-box abstraction. Built on TailwindCSS v4 semantic tokens, every component ships with full WAI-ARIA accessibility, zero heavy npm runtime dependencies, and first-class dark mode out of the box.
 
 [![Hex.pm](https://img.shields.io/hexpm/v/phia_ui.svg)](https://hex.pm/packages/phia_ui)
 [![Elixir](https://img.shields.io/badge/elixir-%3E%3D1.17-purple)](https://elixir-lang.org)

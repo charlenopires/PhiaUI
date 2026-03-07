@@ -46,7 +46,7 @@
     <line x1="0" y1="119" x2="900" y2="119" stroke="#4f46e5" stroke-width="1" opacity="0.4"/>
 
     <!-- Glow blob behind phi -->
-    <ellipse cx="450" cy="60" rx="60" ry="45" fill="url(#phiGlow)"/>
+    <ellipse cx="390" cy="60" rx="60" ry="45" fill="url(#phiGlow)"/>
 
     <!-- Left decorative dots -->
     <circle cx="30" cy="30" r="2" fill="#7c3aed" opacity="0.6"/>
@@ -64,36 +64,21 @@
 
     <!-- Phi (ϕ) symbol — constructed from SVG paths -->
     <!-- Circle part of phi -->
-    <circle cx="450" cy="60" r="22" fill="none" stroke="#c4b5fd" stroke-width="3.5" opacity="0.9" filter="url(#glow)"/>
+    <circle cx="390" cy="60" r="22" fill="none" stroke="#c4b5fd" stroke-width="3.5" opacity="0.9" filter="url(#glow)"/>
     <!-- Vertical bar of phi -->
-    <line x1="450" y1="24" x2="450" y2="96" stroke="#e0d4ff" stroke-width="3.5" stroke-linecap="round" opacity="0.95" filter="url(#glow)"/>
+    <line x1="390" y1="24" x2="390" y2="96" stroke="#e0d4ff" stroke-width="3.5" stroke-linecap="round" opacity="0.95" filter="url(#glow)"/>
     <!-- Inner accent dot -->
-    <circle cx="450" cy="60" r="4" fill="#f0abfc" opacity="0.8"/>
+    <circle cx="390" cy="60" r="4" fill="#f0abfc" opacity="0.8"/>
 
-    <!-- "PhiaUI" text — shadow/glow pass -->
-    <text x="450" y="68" text-anchor="middle"
-          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
-          font-size="0" fill="none" opacity="0">PhiaUI</text>
-
-    <!-- Left "Phia" -->
-    <text x="320" y="69"
+    <!-- "PhiaUI" text — shadow/glow pass then main -->
+    <text x="422" y="69"
           font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
           font-size="36" font-weight="700" letter-spacing="-0.5"
-          fill="#f0abfc" opacity="0.18" filter="url(#textGlow)">Phia</text>
-    <text x="320" y="69"
+          fill="#f0abfc" opacity="0.18" filter="url(#textGlow)">PhiaUI</text>
+    <text x="422" y="69"
           font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
           font-size="36" font-weight="700" letter-spacing="-0.5"
-          fill="url(#textGrad)">Phia</text>
-
-    <!-- Right "UI" -->
-    <text x="496" y="69"
-          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
-          font-size="36" font-weight="700" letter-spacing="-0.5"
-          fill="#f0abfc" opacity="0.18" filter="url(#textGlow)">UI</text>
-    <text x="496" y="69"
-          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
-          font-size="36" font-weight="700" letter-spacing="-0.5"
-          fill="url(#textGrad)">UI</text>
+          fill="url(#textGrad)">PhiaUI</text>
 
     <!-- Tagline -->
     <text x="450" y="96"
