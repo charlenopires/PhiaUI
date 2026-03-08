@@ -54,18 +54,6 @@ defmodule Mix.Tasks.Phia.Undaisy do
 
   @shortdoc "Removes DaisyUI from a Phoenix LiveView project"
 
-  # CSS directives to remove (Tailwind v4 @plugin, legacy @import, @source paths)
-  @css_patterns [
-    # @plugin "daisyui"; or @plugin "daisyui/full";
-    ~r/^[^\S\n]*@plugin\s+["']daisyui(?:\/[^"']*)?["']\s*;\n?/m,
-    # @plugin "daisyui" { ... } (block form with options)
-    ~r/^[^\S\n]*@plugin\s+["']daisyui(?:\/[^"']*)?["'][^\n{]*\{[^}]*\}\n?/ms,
-    # @import "daisyui" or @import 'daisyui'
-    ~r/^[^\S\n]*@import\s+["']daisyui(?:\/[^"']*)?["']\s*;\n?/m,
-    # @source "node_modules/daisyui/..."
-    ~r/^[^\S\n]*@source\s+["'][^"']*node_modules\/daisyui[^"']*["']\s*;\n?/m
-  ]
-
   # DaisyUI-specific component class identifiers.
   # These are suffixed or compound names that only appear in DaisyUI projects,
   # minimising false positives against plain Tailwind or PhiaUI class names.
@@ -159,7 +147,7 @@ defmodule Mix.Tasks.Phia.Undaisy do
   """
   @spec clean_css(String.t()) :: {:changed, String.t()} | {:unchanged, String.t()}
   def clean_css(content) do
-    new_content = Enum.reduce(@css_patterns, content, &String.replace(&2, &1, ""))
+    new_content = Enum.reduce(css_patterns(), content, &String.replace(&2, &1, ""))
     if new_content == content, do: {:unchanged, content}, else: {:changed, new_content}
   end
 
@@ -266,6 +254,22 @@ defmodule Mix.Tasks.Phia.Undaisy do
   # ---------------------------------------------------------------------------
   # Private: string transformers
   # ---------------------------------------------------------------------------
+
+  # Defined as a function (not a module attribute) so that compiled Regex
+  # structs are created at runtime. OTP 28 changed Regex internals to use
+  # NIF references, which cannot be serialized as compile-time module attributes.
+  defp css_patterns do
+    [
+      # @plugin "daisyui"; or @plugin "daisyui/full";
+      ~r/^[^\S\n]*@plugin\s+["']daisyui(?:\/[^"']*)?["']\s*;\n?/m,
+      # @plugin "daisyui" { ... } (block form with options)
+      ~r/^[^\S\n]*@plugin\s+["']daisyui(?:\/[^"']*)?["'][^\n{]*\{[^}]*\}\n?/ms,
+      # @import "daisyui" or @import 'daisyui'
+      ~r/^[^\S\n]*@import\s+["']daisyui(?:\/[^"']*)?["']\s*;\n?/m,
+      # @source "node_modules/daisyui/..."
+      ~r/^[^\S\n]*@source\s+["'][^"']*node_modules\/daisyui[^"']*["']\s*;\n?/m
+    ]
+  end
 
   defp do_clean_package_json(content) do
     with {:module, _} <- Code.ensure_loaded(Jason),
