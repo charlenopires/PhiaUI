@@ -26,7 +26,9 @@ defmodule PhiaUi.Components.Data.XyChart do
 
   alias PhiaUi.Components.Data.ChartHelpers
   alias PhiaUi.Components.Data.ChartAxisHelpers
-  alias PhiaUi.Components.Data.ChartScales
+  alias PhiaUi.Components.Data.ChartCoord
+  alias PhiaUi.Components.Data.ChartSeriesRegistry
+  alias PhiaUi.Components.Data.ChartViewport
 
   @default_padding %{top: 16, right: 16, bottom: 40, left: 44}
 
@@ -41,7 +43,7 @@ defmodule PhiaUi.Components.Data.XyChart do
     default: [],
     doc: """
     List of series maps: `%{name, type, data, color}`.
-    - `type` — `:bar`, `:line`, or `:area` (default `:line`)
+    - `type` — `:bar`, `:line`, `:area`, or `:scatter` (default `:line`)
     - `data` — `[%{label, value}]`
     - `color` — optional override color
     """
@@ -70,24 +72,19 @@ defmodule PhiaUi.Components.Data.XyChart do
 
   def xy_chart(assigns) do
     pad = Map.merge(@default_padding, assigns.padding)
-    cw = assigns.width - pad.left - pad.right
-    ch = assigns.height - pad.top - pad.bottom
+    vp = ChartViewport.build(
+      vw: assigns.width, vh: assigns.height,
+      pl: pad.left, pr: pad.right, pt: pad.top, pb: pad.bottom
+    )
 
     series = assigns.series
-    categories = extract_categories(series)
-    {y_min, y_max} = compute_y_domain(series)
-    y_ticks = ChartAxisHelpers.nice_ticks(y_min, max(y_max, 1), 5)
-    y_min_nice = Enum.min(y_ticks)
-    y_max_nice = Enum.max(y_ticks)
 
-    # Build scales
-    x_scale_result = build_x_scale(assigns.x_scale_type, categories, pad.left, pad.left + cw)
-
-    y_scale =
-      case assigns.y_scale_type do
-        :log -> ChartScales.log_scale(max(y_min_nice, 0.1), y_max_nice, pad.top + ch, pad.top)
-        _ -> ChartScales.linear_scale(y_min_nice, y_max_nice, pad.top + ch, pad.top)
-      end
+    {coord, categories, y_ticks, {_y_min, _y_max}} =
+      ChartCoord.auto_cartesian(series,
+        viewport: vp,
+        x_type: assigns.x_scale_type,
+        y_type: assigns.y_scale_type
+      )
 
     # Build visual elements for each series
     bar_series = Enum.filter(series, fn s -> Map.get(s, :type, :line) == :bar end)
@@ -101,17 +98,27 @@ defmodule PhiaUi.Components.Data.XyChart do
         type = Map.get(s, :type, :line)
         bar_idx = if type == :bar, do: Enum.find_index(bar_series, &(&1.name == s.name)) || 0, else: 0
 
-        build_elements(type, s.data, x_scale_result, y_scale, color, si, bar_idx, n_bar_series, cw, ch, pad, assigns)
+        ChartSeriesRegistry.render(type, s.data, coord, [
+          color: color,
+          series_index: si,
+          bar_index: bar_idx,
+          n_bar_series: n_bar_series,
+          animate: assigns.animate,
+          animation_duration: assigns.animation_duration,
+          bar_radius: assigns.bar_radius,
+          stroke_width: assigns.stroke_width
+        ])
       end)
 
     bars = Enum.filter(elements, &(&1.type == :bar))
     lines = Enum.filter(elements, &(&1.type == :line))
     areas = Enum.filter(elements, &(&1.type == :area))
+    scatters = Enum.filter(elements, &(&1.type == :scatter))
 
     # Y-axis tick rendering
     y_tick_entries =
       Enum.map(y_ticks, fn tick ->
-        py = y_scale.(tick)
+        py = coord.y_scale.(tick)
         %{py: Float.round(py * 1.0, 2), label: ChartAxisHelpers.format_tick(tick * 1.0)}
       end)
 
@@ -120,7 +127,7 @@ defmodule PhiaUi.Components.Data.XyChart do
       categories
       |> Enum.with_index()
       |> Enum.map(fn {cat, _i} ->
-        px = x_scale_result.scale.(cat)
+        px = coord.x_scale.(cat)
         %{label: to_string(cat), px: Float.round(px * 1.0, 2)}
       end)
 
@@ -130,9 +137,17 @@ defmodule PhiaUi.Components.Data.XyChart do
       |> Enum.with_index()
       |> Enum.map(fn {s, si} ->
         color = Map.get(s, :color) || ChartHelpers.chart_color(si, assigns.colors)
-        shape = if Map.get(s, :type, :line) == :bar, do: :square, else: :line
+        type = Map.get(s, :type, :line)
+        shape = case type do
+          :bar -> :square
+          :scatter -> :circle
+          _ -> :line
+        end
         %{label: s.name, color: color, shape: shape}
       end)
+
+    cw = vp.cw
+    ch = vp.ch
 
     assigns =
       assigns
@@ -142,10 +157,11 @@ defmodule PhiaUi.Components.Data.XyChart do
       |> assign(:bars, bars)
       |> assign(:lines, lines)
       |> assign(:areas, areas)
+      |> assign(:scatters, scatters)
       |> assign(:y_tick_entries, y_tick_entries)
       |> assign(:x_label_entries, x_label_entries)
       |> assign(:legend_items, legend_items)
-      |> assign(:viewbox, "0 0 #{assigns.width} #{assigns.height}")
+      |> assign(:viewbox, ChartViewport.viewbox(vp))
 
     ~H"""
     <div class={cn(["w-full", if(@animate, do: "phia-chart-animate", else: ""), @class])} {@rest}>
@@ -226,6 +242,16 @@ defmodule PhiaUi.Components.Data.XyChart do
           stroke-linejoin="round"
           style={line.anim_style}
         />
+
+        <%!-- Scatter points --%>
+        <circle
+          :for={dot <- @scatters}
+          cx={dot.cx}
+          cy={dot.cy}
+          r={dot.r}
+          fill={dot.color}
+          style={dot.anim_style}
+        />
       </svg>
 
       <%!-- Legend --%>
@@ -246,6 +272,11 @@ defmodule PhiaUi.Components.Data.XyChart do
             class="inline-block w-3 h-0.5 rounded-full shrink-0"
             style={"background-color: #{item.color}"}
           />
+          <span
+            :if={item.shape == :circle}
+            class="inline-block size-2.5 rounded-full shrink-0"
+            style={"background-color: #{item.color}"}
+          />
           <span class="text-muted-foreground">{item.label}</span>
         </div>
       </div>
@@ -253,128 +284,4 @@ defmodule PhiaUi.Components.Data.XyChart do
     """
   end
 
-  # ---------------------------------------------------------------------------
-  # Private
-  # ---------------------------------------------------------------------------
-
-  defp extract_categories(series) do
-    series
-    |> Enum.flat_map(fn s -> Enum.map(s.data, & &1.label) end)
-    |> Enum.uniq()
-  end
-
-  defp compute_y_domain(series) do
-    all_values = Enum.flat_map(series, fn s -> Enum.map(s.data, & &1.value) end)
-
-    if all_values == [] do
-      {0, 10}
-    else
-      y_max = Enum.max(all_values)
-      y_min = min(0, Enum.min(all_values))
-      {y_min, y_max}
-    end
-  end
-
-  defp build_x_scale(:band, categories, range_min, range_max) do
-    ChartScales.band_scale(categories, range_min, range_max)
-  end
-
-  defp build_x_scale(:linear, categories, range_min, range_max) do
-    n = length(categories)
-    scale = ChartScales.linear_scale(0, max(n - 1, 1), range_min, range_max)
-    positions = categories |> Enum.with_index() |> Enum.map(fn {c, i} -> {c, scale.(i)} end) |> Map.new()
-
-    %{
-      positions: positions,
-      bandwidth: (range_max - range_min) / max(n, 1) * 0.8,
-      scale: fn cat -> Map.get(positions, cat, (range_min + range_max) / 2) end
-    }
-  end
-
-  defp build_x_scale(_type, categories, range_min, range_max) do
-    build_x_scale(:band, categories, range_min, range_max)
-  end
-
-  defp build_elements(:bar, data, x_scale, y_scale, color, _si, bar_idx, n_bar, _cw, _ch, _pad, assigns) do
-    bw = Map.get(x_scale, :bandwidth, 20)
-    bar_w = bw / max(n_bar, 1)
-
-    data
-    |> Enum.with_index()
-    |> Enum.map(fn {item, gi} ->
-      cx = x_scale.scale.(item.label)
-      x = cx - bw / 2 + bar_idx * bar_w
-      y_top = y_scale.(item.value)
-      y_base = y_scale.(0)
-      h = abs(y_base - y_top)
-
-      %{
-        type: :bar,
-        x: Float.round(x, 2),
-        y: Float.round(min(y_top, y_base), 2),
-        w: Float.round(bar_w, 2),
-        h: Float.round(max(h, 1.0), 2),
-        color: color,
-        anim_style: bar_anim(assigns.animate, assigns.animation_duration, gi * 60)
-      }
-    end)
-  end
-
-  defp build_elements(:line, data, x_scale, y_scale, color, si, _bi, _nb, _cw, _ch, _pad, assigns) do
-    points =
-      data
-      |> Enum.map(fn item ->
-        px = x_scale.scale.(item.label)
-        py = y_scale.(item.value)
-        "#{Float.round(px * 1.0, 2)},#{Float.round(py * 1.0, 2)}"
-      end)
-      |> Enum.join(" ")
-
-    line_length = ChartHelpers.polyline_length(points)
-
-    [%{
-      type: :line,
-      points: points,
-      color: color,
-      anim_style: line_anim(assigns.animate, assigns.animation_duration, si * 100, line_length)
-    }]
-  end
-
-  defp build_elements(:area, data, x_scale, y_scale, color, si, _bi, _nb, _cw, _ch, _pad, assigns) do
-    coords =
-      Enum.map(data, fn item ->
-        px = x_scale.scale.(item.label)
-        py = y_scale.(item.value)
-        {Float.round(px * 1.0, 2), Float.round(py * 1.0, 2)}
-      end)
-
-    baseline = Float.round(y_scale.(0) * 1.0, 2)
-
-    path_d =
-      if coords == [] do
-        ""
-      else
-        {first_x, _} = hd(coords)
-        {last_x, _} = List.last(coords)
-        line = Enum.map_join(coords, " L ", fn {x, y} -> "#{x} #{y}" end)
-        "M #{first_x} #{baseline} L #{line} L #{last_x} #{baseline} Z"
-      end
-
-    [%{
-      type: :area,
-      path_d: path_d,
-      color: color,
-      anim_style: if(assigns.animate, do: "animation: phia-fade-in #{assigns.animation_duration}ms ease-out #{si * 100}ms both", else: "")
-    }]
-  end
-
-  defp bar_anim(false, _dur, _delay), do: ""
-
-  defp bar_anim(true, dur, delay),
-    do: "transform-box: fill-box; transform-origin: bottom; animation: phia-bar-grow #{dur}ms ease-out #{delay}ms both"
-
-  defp line_anim(false, _dur, _delay, _len), do: ""
-
-  defp line_anim(true, dur, delay, len),
-    do: "stroke-dasharray: #{len}; stroke-dashoffset: #{len}; animation: phia-line-draw #{dur}ms ease-out #{delay}ms forwards"
 end

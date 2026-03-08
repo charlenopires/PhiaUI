@@ -411,6 +411,18 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
     Enum.flat_map(series, fn s -> Enum.map(s.data, & &1.value) end)
   end
 
+  @doc """
+  Computes descriptive statistics for each series.
+
+  Delegates to `ChartPipeline.series_stats/1`.
+
+  Returns `[%{name: string, stats: %{min, max, mean, median, sum, count, std_dev}}]`.
+  """
+  def series_stats(series) do
+    alias PhiaUi.Components.Data.ChartPipeline
+    ChartPipeline.series_stats(series)
+  end
+
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------

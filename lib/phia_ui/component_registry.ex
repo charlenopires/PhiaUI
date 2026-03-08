@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 556 PhiaUI components.
+  Source of truth for all 561 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -5778,6 +5778,56 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :primitive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+    visual_map: %{
+      name: "visual_map",
+      module: PhiaUi.Components.Data.VisualMap,
+      template_file: "priv/templates/components/data/visual_map.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    data_zoom: %{
+      name: "data_zoom",
+      module: PhiaUi.Components.Data.DataZoom,
+      template_file: "priv/templates/components/data/data_zoom.ex",
+      js_hooks: ["PhiaDataZoom"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_toolbox: %{
+      name: "chart_toolbox",
+      module: PhiaUi.Components.Data.ChartToolbox,
+      template_file: "priv/templates/components/data/chart_toolbox.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_mark_line: %{
+      name: "chart_mark_line",
+      module: PhiaUi.Components.Data.MarkLine,
+      template_file: "priv/templates/components/data/mark_line.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_mark_point: %{
+      name: "chart_mark_point",
+      module: PhiaUi.Components.Data.MarkPoint,
+      template_file: "priv/templates/components/data/mark_point.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -5785,7 +5835,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 556 component metadata entries."
+  @doc "Returns the full registry map — all 561 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
