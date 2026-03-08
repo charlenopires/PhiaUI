@@ -153,6 +153,154 @@ defmodule PhiaUi.Components.Data.ChartCoord do
   end
 
   @doc """
+  Creates a multi-axis Cartesian coordinate system.
+
+  Maps to Highcharts' multiple Y-axes per chart (e.g., revenue left, % right).
+  Each axis gets its own scale, ticks, and domain.
+
+  ## Parameters
+  - `viewport` — viewport from `ChartViewport.build/1`
+  - `axes_config` — list of axis configs: `[%{id, domain: {min, max}, position: :left | :right}]`
+
+  Returns a coord map with:
+  - `data_to_point` — `fn(x_val, y_val, axis_id) -> {px, py}`
+  - `y_scales` — `%{axis_id => scale_fn}`
+  - `y_ticks_map` — `%{axis_id => [ticks]}`
+  - `y_ranges_map` — `%{axis_id => {y_min, y_max}}`
+  """
+  def multi_cartesian(viewport, x_scale, axes_config) do
+    %{pl: pl, pt: pt, cw: cw, ch: ch} = viewport
+
+    y_scales =
+      axes_config
+      |> Enum.map(fn axis ->
+        {y_min, y_max} = axis.domain
+        scale = ChartScales.linear_scale(y_min, y_max, pt + ch, pt)
+        {axis.id, scale}
+      end)
+      |> Map.new()
+
+    y_ticks_map =
+      axes_config
+      |> Enum.map(fn axis ->
+        {y_min, y_max} = axis.domain
+        tick_count = Map.get(axis, :tick_count, 5)
+        ticks = ChartAxisHelpers.nice_ticks(y_min, y_max, tick_count)
+        {axis.id, ticks}
+      end)
+      |> Map.new()
+
+    y_ranges_map =
+      axes_config
+      |> Enum.map(fn axis ->
+        ticks = Map.get(y_ticks_map, axis.id, [0])
+        {axis.id, {Enum.min(ticks), Enum.max(ticks)}}
+      end)
+      |> Map.new()
+
+    default_axis_id =
+      case axes_config do
+        [first | _] -> first.id
+        _ -> nil
+      end
+
+    %{
+      type: :cartesian2d,
+      multi_axis: true,
+      data_to_point: fn x_val, y_val ->
+        px = x_scale.(x_val)
+        default_scale = Map.get(y_scales, default_axis_id, fn v -> v end)
+        py = default_scale.(y_val)
+        {px, py}
+      end,
+      data_to_point_axis: fn x_val, y_val, axis_id ->
+        px = x_scale.(x_val)
+        scale = Map.get(y_scales, axis_id, Map.get(y_scales, default_axis_id, fn v -> v end))
+        py = scale.(y_val)
+        {px, py}
+      end,
+      point_to_data: fn px, py -> {px, py} end,
+      contain_point: fn px, py ->
+        px >= pl and px <= pl + cw and py >= pt and py <= pt + ch
+      end,
+      area: %{x: pl, y: pt, width: cw, height: ch},
+      x_scale: x_scale,
+      y_scale: Map.get(y_scales, default_axis_id, fn v -> v end),
+      y_scales: y_scales,
+      y_ticks_map: y_ticks_map,
+      y_ranges_map: y_ranges_map,
+      axes_config: axes_config
+    }
+  end
+
+  @doc """
+  Auto-creates a multi-axis Cartesian coordinate system from series data.
+
+  Series with `:y_axis_index` (0-based) are grouped by axis. Each axis gets
+  its own domain, scale, and ticks.
+
+  Returns `{coord, categories, y_ticks_map, y_ranges_map}`.
+  """
+  def auto_multi_cartesian(series, opts \\ []) do
+    vp = Keyword.get(opts, :viewport, ChartViewport.build([]))
+    x_type = Keyword.get(opts, :x_type, :band)
+    tick_count = Keyword.get(opts, :tick_count, 5)
+
+    categories = ChartHelpers.extract_categories(series)
+
+    x_range_min = vp.pl
+    x_range_max = vp.pl + vp.cw
+
+    x_scale_result =
+      case x_type do
+        :band ->
+          ChartScales.band_scale(categories, x_range_min, x_range_max)
+
+        :linear ->
+          n = length(categories)
+          scale = ChartScales.linear_scale(0, max(n - 1, 1), x_range_min, x_range_max)
+          positions = categories |> Enum.with_index() |> Enum.map(fn {c, i} -> {c, scale.(i)} end) |> Map.new()
+          bw = (x_range_max - x_range_min) / max(n, 1) * 0.8
+          %{positions: positions, bandwidth: bw, scale: fn cat -> Map.get(positions, cat, (x_range_min + x_range_max) / 2) end}
+      end
+
+    # Group series by y_axis_index
+    grouped =
+      series
+      |> Enum.group_by(fn s -> Map.get(s, :y_axis_index, 0) end)
+
+    axes_config =
+      grouped
+      |> Enum.sort_by(fn {idx, _} -> idx end)
+      |> Enum.map(fn {idx, group_series} ->
+        all_values = Enum.flat_map(group_series, fn s -> Enum.map(s.data, & &1.value) end)
+        {ticks, y_min, y_max} =
+          if all_values == [] do
+            {[0], 0, 10}
+          else
+            ChartHelpers.compute_y_domain(group_series, tick_count: tick_count)
+          end
+
+        position = if idx == 0, do: :left, else: :right
+
+        %{
+          id: idx,
+          domain: {Enum.min(ticks), Enum.max(ticks)},
+          position: position,
+          tick_count: tick_count,
+          ticks: ticks,
+          y_min: y_min,
+          y_max: y_max
+        }
+      end)
+
+    coord = multi_cartesian(vp, x_scale_result.scale, axes_config)
+    coord_with_band = Map.put(coord, :bandwidth, Map.get(x_scale_result, :bandwidth, 0))
+
+    {coord_with_band, categories, coord.y_ticks_map, coord.y_ranges_map}
+  end
+
+  @doc """
   Auto-creates a polar coordinate system from data values.
 
   Returns `{coord, radius_ticks}`.

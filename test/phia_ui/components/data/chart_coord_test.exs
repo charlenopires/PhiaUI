@@ -201,6 +201,111 @@ defmodule PhiaUi.Components.Data.ChartCoordTest do
     end
   end
 
+  describe "multi_cartesian/3" do
+    test "creates a multi-axis coordinate system" do
+      vp = ChartViewport.build([])
+      categories = ["Q1", "Q2"]
+      x_result = ChartScales.band_scale(categories, vp.pl, vp.pl + vp.cw)
+
+      axes_config = [
+        %{id: 0, domain: {0, 1000}, position: :left, tick_count: 5},
+        %{id: 1, domain: {0, 100}, position: :right, tick_count: 5}
+      ]
+
+      coord = ChartCoord.multi_cartesian(vp, x_result.scale, axes_config)
+
+      assert coord.type == :cartesian2d
+      assert coord.multi_axis == true
+      assert is_function(coord.data_to_point, 2)
+      assert is_function(coord.data_to_point_axis, 3)
+      assert Map.has_key?(coord, :y_scales)
+      assert Map.has_key?(coord, :y_ticks_map)
+    end
+
+    test "data_to_point_axis uses axis-specific scale" do
+      vp = ChartViewport.build([])
+      categories = ["Q1"]
+      x_result = ChartScales.band_scale(categories, vp.pl, vp.pl + vp.cw)
+
+      axes_config = [
+        %{id: 0, domain: {0, 1000}, position: :left},
+        %{id: 1, domain: {0, 100}, position: :right}
+      ]
+
+      coord = ChartCoord.multi_cartesian(vp, x_result.scale, axes_config)
+
+      # Same y value should map to different pixel positions on different axes
+      {_, py_axis0} = coord.data_to_point_axis.("Q1", 50, 0)
+      {_, py_axis1} = coord.data_to_point_axis.("Q1", 50, 1)
+
+      # 50 on a 0-1000 scale maps much higher (lower py) than 50 on a 0-100 scale
+      assert py_axis0 != py_axis1
+    end
+
+    test "y_ticks_map contains ticks for each axis" do
+      vp = ChartViewport.build([])
+      categories = ["Q1"]
+      x_result = ChartScales.band_scale(categories, vp.pl, vp.pl + vp.cw)
+
+      axes_config = [
+        %{id: 0, domain: {0, 100}, position: :left, tick_count: 5},
+        %{id: 1, domain: {0, 50}, position: :right, tick_count: 5}
+      ]
+
+      coord = ChartCoord.multi_cartesian(vp, x_result.scale, axes_config)
+
+      assert Map.has_key?(coord.y_ticks_map, 0)
+      assert Map.has_key?(coord.y_ticks_map, 1)
+      assert is_list(coord.y_ticks_map[0])
+      assert is_list(coord.y_ticks_map[1])
+    end
+  end
+
+  describe "auto_multi_cartesian/2" do
+    test "creates multi-axis coord from series with y_axis_index" do
+      series = [
+        %{name: "Revenue", y_axis_index: 0, data: [%{label: "Q1", value: 1000}, %{label: "Q2", value: 2000}]},
+        %{name: "Margin", y_axis_index: 1, data: [%{label: "Q1", value: 20}, %{label: "Q2", value: 30}]}
+      ]
+
+      {coord, categories, y_ticks_map, y_ranges_map} = ChartCoord.auto_multi_cartesian(series)
+
+      assert coord.type == :cartesian2d
+      assert coord.multi_axis == true
+      assert categories == ["Q1", "Q2"]
+      assert Map.has_key?(y_ticks_map, 0)
+      assert Map.has_key?(y_ticks_map, 1)
+      assert Map.has_key?(y_ranges_map, 0)
+      assert Map.has_key?(y_ranges_map, 1)
+    end
+
+    test "assigns left position for first axis, right for second" do
+      series = [
+        %{name: "A", y_axis_index: 0, data: [%{label: "X", value: 100}]},
+        %{name: "B", y_axis_index: 1, data: [%{label: "X", value: 50}]}
+      ]
+
+      {coord, _cats, _ticks_map, _ranges_map} = ChartCoord.auto_multi_cartesian(series)
+
+      left_axis = Enum.find(coord.axes_config, &(&1.id == 0))
+      right_axis = Enum.find(coord.axes_config, &(&1.id == 1))
+
+      assert left_axis.position == :left
+      assert right_axis.position == :right
+    end
+
+    test "handles series without y_axis_index (defaults to 0)" do
+      series = [
+        %{name: "A", data: [%{label: "X", value: 100}]}
+      ]
+
+      {coord, _cats, y_ticks_map, _ranges_map} = ChartCoord.auto_multi_cartesian(series)
+
+      assert coord.type == :cartesian2d
+      assert Map.has_key?(y_ticks_map, 0)
+    end
+  end
+
   describe "auto_polar/2" do
     test "creates polar coord from values" do
       values = [10, 20, 30, 40, 50]

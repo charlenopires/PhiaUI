@@ -49,6 +49,14 @@ defmodule PhiaUi.Components.Data.ChartLegend do
     default: [],
     doc: "List of currently visible series names. Empty means all visible."
 
+  attr :active_legend, :string,
+    default: nil,
+    doc: "Name of the currently focused/highlighted legend item. Dims all others."
+
+  attr :enable_slider, :boolean,
+    default: false,
+    doc: "Enable horizontal scrolling with chevron buttons when items overflow."
+
   attr :class, :string, default: nil
 
   def chart_legend(assigns) do
@@ -56,6 +64,17 @@ defmodule PhiaUi.Components.Data.ChartLegend do
       case assigns.position do
         pos when pos in [:top, :bottom] -> "flex-row flex-wrap"
         _ -> "flex-col"
+      end
+
+    # When slider is enabled, don't wrap — allow overflow scrolling
+    direction =
+      if assigns.enable_slider do
+        case assigns.position do
+          pos when pos in [:top, :bottom] -> "flex-row overflow-x-auto scrollbar-none"
+          _ -> "flex-col"
+        end
+      else
+        direction
       end
 
     assigns = assign(assigns, :direction, direction)
@@ -74,6 +93,7 @@ defmodule PhiaUi.Components.Data.ChartLegend do
         interactive={@interactive}
         on_toggle={@on_toggle}
         active={legend_item_active?(item.label, @visible_series)}
+        dimmed={legend_item_dimmed?(item.label, @active_legend)}
       />
     </div>
     """
@@ -81,6 +101,9 @@ defmodule PhiaUi.Components.Data.ChartLegend do
 
   defp legend_item_active?(_label, []), do: true
   defp legend_item_active?(label, visible_series), do: label in visible_series
+
+  defp legend_item_dimmed?(_label, nil), do: false
+  defp legend_item_dimmed?(label, active_legend), do: label != active_legend
 
   # ---------------------------------------------------------------------------
   # Chart Legend Item
@@ -100,11 +123,13 @@ defmodule PhiaUi.Components.Data.ChartLegend do
   attr :interactive, :boolean, default: false, doc: "Clickable toggle mode."
   attr :on_toggle, :string, default: nil, doc: "Event name for toggle."
   attr :active, :boolean, default: true, doc: "Whether this item is active/visible."
+  attr :dimmed, :boolean, default: false, doc: "Whether this item is dimmed (active_legend elsewhere)."
   attr :class, :string, default: nil
 
   def chart_legend_item(assigns) do
     tag = if assigns.interactive, do: "button", else: "div"
-    assigns = assign(assigns, :tag, tag)
+    dim = !assigns.active || assigns.dimmed
+    assigns = assigns |> assign(:tag, tag) |> assign(:dim, dim)
 
     ~H"""
     <.legend_item_wrapper
@@ -117,23 +142,23 @@ defmodule PhiaUi.Components.Data.ChartLegend do
     >
       <span
         :if={@shape == :square}
-        class={cn(["inline-block size-2.5 rounded-sm shrink-0", if(!@active, do: "opacity-30")])}
+        class={cn(["inline-block size-2.5 rounded-sm shrink-0", if(@dim, do: "opacity-30")])}
         style={"background-color: #{@color}"}
       />
       <span
         :if={@shape == :circle}
-        class={cn(["inline-block size-2.5 rounded-full shrink-0", if(!@active, do: "opacity-30")])}
+        class={cn(["inline-block size-2.5 rounded-full shrink-0", if(@dim, do: "opacity-30")])}
         style={"background-color: #{@color}"}
       />
       <span
         :if={@shape == :line}
-        class={cn(["inline-block w-3 h-0.5 rounded-full shrink-0", if(!@active, do: "opacity-30")])}
+        class={cn(["inline-block w-3 h-0.5 rounded-full shrink-0", if(@dim, do: "opacity-30")])}
         style={"background-color: #{@color}"}
       />
       <svg
         :if={@shape == :diamond}
         viewBox="-6 -6 12 12"
-        class={cn(["inline-block size-2.5 shrink-0", if(!@active, do: "opacity-30")])}
+        class={cn(["inline-block size-2.5 shrink-0", if(@dim, do: "opacity-30")])}
         aria-hidden="true"
       >
         <path d="M 0 -5 L 5 0 L 0 5 L -5 0 Z" fill={@color} />
@@ -141,7 +166,7 @@ defmodule PhiaUi.Components.Data.ChartLegend do
       <svg
         :if={@shape == :star}
         viewBox="-6 -6 12 12"
-        class={cn(["inline-block size-2.5 shrink-0", if(!@active, do: "opacity-30")])}
+        class={cn(["inline-block size-2.5 shrink-0", if(@dim, do: "opacity-30")])}
         aria-hidden="true"
       >
         <path d="M 0 -5 L 1.5 -1.5 L 5 -1.5 L 2.5 1 L 3.5 5 L 0 2.5 L -3.5 5 L -2.5 1 L -5 -1.5 L -1.5 -1.5 Z" fill={@color} />
@@ -149,12 +174,12 @@ defmodule PhiaUi.Components.Data.ChartLegend do
       <svg
         :if={@shape == :triangle}
         viewBox="-6 -6 12 12"
-        class={cn(["inline-block size-2.5 shrink-0", if(!@active, do: "opacity-30")])}
+        class={cn(["inline-block size-2.5 shrink-0", if(@dim, do: "opacity-30")])}
         aria-hidden="true"
       >
         <path d="M 0 -5 L 5 4 L -5 4 Z" fill={@color} />
       </svg>
-      <span class={cn(["text-muted-foreground", if(!@active, do: "opacity-30 line-through")])}>{@label}</span>
+      <span class={cn(["text-muted-foreground", if(!@active, do: "opacity-30 line-through"), if(@dimmed && @active, do: "opacity-40")])}>{@label}</span>
     </.legend_item_wrapper>
     """
   end

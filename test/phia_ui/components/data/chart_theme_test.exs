@@ -78,4 +78,68 @@ defmodule PhiaUi.Components.Data.ChartThemeTest do
       assert theme.axis.tick_size == 10
     end
   end
+
+  describe "merge/2 (two-level)" do
+    test "merges global then chart overrides" do
+      theme = ChartTheme.merge(%{axis: %{font_size: "12"}}, %{grid: %{stroke_width: "1"}})
+
+      assert theme.axis.font_size == "12"
+      assert theme.grid.stroke_width == "1"
+      # Defaults preserved for other keys
+      assert theme.legend.font_size == "9"
+    end
+
+    test "chart overrides take precedence over global" do
+      theme = ChartTheme.merge(%{axis: %{font_size: "12"}}, %{axis: %{font_size: "14"}})
+
+      assert theme.axis.font_size == "14"
+    end
+  end
+
+  describe "merge/3 (three-level)" do
+    test "merges global -> chart -> series overrides" do
+      theme =
+        ChartTheme.merge(
+          %{axis: %{font_size: "12"}},
+          %{grid: %{stroke_width: "1"}},
+          %{point_label: %{offset: 12}}
+        )
+
+      assert theme.axis.font_size == "12"
+      assert theme.grid.stroke_width == "1"
+      assert theme.point_label.offset == 12
+    end
+
+    test "series overrides take highest precedence" do
+      theme =
+        ChartTheme.merge(
+          %{axis: %{font_size: "12"}},
+          %{axis: %{font_size: "14"}},
+          %{axis: %{font_size: "16"}}
+        )
+
+      assert theme.axis.font_size == "16"
+    end
+  end
+
+  describe "for_series/3" do
+    test "returns base theme when opts is nil" do
+      base = ChartTheme.default()
+      assert ChartTheme.for_series(base, 0, nil) == base
+    end
+
+    test "returns base theme when opts is empty map" do
+      base = ChartTheme.default()
+      assert ChartTheme.for_series(base, 0, %{}) == base
+    end
+
+    test "merges series-specific overrides" do
+      base = ChartTheme.default()
+      result = ChartTheme.for_series(base, 0, %{point_label: %{font_size: "14"}})
+
+      assert result.point_label.font_size == "14"
+      # Other keys preserved
+      assert result.axis == base.axis
+    end
+  end
 end

@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 569 PhiaUI components.
+  Source of truth for all 579 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -5910,6 +5910,108 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :primitive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Tremor-Inspired Architecture Wave ───────────────────────────────────────
+    chart_no_data: %{
+      name: "chart_no_data",
+      module: PhiaUi.Components.Data.ChartNoData,
+      template_file: "priv/templates/components/data/chart_no_data.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_tooltip_frame: %{
+      name: "chart_tooltip_frame",
+      module: PhiaUi.Components.Data.ChartTooltip,
+      template_file: "priv/templates/components/data/chart_tooltip.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_tooltip_header: %{
+      name: "chart_tooltip_header",
+      module: PhiaUi.Components.Data.ChartTooltip,
+      template_file: "priv/templates/components/data/chart_tooltip.ex",
+      js_hooks: [],
+      dependencies: [:chart_tooltip_frame],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_tooltip_row: %{
+      name: "chart_tooltip_row",
+      module: PhiaUi.Components.Data.ChartTooltip,
+      template_file: "priv/templates/components/data/chart_tooltip.ex",
+      js_hooks: [],
+      dependencies: [:chart_tooltip_frame],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    delta_bar: %{
+      name: "delta_bar",
+      module: PhiaUi.Components.Data.DeltaBar,
+      template_file: "priv/templates/components/data/delta_bar.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    marker_bar: %{
+      name: "marker_bar",
+      module: PhiaUi.Components.Data.MarkerBar,
+      template_file: "priv/templates/components/data/marker_bar.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tracker: %{
+      name: "tracker",
+      module: PhiaUi.Components.Data.Tracker,
+      template_file: "priv/templates/components/data/tracker.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    spark_line_chart: %{
+      name: "spark_line_chart",
+      module: PhiaUi.Components.Data.SparkChart,
+      template_file: "priv/templates/components/data/spark_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    spark_area_chart: %{
+      name: "spark_area_chart",
+      module: PhiaUi.Components.Data.SparkChart,
+      template_file: "priv/templates/components/data/spark_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    spark_bar_chart: %{
+      name: "spark_bar_chart",
+      module: PhiaUi.Components.Data.SparkChart,
+      template_file: "priv/templates/components/data/spark_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -5917,7 +6019,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 569 component metadata entries."
+  @doc "Returns the full registry map — all 579 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

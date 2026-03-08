@@ -62,6 +62,52 @@ defmodule PhiaUi.Components.Data.ChartTheme do
     deep_merge(default(), overrides)
   end
 
+  @doc """
+  Three-level merge: global defaults → chart-level → series/point-level.
+
+  Maps to Highcharts' 3-tier configuration cascade.
+
+  ## Examples
+
+      ChartTheme.merge(%{axis: %{font_size: "12"}}, %{grid: %{stroke_width: "1"}})
+  """
+  def merge(global_overrides, chart_overrides)
+      when is_map(global_overrides) and is_map(chart_overrides) do
+    default()
+    |> deep_merge(global_overrides)
+    |> deep_merge(chart_overrides)
+  end
+
+  @doc """
+  Three-level merge with series-specific overrides.
+
+  ## Examples
+
+      ChartTheme.merge(%{}, %{axis: %{font_size: "12"}}, %{point_label: %{offset: 12}})
+  """
+  def merge(global_overrides, chart_overrides, series_overrides)
+      when is_map(global_overrides) and is_map(chart_overrides) and is_map(series_overrides) do
+    default()
+    |> deep_merge(global_overrides)
+    |> deep_merge(chart_overrides)
+    |> deep_merge(series_overrides)
+  end
+
+  @doc """
+  Extracts a series-specific theme by merging series-level overrides for a given index.
+
+  ## Parameters
+  - `theme` — base theme (already merged)
+  - `series_index` — index of the series
+  - `series_opts` — series-specific theme overrides
+  """
+  def for_series(theme, _series_index, nil), do: theme
+  def for_series(theme, _series_index, opts) when opts == %{}, do: theme
+
+  def for_series(theme, _series_index, series_opts) when is_map(series_opts) do
+    deep_merge(theme, series_opts)
+  end
+
   # Deep merge two maps — if both values are maps, recurse; otherwise replace.
   defp deep_merge(base, override) when is_map(base) and is_map(override) do
     Map.merge(base, override, fn

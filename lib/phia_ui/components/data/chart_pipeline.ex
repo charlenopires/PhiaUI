@@ -162,4 +162,87 @@ defmodule PhiaUi.Components.Data.ChartPipeline do
       %{s | data: data}
     end)
   end
+
+  # Group data by category for side-by-side rendering (e.g., grouped bars)
+  defp apply_step(series, {:group, :by_category}) do
+    categories =
+      series
+      |> Enum.flat_map(fn s -> Enum.map(s.data, & &1.label) end)
+      |> Enum.uniq()
+
+    Enum.map(series, fn s ->
+      existing = Map.new(s.data, fn d -> {d.label, d} end)
+
+      data =
+        Enum.map(categories, fn cat ->
+          Map.get(existing, cat, %{label: cat, value: 0})
+        end)
+
+      %{s | data: data}
+    end)
+  end
+
+  # Percentage normalization — converts values to percentage of column total
+  defp apply_step(series, {:percent, :of_total}) do
+    # Build totals per label across all series
+    totals =
+      series
+      |> Enum.flat_map(fn s -> Enum.map(s.data, fn d -> {d.label, abs(d.value)} end) end)
+      |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
+      |> Map.new(fn {label, values} -> {label, Enum.sum(values)} end)
+
+    Enum.map(series, fn s ->
+      data =
+        Enum.map(s.data, fn d ->
+          total = Map.get(totals, d.label, 1)
+          pct = if total == 0, do: 0.0, else: d.value / total * 100.0
+          %{d | value: Float.round(pct, 4)}
+        end)
+
+      %{s | data: data}
+    end)
+  end
+
+  # Running cumulative sum within each series
+  defp apply_step(series, {:cumulative, :running_sum}) do
+    Enum.map(series, fn s ->
+      {data, _acc} =
+        Enum.map_reduce(s.data, 0, fn d, acc ->
+          new_acc = acc + d.value
+          {%{d | value: new_acc}, new_acc}
+        end)
+
+      %{s | data: data}
+    end)
+  end
+
+  # Error bars — attach error_low/error_high to each data point
+  defp apply_step(series, {:error_bars, spec}) do
+    Enum.map(series, fn s ->
+      data = Enum.map(s.data, fn d -> attach_error(d, spec) end)
+      %{s | data: data}
+    end)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Private — error bar computation
+  # ---------------------------------------------------------------------------
+
+  defp attach_error(point, {:fixed, amount}) do
+    Map.merge(point, %{error_low: point.value - amount, error_high: point.value + amount})
+  end
+
+  defp attach_error(point, {:percent, pct}) do
+    delta = abs(point.value) * pct / 100.0
+    Map.merge(point, %{error_low: point.value - delta, error_high: point.value + delta})
+  end
+
+  defp attach_error(point, {:stddev, std_dev}) do
+    Map.merge(point, %{error_low: point.value - std_dev, error_high: point.value + std_dev})
+  end
+
+  defp attach_error(point, {:custom, func}) when is_function(func, 1) do
+    {low, high} = func.(point)
+    Map.merge(point, %{error_low: low, error_high: high})
+  end
 end

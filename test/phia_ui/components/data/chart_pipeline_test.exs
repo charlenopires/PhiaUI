@@ -147,6 +147,109 @@ defmodule PhiaUi.Components.Data.ChartPipelineTest do
     end
   end
 
+  describe "process/2 — group step" do
+    test "group by category fills missing labels with zero" do
+      series = [
+        %{name: "A", data: [%{label: "X", value: 10}]},
+        %{name: "B", data: [%{label: "X", value: 20}, %{label: "Y", value: 30}]}
+      ]
+
+      result = ChartPipeline.process(series, [{:group, :by_category}])
+
+      first = hd(result)
+      labels = Enum.map(first.data, & &1.label)
+      assert "X" in labels
+      assert "Y" in labels
+      y_point = Enum.find(first.data, &(&1.label == "Y"))
+      assert y_point.value == 0
+    end
+  end
+
+  describe "process/2 — percent step" do
+    test "converts values to percentage of column total" do
+      series = [
+        %{name: "A", data: [%{label: "X", value: 25}]},
+        %{name: "B", data: [%{label: "X", value: 75}]}
+      ]
+
+      result = ChartPipeline.process(series, [{:percent, :of_total}])
+
+      a_val = hd(hd(result).data).value
+      b_val = hd(Enum.at(result, 1).data).value
+      assert_in_delta a_val, 25.0, 0.01
+      assert_in_delta b_val, 75.0, 0.01
+    end
+
+    test "handles zero total gracefully" do
+      series = [
+        %{name: "A", data: [%{label: "X", value: 0}]},
+        %{name: "B", data: [%{label: "X", value: 0}]}
+      ]
+
+      result = ChartPipeline.process(series, [{:percent, :of_total}])
+
+      assert hd(hd(result).data).value == 0.0
+    end
+  end
+
+  describe "process/2 — cumulative step" do
+    test "computes running sum" do
+      series = [%{name: "A", data: [
+        %{label: "Q1", value: 10},
+        %{label: "Q2", value: 20},
+        %{label: "Q3", value: 30}
+      ]}]
+
+      result = ChartPipeline.process(series, [{:cumulative, :running_sum}])
+
+      values = Enum.map(hd(result).data, & &1.value)
+      assert values == [10, 30, 60]
+    end
+  end
+
+  describe "process/2 — error_bars step" do
+    test "attaches fixed error ranges" do
+      series = [%{name: "A", data: [%{label: "X", value: 100}]}]
+
+      result = ChartPipeline.process(series, [{:error_bars, {:fixed, 10}}])
+
+      point = hd(hd(result).data)
+      assert point.error_low == 90
+      assert point.error_high == 110
+    end
+
+    test "attaches percent error ranges" do
+      series = [%{name: "A", data: [%{label: "X", value: 200}]}]
+
+      result = ChartPipeline.process(series, [{:error_bars, {:percent, 10}}])
+
+      point = hd(hd(result).data)
+      assert_in_delta point.error_low, 180.0, 0.01
+      assert_in_delta point.error_high, 220.0, 0.01
+    end
+
+    test "attaches stddev error ranges" do
+      series = [%{name: "A", data: [%{label: "X", value: 100}]}]
+
+      result = ChartPipeline.process(series, [{:error_bars, {:stddev, 15}}])
+
+      point = hd(hd(result).data)
+      assert point.error_low == 85
+      assert point.error_high == 115
+    end
+
+    test "attaches custom error ranges" do
+      series = [%{name: "A", data: [%{label: "X", value: 100}]}]
+
+      func = fn point -> {point.value - 5, point.value + 25} end
+      result = ChartPipeline.process(series, [{:error_bars, {:custom, func}}])
+
+      point = hd(hd(result).data)
+      assert point.error_low == 95
+      assert point.error_high == 125
+    end
+  end
+
   describe "series_stats/1" do
     test "computes stats for each series" do
       result = ChartPipeline.series_stats(@sample_series)
