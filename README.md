@@ -55,7 +55,7 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 # mix.exs
 def deps do
   [
-    {:phia_ui, "~> 0.1.11"}
+    {:phia_ui, "~> 0.1.12"}
   ]
 end
 ```
