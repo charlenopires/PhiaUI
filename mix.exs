@@ -67,7 +67,8 @@ defmodule PhiaUi.MixProject do
         "docs/guides/tutorial-booking.md",
         "docs/guides/tutorial-cms.md",
         "docs/guides/tutorial-dashboard.md",
-        "docs/guides/tutorial-livebook.md"
+        "docs/guides/tutorial-livebook.md",
+        "docs/guides/tutorial-charts.md"
       ],
       main: "readme",
       source_url: "https://github.com/charlenopires/PhiaUI",
