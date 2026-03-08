@@ -24,15 +24,8 @@ defmodule PhiaUi.Components.ScatterChart do
   import PhiaUi.ClassMerger, only: [cn: 1]
 
   alias PhiaUi.Components.Data.ChartAxisHelpers
-
-  @vw 400
-  @vh 300
-  @pl 44
-  @pr 16
-  @pt 16
-  @pb 40
-  @cw @vw - @pl - @pr
-  @ch @vh - @pt - @pb
+  alias PhiaUi.Components.Data.ChartViewport
+  alias PhiaUi.Components.Data.ChartTheme
 
   attr :data, :list, required: true, doc: "List of `%{x, y}` (and optional `:label`)."
   attr :color, :string, default: nil, doc: "Dot fill color. Defaults to primary palette color."
@@ -41,13 +34,27 @@ defmodule PhiaUi.Components.ScatterChart do
   attr :show_labels, :boolean, default: true
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 600
+  attr :theme, :map, default: %{}, doc: "Chart theme overrides."
+  attr :show_point_labels, :boolean, default: false, doc: "Show labels next to data points."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def scatter_chart(assigns) do
+    vp = ChartViewport.build()
+    theme = ChartTheme.merge(assigns.theme)
     color = assigns.color || "oklch(0.60 0.20 240)"
 
-    {x_tick_entries, y_tick_entries, dots} = build_chart(assigns.data)
+    {x_tick_entries, y_tick_entries, dots} = build_chart(assigns.data, vp)
+
+    point_labels =
+      if assigns.show_point_labels do
+        Enum.map(dots, fn dot ->
+          label = dot.label || ""
+          %{x: dot.cx, y: dot.cy - theme.point_label.offset, label: label}
+        end)
+      else
+        []
+      end
 
     assigns =
       assigns
@@ -55,11 +62,13 @@ defmodule PhiaUi.Components.ScatterChart do
       |> assign(:x_tick_entries, x_tick_entries)
       |> assign(:y_tick_entries, y_tick_entries)
       |> assign(:color, color)
-      |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
-      |> assign(:grid_x1, @pl)
-      |> assign(:grid_x2, @pl + @cw)
-      |> assign(:grid_y1, @pt)
-      |> assign(:grid_y2, @pt + @ch)
+      |> assign(:point_labels, point_labels)
+      |> assign(:theme, theme)
+      |> assign(:viewbox, ChartViewport.viewbox(vp))
+      |> assign(:grid_x1, vp.pl)
+      |> assign(:grid_x2, vp.pl + vp.cw)
+      |> assign(:grid_y1, vp.pt)
+      |> assign(:grid_y2, vp.pt + vp.ch)
 
     ~H"""
     <div
@@ -76,8 +85,8 @@ defmodule PhiaUi.Components.ScatterChart do
             x2={@grid_x2}
             y2={t.py}
             stroke="currentColor"
-            stroke-width="0.5"
-            class="text-border"
+            stroke-width={@theme.grid.stroke_width}
+            class={@theme.grid.stroke_class}
           />
           <line
             :for={t <- @x_tick_entries}
@@ -86,8 +95,8 @@ defmodule PhiaUi.Components.ScatterChart do
             x2={t.px}
             y2={@grid_y2}
             stroke="currentColor"
-            stroke-width="0.5"
-            class="text-border"
+            stroke-width={@theme.grid.stroke_width}
+            class={@theme.grid.stroke_class}
           />
         </g>
 
@@ -99,8 +108,8 @@ defmodule PhiaUi.Components.ScatterChart do
             y={t.py}
             text-anchor="end"
             dominant-baseline="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{t.label}</text>
         </g>
 
@@ -111,8 +120,8 @@ defmodule PhiaUi.Components.ScatterChart do
             x={t.px}
             y={@grid_y2 + 14}
             text-anchor="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{t.label}</text>
         </g>
 
@@ -132,6 +141,18 @@ defmodule PhiaUi.Components.ScatterChart do
             end
           }
         />
+
+        <%!-- Point labels --%>
+        <g :if={@show_point_labels}>
+          <text
+            :for={pl <- @point_labels}
+            x={pl.x}
+            y={pl.y}
+            text-anchor="middle"
+            font-size={@theme.point_label.font_size}
+            class={@theme.point_label.label_class}
+          >{pl.label}</text>
+        </g>
       </svg>
     </div>
     """
@@ -141,24 +162,24 @@ defmodule PhiaUi.Components.ScatterChart do
   # Private helpers
   # ---------------------------------------------------------------------------
 
-  defp build_chart([]) do
+  defp build_chart([], vp) do
     x_ticks = ChartAxisHelpers.nice_ticks(0, 10, 5)
     y_ticks = ChartAxisHelpers.nice_ticks(0, 10, 5)
 
     x_entries = Enum.map(x_ticks, fn t ->
-      px = @pl + t / 10.0 * @cw
+      px = vp.pl + t / 10.0 * vp.cw
       %{px: Float.round(px, 2), label: ChartAxisHelpers.format_tick(t * 1.0)}
     end)
 
     y_entries = Enum.map(y_ticks, fn t ->
-      py = @pt + @ch - t / 10.0 * @ch
+      py = vp.pt + vp.ch - t / 10.0 * vp.ch
       %{py: Float.round(py, 2), label: ChartAxisHelpers.format_tick(t * 1.0)}
     end)
 
     {x_entries, y_entries, []}
   end
 
-  defp build_chart(data) do
+  defp build_chart(data, vp) do
     xs = Enum.map(data, & &1.x)
     ys = Enum.map(data, & &1.y)
 
@@ -174,13 +195,13 @@ defmodule PhiaUi.Components.ScatterChart do
 
     x_entries =
       Enum.map(x_ticks, fn t ->
-        px = @pl + (t - x_min_n) / x_range * @cw
+        px = vp.pl + (t - x_min_n) / x_range * vp.cw
         %{px: Float.round(px, 2), label: ChartAxisHelpers.format_tick(t * 1.0)}
       end)
 
     y_entries =
       Enum.map(y_ticks, fn t ->
-        py = @pt + @ch - (t - y_min_n) / y_range * @ch
+        py = vp.pt + vp.ch - (t - y_min_n) / y_range * vp.ch
         %{py: Float.round(py, 2), label: ChartAxisHelpers.format_tick(t * 1.0)}
       end)
 
@@ -188,8 +209,8 @@ defmodule PhiaUi.Components.ScatterChart do
       data
       |> Enum.with_index()
       |> Enum.map(fn {pt, i} ->
-        cx = @pl + (pt.x - x_min_n) / x_range * @cw
-        cy = @pt + @ch - (pt.y - y_min_n) / y_range * @ch
+        cx = vp.pl + (pt.x - x_min_n) / x_range * vp.cw
+        cy = vp.pt + vp.ch - (pt.y - y_min_n) / y_range * vp.ch
 
         %{
           cx: Float.round(cx, 2),

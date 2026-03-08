@@ -22,15 +22,8 @@ defmodule PhiaUi.Components.WaterfallChart do
   import PhiaUi.ClassMerger, only: [cn: 1]
 
   alias PhiaUi.Components.Data.ChartAxisHelpers
-
-  @vw 400
-  @vh 300
-  @pl 44
-  @pr 16
-  @pt 16
-  @pb 40
-  @cw @vw - @pl - @pr
-  @ch @vh - @pt - @pb
+  alias PhiaUi.Components.Data.ChartViewport
+  alias PhiaUi.Components.Data.ChartTheme
 
   attr :data, :list,
     required: true,
@@ -46,10 +39,13 @@ defmodule PhiaUi.Components.WaterfallChart do
   attr :show_labels, :boolean, default: true
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 600
+  attr :theme, :map, default: %{}, doc: "Chart theme overrides."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def waterfall_chart(assigns) do
+    vp = ChartViewport.build()
+    theme = ChartTheme.merge(assigns.theme)
     {bars, y_min_raw, y_max_raw} = build_waterfall(assigns.data)
 
     y_range = max(y_max_raw - y_min_raw, 1)
@@ -59,24 +55,24 @@ defmodule PhiaUi.Components.WaterfallChart do
     y_range_nice = max(y_max_nice - y_min_nice, 1)
 
     n = length(bars)
-    bar_group_w = @cw / max(n, 1)
+    bar_group_w = vp.cw / max(n, 1)
     bar_w = bar_group_w * 0.6
 
     rendered_bars =
       bars
       |> Enum.with_index()
       |> Enum.map(fn {bar, i} ->
-        h = abs(bar.value) / y_range_nice * @ch
+        h = abs(bar.value) / y_range_nice * vp.ch
         h = max(h, if(bar.value != 0, do: 1.0, else: 0.0))
 
         y =
           if bar.value >= 0 do
-            @pt + @ch - (bar.base + bar.value - y_min_nice) / y_range_nice * @ch
+            vp.pt + vp.ch - (bar.base + bar.value - y_min_nice) / y_range_nice * vp.ch
           else
-            @pt + @ch - (bar.base - y_min_nice) / y_range_nice * @ch
+            vp.pt + vp.ch - (bar.base - y_min_nice) / y_range_nice * vp.ch
           end
 
-        x = @pl + i * bar_group_w + bar_group_w * 0.2
+        x = vp.pl + i * bar_group_w + bar_group_w * 0.2
 
         color =
           cond do
@@ -100,7 +96,7 @@ defmodule PhiaUi.Components.WaterfallChart do
 
     tick_entries =
       Enum.map(y_ticks, fn tick ->
-        py = Float.round(@pt + @ch - (tick - y_min_nice) / y_range_nice * @ch, 2)
+        py = Float.round(vp.pt + vp.ch - (tick - y_min_nice) / y_range_nice * vp.ch, 2)
         %{py: py, label: ChartAxisHelpers.format_tick(tick * 1.0)}
       end)
 
@@ -108,8 +104,8 @@ defmodule PhiaUi.Components.WaterfallChart do
       bars
       |> Enum.with_index()
       |> Enum.map(fn {bar, i} ->
-        px = @pl + (i + 0.5) * bar_group_w
-        %{label: bar.label, px: Float.round(px, 2), py: @pt + @ch + 14}
+        px = vp.pl + (i + 0.5) * bar_group_w
+        %{label: bar.label, px: Float.round(px, 2), py: vp.pt + vp.ch + 14}
       end)
 
     assigns =
@@ -117,10 +113,11 @@ defmodule PhiaUi.Components.WaterfallChart do
       |> assign(:bars, rendered_bars)
       |> assign(:tick_entries, tick_entries)
       |> assign(:x_label_entries, x_label_entries)
-      |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
-      |> assign(:grid_x1, @pl)
-      |> assign(:grid_x2, @pl + @cw)
-      |> assign(:zero_y, Float.round(@pt + @ch - (0 - y_min_nice) / y_range_nice * @ch, 2))
+      |> assign(:viewbox, ChartViewport.viewbox(vp))
+      |> assign(:grid_x1, vp.pl)
+      |> assign(:grid_x2, vp.pl + vp.cw)
+      |> assign(:zero_y, Float.round(vp.pt + vp.ch - (0 - y_min_nice) / y_range_nice * vp.ch, 2))
+      |> assign(:theme, theme)
 
     ~H"""
     <div
@@ -137,8 +134,8 @@ defmodule PhiaUi.Components.WaterfallChart do
             x2={@grid_x2}
             y2={t.py}
             stroke="currentColor"
-            stroke-width="0.5"
-            class="text-border"
+            stroke-width={@theme.grid.stroke_width}
+            class={@theme.grid.stroke_class}
           />
         </g>
 
@@ -161,8 +158,8 @@ defmodule PhiaUi.Components.WaterfallChart do
             y={t.py}
             text-anchor="end"
             dominant-baseline="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{t.label}</text>
         </g>
 
@@ -173,8 +170,8 @@ defmodule PhiaUi.Components.WaterfallChart do
             x={e.px}
             y={e.py}
             text-anchor="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{e.label}</text>
         </g>
 

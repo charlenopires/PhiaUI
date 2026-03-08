@@ -23,14 +23,8 @@ defmodule PhiaUi.Components.HeatmapChart do
 
   import PhiaUi.ClassMerger, only: [cn: 1]
 
-  @vw 420
-  @vh 300
-  @pl 48
-  @pr 16
-  @pt 24
-  @pb 16
-  @cw @vw - @pl - @pr
-  @ch @vh - @pt - @pb
+  alias PhiaUi.Components.Data.ChartViewport
+  alias PhiaUi.Components.Data.ChartTheme
 
   attr :data, :list, required: true, doc: "2D list of numbers: `[[row_vals...], ...]`."
   attr :row_labels, :list, default: [], doc: "Labels for each row (left side)."
@@ -42,10 +36,14 @@ defmodule PhiaUi.Components.HeatmapChart do
 
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 500
+  attr :theme, :map, default: %{}, doc: "Chart theme overrides."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def heatmap_chart(assigns) do
+    vp = ChartViewport.build(vw: 420, pl: 48, pt: 24, pb: 16)
+    theme = ChartTheme.merge(assigns.theme)
+
     data = assigns.data
     n_rows = length(data)
     n_cols = data |> List.first([]) |> length()
@@ -55,8 +53,8 @@ defmodule PhiaUi.Components.HeatmapChart do
     val_max = if all_vals == [], do: 1, else: Enum.max(all_vals)
     val_range = max(val_max - val_min, 1)
 
-    cell_w = @cw / max(n_cols, 1)
-    cell_h = @ch / max(n_rows, 1)
+    cell_w = vp.cw / max(n_cols, 1)
+    cell_h = vp.ch / max(n_rows, 1)
     gap = 2
 
     cells =
@@ -66,8 +64,8 @@ defmodule PhiaUi.Components.HeatmapChart do
         row
         |> Enum.with_index()
         |> Enum.map(fn {val, ci} ->
-          x = @pl + ci * cell_w
-          y = @pt + ri * cell_h
+          x = vp.pl + ci * cell_w
+          y = vp.pt + ri * cell_h
           intensity = (val - val_min) / val_range
           idx = ri * max(n_cols, 1) + ci
 
@@ -87,16 +85,16 @@ defmodule PhiaUi.Components.HeatmapChart do
       assigns.row_labels
       |> Enum.with_index()
       |> Enum.map(fn {lbl, i} ->
-        py = @pt + (i + 0.5) * cell_h
-        %{label: lbl, px: @pl - 4, py: Float.round(py, 2)}
+        py = vp.pt + (i + 0.5) * cell_h
+        %{label: lbl, px: vp.pl - 4, py: Float.round(py, 2)}
       end)
 
     col_label_entries =
       assigns.col_labels
       |> Enum.with_index()
       |> Enum.map(fn {lbl, i} ->
-        px = @pl + (i + 0.5) * cell_w
-        %{label: lbl, px: Float.round(px, 2), py: @pt - 6}
+        px = vp.pl + (i + 0.5) * cell_w
+        %{label: lbl, px: Float.round(px, 2), py: vp.pt - 6}
       end)
 
     [low_color, high_color] =
@@ -113,7 +111,8 @@ defmodule PhiaUi.Components.HeatmapChart do
       |> assign(:col_label_entries, col_label_entries)
       |> assign(:low_color, low_color)
       |> assign(:high_color, high_color)
-      |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
+      |> assign(:viewbox, ChartViewport.viewbox(vp))
+      |> assign(:theme, theme)
 
     ~H"""
     <div
@@ -128,8 +127,8 @@ defmodule PhiaUi.Components.HeatmapChart do
           y={e.py}
           text-anchor="end"
           dominant-baseline="middle"
-          font-size="9"
-          class="fill-muted-foreground"
+          font-size={@theme.axis.font_size}
+          class={@theme.axis.label_class}
         >{e.label}</text>
 
         <%!-- Column labels --%>
@@ -139,8 +138,8 @@ defmodule PhiaUi.Components.HeatmapChart do
           y={e.py}
           text-anchor="middle"
           dominant-baseline="auto"
-          font-size="9"
-          class="fill-muted-foreground"
+          font-size={@theme.axis.font_size}
+          class={@theme.axis.label_class}
         >{e.label}</text>
 
         <%!-- Cells --%>

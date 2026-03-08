@@ -69,6 +69,61 @@ defmodule PhiaUi.Components.PieChartTest do
       <.pie_chart data={[%{label: "X", value: 100}]} class="my-pie-chart" />
       """
     end
+
+    def render_with_spacing(assigns) do
+      ~H"""
+      <.pie_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        spacing={4}
+      />
+      """
+    end
+
+    def render_with_corner_radius(assigns) do
+      ~H"""
+      <.pie_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        corner_radius={3}
+      />
+      """
+    end
+
+    def render_with_spacing_and_corner_radius(assigns) do
+      ~H"""
+      <.pie_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        spacing={4}
+        corner_radius={3}
+      />
+      """
+    end
+
+    def render_zero_spacing(assigns) do
+      ~H"""
+      <.pie_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        spacing={0}
+      />
+      """
+    end
+
+    def render_with_link_labels(assigns) do
+      ~H"""
+      <.pie_chart
+        data={[%{label: "Direct", value: 40}, %{label: "Organic", value: 30}, %{label: "Referral", value: 30}]}
+        show_link_labels={true}
+      />
+      """
+    end
+
+    def render_without_link_labels(assigns) do
+      ~H"""
+      <.pie_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        show_link_labels={false}
+      />
+      """
+    end
   end
 
   describe "pie_chart/1" do
@@ -143,6 +198,59 @@ defmodule PhiaUi.Components.PieChartTest do
     test "slice paths include arc command" do
       html = render_component(&H.render_default/1, %{})
       assert html =~ " A "
+    end
+
+    test "spacing > 0 removes stroke between slices" do
+      html = render_component(&H.render_with_spacing/1, %{})
+      assert html =~ ~s(stroke="none")
+      assert html =~ ~s(stroke-width="0")
+    end
+
+    test "spacing 0 keeps default background stroke" do
+      html = render_component(&H.render_zero_spacing/1, %{})
+      assert html =~ "var(--color-background, white)"
+      assert html =~ ~s(stroke-width="1")
+    end
+
+    test "corner_radius > 0 sets round linejoin and linecap" do
+      html = render_component(&H.render_with_corner_radius/1, %{})
+      assert html =~ ~s(stroke-linejoin="round")
+      assert html =~ ~s(stroke-linecap="round")
+    end
+
+    test "corner_radius 0 uses default miter and butt" do
+      html = render_component(&H.render_default/1, %{})
+      assert html =~ ~s(stroke-linejoin="miter")
+      assert html =~ ~s(stroke-linecap="butt")
+    end
+
+    test "corner_radius > 0 uses slice fill color as stroke" do
+      html = render_component(&H.render_with_corner_radius/1, %{})
+      assert html =~ ~s(stroke-width="3")
+    end
+
+    test "spacing + corner_radius together sets stroke none" do
+      html = render_component(&H.render_with_spacing_and_corner_radius/1, %{})
+      assert html =~ ~s(stroke="none")
+    end
+
+    test "spacing produces valid paths" do
+      html = render_component(&H.render_with_spacing/1, %{})
+      assert html =~ "<path"
+      assert html =~ " A "
+    end
+
+    test "show_link_labels renders arc link labels" do
+      html = render_component(&H.render_with_link_labels/1, %{})
+      assert html =~ "<polyline"
+      assert html =~ "Direct"
+      assert html =~ "Organic"
+      assert html =~ "Referral"
+    end
+
+    test "show_link_labels false does not render polylines" do
+      html = render_component(&H.render_without_link_labels/1, %{})
+      refute html =~ "<polyline"
     end
   end
 end

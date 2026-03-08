@@ -27,9 +27,6 @@ defmodule PhiaUi.Components.TreemapChart do
 
   alias PhiaUi.Components.Data.ChartHelpers
 
-  @vw 400
-  @vh 280
-
   attr :data, :list, required: true, doc: "List of `%{label, value}` (and optional `:color`)."
   attr :colors, :list, default: [], doc: "Override default palette."
   attr :animate, :boolean, default: true
@@ -38,6 +35,8 @@ defmodule PhiaUi.Components.TreemapChart do
   attr :rest, :global
 
   def treemap_chart(assigns) do
+    vp = %{vw: 400, vh: 280}
+
     # Add index-based color if not provided
     data_with_colors =
       assigns.data
@@ -46,7 +45,7 @@ defmodule PhiaUi.Components.TreemapChart do
         Map.put_new(item, :color, ChartHelpers.chart_color(i, assigns.colors))
       end)
 
-    tiles = ChartHelpers.squarify(data_with_colors, 0.0, 0.0, @vw * 1.0, @vh * 1.0)
+    tiles = ChartHelpers.squarify(data_with_colors, 0.0, 0.0, vp.vw * 1.0, vp.vh * 1.0)
 
     tiles_with_delay =
       tiles
@@ -58,7 +57,7 @@ defmodule PhiaUi.Components.TreemapChart do
     assigns =
       assigns
       |> assign(:tiles, tiles_with_delay)
-      |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
+      |> assign(:viewbox, "0 0 #{vp.vw} #{vp.vh}")
 
     ~H"""
     <div

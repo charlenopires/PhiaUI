@@ -22,15 +22,8 @@ defmodule PhiaUi.Components.HistogramChart do
 
   alias PhiaUi.Components.Data.ChartHelpers
   alias PhiaUi.Components.Data.ChartAxisHelpers
-
-  @vw 400
-  @vh 300
-  @pl 44
-  @pr 16
-  @pt 16
-  @pb 40
-  @cw @vw - @pl - @pr
-  @ch @vh - @pt - @pb
+  alias PhiaUi.Components.Data.ChartViewport
+  alias PhiaUi.Components.Data.ChartTheme
 
   attr :data, :list, required: true, doc: "Flat list of numeric values."
   attr :bins, :integer, default: 10, doc: "Number of histogram bins."
@@ -39,10 +32,13 @@ defmodule PhiaUi.Components.HistogramChart do
   attr :show_labels, :boolean, default: true
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 600
+  attr :theme, :map, default: %{}, doc: "Chart theme overrides."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def histogram_chart(assigns) do
+    vp = ChartViewport.build()
+    theme = ChartTheme.merge(assigns.theme)
     color = assigns.color || "oklch(0.60 0.20 240)"
     binned = ChartHelpers.histogram_bins(assigns.data, assigns.bins)
 
@@ -51,15 +47,15 @@ defmodule PhiaUi.Components.HistogramChart do
     y_max_nice = Enum.max(y_ticks)
 
     n = length(binned)
-    bar_w = @cw / max(n, 1)
+    bar_w = vp.cw / max(n, 1)
 
     bars =
       binned
       |> Enum.with_index()
       |> Enum.map(fn {bin, i} ->
-        h = max(bin.value / max(y_max_nice, 1) * @ch, if(bin.value > 0, do: 1.0, else: 0.0))
-        x = @pl + i * bar_w
-        y = @pt + @ch - h
+        h = max(bin.value / max(y_max_nice, 1) * vp.ch, if(bin.value > 0, do: 1.0, else: 0.0))
+        x = vp.pl + i * bar_w
+        y = vp.pt + vp.ch - h
 
         %{
           x: Float.round(x, 2),
@@ -73,7 +69,7 @@ defmodule PhiaUi.Components.HistogramChart do
 
     tick_entries =
       Enum.map(y_ticks, fn tick ->
-        py = Float.round(@pt + @ch - tick / max(y_max_nice, 1) * @ch, 2)
+        py = Float.round(vp.pt + vp.ch - tick / max(y_max_nice, 1) * vp.ch, 2)
         %{py: py, label: ChartAxisHelpers.format_tick(tick * 1.0)}
       end)
 
@@ -82,8 +78,8 @@ defmodule PhiaUi.Components.HistogramChart do
       |> Enum.with_index()
       |> Enum.take_every(max(div(n, 5), 1))
       |> Enum.map(fn {bin, i} ->
-        px = @pl + (i + 0.5) * bar_w
-        %{label: bin.label, px: Float.round(px, 2), py: @pt + @ch + 14}
+        px = vp.pl + (i + 0.5) * bar_w
+        %{label: bin.label, px: Float.round(px, 2), py: vp.pt + vp.ch + 14}
       end)
 
     assigns =
@@ -92,9 +88,10 @@ defmodule PhiaUi.Components.HistogramChart do
       |> assign(:tick_entries, tick_entries)
       |> assign(:x_label_entries, x_label_entries)
       |> assign(:color, color)
-      |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
-      |> assign(:grid_x1, @pl)
-      |> assign(:grid_x2, @pl + @cw)
+      |> assign(:viewbox, ChartViewport.viewbox(vp))
+      |> assign(:grid_x1, vp.pl)
+      |> assign(:grid_x2, vp.pl + vp.cw)
+      |> assign(:theme, theme)
 
     ~H"""
     <div
@@ -111,8 +108,8 @@ defmodule PhiaUi.Components.HistogramChart do
             x2={@grid_x2}
             y2={t.py}
             stroke="currentColor"
-            stroke-width="0.5"
-            class="text-border"
+            stroke-width={@theme.grid.stroke_width}
+            class={@theme.grid.stroke_class}
           />
         </g>
 
@@ -124,8 +121,8 @@ defmodule PhiaUi.Components.HistogramChart do
             y={t.py}
             text-anchor="end"
             dominant-baseline="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{t.label}</text>
         </g>
 
@@ -136,8 +133,8 @@ defmodule PhiaUi.Components.HistogramChart do
             x={e.px}
             y={e.py}
             text-anchor="middle"
-            font-size="7"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{e.label}</text>
         </g>
 

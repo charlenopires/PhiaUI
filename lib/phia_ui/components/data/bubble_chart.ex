@@ -25,15 +25,8 @@ defmodule PhiaUi.Components.BubbleChart do
   import PhiaUi.ClassMerger, only: [cn: 1]
 
   alias PhiaUi.Components.Data.ChartAxisHelpers
-
-  @vw 400
-  @vh 300
-  @pl 44
-  @pr 16
-  @pt 24
-  @pb 40
-  @cw @vw - @pl - @pr
-  @ch @vh - @pt - @pb
+  alias PhiaUi.Components.Data.ChartViewport
+  alias PhiaUi.Components.Data.ChartTheme
 
   attr :data, :list, required: true, doc: "List of `%{x, y, size}` (and optional `:label`)."
   attr :color, :string, default: nil, doc: "Bubble fill color."
@@ -42,14 +35,17 @@ defmodule PhiaUi.Components.BubbleChart do
   attr :show_labels, :boolean, default: true
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 600
+  attr :theme, :map, default: %{}, doc: "Chart theme overrides."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def bubble_chart(assigns) do
+    vp = ChartViewport.build(pt: 24)
+    theme = ChartTheme.merge(assigns.theme)
     color = assigns.color || "oklch(0.60 0.20 240)"
 
     {x_tick_entries, y_tick_entries, bubbles} =
-      build_chart(assigns.data, assigns.max_bubble_size)
+      build_chart(assigns.data, assigns.max_bubble_size, vp)
 
     assigns =
       assigns
@@ -57,11 +53,12 @@ defmodule PhiaUi.Components.BubbleChart do
       |> assign(:x_tick_entries, x_tick_entries)
       |> assign(:y_tick_entries, y_tick_entries)
       |> assign(:color, color)
-      |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
-      |> assign(:grid_x1, @pl)
-      |> assign(:grid_x2, @pl + @cw)
-      |> assign(:grid_y1, @pt)
-      |> assign(:grid_y2, @pt + @ch)
+      |> assign(:theme, theme)
+      |> assign(:viewbox, ChartViewport.viewbox(vp))
+      |> assign(:grid_x1, vp.pl)
+      |> assign(:grid_x2, vp.pl + vp.cw)
+      |> assign(:grid_y1, vp.pt)
+      |> assign(:grid_y2, vp.pt + vp.ch)
 
     ~H"""
     <div
@@ -78,8 +75,8 @@ defmodule PhiaUi.Components.BubbleChart do
             x2={@grid_x2}
             y2={t.py}
             stroke="currentColor"
-            stroke-width="0.5"
-            class="text-border"
+            stroke-width={@theme.grid.stroke_width}
+            class={@theme.grid.stroke_class}
           />
         </g>
 
@@ -91,8 +88,8 @@ defmodule PhiaUi.Components.BubbleChart do
             y={t.py}
             text-anchor="end"
             dominant-baseline="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{t.label}</text>
         </g>
 
@@ -103,8 +100,8 @@ defmodule PhiaUi.Components.BubbleChart do
             x={t.px}
             y={@grid_y2 + 14}
             text-anchor="middle"
-            font-size="9"
-            class="fill-muted-foreground"
+            font-size={@theme.axis.font_size}
+            class={@theme.axis.label_class}
           >{t.label}</text>
         </g>
 
@@ -132,16 +129,16 @@ defmodule PhiaUi.Components.BubbleChart do
     """
   end
 
-  defp build_chart([], _max_r) do
+  defp build_chart([], _max_r, vp) do
     ticks = ChartAxisHelpers.nice_ticks(0, 10, 5)
     entries = Enum.map(ticks, fn t ->
-      %{px: Float.round(@pl + t / 10.0 * @cw, 2), py: Float.round(@pt + @ch - t / 10.0 * @ch, 2),
+      %{px: Float.round(vp.pl + t / 10.0 * vp.cw, 2), py: Float.round(vp.pt + vp.ch - t / 10.0 * vp.ch, 2),
         label: ChartAxisHelpers.format_tick(t * 1.0)}
     end)
     {entries, entries, []}
   end
 
-  defp build_chart(data, max_r) do
+  defp build_chart(data, max_r, vp) do
     xs = Enum.map(data, & &1.x)
     ys = Enum.map(data, & &1.y)
     sizes = Enum.map(data, & &1.size)
@@ -160,13 +157,13 @@ defmodule PhiaUi.Components.BubbleChart do
 
     x_entries =
       Enum.map(x_ticks, fn t ->
-        px = @pl + (t - x_min_n) / x_range * @cw
+        px = vp.pl + (t - x_min_n) / x_range * vp.cw
         %{px: Float.round(px, 2), label: ChartAxisHelpers.format_tick(t * 1.0)}
       end)
 
     y_entries =
       Enum.map(y_ticks, fn t ->
-        py = @pt + @ch - (t - y_min_n) / y_range * @ch
+        py = vp.pt + vp.ch - (t - y_min_n) / y_range * vp.ch
         %{py: Float.round(py, 2), label: ChartAxisHelpers.format_tick(t * 1.0)}
       end)
 
@@ -174,8 +171,8 @@ defmodule PhiaUi.Components.BubbleChart do
       data
       |> Enum.with_index()
       |> Enum.map(fn {pt, i} ->
-        cx = @pl + (pt.x - x_min_n) / x_range * @cw
-        cy = @pt + @ch - (pt.y - y_min_n) / y_range * @ch
+        cx = vp.pl + (pt.x - x_min_n) / x_range * vp.cw
+        cy = vp.pt + vp.ch - (pt.y - y_min_n) / y_range * vp.ch
         r = max_r * :math.sqrt(pt.size / size_max)
 
         %{

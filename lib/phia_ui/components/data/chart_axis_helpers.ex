@@ -48,6 +48,58 @@ defmodule PhiaUi.Components.Data.ChartAxisHelpers do
     end
   end
 
+  @doc """
+  Computes logarithmic tick values for a range [min, max].
+
+  Generates ticks at 1, 2, 5 × 10^n intervals (matching Chart.js LogarithmicScale).
+  `min` must be > 0. Falls back to `nice_ticks/3` if min <= 0.
+  """
+  def log_ticks(min, max, count \\ 5)
+  def log_ticks(min, _max, _count) when min <= 0, do: nice_ticks(max(min, 0.1), max(min + 1, 1), 5)
+
+  def log_ticks(min, max, _count) when min > 0 and max > min do
+    start_exp = Float.floor(:math.log10(min))
+    end_exp = Float.ceil(:math.log10(max))
+
+    ticks =
+      trunc(start_exp)..trunc(end_exp)
+      |> Enum.flat_map(fn exp ->
+        base = :math.pow(10, exp)
+
+        [1.0, 2.0, 5.0]
+        |> Enum.map(fn mult -> Float.round(mult * base, 10) end)
+        |> Enum.filter(fn v -> v >= min and v <= max end)
+      end)
+
+    # Ensure boundaries are included
+    ticks =
+      cond do
+        ticks == [] -> [min, max]
+        hd(ticks) > min -> [min | ticks]
+        true -> ticks
+      end
+
+    ticks =
+      if List.last(ticks) < max, do: ticks ++ [max], else: ticks
+
+    Enum.uniq(ticks)
+  end
+
+  @doc """
+  Formats a logarithmic tick value for display.
+
+  Uses scientific notation for very large/small values,
+  otherwise delegates to `format_tick/2`.
+  """
+  def format_log_tick(value, opts \\ []) do
+    cond do
+      value >= 1_000_000 -> format_tick(value, opts)
+      value >= 1 -> format_tick(value, opts)
+      value >= 0.01 -> "#{Float.round(value, 2)}"
+      true -> "#{:io_lib.format(~c"~.1e", [value])}"
+    end
+  end
+
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------

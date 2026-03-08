@@ -3,6 +3,8 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
   # Shared pure-Elixir helpers used by the SVG chart components.
   # Not registered in ComponentRegistry — internal only.
 
+  alias PhiaUi.Components.Data.ChartAxisHelpers
+
   @palette [
     "oklch(0.60 0.20 240)",
     "oklch(0.70 0.18 145)",
@@ -64,6 +66,115 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
   end
 
   @doc """
+  Converts a data series to an SVG `<path d="...">` string using the specified curve mode.
+
+  Curve modes:
+  - `:linear` — straight line segments (same as `series_points/7` but as path)
+  - `:smooth` — Catmull-Rom spline (smooth curves)
+  - `:monotone` — monotone cubic interpolation (no overshoot)
+  - `:step_before` / `:step_after` / `:step_middle` — stepped lines
+  """
+  def series_path([], _x0, _x1, _y_min, _y_max, _px_top, _px_bot, _curve), do: ""
+
+  def series_path(data, x0, x1, y_min, y_max, px_top, px_bot, curve) do
+    alias PhiaUi.Components.Data.ChartMathHelpers
+
+    count = length(data)
+    y_range = max(y_max - y_min, 1)
+    px_range = px_bot - px_top
+
+    points =
+      data
+      |> Enum.with_index()
+      |> Enum.map(fn {item, i} ->
+        px_x = x0 + i / max(count - 1, 1) * (x1 - x0)
+        px_y = px_bot - (item.value - y_min) / y_range * px_range
+        %{x: Float.round(px_x, 2), y: Float.round(px_y, 2)}
+      end)
+
+    case curve do
+      :linear ->
+        [first | rest] = points
+        move = "M #{f(first.x)} #{f(first.y)}"
+        lines = Enum.map_join(rest, " ", fn pt -> "L #{f(pt.x)} #{f(pt.y)}" end)
+        "#{move} #{lines}"
+
+      :smooth ->
+        ChartMathHelpers.smooth_path(points, :smooth)
+
+      :monotone ->
+        ChartMathHelpers.smooth_path(points, :monotone)
+
+      :step_before ->
+        ChartMathHelpers.stepped_path(points, :before)
+
+      :step_after ->
+        ChartMathHelpers.stepped_path(points, :after)
+
+      :step_middle ->
+        ChartMathHelpers.stepped_path(points, :middle)
+    end
+  end
+
+  @doc """
+  Builds a closed area path for a data series with the specified curve mode.
+  Closes the path down to `px_bot` (the x-axis baseline).
+  """
+  def series_area_path([], _x0, _x1, _y_min, _y_max, _px_top, _px_bot, _curve), do: ""
+
+  def series_area_path(data, x0, x1, y_min, y_max, px_top, px_bot, curve) do
+    alias PhiaUi.Components.Data.ChartMathHelpers
+
+    count = length(data)
+    y_range = max(y_max - y_min, 1)
+    px_range = px_bot - px_top
+
+    points =
+      data
+      |> Enum.with_index()
+      |> Enum.map(fn {item, i} ->
+        px_x = x0 + i / max(count - 1, 1) * (x1 - x0)
+        px_y = px_bot - (item.value - y_min) / y_range * px_range
+        %{x: Float.round(px_x, 2), y: Float.round(px_y, 2)}
+      end)
+
+    case curve do
+      :linear ->
+        line_part = Enum.map_join(points, " L ", fn pt -> "#{f(pt.x)} #{f(pt.y)}" end)
+        first = List.first(points)
+        last = List.last(points)
+        "M #{f(first.x)} #{f(px_bot)} L #{line_part} L #{f(last.x)} #{f(px_bot)} Z"
+
+      mode when mode in [:smooth, :monotone] ->
+        ChartMathHelpers.smooth_area_path(points, mode, px_bot)
+
+      step when step in [:step_before, :step_after, :step_middle] ->
+        step_mode = step |> Atom.to_string() |> String.replace("step_", "") |> String.to_atom()
+        ChartMathHelpers.stepped_area_path(points, step_mode, px_bot)
+    end
+  end
+
+  @doc """
+  Estimates the path length for a curved path (for stroke-dashoffset animation).
+  For smooth curves, approximates by sampling the Bezier at intervals.
+  For linear paths, falls back to polyline_length.
+  """
+  def path_length(""), do: 0.0
+
+  def path_length(path_d) do
+    # Extract all coordinate pairs from the path data
+    coords =
+      Regex.scan(~r/[MLCZ]\s*([\d.-]+)\s+([\d.-]+)/, path_d)
+      |> Enum.map(fn [_, x, y] -> {parse_float(x), parse_float(y)} end)
+
+    coords
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.reduce(0.0, fn [{x1, y1}, {x2, y2}], acc ->
+      acc + :math.sqrt(:math.pow(x2 - x1, 2) + :math.pow(y2 - y1, 2))
+    end)
+  end
+
+  @doc """
   Computes the total arc length of a polyline points string.
   Returns 0.0 for empty or single-point strings.
   """
@@ -90,10 +201,18 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
 
   Returns a list of `%{path: string, color: string, delay: string}` maps.
   Starting angle: -pi/2 (top of circle).
+
+  Options:
+  - `spacing` — gap in pixels between slices (default 0). Implemented as angular
+    offset proportional to radius, matching Chart.js ArcElement spacing pattern.
   """
-  def pie_slices(data, cx, cy, r, colors) when is_list(data) do
+  def pie_slices(data, cx, cy, r, colors, opts \\ []) when is_list(data) do
+    spacing = Keyword.get(opts, :spacing, 0)
     total = data |> Enum.map(& &1.value) |> Enum.sum() |> max(1)
     start = -:math.pi() / 2
+
+    # Angular gap per slice (spacing in pixels → radians at given radius)
+    angle_gap = if spacing > 0 and r > 0, do: spacing / r, else: 0.0
 
     {slices, _} =
       data
@@ -103,7 +222,11 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
         sweep = ratio * 2 * :math.pi()
         end_angle = acc_angle + sweep
 
-        path = arc_path(cx, cy, r, acc_angle, end_angle)
+        # Apply spacing: shrink each slice by half-gap on each side
+        a = acc_angle + angle_gap / 2
+        b = end_angle - angle_gap / 2
+
+        path = if b > a, do: arc_path(cx, cy, r, a, b), else: arc_path(cx, cy, r, a, a + 0.001)
         color = Map.get(item, :color) || chart_color(i, colors)
 
         slice = %{
@@ -121,11 +244,19 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
   @doc """
   Computes SVG donut arc path slices.
 
-  Same as `pie_slices/5` but with inner radius for the ring.
+  Same as `pie_slices/6` but with inner radius for the ring.
+
+  Options:
+  - `spacing` — gap in pixels between slices (default 0).
   """
-  def donut_slices(data, cx, cy, r_outer, r_inner, colors) when is_list(data) do
+  def donut_slices(data, cx, cy, r_outer, r_inner, colors, opts \\ []) when is_list(data) do
+    spacing = Keyword.get(opts, :spacing, 0)
     total = data |> Enum.map(& &1.value) |> Enum.sum() |> max(1)
     start = -:math.pi() / 2
+
+    # Angular gap using mean radius for consistent visual spacing
+    mean_r = (r_outer + r_inner) / 2
+    angle_gap = if spacing > 0 and mean_r > 0, do: spacing / mean_r, else: 0.0
 
     {slices, _} =
       data
@@ -135,7 +266,14 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
         sweep = ratio * 2 * :math.pi()
         end_angle = acc_angle + sweep
 
-        path = donut_arc_path(cx, cy, r_outer, r_inner, acc_angle, end_angle)
+        a = acc_angle + angle_gap / 2
+        b = end_angle - angle_gap / 2
+
+        path =
+          if b > a,
+            do: donut_arc_path(cx, cy, r_outer, r_inner, a, b),
+            else: donut_arc_path(cx, cy, r_outer, r_inner, a, a + 0.001)
+
         color = Map.get(item, :color) || chart_color(i, colors)
 
         slice = %{
@@ -195,6 +333,82 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
       end)
 
     do_squarify(items, x, y, w, h, [])
+  end
+
+  @doc """
+  Computes a nice Y-domain (ticks + min/max) from a list of series.
+
+  Returns `{y_ticks, y_min_nice, y_max_nice}`.
+
+  Options:
+  - `:min_override` — force a minimum value (default: 0)
+  - `:tick_count` — target number of ticks (default: 5)
+  - `:include_negative` — if false, clamp min to 0 (default: true)
+  """
+  def compute_y_domain(series, opts \\ []) do
+    min_override = Keyword.get(opts, :min_override, nil)
+    tick_count = Keyword.get(opts, :tick_count, 5)
+    include_negative = Keyword.get(opts, :include_negative, true)
+
+    all_values = Enum.flat_map(series, fn s -> Enum.map(s.data, & &1.value) end)
+
+    y_max = if all_values == [], do: 10, else: Enum.max(all_values)
+
+    y_min =
+      cond do
+        min_override != nil -> min_override
+        !include_negative -> 0
+        all_values == [] -> 0
+        true -> min(0, Enum.min(all_values))
+      end
+
+    ticks = ChartAxisHelpers.nice_ticks(y_min, max(y_max, 1), tick_count)
+    {ticks, Enum.min(ticks), Enum.max(ticks)}
+  end
+
+  @doc """
+  Computes Y-domain for stacked bar/area charts by summing per-group.
+
+  Returns `{y_ticks, y_max_nice}`.
+  """
+  def compute_stacked_y_domain(series, opts \\ []) do
+    tick_count = Keyword.get(opts, :tick_count, 5)
+    n_groups = series |> List.first(%{data: []}) |> Map.get(:data, []) |> length()
+
+    sums =
+      if n_groups == 0 do
+        []
+      else
+        Enum.map(0..(n_groups - 1), fn g ->
+          Enum.reduce(series, 0, fn s, acc ->
+            v = s.data |> Enum.at(g) |> then(&if(&1, do: &1.value, else: 0))
+            acc + v
+          end)
+        end)
+      end
+
+    y_max = if sums == [], do: 10, else: Enum.max(sums)
+    ticks = ChartAxisHelpers.nice_ticks(0, max(y_max, 1), tick_count)
+    {ticks, Enum.max(ticks)}
+  end
+
+  @doc """
+  Extracts unique category labels from a series list.
+
+  Returns a list of label strings from the first series.
+  """
+  def extract_categories(series) do
+    series
+    |> List.first(%{data: []})
+    |> Map.get(:data, [])
+    |> Enum.map(& &1.label)
+  end
+
+  @doc """
+  Extracts all numeric values from all series into a flat list.
+  """
+  def extract_all_values(series) do
+    Enum.flat_map(series, fn s -> Enum.map(s.data, & &1.value) end)
   end
 
   # ---------------------------------------------------------------------------

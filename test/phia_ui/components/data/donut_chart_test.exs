@@ -63,6 +63,42 @@ defmodule PhiaUi.Components.DonutChartTest do
       />
       """
     end
+
+    def render_with_spacing(assigns) do
+      ~H"""
+      <.donut_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        spacing={4}
+      />
+      """
+    end
+
+    def render_zero_spacing(assigns) do
+      ~H"""
+      <.donut_chart
+        data={[%{label: "A", value: 60}, %{label: "B", value: 40}]}
+        spacing={0}
+      />
+      """
+    end
+
+    def render_with_link_labels(assigns) do
+      ~H"""
+      <.donut_chart
+        data={[%{label: "Used", value: 70}, %{label: "Free", value: 30}]}
+        show_link_labels={true}
+      />
+      """
+    end
+
+    def render_without_link_labels(assigns) do
+      ~H"""
+      <.donut_chart
+        data={[%{label: "A", value: 50}, %{label: "B", value: 50}]}
+        show_link_labels={false}
+      />
+      """
+    end
   end
 
   describe "donut_chart/1" do
@@ -134,6 +170,38 @@ defmodule PhiaUi.Components.DonutChartTest do
     test "custom colors applied to slices" do
       html = render_component(&H.render_custom_colors/1, %{})
       assert html =~ "oklch(0.60 0.20 240)"
+    end
+
+    test "spacing > 0 removes stroke between slices" do
+      html = render_component(&H.render_with_spacing/1, %{})
+      assert html =~ ~s(stroke="none")
+      assert html =~ ~s(stroke-width="0")
+    end
+
+    test "spacing 0 keeps default background stroke" do
+      html = render_component(&H.render_zero_spacing/1, %{})
+      assert html =~ "var(--color-background, white)"
+      assert html =~ ~s(stroke-width="1.5")
+    end
+
+    test "spacing produces valid donut paths" do
+      html = render_component(&H.render_with_spacing/1, %{})
+      assert html =~ "<path"
+      # Donut paths have two arcs per slice
+      a_count = html |> String.split(" A ") |> length() |> Kernel.-(1)
+      assert a_count >= 2
+    end
+
+    test "show_link_labels renders arc link labels" do
+      html = render_component(&H.render_with_link_labels/1, %{})
+      assert html =~ "<polyline"
+      assert html =~ "Used"
+      assert html =~ "Free"
+    end
+
+    test "show_link_labels false does not render polylines" do
+      html = render_component(&H.render_without_link_labels/1, %{})
+      refute html =~ "<polyline"
     end
   end
 end

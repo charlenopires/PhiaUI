@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 534 PhiaUI components.
+  Source of truth for all 556 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -2682,6 +2682,16 @@ defmodule PhiaUi.ComponentRegistry do
       name: "donut_chart",
       module: PhiaUi.Components.DonutChart,
       template_file: "priv/templates/components/data/donut_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    polar_area_chart: %{
+      name: "polar_area_chart",
+      module: PhiaUi.Components.PolarAreaChart,
+      template_file: "priv/templates/components/data/polar_area_chart.ex",
       js_hooks: [],
       dependencies: [],
       tier: :widget,
@@ -5556,6 +5566,218 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Chart Building Blocks (visx-inspired) ─────────────────────────────────
+    chart_linear_gradient: %{
+      name: "chart_linear_gradient",
+      module: PhiaUi.Components.Data.ChartSvgDefs,
+      template_file: "priv/templates/components/data/chart_svg_defs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_radial_gradient: %{
+      name: "chart_radial_gradient",
+      module: PhiaUi.Components.Data.ChartSvgDefs,
+      template_file: "priv/templates/components/data/chart_svg_defs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_pattern: %{
+      name: "chart_pattern",
+      module: PhiaUi.Components.Data.ChartSvgDefs,
+      template_file: "priv/templates/components/data/chart_svg_defs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_clip_path: %{
+      name: "chart_clip_path",
+      module: PhiaUi.Components.Data.ChartSvgDefs,
+      template_file: "priv/templates/components/data/chart_svg_defs.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    x_axis: %{
+      name: "x_axis",
+      module: PhiaUi.Components.Data.ChartAxis,
+      template_file: "priv/templates/components/data/chart_axis.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    y_axis: %{
+      name: "y_axis",
+      module: PhiaUi.Components.Data.ChartAxis,
+      template_file: "priv/templates/components/data/chart_axis.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    radial_axis: %{
+      name: "radial_axis",
+      module: PhiaUi.Components.Data.ChartAxis,
+      template_file: "priv/templates/components/data/chart_axis.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    angle_axis: %{
+      name: "angle_axis",
+      module: PhiaUi.Components.Data.ChartAxis,
+      template_file: "priv/templates/components/data/chart_axis.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    x_grid: %{
+      name: "x_grid",
+      module: PhiaUi.Components.Data.ChartGrid,
+      template_file: "priv/templates/components/data/chart_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    y_grid: %{
+      name: "y_grid",
+      module: PhiaUi.Components.Data.ChartGrid,
+      template_file: "priv/templates/components/data/chart_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    polar_grid: %{
+      name: "polar_grid",
+      module: PhiaUi.Components.Data.ChartGrid,
+      template_file: "priv/templates/components/data/chart_grid.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_legend: %{
+      name: "chart_legend",
+      module: PhiaUi.Components.Data.ChartLegend,
+      template_file: "priv/templates/components/data/chart_legend.ex",
+      js_hooks: [],
+      dependencies: [:chart_legend_item],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_legend_item: %{
+      name: "chart_legend_item",
+      module: PhiaUi.Components.Data.ChartLegend,
+      template_file: "priv/templates/components/data/chart_legend.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_annotation_line: %{
+      name: "chart_annotation_line",
+      module: PhiaUi.Components.Data.ChartAnnotation,
+      template_file: "priv/templates/components/data/chart_annotation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_annotation_band: %{
+      name: "chart_annotation_band",
+      module: PhiaUi.Components.Data.ChartAnnotation,
+      template_file: "priv/templates/components/data/chart_annotation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_annotation_point: %{
+      name: "chart_annotation_point",
+      module: PhiaUi.Components.Data.ChartAnnotation,
+      template_file: "priv/templates/components/data/chart_annotation.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    xy_chart: %{
+      name: "xy_chart",
+      module: PhiaUi.Components.Data.XyChart,
+      template_file: "priv/templates/components/data/xy_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    bar_totals: %{
+      name: "bar_totals",
+      module: PhiaUi.Components.Data.BarTotals,
+      template_file: "priv/templates/components/data/bar_totals.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    arc_link_labels: %{
+      name: "arc_link_labels",
+      module: PhiaUi.Components.Data.ArcLinkLabels,
+      template_file: "priv/templates/components/data/arc_link_labels.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_tooltip: %{
+      name: "chart_tooltip",
+      module: PhiaUi.Components.Data.ChartTooltip,
+      template_file: "priv/templates/components/data/chart_tooltip.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    responsive_chart: %{
+      name: "responsive_chart",
+      module: PhiaUi.Components.Data.ResponsiveChart,
+      template_file: "priv/templates/components/data/responsive_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -5563,7 +5785,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 534 component metadata entries."
+  @doc "Returns the full registry map — all 556 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 
