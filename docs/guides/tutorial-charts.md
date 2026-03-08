@@ -936,5 +936,5 @@ end
 ## Related guides
 
 - [Analytics Dashboard tutorial](tutorial-dashboard.md) — full shell + data grid + chart
-- [Charts & Data components reference](../components/data.md)
-- [Design System](../guides/theme-system.md) — colour tokens and dark mode
+- [Charts & Data components reference](data.md)
+- [Design System](theme-system.md) — colour tokens and dark mode
