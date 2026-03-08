@@ -454,6 +454,7 @@ PhiaUI provides components for virtually any Phoenix LiveView application. Here 
 |---|---|
 | [LiveBook — Task Manager](docs/guides/tutorial-livebook.md) | Render PhiaUI components interactively in Livebook |
 | [Analytics Dashboard](docs/guides/tutorial-dashboard.md) | Sidebar shell + KPI cards + chart + data grid |
+| [Charts — Complete Guide](docs/guides/tutorial-charts.md) | All 19 chart types, composable xy_chart, responsive wrappers, real-time updates |
 | [Booking Platform](docs/guides/tutorial-booking.md) | Multi-step appointment wizard |
 | [CMS Editor](docs/guides/tutorial-cms.md) | Article editor with rich text and media upload |
 
