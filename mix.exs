@@ -70,7 +70,7 @@ defmodule PhiaUi.MixProject do
         "docs/guides/tutorial-livebook.md"
       ],
       main: "readme",
-      source_url: "https://github.com/phiaui/phia_ui",
+      source_url: "https://github.com/charlenopires/PhiaUI",
       source_ref: "v#{@version}",
       groups_for_extras: [
         Guides: ~r/docs\/guides\/.*/,
@@ -85,7 +85,7 @@ defmodule PhiaUi.MixProject do
       description:
         "shadcn/ui-inspired component library for Phoenix LiveView with eject-based distribution. CSS-first theme system, 534 components across 18 categories — Calendar, Chart, Animation, DnD, Editor, Typography, Navigation, Background, Surface, and more.",
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/phiaui/phia_ui"},
+      links: %{"GitHub" => "https://github.com/charlenopires/PhiaUI"},
       files: ~w(lib priv docs mix.exs README.md CHANGELOG.md LICENSE)
     ]
   end
