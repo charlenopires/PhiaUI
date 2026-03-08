@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 561 PhiaUI components.
+  Source of truth for all 569 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -5828,6 +5828,88 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :primitive,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+    chart_crosshair: %{
+      name: "chart_crosshair",
+      module: PhiaUi.Components.Data.ChartCrosshair,
+      template_file: "priv/templates/components/data/chart_crosshair.ex",
+      js_hooks: ["PhiaChartCrosshair"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_drilldown: %{
+      name: "chart_drilldown",
+      module: PhiaUi.Components.Data.ChartDrilldown,
+      template_file: "priv/templates/components/data/chart_drilldown.ex",
+      js_hooks: [],
+      dependencies: [:chart_drilldown_breadcrumb],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_drilldown_breadcrumb: %{
+      name: "chart_drilldown_breadcrumb",
+      module: PhiaUi.Components.Data.ChartDrilldown,
+      template_file: "priv/templates/components/data/chart_drilldown.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_error_bar: %{
+      name: "chart_error_bar",
+      module: PhiaUi.Components.Data.ChartErrorBar,
+      template_file: "priv/templates/components/data/chart_error_bar.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Recharts-Inspired Architecture Wave ────────────────────────────────────
+    chart_label: %{
+      name: "chart_label",
+      module: PhiaUi.Components.Data.ChartLabel,
+      template_file: "priv/templates/components/data/chart_label.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_sync: %{
+      name: "chart_sync",
+      module: PhiaUi.Components.Data.ChartSync,
+      template_file: "priv/templates/components/data/chart_sync.ex",
+      js_hooks: ["PhiaChartSync"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_active_shape: %{
+      name: "chart_active_shape",
+      module: PhiaUi.Components.Data.ChartActiveShape,
+      template_file: "priv/templates/components/data/chart_active_shape.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chart_layer: %{
+      name: "chart_layer",
+      module: PhiaUi.Components.Data.ChartLayer,
+      template_file: "priv/templates/components/data/chart_layer.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -5835,7 +5917,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 561 component metadata entries."
+  @doc "Returns the full registry map — all 569 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

@@ -37,6 +37,18 @@ defmodule PhiaUi.Components.Data.ChartLegend do
     values: [:top, :bottom, :left, :right],
     doc: "Legend position determines layout direction."
 
+  attr :interactive, :boolean,
+    default: false,
+    doc: "Enable click-to-toggle series visibility."
+
+  attr :on_toggle, :string,
+    default: nil,
+    doc: "Event name for series toggle (receives `%{\"series\" => label}`)."
+
+  attr :visible_series, :list,
+    default: [],
+    doc: "List of currently visible series names. Empty means all visible."
+
   attr :class, :string, default: nil
 
   def chart_legend(assigns) do
@@ -59,10 +71,16 @@ defmodule PhiaUi.Components.Data.ChartLegend do
         label={item.label}
         color={item.color}
         shape={Map.get(item, :shape, :square)}
+        interactive={@interactive}
+        on_toggle={@on_toggle}
+        active={legend_item_active?(item.label, @visible_series)}
       />
     </div>
     """
   end
+
+  defp legend_item_active?(_label, []), do: true
+  defp legend_item_active?(label, visible_series), do: label in visible_series
 
   # ---------------------------------------------------------------------------
   # Chart Legend Item
@@ -76,30 +94,98 @@ defmodule PhiaUi.Components.Data.ChartLegend do
 
   attr :shape, :atom,
     default: :square,
-    values: [:square, :circle, :line],
+    values: [:square, :circle, :line, :diamond, :star, :triangle],
     doc: "Swatch shape."
 
+  attr :interactive, :boolean, default: false, doc: "Clickable toggle mode."
+  attr :on_toggle, :string, default: nil, doc: "Event name for toggle."
+  attr :active, :boolean, default: true, doc: "Whether this item is active/visible."
   attr :class, :string, default: nil
 
   def chart_legend_item(assigns) do
+    tag = if assigns.interactive, do: "button", else: "div"
+    assigns = assign(assigns, :tag, tag)
+
     ~H"""
-    <div class={cn(["flex items-center gap-1.5", @class])} role="listitem">
+    <.legend_item_wrapper
+      tag={@tag}
+      interactive={@interactive}
+      on_toggle={@on_toggle}
+      label={@label}
+      active={@active}
+      class={@class}
+    >
       <span
         :if={@shape == :square}
-        class="inline-block size-2.5 rounded-sm shrink-0"
+        class={cn(["inline-block size-2.5 rounded-sm shrink-0", if(!@active, do: "opacity-30")])}
         style={"background-color: #{@color}"}
       />
       <span
         :if={@shape == :circle}
-        class="inline-block size-2.5 rounded-full shrink-0"
+        class={cn(["inline-block size-2.5 rounded-full shrink-0", if(!@active, do: "opacity-30")])}
         style={"background-color: #{@color}"}
       />
       <span
         :if={@shape == :line}
-        class="inline-block w-3 h-0.5 rounded-full shrink-0"
+        class={cn(["inline-block w-3 h-0.5 rounded-full shrink-0", if(!@active, do: "opacity-30")])}
         style={"background-color: #{@color}"}
       />
-      <span class="text-muted-foreground">{@label}</span>
+      <svg
+        :if={@shape == :diamond}
+        viewBox="-6 -6 12 12"
+        class={cn(["inline-block size-2.5 shrink-0", if(!@active, do: "opacity-30")])}
+        aria-hidden="true"
+      >
+        <path d="M 0 -5 L 5 0 L 0 5 L -5 0 Z" fill={@color} />
+      </svg>
+      <svg
+        :if={@shape == :star}
+        viewBox="-6 -6 12 12"
+        class={cn(["inline-block size-2.5 shrink-0", if(!@active, do: "opacity-30")])}
+        aria-hidden="true"
+      >
+        <path d="M 0 -5 L 1.5 -1.5 L 5 -1.5 L 2.5 1 L 3.5 5 L 0 2.5 L -3.5 5 L -2.5 1 L -5 -1.5 L -1.5 -1.5 Z" fill={@color} />
+      </svg>
+      <svg
+        :if={@shape == :triangle}
+        viewBox="-6 -6 12 12"
+        class={cn(["inline-block size-2.5 shrink-0", if(!@active, do: "opacity-30")])}
+        aria-hidden="true"
+      >
+        <path d="M 0 -5 L 5 4 L -5 4 Z" fill={@color} />
+      </svg>
+      <span class={cn(["text-muted-foreground", if(!@active, do: "opacity-30 line-through")])}>{@label}</span>
+    </.legend_item_wrapper>
+    """
+  end
+
+  # Private wrapper component — renders button when interactive, div otherwise
+  attr :tag, :string, required: true
+  attr :interactive, :boolean, default: false
+  attr :on_toggle, :string, default: nil
+  attr :label, :string, default: nil
+  attr :active, :boolean, default: true
+  attr :class, :string, default: nil
+  slot :inner_block, required: true
+
+  defp legend_item_wrapper(%{interactive: true} = assigns) do
+    ~H"""
+    <button
+      class={cn(["flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", @class])}
+      role="listitem"
+      phx-click={@on_toggle}
+      phx-value-series={@label}
+      aria-pressed={to_string(@active)}
+    >
+      {render_slot(@inner_block)}
+    </button>
+    """
+  end
+
+  defp legend_item_wrapper(assigns) do
+    ~H"""
+    <div class={cn(["flex items-center gap-1.5", @class])} role="listitem">
+      {render_slot(@inner_block)}
     </div>
     """
   end

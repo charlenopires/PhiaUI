@@ -70,6 +70,15 @@ defmodule PhiaUi.Components.LineChart do
   attr :theme, :map, default: %{}, doc: "Chart theme overrides (see ChartTheme)."
   attr :show_point_labels, :boolean, default: false, doc: "Show value labels above data points."
 
+  attr :dot_symbol, :atom,
+    default: :circle,
+    values: [:circle, :cross, :diamond, :square, :star, :triangle, :wye],
+    doc: "Symbol shape for data point dots (Recharts symbol pattern)."
+
+  attr :active_dot, :map,
+    default: nil,
+    doc: "Active dot config on hover: `%{r: 8, color: \"red\"}`. nil disables."
+
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -298,20 +307,49 @@ defmodule PhiaUi.Components.LineChart do
         />
 
         <%!-- Dots --%>
-        <circle
-          :for={dot <- @all_dots}
-          cx={dot.cx}
-          cy={dot.cy}
-          r="3"
-          fill={dot.color}
-          style={
-            if @animate do
-              "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{dot.delay}ms both"
-            else
-              ""
-            end
-          }
-        />
+        <%= if @dot_symbol == :circle do %>
+          <%= for dot <- @all_dots do %>
+            <%= if @active_dot do %>
+              <PhiaUi.Components.Data.ChartActiveShape.chart_active_shape
+                type={:dot}
+                cx={dot.cx}
+                cy={dot.cy}
+                r={3}
+                active_r={Map.get(@active_dot, :r, 6)}
+                color={dot.color}
+                active_color={Map.get(@active_dot, :color)}
+              />
+            <% else %>
+              <circle
+                cx={dot.cx}
+                cy={dot.cy}
+                r="3"
+                fill={dot.color}
+                style={
+                  if @animate do
+                    "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{dot.delay}ms both"
+                  else
+                    ""
+                  end
+                }
+              />
+            <% end %>
+          <% end %>
+        <% else %>
+          <path
+            :for={dot <- @all_dots}
+            d={PhiaUi.Components.Data.ChartSymbols.path(@dot_symbol, 3)}
+            transform={"translate(#{dot.cx}, #{dot.cy})"}
+            fill={dot.color}
+            style={
+              if @animate do
+                "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{dot.delay}ms both"
+              else
+                ""
+              end
+            }
+          />
+        <% end %>
 
         <%!-- Point labels --%>
         <g :if={@show_point_labels}>

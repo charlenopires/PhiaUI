@@ -67,6 +67,22 @@ defmodule PhiaUi.Components.Data.XyChart do
   attr :animation_duration, :integer, default: 600, doc: "Animation duration in ms."
   attr :bar_radius, :integer, default: 2, doc: "Corner radius for bars."
   attr :stroke_width, :integer, default: 2, doc: "Line stroke width."
+  attr :multi_y_axis, :boolean, default: false, doc: "Enable dual Y-axis mode."
+
+  attr :y_axes, :list,
+    default: [],
+    doc: "Config for multiple Y axes: `[%{position: :left, label: \"...\"}]`."
+
+  attr :crosshair, :any,
+    default: nil,
+    doc: "Crosshair type: nil, :x, :y, or :both."
+
+  attr :error_bars, :boolean, default: false, doc: "Show error bars on series with error data."
+
+  attr :cell_overrides, :map,
+    default: %{},
+    doc: "Per-series cell overrides: `%{\"series_name\" => [%{color: \"red\"}, ...]}`. Recharts Cell pattern."
+
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -79,12 +95,13 @@ defmodule PhiaUi.Components.Data.XyChart do
 
     series = assigns.series
 
-    {coord, categories, y_ticks, {_y_min, _y_max}} =
-      ChartCoord.auto_cartesian(series,
-        viewport: vp,
-        x_type: assigns.x_scale_type,
-        y_type: assigns.y_scale_type
-      )
+    # Multi-axis or single-axis coordinate system
+    {coord, categories, y_tick_entries, right_y_tick_entries} =
+      if assigns.multi_y_axis do
+        build_multi_axis(series, vp, assigns)
+      else
+        build_single_axis(series, vp, assigns)
+      end
 
     # Build visual elements for each series
     bar_series = Enum.filter(series, fn s -> Map.get(s, :type, :line) == :bar end)
@@ -98,29 +115,44 @@ defmodule PhiaUi.Components.Data.XyChart do
         type = Map.get(s, :type, :line)
         bar_idx = if type == :bar, do: Enum.find_index(bar_series, &(&1.name == s.name)) || 0, else: 0
 
-        ChartSeriesRegistry.render(type, s.data, coord, [
-          color: color,
-          series_index: si,
-          bar_index: bar_idx,
-          n_bar_series: n_bar_series,
-          animate: assigns.animate,
-          animation_duration: assigns.animation_duration,
-          bar_radius: assigns.bar_radius,
-          stroke_width: assigns.stroke_width
-        ])
+        # For multi-axis, use axis-specific coord
+        render_coord =
+          if assigns.multi_y_axis and Map.has_key?(coord, :data_to_point_axis) do
+            axis_id = Map.get(s, :y_axis_index, 0)
+            axis_scale = Map.get(coord.y_scales, axis_id, coord.y_scale)
+            Map.put(coord, :y_scale, axis_scale)
+          else
+            coord
+          end
+
+        if ChartSeriesRegistry.supported?(type) do
+          cells = Map.get(assigns.cell_overrides, s.name)
+
+          ChartSeriesRegistry.render(type, s.data, render_coord, [
+            color: color,
+            series_index: si,
+            bar_index: bar_idx,
+            n_bar_series: n_bar_series,
+            animate: assigns.animate,
+            animation_duration: assigns.animation_duration,
+            bar_radius: assigns.bar_radius,
+            stroke_width: assigns.stroke_width,
+            cells: cells
+          ])
+        else
+          []
+        end
       end)
 
     bars = Enum.filter(elements, &(&1.type == :bar))
     lines = Enum.filter(elements, &(&1.type == :line))
     areas = Enum.filter(elements, &(&1.type == :area))
     scatters = Enum.filter(elements, &(&1.type == :scatter))
-
-    # Y-axis tick rendering
-    y_tick_entries =
-      Enum.map(y_ticks, fn tick ->
-        py = coord.y_scale.(tick)
-        %{py: Float.round(py * 1.0, 2), label: ChartAxisHelpers.format_tick(tick * 1.0)}
-      end)
+    scatter_symbols = Enum.filter(elements, &(&1.type == :scatter_symbol))
+    splines = Enum.filter(elements, &(&1.type == :spline))
+    error_bars_list = Enum.filter(elements, &(&1.type == :error_bar))
+    range_areas = Enum.filter(elements, &(&1.type == :range_area))
+    column_ranges = Enum.filter(elements, &(&1.type == :column_range))
 
     # X-axis label rendering
     x_label_entries =
@@ -146,8 +178,25 @@ defmodule PhiaUi.Components.Data.XyChart do
         %{label: s.name, color: color, shape: shape}
       end)
 
+    # Crosshair points for JS hook
+    crosshair_points =
+      if assigns.crosshair do
+        series
+        |> Enum.with_index()
+        |> Enum.flat_map(fn {s, _si} ->
+          Enum.map(s.data, fn item ->
+            {px, py} = coord.data_to_point.(item.label, item.value)
+            %{px: Float.round(px * 1.0, 2), py: Float.round(py * 1.0, 2), label: item.label, value: item.value}
+          end)
+        end)
+      else
+        []
+      end
+
     cw = vp.cw
     ch = vp.ch
+
+    crosshair_id = "xy-crosshair-#{System.unique_integer([:positive])}"
 
     assigns =
       assigns
@@ -158,10 +207,19 @@ defmodule PhiaUi.Components.Data.XyChart do
       |> assign(:lines, lines)
       |> assign(:areas, areas)
       |> assign(:scatters, scatters)
+      |> assign(:scatter_symbols, scatter_symbols)
+      |> assign(:splines, splines)
+      |> assign(:error_bars_list, error_bars_list)
+      |> assign(:range_areas, range_areas)
+      |> assign(:column_ranges, column_ranges)
       |> assign(:y_tick_entries, y_tick_entries)
+      |> assign(:right_y_tick_entries, right_y_tick_entries)
       |> assign(:x_label_entries, x_label_entries)
       |> assign(:legend_items, legend_items)
       |> assign(:viewbox, ChartViewport.viewbox(vp))
+      |> assign(:crosshair_points, crosshair_points)
+      |> assign(:crosshair_id, crosshair_id)
+      |> assign(:chart_area, %{x: pad.left, y: pad.top, width: cw, height: ch})
 
     ~H"""
     <div class={cn(["w-full", if(@animate, do: "phia-chart-animate", else: ""), @class])} {@rest}>
@@ -252,6 +310,90 @@ defmodule PhiaUi.Components.Data.XyChart do
           fill={dot.color}
           style={dot.anim_style}
         />
+
+        <%!-- Scatter symbol points --%>
+        <path
+          :for={dot <- @scatter_symbols}
+          d={dot.path_d}
+          transform={"translate(#{dot.cx}, #{dot.cy})"}
+          fill={dot.color}
+          style={dot.anim_style}
+        />
+
+        <%!-- Spline paths --%>
+        <path
+          :for={spline <- @splines}
+          d={spline.path_d}
+          fill="none"
+          stroke={spline.color}
+          stroke-width={spline.stroke_width}
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style={spline.anim_style}
+        />
+
+        <%!-- Range area fills --%>
+        <path
+          :for={ra <- @range_areas}
+          d={ra.path_d}
+          fill={ra.color}
+          opacity="0.2"
+          style={ra.anim_style}
+        />
+
+        <%!-- Column range bars --%>
+        <rect
+          :for={cr <- @column_ranges}
+          x={cr.x}
+          y={cr.y}
+          width={cr.w}
+          height={cr.h}
+          rx={cr.rx}
+          fill={cr.color}
+          style={cr.anim_style}
+        />
+
+        <%!-- Error bars --%>
+        <g :for={eb <- @error_bars_list}>
+          <line
+            x1={eb.px}
+            y1={eb.py_low}
+            x2={eb.px}
+            y2={eb.py_high}
+            stroke={eb.color}
+            stroke-width={eb.stroke_width}
+            style={eb.anim_style}
+          />
+          <line
+            x1={eb.px - eb.cap_width / 2}
+            y1={eb.py_high}
+            x2={eb.px + eb.cap_width / 2}
+            y2={eb.py_high}
+            stroke={eb.color}
+            stroke-width={eb.stroke_width}
+          />
+          <line
+            x1={eb.px - eb.cap_width / 2}
+            y1={eb.py_low}
+            x2={eb.px + eb.cap_width / 2}
+            y2={eb.py_low}
+            stroke={eb.color}
+            stroke-width={eb.stroke_width}
+          />
+        </g>
+
+        <%!-- Right Y-axis labels (multi-axis) --%>
+        <g :if={@right_y_tick_entries != []}>
+          <text
+            :for={t <- @right_y_tick_entries}
+            x={@pad.left + @cw + 4}
+            y={t.py}
+            text-anchor="start"
+            dominant-baseline="middle"
+            font-size="9"
+            class="fill-muted-foreground"
+          >{t.label}</text>
+        </g>
       </svg>
 
       <%!-- Legend --%>
@@ -284,4 +426,54 @@ defmodule PhiaUi.Components.Data.XyChart do
     """
   end
 
+  # ---------------------------------------------------------------------------
+  # Private — axis builders
+  # ---------------------------------------------------------------------------
+
+  defp build_single_axis(series, vp, assigns) do
+    {coord, categories, y_ticks, {_y_min, _y_max}} =
+      ChartCoord.auto_cartesian(series,
+        viewport: vp,
+        x_type: assigns.x_scale_type,
+        y_type: assigns.y_scale_type
+      )
+
+    y_tick_entries =
+      Enum.map(y_ticks, fn tick ->
+        py = coord.y_scale.(tick)
+        %{py: Float.round(py * 1.0, 2), label: ChartAxisHelpers.format_tick(tick * 1.0)}
+      end)
+
+    {coord, categories, y_tick_entries, []}
+  end
+
+  defp build_multi_axis(series, vp, assigns) do
+    {coord, categories, y_ticks_map, _y_ranges_map} =
+      ChartCoord.auto_multi_cartesian(series,
+        viewport: vp,
+        x_type: assigns.x_scale_type
+      )
+
+    # Left axis ticks (axis 0)
+    left_ticks = Map.get(y_ticks_map, 0, [])
+    left_scale = Map.get(coord.y_scales, 0, coord.y_scale)
+
+    y_tick_entries =
+      Enum.map(left_ticks, fn tick ->
+        py = left_scale.(tick)
+        %{py: Float.round(py * 1.0, 2), label: ChartAxisHelpers.format_tick(tick * 1.0)}
+      end)
+
+    # Right axis ticks (axis 1)
+    right_ticks = Map.get(y_ticks_map, 1, [])
+    right_scale = Map.get(coord.y_scales, 1, fn v -> v end)
+
+    right_y_tick_entries =
+      Enum.map(right_ticks, fn tick ->
+        py = right_scale.(tick)
+        %{py: Float.round(py * 1.0, 2), label: ChartAxisHelpers.format_tick(tick * 1.0)}
+      end)
+
+    {coord, categories, y_tick_entries, right_y_tick_entries}
+  end
 end

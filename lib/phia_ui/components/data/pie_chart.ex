@@ -49,6 +49,15 @@ defmodule PhiaUi.Components.PieChart do
     doc: "Border radius for slice corners in pixels. Simulated via round stroke caps."
 
   attr :show_link_labels, :boolean, default: false, doc: "Show leader lines from slices to external labels."
+
+  attr :active_shape, :boolean,
+    default: false,
+    doc: "Enable hover expand effect on slices (Recharts activeShape pattern)."
+
+  attr :active_expand, :integer,
+    default: 6,
+    doc: "Radius expansion in px on hover when active_shape is true."
+
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -61,13 +70,38 @@ defmodule PhiaUi.Components.PieChart do
     # Add label info
     total = assigns.data |> Enum.map(& &1.value) |> Enum.sum() |> max(1)
 
+    # Compute active (expanded) paths if active_shape is enabled
+    active_paths =
+      if assigns.active_shape do
+        start = -:math.pi() / 2
+        spacing = assigns.spacing
+        angle_gap = if spacing > 0 and @r > 0, do: spacing / @r, else: 0.0
+
+        {paths, _} =
+          assigns.data
+          |> Enum.map_reduce(start, fn item, acc ->
+            ratio = item.value / total
+            sweep = ratio * 2 * :math.pi()
+            end_angle = acc + sweep
+            a = acc + angle_gap / 2
+            b = end_angle - angle_gap / 2
+            path = if b > a, do: ChartHelpers.expand_arc_path(@cx, @cy, @r, a, b, assigns.active_expand), else: nil
+            {path, end_angle}
+          end)
+
+        paths
+      else
+        []
+      end
+
     slices_with_labels =
       slices
       |> Enum.with_index()
       |> Enum.map(fn {s, i} ->
         item = Enum.at(assigns.data, i)
         pct = Float.round(item.value / total * 100, 1)
-        Map.merge(s, %{label: item.label, pct: pct})
+        active_path = Enum.at(active_paths, i)
+        Map.merge(s, %{label: item.label, pct: pct, active_path: active_path})
       end)
 
     link_label_slices =
@@ -104,22 +138,32 @@ defmodule PhiaUi.Components.PieChart do
     >
       <svg viewBox={@viewbox} aria-hidden="true" class="w-full h-full overflow-visible">
         <%!-- Pie slices --%>
-        <path
-          :for={slice <- @slices}
-          d={slice.path}
-          fill={slice.color}
-          stroke={slice_stroke(slice.color, @spacing, @corner_radius)}
-          stroke-width={slice_stroke_width(@spacing, @corner_radius)}
-          stroke-linejoin={if @corner_radius > 0, do: "round", else: "miter"}
-          stroke-linecap={if @corner_radius > 0, do: "round", else: "butt"}
-          style={
-            if @animate do
-              "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{slice.delay} both; #{slice.delay}"
-            else
-              ""
-            end
-          }
-        />
+        <%= for slice <- @slices do %>
+          <%= if @active_shape && slice.active_path do %>
+            <PhiaUi.Components.Data.ChartActiveShape.chart_active_shape
+              type={:sector}
+              path={slice.path}
+              active_path={slice.active_path}
+              color={slice.color}
+            />
+          <% else %>
+            <path
+              d={slice.path}
+              fill={slice.color}
+              stroke={slice_stroke(slice.color, @spacing, @corner_radius)}
+              stroke-width={slice_stroke_width(@spacing, @corner_radius)}
+              stroke-linejoin={if @corner_radius > 0, do: "round", else: "miter"}
+              stroke-linecap={if @corner_radius > 0, do: "round", else: "butt"}
+              style={
+                if @animate do
+                  "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{slice.delay} both; #{slice.delay}"
+                else
+                  ""
+                end
+              }
+            />
+          <% end %>
+        <% end %>
 
         <%!-- Legend --%>
         <g :if={@show_legend}>

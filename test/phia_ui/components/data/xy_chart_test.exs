@@ -20,6 +20,10 @@ defmodule PhiaUi.Components.Data.XyChartTest do
     animation_duration: 600,
     bar_radius: 2,
     stroke_width: 2,
+    multi_y_axis: false,
+    y_axes: [],
+    crosshair: nil,
+    error_bars: false,
     class: nil
   }
 
@@ -171,6 +175,69 @@ defmodule PhiaUi.Components.Data.XyChartTest do
       html = render_component(&XyChart.xy_chart/1, attrs)
 
       refute html =~ "phia-chart-animate"
+    end
+  end
+
+  describe "xy_chart/1 with scatter series" do
+    test "renders scatter circles" do
+      scatter_series = [
+        %{
+          name: "Points",
+          type: :scatter,
+          data: [
+            %{label: "A", value: 50},
+            %{label: "B", value: 80}
+          ]
+        }
+      ]
+
+      html =
+        render_component(&XyChart.xy_chart/1, Map.put(@base_attrs, :series, scatter_series))
+
+      assert html =~ "<circle"
+    end
+  end
+
+  describe "xy_chart/1 with spline series" do
+    test "renders spline path" do
+      spline_series = [
+        %{
+          name: "Smooth",
+          type: :spline,
+          data: [
+            %{label: "A", value: 50},
+            %{label: "B", value: 80},
+            %{label: "C", value: 60}
+          ]
+        }
+      ]
+
+      html =
+        render_component(&XyChart.xy_chart/1, Map.put(@base_attrs, :series, spline_series))
+
+      assert html =~ "<path"
+    end
+  end
+
+  describe "xy_chart/1 multi-axis" do
+    test "renders with dual Y axes" do
+      multi_series = [
+        %{name: "Revenue", type: :bar, y_axis_index: 0, data: [%{label: "Q1", value: 1000}, %{label: "Q2", value: 1500}]},
+        %{name: "Margin %", type: :line, y_axis_index: 1, data: [%{label: "Q1", value: 20}, %{label: "Q2", value: 25}]}
+      ]
+
+      attrs =
+        @base_attrs
+        |> Map.put(:series, multi_series)
+        |> Map.put(:multi_y_axis, true)
+
+      html = render_component(&XyChart.xy_chart/1, attrs)
+
+      assert html =~ "<svg"
+      assert html =~ "<rect"    # bars
+      assert html =~ "<polyline" # lines
+      # Right axis labels should be rendered
+      assert html =~ "text-anchor=\"start\""
     end
   end
 

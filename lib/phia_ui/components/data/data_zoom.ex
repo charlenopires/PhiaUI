@@ -34,6 +34,8 @@ defmodule PhiaUi.Components.Data.DataZoom do
   attr :minimap_data, :list, default: [], doc: "List of numeric values for minimap."
   attr :minimap_color, :string, default: "oklch(0.60 0.20 240)", doc: "Minimap area fill color."
   attr :on_change, :string, default: nil, doc: "Event name to send on range change."
+  attr :traveller_width, :integer, default: 5, doc: "Width of handle traveller bars in px."
+  attr :gap, :integer, default: 1, doc: "Minimum gap between start and end (0-100 percent)."
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -51,6 +53,8 @@ defmodule PhiaUi.Components.Data.DataZoom do
       data-start={@start}
       data-end={@end_val}
       data-event={@on_change}
+      data-traveller-width={@traveller_width}
+      data-gap={@gap}
       class={cn(["relative w-full select-none", @class])}
       style={"height: #{@height}px"}
       role="slider"

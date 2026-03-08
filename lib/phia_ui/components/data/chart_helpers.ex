@@ -423,6 +423,62 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
     ChartPipeline.series_stats(series)
   end
 
+  @doc """
+  Recomputes a pie arc path with a larger radius for hover/active state.
+
+  Given original pie parameters, returns a new SVG path with radius expanded
+  by `expand` pixels. Used by `chart_active_shape` for sector hover effects.
+  """
+  def expand_arc_path(cx, cy, r, a, b, expand) do
+    r_expanded = r + expand
+    arc_path_public(cx, cy, r_expanded, a, b)
+  end
+
+  @doc """
+  Recomputes a donut arc path with outer radius expanded for hover state.
+  """
+  def expand_donut_arc_path(cx, cy, r_out, r_in, a, b, expand) do
+    donut_arc_path_public(cx, cy, r_out + expand, r_in, a, b)
+  end
+
+  # Public wrappers for arc path generation (used by expand functions)
+  defp arc_path_public(cx, cy, r, a, b) do
+    x1 = cx + r * :math.cos(a)
+    y1 = cy + r * :math.sin(a)
+    x2 = cx + r * :math.cos(b)
+    y2 = cy + r * :math.sin(b)
+    large = if b - a > :math.pi(), do: 1, else: 0
+
+    [
+      "M #{f(cx)} #{f(cy)}",
+      "L #{f(x1)} #{f(y1)}",
+      "A #{r + 0.0} #{r + 0.0} 0 #{large} 1 #{f(x2)} #{f(y2)}",
+      "Z"
+    ]
+    |> Enum.join(" ")
+  end
+
+  defp donut_arc_path_public(cx, cy, r_out, r_in, a, b) do
+    ox1 = cx + r_out * :math.cos(a)
+    oy1 = cy + r_out * :math.sin(a)
+    ox2 = cx + r_out * :math.cos(b)
+    oy2 = cy + r_out * :math.sin(b)
+    ix1 = cx + r_in * :math.cos(b)
+    iy1 = cy + r_in * :math.sin(b)
+    ix2 = cx + r_in * :math.cos(a)
+    iy2 = cy + r_in * :math.sin(a)
+    large = if b - a > :math.pi(), do: 1, else: 0
+
+    [
+      "M #{f(ox1)} #{f(oy1)}",
+      "A #{r_out + 0.0} #{r_out + 0.0} 0 #{large} 1 #{f(ox2)} #{f(oy2)}",
+      "L #{f(ix1)} #{f(iy1)}",
+      "A #{r_in + 0.0} #{r_in + 0.0} 0 #{large} 0 #{f(ix2)} #{f(iy2)}",
+      "Z"
+    ]
+    |> Enum.join(" ")
+  end
+
   # ---------------------------------------------------------------------------
   # Private helpers
   # ---------------------------------------------------------------------------

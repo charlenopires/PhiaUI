@@ -28,6 +28,10 @@ defmodule PhiaUi.Components.Data.ChartSeriesRegistryTest do
       assert :line in types
       assert :area in types
       assert :scatter in types
+      assert :error_bar in types
+      assert :range_area in types
+      assert :column_range in types
+      assert :spline in types
     end
   end
 
@@ -37,6 +41,10 @@ defmodule PhiaUi.Components.Data.ChartSeriesRegistryTest do
       assert ChartSeriesRegistry.supported?(:line)
       assert ChartSeriesRegistry.supported?(:area)
       assert ChartSeriesRegistry.supported?(:scatter)
+      assert ChartSeriesRegistry.supported?(:error_bar)
+      assert ChartSeriesRegistry.supported?(:range_area)
+      assert ChartSeriesRegistry.supported?(:column_range)
+      assert ChartSeriesRegistry.supported?(:spline)
     end
 
     test "returns false for unsupported types" do
@@ -151,6 +159,125 @@ defmodule PhiaUi.Components.Data.ChartSeriesRegistryTest do
       coord = build_coord()
       [area] = ChartSeriesRegistry.render(:area, @sample_data, coord, color: "blue", animate: false)
       assert area.anim_style == ""
+    end
+  end
+
+  describe "render(:error_bar, ...)" do
+    test "returns error bar elements" do
+      coord = build_coord()
+      data = [
+        %{label: "Q1", value: 100, error_low: 80, error_high: 120},
+        %{label: "Q2", value: 200, error_low: 170, error_high: 230}
+      ]
+
+      elements = ChartSeriesRegistry.render(:error_bar, data, coord, color: "red")
+
+      assert length(elements) == 2
+      assert Enum.all?(elements, fn e -> e.type == :error_bar end)
+    end
+
+    test "error bar elements have required fields" do
+      coord = build_coord()
+      data = [%{label: "Q1", value: 100, error_low: 80, error_high: 120}]
+
+      [first] = ChartSeriesRegistry.render(:error_bar, data, coord, color: "red")
+
+      assert is_float(first.px)
+      assert is_float(first.py_low)
+      assert is_float(first.py_high)
+      assert first.color == "red"
+      assert first.cap_width == 8
+    end
+
+    test "custom cap width" do
+      coord = build_coord()
+      data = [%{label: "Q1", value: 100, error_low: 80, error_high: 120}]
+
+      [first] = ChartSeriesRegistry.render(:error_bar, data, coord, color: "red", cap_width: 12)
+      assert first.cap_width == 12
+    end
+  end
+
+  describe "render(:range_area, ...)" do
+    test "returns range area element" do
+      coord = build_coord()
+      data = [
+        %{label: "Q1", value: 100, low: 80, high: 120},
+        %{label: "Q2", value: 200, low: 170, high: 230}
+      ]
+
+      elements = ChartSeriesRegistry.render(:range_area, data, coord, color: "blue")
+
+      assert length(elements) == 1
+      assert hd(elements).type == :range_area
+    end
+
+    test "range area has path_d" do
+      coord = build_coord()
+      data = [
+        %{label: "Q1", value: 100, low: 80, high: 120},
+        %{label: "Q2", value: 200, low: 170, high: 230}
+      ]
+
+      [area] = ChartSeriesRegistry.render(:range_area, data, coord, color: "blue")
+
+      assert is_binary(area.path_d)
+      assert area.path_d =~ "M"
+      assert area.path_d =~ "Z"
+    end
+  end
+
+  describe "render(:column_range, ...)" do
+    test "returns column range elements" do
+      coord = build_coord()
+      data = [
+        %{label: "Q1", value: 100, low: 50, high: 150},
+        %{label: "Q2", value: 200, low: 120, high: 250}
+      ]
+
+      elements = ChartSeriesRegistry.render(:column_range, data, coord, color: "green")
+
+      assert length(elements) == 2
+      assert Enum.all?(elements, fn e -> e.type == :column_range end)
+    end
+
+    test "column range elements have rect fields" do
+      coord = build_coord()
+      data = [%{label: "Q1", value: 100, low: 50, high: 150}]
+
+      [first] = ChartSeriesRegistry.render(:column_range, data, coord, color: "green")
+
+      assert is_float(first.x)
+      assert is_float(first.y)
+      assert is_float(first.w)
+      assert is_float(first.h)
+      assert first.color == "green"
+    end
+  end
+
+  describe "render(:spline, ...)" do
+    test "returns spline element with path" do
+      coord = build_coord()
+      elements = ChartSeriesRegistry.render(:spline, @sample_data, coord, color: "purple")
+
+      assert length(elements) == 1
+      assert hd(elements).type == :spline
+    end
+
+    test "spline element has smooth path_d" do
+      coord = build_coord()
+      [spline] = ChartSeriesRegistry.render(:spline, @sample_data, coord, color: "purple")
+
+      assert is_binary(spline.path_d)
+      assert spline.path_d =~ "C"  # Cubic bezier
+    end
+
+    test "spline element has color and stroke_width" do
+      coord = build_coord()
+      [spline] = ChartSeriesRegistry.render(:spline, @sample_data, coord, color: "purple", stroke_width: 3)
+
+      assert spline.color == "purple"
+      assert spline.stroke_width == 3
     end
   end
 

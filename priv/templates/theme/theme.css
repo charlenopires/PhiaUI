@@ -496,6 +496,42 @@
   50%      { opacity: 1; }
 }
 
+/* Highcharts-inspired chart animations */
+@keyframes phia-crosshair-show {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes phia-drill-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes phia-drill-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(1.05); }
+}
+
+@keyframes phia-error-bar-pop {
+  from { opacity: 0; transform: scaleY(0); }
+  to   { opacity: 1; transform: scaleY(1); }
+}
+
+.phia-crosshair-line {
+  pointer-events: none;
+  stroke-dasharray: 4 2;
+}
+
+.phia-drilldown-enter {
+  animation: phia-drill-in 300ms ease-out;
+}
+
+/* ── Recharts-Inspired Active Shape ──────────────────────────────────────── */
+@keyframes phia-active-shape-grow {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .phia-mesh-bg *,
   .phia-wave-bg *,

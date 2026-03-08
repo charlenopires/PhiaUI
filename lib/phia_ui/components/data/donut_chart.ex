@@ -49,6 +49,15 @@ defmodule PhiaUi.Components.DonutChart do
     doc: "Gap in pixels between slices (0-8)."
 
   attr :show_link_labels, :boolean, default: false, doc: "Show leader lines from slices to external labels."
+
+  attr :active_shape, :boolean,
+    default: false,
+    doc: "Enable hover expand effect on slices (Recharts activeShape pattern)."
+
+  attr :active_expand, :integer,
+    default: 6,
+    doc: "Radius expansion in px on hover when active_shape is true."
+
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -61,12 +70,39 @@ defmodule PhiaUi.Components.DonutChart do
         spacing: assigns.spacing
       )
 
+    total = assigns.data |> Enum.map(& &1.value) |> Enum.sum() |> max(1)
+
+    active_paths =
+      if assigns.active_shape do
+        start = -:math.pi() / 2
+        spacing = assigns.spacing
+        mean_r = (@r_outer + r_inner) / 2
+        angle_gap = if spacing > 0 and mean_r > 0, do: spacing / mean_r, else: 0.0
+
+        {paths, _} =
+          assigns.data
+          |> Enum.map_reduce(start, fn item, acc ->
+            ratio = item.value / total
+            sweep = ratio * 2 * :math.pi()
+            end_angle = acc + sweep
+            a = acc + angle_gap / 2
+            b = end_angle - angle_gap / 2
+            path = if b > a, do: ChartHelpers.expand_donut_arc_path(@cx, @cy, @r_outer, r_inner, a, b, assigns.active_expand), else: nil
+            {path, end_angle}
+          end)
+
+        paths
+      else
+        []
+      end
+
     slices_with_labels =
       slices
       |> Enum.with_index()
       |> Enum.map(fn {s, i} ->
         item = Enum.at(assigns.data, i)
-        Map.put(s, :label, if(item, do: item.label, else: ""))
+        active_path = Enum.at(active_paths, i)
+        Map.merge(s, %{label: if(item, do: item.label, else: ""), active_path: active_path})
       end)
 
     link_label_slices =
@@ -106,20 +142,30 @@ defmodule PhiaUi.Components.DonutChart do
     >
       <svg viewBox={@viewbox} aria-hidden="true" class="w-full h-full overflow-visible">
         <%!-- Donut slices --%>
-        <path
-          :for={slice <- @slices}
-          d={slice.path}
-          fill={slice.color}
-          stroke={donut_slice_stroke(@spacing)}
-          stroke-width={donut_slice_stroke_width(@spacing)}
-          style={
-            if @animate do
-              "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{slice.delay} both"
-            else
-              ""
-            end
-          }
-        />
+        <%= for slice <- @slices do %>
+          <%= if @active_shape && slice[:active_path] do %>
+            <PhiaUi.Components.Data.ChartActiveShape.chart_active_shape
+              type={:sector}
+              path={slice.path}
+              active_path={slice.active_path}
+              color={slice.color}
+            />
+          <% else %>
+            <path
+              d={slice.path}
+              fill={slice.color}
+              stroke={donut_slice_stroke(@spacing)}
+              stroke-width={donut_slice_stroke_width(@spacing)}
+              style={
+                if @animate do
+                  "transform-box: fill-box; transform-origin: center; animation: phia-dot-pop #{@animation_duration}ms ease-out #{slice.delay} both"
+                else
+                  ""
+                end
+              }
+            />
+          <% end %>
+        <% end %>
 
         <%!-- Center slot content --%>
         <foreignObject
