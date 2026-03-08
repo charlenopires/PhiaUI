@@ -6,6 +6,10 @@ defmodule PhiaUi.Components.Layout.Stack do
   `:vertical` (default) for stacked sections and `:horizontal` for inline
   groups of elements.
 
+  All layout attributes accept either a plain value (backward compatible) or a
+  responsive map like `%{base: :vertical, md: :horizontal}` for per-breakpoint
+  control.
+
   ## Examples
 
       <%!-- Vertical stack (VStack equivalent) --%>
@@ -22,6 +26,12 @@ defmodule PhiaUi.Components.Layout.Stack do
         <.badge>3</.badge>
       </.stack>
 
+      <%!-- Responsive: stack vertically on mobile, horizontal from md --%>
+      <.stack direction={%{base: :vertical, md: :horizontal}} gap={%{base: 2, md: 4}}>
+        <.card>A</.card>
+        <.card>B</.card>
+      </.stack>
+
       <%!-- Centered vertical stack --%>
       <.stack gap={6} align={:center} class="py-12">
         <h1>Title</h1>
@@ -33,25 +43,23 @@ defmodule PhiaUi.Components.Layout.Stack do
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.ResponsiveHelpers, only: [resolve_responsive: 2]
 
-  attr(:direction, :atom,
+  attr(:direction, :any,
     default: :vertical,
-    values: [:vertical, :horizontal],
-    doc: "Stack direction: `:vertical` (flex-col) or `:horizontal` (flex-row)."
+    doc: "Stack direction. Accepts atom or responsive map, e.g. `%{base: :vertical, md: :horizontal}`."
   )
 
-  attr(:gap, :integer, default: 4, doc: "Gap between children (0–12) → `gap-N`.")
+  attr(:gap, :any, default: 4, doc: "Gap between children (0–12) → `gap-N`. Accepts integer or responsive map.")
 
-  attr(:align, :atom,
+  attr(:align, :any,
     default: nil,
-    values: [nil, :start, :center, :end, :stretch, :baseline],
-    doc: "align-items value."
+    doc: "align-items value. Accepts atom or responsive map."
   )
 
-  attr(:justify, :atom,
+  attr(:justify, :any,
     default: nil,
-    values: [nil, :start, :center, :end, :between, :around, :evenly],
-    doc: "justify-content value."
+    doc: "justify-content value. Accepts atom or responsive map."
   )
 
   attr(:wrap, :boolean, default: false, doc: "Allow children to wrap onto multiple lines.")
@@ -68,10 +76,10 @@ defmodule PhiaUi.Components.Layout.Stack do
     <div
       class={cn([
         "flex",
-        direction_class(@direction),
-        "gap-#{@gap}",
-        align_class(@align),
-        justify_class(@justify),
+        responsive(@direction, &direction_class/1),
+        responsive(@gap, &gap_class/1),
+        responsive(@align, &align_class/1),
+        responsive(@justify, &justify_class/1),
         @wrap && "flex-wrap",
         @class
       ])}
@@ -82,8 +90,21 @@ defmodule PhiaUi.Components.Layout.Stack do
     """
   end
 
+  defp responsive(value, mapper) do
+    resolve_responsive(value, mapper)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+    |> case do
+      "" -> nil
+      s -> s
+    end
+  end
+
   defp direction_class(:vertical), do: "flex-col"
   defp direction_class(:horizontal), do: "flex-row"
+
+  defp gap_class(nil), do: nil
+  defp gap_class(n), do: "gap-#{n}"
 
   defp align_class(nil), do: nil
   defp align_class(:start), do: "items-start"

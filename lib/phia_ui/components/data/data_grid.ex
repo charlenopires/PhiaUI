@@ -228,6 +228,19 @@ defmodule PhiaUi.Components.DataGrid do
       "Screen reader announcement for sort/filter/page changes. E.g.: 'Sorted by Name, ascending'"
   )
 
+  attr(:responsive_mode, :atom,
+    default: :scroll,
+    values: [:scroll, :stack, :hide_columns],
+    doc: """
+    Controls responsive behavior on small screens.
+
+    - `:scroll` — default horizontal scroll on overflow (via `overflow-x-auto`)
+    - `:stack` — below `md:`, each row becomes a vertical card layout
+    - `:hide_columns` — no change to the grid itself; columns with a `priority`
+      attr can be hidden via `hidden md:table-cell` in the consuming template
+    """
+  )
+
   attr(:sticky_header, :boolean,
     default: false,
     doc: """
@@ -274,7 +287,7 @@ defmodule PhiaUi.Components.DataGrid do
   """
   def data_grid(assigns) do
     ~H"""
-    <div id={@id} class={cn(["relative w-full overflow-auto", @class])}>
+    <div id={@id} class={cn(["relative w-full overflow-auto", data_grid_responsive_class(@responsive_mode), @class])}>
       <span
         role="status"
         aria-live="polite"
@@ -304,6 +317,14 @@ defmodule PhiaUi.Components.DataGrid do
     </div>
     """
   end
+
+  defp data_grid_responsive_class(:scroll), do: nil
+
+  defp data_grid_responsive_class(:stack),
+    do:
+      "[&_tr]:block [&_tr]:mb-4 [&_tr]:border [&_tr]:rounded-lg [&_tr]:p-4 md:[&_tr]:table-row md:[&_tr]:mb-0 md:[&_tr]:border-0 md:[&_tr]:rounded-none md:[&_tr]:p-0 [&_td]:block [&_td]:py-1 md:[&_td]:table-cell [&_thead]:hidden md:[&_thead]:table-header-group"
+
+  defp data_grid_responsive_class(:hide_columns), do: nil
 
   # ---------------------------------------------------------------------------
   # data_grid_head/1

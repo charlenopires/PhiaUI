@@ -118,7 +118,7 @@ defmodule PhiaUi.Components.ProfileCard do
   """
   def profile_card(assigns) do
     ~H"""
-    <.card class={cn(["p-6", @class])} {@rest}>
+    <.card class={cn(["@container", "p-6", @class])} {@rest}>
       <div class={cn([variant_layout(@variant)])}>
         <%!-- Avatar with optional status dot --%>
         <div class="relative shrink-0">

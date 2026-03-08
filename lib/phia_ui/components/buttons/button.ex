@@ -173,6 +173,7 @@ defmodule PhiaUi.Components.Button do
     ~H"""
     <button
       class={cn([
+        "phia-touch-target",
         base_class(),
         variant_class(@variant),
         size_class(@size),

@@ -195,6 +195,7 @@ defmodule PhiaUi.Components.Checkbox do
       data-state={data_state(@indeterminate, @checked)}
       aria-checked={aria_checked(@indeterminate, @checked)}
       class={cn([
+        "phia-touch-target",
         "h-4 w-4 shrink-0 rounded-sm border border-primary",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",

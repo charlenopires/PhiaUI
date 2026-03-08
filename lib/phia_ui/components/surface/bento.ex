@@ -50,9 +50,9 @@ defmodule PhiaUi.Components.Bento do
     """
   end
 
-  defp bento_cols_class("3"), do: "grid-cols-3"
-  defp bento_cols_class("4"), do: "grid-cols-4"
-  defp bento_cols_class("6"), do: "grid-cols-6"
+  defp bento_cols_class("3"), do: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"
+  defp bento_cols_class("4"), do: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+  defp bento_cols_class("6"), do: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
 
   defp bento_gap_class("sm"), do: "gap-2"
   defp bento_gap_class("md"), do: "gap-4"

@@ -2,6 +2,9 @@ defmodule PhiaUi.Components.Layout.Grid do
   @moduledoc """
   CSS Grid container with column, row, gap and auto-flow control.
 
+  All layout attributes accept either a plain value (backward compatible) or a
+  responsive map like `%{base: 1, md: 3}` for per-breakpoint control.
+
   ## Examples
 
       <%!-- 3-column grid with gap --%>
@@ -9,6 +12,14 @@ defmodule PhiaUi.Components.Layout.Grid do
         <.card>A</.card>
         <.card>B</.card>
         <.card>C</.card>
+      </.grid>
+
+      <%!-- Responsive columns: 1 on mobile, 2 from md, 4 from lg --%>
+      <.grid cols={%{base: 1, md: 2, lg: 4}} gap={%{base: 2, md: 4}}>
+        <.card>A</.card>
+        <.card>B</.card>
+        <.card>C</.card>
+        <.card>D</.card>
       </.grid>
 
       <%!-- 12-column layout grid --%>
@@ -28,29 +39,27 @@ defmodule PhiaUi.Components.Layout.Grid do
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.ResponsiveHelpers, only: [resolve_responsive: 2]
 
-  attr(:cols, :integer, default: nil, doc: "Number of columns (1–12) → `grid-cols-N`.")
-  attr(:rows, :integer, default: nil, doc: "Number of rows (1–6) → `grid-rows-N`.")
-  attr(:gap, :integer, default: nil, doc: "Uniform gap (0–12) → `gap-N`.")
-  attr(:gap_x, :integer, default: nil, doc: "Horizontal gap → `gap-x-N`.")
-  attr(:gap_y, :integer, default: nil, doc: "Vertical gap → `gap-y-N`.")
+  attr(:cols, :any, default: nil, doc: "Number of columns (1–12) → `grid-cols-N`. Accepts integer or responsive map.")
+  attr(:rows, :any, default: nil, doc: "Number of rows (1–6) → `grid-rows-N`. Accepts integer or responsive map.")
+  attr(:gap, :any, default: nil, doc: "Uniform gap (0–12) → `gap-N`. Accepts integer or responsive map.")
+  attr(:gap_x, :any, default: nil, doc: "Horizontal gap → `gap-x-N`. Accepts integer or responsive map.")
+  attr(:gap_y, :any, default: nil, doc: "Vertical gap → `gap-y-N`. Accepts integer or responsive map.")
 
-  attr(:flow, :atom,
+  attr(:flow, :any,
     default: nil,
-    values: [nil, :row, :col, :dense, :row_dense, :col_dense],
-    doc: "Grid auto-flow direction."
+    doc: "Grid auto-flow direction. Accepts atom or responsive map."
   )
 
-  attr(:align, :atom,
+  attr(:align, :any,
     default: nil,
-    values: [nil, :start, :center, :end, :stretch],
-    doc: "align-items value."
+    doc: "align-items value. Accepts atom or responsive map."
   )
 
-  attr(:justify, :atom,
+  attr(:justify, :any,
     default: nil,
-    values: [nil, :start, :center, :end, :between, :around, :evenly],
-    doc: "justify-items value."
+    doc: "justify-items value. Accepts atom or responsive map."
   )
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes merged via cn/1.")
@@ -65,14 +74,14 @@ defmodule PhiaUi.Components.Layout.Grid do
     <div
       class={cn([
         "grid",
-        cols_class(@cols),
-        rows_class(@rows),
-        gap_class(@gap),
-        gap_x_class(@gap_x),
-        gap_y_class(@gap_y),
-        flow_class(@flow),
-        align_class(@align),
-        justify_class(@justify),
+        responsive(@cols, &cols_class/1),
+        responsive(@rows, &rows_class/1),
+        responsive(@gap, &gap_class/1),
+        responsive(@gap_x, &gap_x_class/1),
+        responsive(@gap_y, &gap_y_class/1),
+        responsive(@flow, &flow_class/1),
+        responsive(@align, &align_class/1),
+        responsive(@justify, &justify_class/1),
         @class
       ])}
       {@rest}
@@ -80,6 +89,16 @@ defmodule PhiaUi.Components.Layout.Grid do
       <%= render_slot(@inner_block) %>
     </div>
     """
+  end
+
+  defp responsive(value, mapper) do
+    resolve_responsive(value, mapper)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+    |> case do
+      "" -> nil
+      s -> s
+    end
   end
 
   defp cols_class(nil), do: nil

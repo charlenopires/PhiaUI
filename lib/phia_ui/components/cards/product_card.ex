@@ -73,7 +73,7 @@ defmodule PhiaUi.Components.ProductCard do
   @doc "Renders a product card."
   def product_card(assigns) do
     ~H"""
-    <.card class={cn(["overflow-hidden", @class])} {@rest}>
+    <.card class={cn(["@container", "overflow-hidden", @class])} {@rest}>
       <%!-- Image block --%>
       <div class="relative">
         <a :if={@href} href={@href}>

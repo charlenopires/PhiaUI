@@ -5,6 +5,9 @@ defmodule PhiaUi.Components.Layout.Wrap do
   Items wrap onto new lines automatically when they exceed the container width.
   Ideal for tag clouds, filter chips, and multi-select badge displays.
 
+  All layout attributes accept either a plain value (backward compatible) or a
+  responsive map like `%{base: 2, md: 4}` for per-breakpoint control.
+
   ## Examples
 
       <%!-- Tag cloud --%>
@@ -12,6 +15,12 @@ defmodule PhiaUi.Components.Layout.Wrap do
         <%= for tag <- @tags do %>
           <.badge>{tag}</.badge>
         <% end %>
+      </.wrap>
+
+      <%!-- Responsive gap --%>
+      <.wrap gap={%{base: 1, md: 2, lg: 3}}>
+        <.chip>Design</.chip>
+        <.chip>Engineering</.chip>
       </.wrap>
 
       <%!-- Centered chips --%>
@@ -25,21 +34,20 @@ defmodule PhiaUi.Components.Layout.Wrap do
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.ResponsiveHelpers, only: [resolve_responsive: 2]
 
-  attr(:gap, :integer, default: 2, doc: "Uniform gap (0–12) → `gap-N`.")
-  attr(:gap_x, :integer, default: nil, doc: "Horizontal gap → `gap-x-N`.")
-  attr(:gap_y, :integer, default: nil, doc: "Vertical gap → `gap-y-N`.")
+  attr(:gap, :any, default: 2, doc: "Uniform gap (0–12) → `gap-N`. Accepts integer or responsive map.")
+  attr(:gap_x, :any, default: nil, doc: "Horizontal gap → `gap-x-N`. Accepts integer or responsive map.")
+  attr(:gap_y, :any, default: nil, doc: "Vertical gap → `gap-y-N`. Accepts integer or responsive map.")
 
-  attr(:align, :atom,
+  attr(:align, :any,
     default: :start,
-    values: [:start, :center, :end, :stretch],
-    doc: "align-items value."
+    doc: "align-items value. Accepts atom or responsive map."
   )
 
-  attr(:justify, :atom,
+  attr(:justify, :any,
     default: :start,
-    values: [:start, :center, :end, :between, :around],
-    doc: "justify-content value."
+    doc: "justify-content value. Accepts atom or responsive map."
   )
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes merged via cn/1.")
@@ -54,9 +62,9 @@ defmodule PhiaUi.Components.Layout.Wrap do
     <div
       class={cn([
         "flex flex-wrap",
-        gap_class(@gap, @gap_x, @gap_y),
-        align_class(@align),
-        justify_class(@justify),
+        gap_responsive(@gap, @gap_x, @gap_y),
+        responsive(@align, &align_class/1),
+        responsive(@justify, &justify_class/1),
         @class
       ])}
       {@rest}
@@ -66,13 +74,38 @@ defmodule PhiaUi.Components.Layout.Wrap do
     """
   end
 
-  defp gap_class(gap, nil, nil), do: "gap-#{gap}"
-
-  defp gap_class(_gap, gap_x, gap_y) do
-    [gap_x && "gap-x-#{gap_x}", gap_y && "gap-y-#{gap_y}"]
+  defp responsive(value, mapper) do
+    resolve_responsive(value, mapper)
     |> Enum.reject(&is_nil/1)
     |> Enum.join(" ")
+    |> case do
+      "" -> nil
+      s -> s
+    end
   end
+
+  # When gap_x or gap_y are provided (non-nil), use them instead of gap.
+  # This preserves the original behavior where gap_x/gap_y override gap.
+  defp gap_responsive(gap, nil, nil), do: responsive(gap, &gap_class/1)
+
+  defp gap_responsive(_gap, gap_x, gap_y) do
+    parts = [
+      gap_x && responsive(gap_x, &gap_x_class/1),
+      gap_y && responsive(gap_y, &gap_y_class/1)
+    ]
+
+    parts
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+    |> case do
+      "" -> nil
+      s -> s
+    end
+  end
+
+  defp gap_class(n), do: "gap-#{n}"
+  defp gap_x_class(n), do: "gap-x-#{n}"
+  defp gap_y_class(n), do: "gap-y-#{n}"
 
   defp align_class(:start), do: "items-start"
   defp align_class(:center), do: "items-center"

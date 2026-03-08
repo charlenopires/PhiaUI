@@ -49,6 +49,9 @@ defmodule PhiaUi.Components.Typography do
   attr :tracking, :atom, values: [:tight, :normal, :wide], default: :tight,
     doc: "Letter spacing."
 
+  attr :fluid, :boolean, default: false,
+    doc: "When true, uses CSS custom property fluid font sizes that scale with viewport."
+
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -62,6 +65,7 @@ defmodule PhiaUi.Components.Typography do
       <.heading level={1}>Page Title</.heading>
       <.heading level={2} align={:center}>Section</.heading>
       <.heading level={3} size={:"2xl"}>Custom Size</.heading>
+      <.heading level={1} fluid={true}>Fluid Title</.heading>
   """
   def heading(assigns) do
     render_heading(assigns)
@@ -76,6 +80,10 @@ defmodule PhiaUi.Components.Typography do
 
   attr :align, :atom, values: [:start, :center, :end], default: :start
   attr :weight, :atom, values: [:normal, :medium, :semibold], default: :semibold
+
+  attr :fluid, :boolean, default: false,
+    doc: "When true, uses CSS custom property fluid font sizes that scale with viewport."
+
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -86,10 +94,14 @@ defmodule PhiaUi.Components.Typography do
   ## Examples
 
       <.display size={:"6xl"} align={:center}>Welcome</.display>
+      <.display fluid={true}>Fluid Hero</.display>
   """
   def display(assigns) do
+    size_class = if assigns.fluid, do: fluid_display_size_class(assigns.size), else: display_size_class(assigns.size)
+    assigns = assign(assigns, :resolved_size_class, size_class)
+
     ~H"""
-    <p class={cn(["leading-none tracking-tight", display_size_class(@size), align_class(@align), weight_class(@weight), @class])} {@rest}>
+    <p class={cn(["leading-none tracking-tight", @resolved_size_class, align_class(@align), weight_class(@weight), @class])} {@rest}>
       {render_slot(@inner_block)}
     </p>
     """
@@ -133,6 +145,10 @@ defmodule PhiaUi.Components.Typography do
   # ---------------------------------------------------------------------------
 
   attr :size, :atom, values: [:sm, :base, :lg], default: :base
+
+  attr :fluid, :boolean, default: false,
+    doc: "When true, uses CSS custom property fluid font sizes that scale with viewport."
+
   attr :class, :string, default: nil
   attr :rest, :global
   slot :inner_block, required: true
@@ -144,10 +160,14 @@ defmodule PhiaUi.Components.Typography do
 
       <.paragraph>First paragraph.</.paragraph>
       <.paragraph size={:lg}>Large paragraph.</.paragraph>
+      <.paragraph fluid={true}>Fluid paragraph.</.paragraph>
   """
   def paragraph(assigns) do
+    size_class = if assigns.fluid, do: fluid_paragraph_size_class(assigns.size), else: paragraph_size_class(assigns.size)
+    assigns = assign(assigns, :resolved_size_class, size_class)
+
     ~H"""
-    <p class={cn(["leading-7 [&:not(:first-child)]:mt-6", paragraph_size_class(@size), @class])} {@rest}>
+    <p class={cn(["leading-7 [&:not(:first-child)]:mt-6", @resolved_size_class, @class])} {@rest}>
       {render_slot(@inner_block)}
     </p>
     """
@@ -566,49 +586,62 @@ defmodule PhiaUi.Components.Typography do
   # ===========================================================================
 
   # heading — one clause per level so the correct <hN> element is emitted
+  # When @fluid is true, the fluid size class is used instead of the static one.
   defp render_heading(%{level: 1} = assigns) do
+    assigns = assign(assigns, :resolved_class, resolve_heading_class(1, assigns.size, assigns.fluid))
+
     ~H"""
-    <h1 class={cn([heading_level_class(1, @size), align_class(@align), tracking_class(@tracking), @class])} {@rest}>
+    <h1 class={cn([@resolved_class, align_class(@align), tracking_class(@tracking), @class])} {@rest}>
       {render_slot(@inner_block)}
     </h1>
     """
   end
 
   defp render_heading(%{level: 2} = assigns) do
+    assigns = assign(assigns, :resolved_class, resolve_heading_class(2, assigns.size, assigns.fluid))
+
     ~H"""
-    <h2 class={cn([heading_level_class(2, @size), align_class(@align), tracking_class(@tracking), @class])} {@rest}>
+    <h2 class={cn([@resolved_class, align_class(@align), tracking_class(@tracking), @class])} {@rest}>
       {render_slot(@inner_block)}
     </h2>
     """
   end
 
   defp render_heading(%{level: 3} = assigns) do
+    assigns = assign(assigns, :resolved_class, resolve_heading_class(3, assigns.size, assigns.fluid))
+
     ~H"""
-    <h3 class={cn([heading_level_class(3, @size), align_class(@align), tracking_class(@tracking), @class])} {@rest}>
+    <h3 class={cn([@resolved_class, align_class(@align), tracking_class(@tracking), @class])} {@rest}>
       {render_slot(@inner_block)}
     </h3>
     """
   end
 
   defp render_heading(%{level: 4} = assigns) do
+    assigns = assign(assigns, :resolved_class, resolve_heading_class(4, assigns.size, assigns.fluid))
+
     ~H"""
-    <h4 class={cn([heading_level_class(4, @size), align_class(@align), tracking_class(@tracking), @class])} {@rest}>
+    <h4 class={cn([@resolved_class, align_class(@align), tracking_class(@tracking), @class])} {@rest}>
       {render_slot(@inner_block)}
     </h4>
     """
   end
 
   defp render_heading(%{level: 5} = assigns) do
+    assigns = assign(assigns, :resolved_class, resolve_heading_class(5, assigns.size, assigns.fluid))
+
     ~H"""
-    <h5 class={cn([heading_level_class(5, @size), align_class(@align), tracking_class(@tracking), @class])} {@rest}>
+    <h5 class={cn([@resolved_class, align_class(@align), tracking_class(@tracking), @class])} {@rest}>
       {render_slot(@inner_block)}
     </h5>
     """
   end
 
   defp render_heading(%{level: 6} = assigns) do
+    assigns = assign(assigns, :resolved_class, resolve_heading_class(6, assigns.size, assigns.fluid))
+
     ~H"""
-    <h6 class={cn([heading_level_class(6, @size), align_class(@align), tracking_class(@tracking), @class])} {@rest}>
+    <h6 class={cn([@resolved_class, align_class(@align), tracking_class(@tracking), @class])} {@rest}>
       {render_slot(@inner_block)}
     </h6>
     """
@@ -692,15 +725,45 @@ defmodule PhiaUi.Components.Typography do
   defp heading_level_class(_, :"3xl"), do: "scroll-m-20 text-3xl font-semibold leading-tight"
   defp heading_level_class(_, :"4xl"), do: "scroll-m-20 text-4xl font-semibold leading-tight"
 
+  # resolve heading class — picks fluid or static based on flag
+  defp resolve_heading_class(level, size, true = _fluid), do: fluid_heading_level_class(level, size)
+  defp resolve_heading_class(level, size, false = _fluid), do: heading_level_class(level, size)
+
+  # fluid heading level + size — mirrors heading_level_class but with fluid tokens
+  defp fluid_heading_level_class(1, :auto), do: "scroll-m-20 text-[length:var(--font-size-fluid-4xl)] font-semibold leading-none"
+  defp fluid_heading_level_class(2, :auto), do: "scroll-m-20 text-[length:var(--font-size-fluid-3xl)] font-semibold leading-tight border-b pb-2"
+  defp fluid_heading_level_class(3, :auto), do: "scroll-m-20 text-[length:var(--font-size-fluid-2xl)] font-semibold leading-tight"
+  defp fluid_heading_level_class(4, :auto), do: "scroll-m-20 text-[length:var(--font-size-fluid-xl)] font-semibold leading-tight"
+  defp fluid_heading_level_class(5, :auto), do: "scroll-m-20 text-[length:var(--font-size-fluid-lg)] font-semibold"
+  defp fluid_heading_level_class(6, :auto), do: "scroll-m-20 text-[length:var(--font-size-fluid-base)] font-semibold"
+  defp fluid_heading_level_class(_, :xs), do: "scroll-m-20 text-[length:var(--font-size-fluid-sm)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :sm), do: "scroll-m-20 text-[length:var(--font-size-fluid-sm)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :base), do: "scroll-m-20 text-[length:var(--font-size-fluid-base)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :lg), do: "scroll-m-20 text-[length:var(--font-size-fluid-lg)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :xl), do: "scroll-m-20 text-[length:var(--font-size-fluid-xl)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :"2xl"), do: "scroll-m-20 text-[length:var(--font-size-fluid-2xl)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :"3xl"), do: "scroll-m-20 text-[length:var(--font-size-fluid-3xl)] font-semibold leading-tight"
+  defp fluid_heading_level_class(_, :"4xl"), do: "scroll-m-20 text-[length:var(--font-size-fluid-4xl)] font-semibold leading-tight"
+
   # display size
   defp display_size_class(:"5xl"), do: "text-5xl"
   defp display_size_class(:"6xl"), do: "text-6xl"
   defp display_size_class(:"7xl"), do: "text-7xl"
 
+  # fluid display size — maps to closest available fluid token
+  defp fluid_display_size_class(:"5xl"), do: "text-[length:var(--font-size-fluid-4xl)]"
+  defp fluid_display_size_class(:"6xl"), do: "text-[length:var(--font-size-fluid-4xl)]"
+  defp fluid_display_size_class(:"7xl"), do: "text-[length:var(--font-size-fluid-4xl)]"
+
   # paragraph size
   defp paragraph_size_class(:sm), do: "text-sm"
   defp paragraph_size_class(:base), do: "text-base"
   defp paragraph_size_class(:lg), do: "text-lg"
+
+  # fluid paragraph size
+  defp fluid_paragraph_size_class(:sm), do: "text-[length:var(--font-size-fluid-sm)]"
+  defp fluid_paragraph_size_class(:base), do: "text-[length:var(--font-size-fluid-base)]"
+  defp fluid_paragraph_size_class(:lg), do: "text-[length:var(--font-size-fluid-lg)]"
 
   # text size
   defp text_size_class(:xs), do: "text-xs"

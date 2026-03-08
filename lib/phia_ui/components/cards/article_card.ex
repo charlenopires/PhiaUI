@@ -103,7 +103,7 @@ defmodule PhiaUi.Components.ArticleCard do
   """
   def article_card(assigns) do
     ~H"""
-    <.card class={cn(["overflow-hidden", @class])} {@rest}>
+    <.card class={cn(["@container", "overflow-hidden", @class])} {@rest}>
       <%!-- Cover image --%>
       <img
         :if={@cover_src}

@@ -5,6 +5,9 @@ defmodule PhiaUi.Components.Layout.Flex do
   Encodes all flexbox properties as typed attributes so you get autocomplete
   and compile-time validation rather than ad-hoc Tailwind strings.
 
+  All layout attributes accept either a plain value (backward compatible) or a
+  responsive map like `%{base: :col, md: :row}` for per-breakpoint control.
+
   ## Examples
 
       <%!-- Row with gap and centered alignment --%>
@@ -15,6 +18,12 @@ defmodule PhiaUi.Components.Layout.Flex do
 
       <%!-- Column layout --%>
       <.flex direction={:col} gap={6}>
+        <.card>A</.card>
+        <.card>B</.card>
+      </.flex>
+
+      <%!-- Responsive direction: column on mobile, row from md up --%>
+      <.flex direction={%{base: :col, md: :row}} gap={%{base: 2, lg: 4}}>
         <.card>A</.card>
         <.card>B</.card>
       </.flex>
@@ -35,33 +44,30 @@ defmodule PhiaUi.Components.Layout.Flex do
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.ResponsiveHelpers, only: [resolve_responsive: 2]
 
-  attr(:direction, :atom,
+  attr(:direction, :any,
     default: :row,
-    values: [:row, :col, :row_reverse, :col_reverse],
-    doc: "Flex direction."
+    doc: "Flex direction. Accepts atom or responsive map, e.g. `%{base: :col, md: :row}`."
   )
 
-  attr(:wrap, :atom,
+  attr(:wrap, :any,
     default: :nowrap,
-    values: [:nowrap, :wrap, :wrap_reverse],
-    doc: "Flex wrap behavior."
+    doc: "Flex wrap behavior. Accepts atom or responsive map."
   )
 
-  attr(:gap, :integer, default: nil, doc: "Uniform gap (0–12) → `gap-N`.")
-  attr(:gap_x, :integer, default: nil, doc: "Horizontal gap → `gap-x-N`.")
-  attr(:gap_y, :integer, default: nil, doc: "Vertical gap → `gap-y-N`.")
+  attr(:gap, :any, default: nil, doc: "Uniform gap (0–12) → `gap-N`. Accepts integer or responsive map.")
+  attr(:gap_x, :any, default: nil, doc: "Horizontal gap → `gap-x-N`. Accepts integer or responsive map.")
+  attr(:gap_y, :any, default: nil, doc: "Vertical gap → `gap-y-N`. Accepts integer or responsive map.")
 
-  attr(:align, :atom,
+  attr(:align, :any,
     default: nil,
-    values: [nil, :start, :center, :end, :stretch, :baseline],
-    doc: "align-items value."
+    doc: "align-items value. Accepts atom or responsive map."
   )
 
-  attr(:justify, :atom,
+  attr(:justify, :any,
     default: nil,
-    values: [nil, :start, :center, :end, :between, :around, :evenly],
-    doc: "justify-content value."
+    doc: "justify-content value. Accepts atom or responsive map."
   )
 
   attr(:grow, :boolean, default: false, doc: "Adds `flex-1` so the container grows.")
@@ -83,13 +89,13 @@ defmodule PhiaUi.Components.Layout.Flex do
     <div
       class={cn([
         flex_base(@inline),
-        direction_class(@direction),
-        wrap_class(@wrap),
-        gap_class(@gap),
-        gap_x_class(@gap_x),
-        gap_y_class(@gap_y),
-        align_class(@align),
-        justify_class(@justify),
+        responsive(@direction, &direction_class/1),
+        responsive(@wrap, &wrap_class/1),
+        responsive(@gap, &gap_class/1),
+        responsive(@gap_x, &gap_x_class/1),
+        responsive(@gap_y, &gap_y_class/1),
+        responsive(@align, &align_class/1),
+        responsive(@justify, &justify_class/1),
         @grow && "flex-1",
         @class
       ])}
@@ -98,6 +104,16 @@ defmodule PhiaUi.Components.Layout.Flex do
       <%= render_slot(@inner_block) %>
     </div>
     """
+  end
+
+  defp responsive(value, mapper) do
+    resolve_responsive(value, mapper)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+    |> case do
+      "" -> nil
+      s -> s
+    end
   end
 
   defp flex_base(false), do: "flex"

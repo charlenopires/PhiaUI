@@ -81,7 +81,45 @@ defmodule PhiaUi.ClassMerger.GroupsTest do
     end
 
     test "my-* is correctly classified as margin-y group (not unknown)" do
-      assert Groups.group_for("my-custom") == :my
+      assert Groups.group_for("my-custom") == {nil, :my}
+    end
+  end
+
+  describe "group_for/1 — responsive prefix awareness" do
+    test "sm:bg-primary returns {sm:, :bg}" do
+      assert Groups.group_for("sm:bg-primary") == {"sm:", :bg}
+    end
+
+    test "md:bg-red-500 returns {md:, :bg}" do
+      assert Groups.group_for("md:bg-red-500") == {"md:", :bg}
+    end
+
+    test "sm:flex-col and sm:flex-row share the same group" do
+      assert Groups.group_for("sm:flex-col") == Groups.group_for("sm:flex-row")
+    end
+
+    test "sm:flex-col and md:flex-row are in different groups" do
+      refute Groups.group_for("sm:flex-col") == Groups.group_for("md:flex-row")
+    end
+
+    test "unprefixed and sm: prefixed are in different groups" do
+      refute Groups.group_for("flex-col") == Groups.group_for("sm:flex-col")
+    end
+
+    test "hover:bg-red-500 returns {hover:, :bg}" do
+      assert Groups.group_for("hover:bg-red-500") == {"hover:", :bg}
+    end
+
+    test "hover:sm:bg-red-500 returns {hover:sm:, :bg}" do
+      assert Groups.group_for("hover:sm:bg-red-500") == {"hover:sm:", :bg}
+    end
+
+    test "@sm: container query prefix is handled" do
+      assert Groups.group_for("@sm:flex-col") == {"@sm:", :flex_direction}
+    end
+
+    test "unknown class with variant prefix returns nil" do
+      assert Groups.group_for("sm:phia-custom") == nil
     end
   end
 end

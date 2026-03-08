@@ -31,6 +31,11 @@ defmodule PhiaUi.Components.Layout.Container do
       <.container size={:fluid} centered={false} padding={false}>
         <canvas id="chart" />
       </.container>
+
+      <%!-- Fluid padding: scales from px-4 to px-8 automatically --%>
+      <.container fluid_padding>
+        <h1>Smoothly scaled padding</h1>
+      </.container>
   """
 
   use Phoenix.Component
@@ -50,6 +55,11 @@ defmodule PhiaUi.Components.Layout.Container do
     doc: "Adds `px-4 sm:px-6 lg:px-8` horizontal padding."
   )
 
+  attr(:fluid_padding, :boolean,
+    default: false,
+    doc: "Uses CSS clamp-based fluid padding that scales smoothly between breakpoints. Overrides `:padding` when enabled."
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes merged via cn/1.")
 
   attr(:rest, :global, doc: "HTML attributes forwarded to the root element.")
@@ -64,9 +74,10 @@ defmodule PhiaUi.Components.Layout.Container do
         "w-full",
         size_class(@size),
         @centered && "mx-auto",
-        @padding && "px-4 sm:px-6 lg:px-8",
+        padding_class(@padding, @fluid_padding),
         @class
       ])}
+      style={fluid_padding_style(@fluid_padding)}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
@@ -81,4 +92,13 @@ defmodule PhiaUi.Components.Layout.Container do
   defp size_class(:"2xl"), do: "max-w-screen-2xl"
   defp size_class(:full), do: "max-w-full"
   defp size_class(:fluid), do: nil
+
+  # When fluid_padding is on, padding is handled via inline style (clamp).
+  defp padding_class(_padding, true), do: nil
+  defp padding_class(true, false), do: "px-4 sm:px-6 lg:px-8"
+  defp padding_class(false, false), do: nil
+
+  # clamp(1rem, 2vw + 0.5rem, 2rem) scales from 16px to 32px fluidly.
+  defp fluid_padding_style(true), do: "padding-inline: clamp(1rem, 2vw + 0.5rem, 2rem)"
+  defp fluid_padding_style(false), do: nil
 end

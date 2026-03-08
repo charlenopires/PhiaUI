@@ -204,62 +204,82 @@ defmodule PhiaUi.ClassMerger.Groups do
     {"rounded-", :rounded}
   ]
 
+  # Compiled regex for stripping Tailwind variant prefixes (sm:, md:, hover:, @sm:, etc.)
+  # Used to make conflict resolution breakpoint-aware: sm:flex-col and sm:flex-row
+  # conflict within the sm: namespace but not with unprefixed flex-col.
+  @variant_prefix_re ~r/^((?:@?[a-z0-9]+:)*)(.+)$/
+
   # ── Public API ───────────────────────────────────────────────────────────────
 
   @doc """
-  Returns the conflict group atom for `class`, or `nil` if unknown.
+  Returns the conflict group for `class`, or `nil` if unknown.
 
-  The returned atom identifies the CSS property group that the class belongs
-  to. Two classes with the same group atom conflict; only the last one is kept
-  by `cn/1`. A `nil` return means the class is not in any known conflict group
-  and will be deduplicated by exact string match instead.
+  Returns a `{prefix, group}` tuple where `prefix` is the variant prefix
+  string (e.g. `"sm:"`, `"hover:sm:"`) or `nil` for unprefixed classes.
+  Two classes with the same `{prefix, group}` tuple conflict; only the last
+  one is kept by `cn/1`.
+
+  This makes conflict resolution responsive-prefix aware: `sm:flex-col` and
+  `sm:flex-row` conflict (both `{"sm:", :flex_direction}`), but `sm:flex-col`
+  and `md:flex-row` do not conflict (different prefixes).
+
+  Returns `nil` when the class has no known conflict group — it will be
+  deduplicated by exact string match instead.
 
   ## Examples
 
   Background colour group:
 
       iex> PhiaUi.ClassMerger.Groups.group_for("bg-primary")
-      :bg
+      {nil, :bg}
 
       iex> PhiaUi.ClassMerger.Groups.group_for("bg-red-500")
-      :bg
+      {nil, :bg}
+
+  Responsive prefix awareness:
+
+      iex> PhiaUi.ClassMerger.Groups.group_for("sm:bg-primary")
+      {"sm:", :bg}
+
+      iex> PhiaUi.ClassMerger.Groups.group_for("md:bg-red-500")
+      {"md:", :bg}
 
   Text size (font-size) group:
 
       iex> PhiaUi.ClassMerger.Groups.group_for("text-sm")
-      :text_size
+      {nil, :text_size}
 
       iex> PhiaUi.ClassMerger.Groups.group_for("text-2xl")
-      :text_size
+      {nil, :text_size}
 
   Text colour — different group from text size:
 
       iex> PhiaUi.ClassMerger.Groups.group_for("text-red-500")
-      :text_color
+      {nil, :text_color}
 
       iex> PhiaUi.ClassMerger.Groups.group_for("text-primary")
-      :text_color
+      {nil, :text_color}
 
   Text alignment — exact-matched before the text-* catch-all:
 
       iex> PhiaUi.ClassMerger.Groups.group_for("text-center")
-      :text_align
+      {nil, :text_align}
 
   Padding — axis-specific group:
 
       iex> PhiaUi.ClassMerger.Groups.group_for("px-4")
-      :px
+      {nil, :px}
 
       iex> PhiaUi.ClassMerger.Groups.group_for("p-4")
-      :p
+      {nil, :p}
 
   Display — exact match:
 
       iex> PhiaUi.ClassMerger.Groups.group_for("flex")
-      :display
+      {nil, :display}
 
       iex> PhiaUi.ClassMerger.Groups.group_for("hidden")
-      :display
+      {nil, :display}
 
   Unknown / custom class returns nil:
 
@@ -269,14 +289,26 @@ defmodule PhiaUi.ClassMerger.Groups do
       iex> PhiaUi.ClassMerger.Groups.group_for("my-custom-class")
       nil
   """
-  @spec group_for(String.t()) :: atom() | nil
+  @spec group_for(String.t()) :: {String.t() | nil, atom()} | nil
   def group_for(class) when is_binary(class) do
-    # Four-step cascade, most specific first:
-    # 1. Exact compile-time map lookup (display, position, border-width, text-align)
-    # 2. Special ambiguous-prefix handling (text-*, font-*)
-    # 3. Linear prefix scan (spacing, sizing, colours, etc.)
-    # 4. Standalone multi-word classes not covered above (flex-direction, flex-wrap)
-    exact_group(class) || special_group(class) || prefix_group(class) || standalone_group(class)
+    {prefix, base} = split_variant_prefix(class)
+
+    base_group =
+      exact_group(base) || special_group(base) || prefix_group(base) || standalone_group(base)
+
+    if base_group, do: {prefix, base_group}, else: nil
+  end
+
+  # Splits a class into its variant prefix and base class.
+  # "sm:flex-col" → {"sm:", "flex-col"}
+  # "hover:sm:bg-red-500" → {"hover:sm:", "bg-red-500"}
+  # "flex-col" → {nil, "flex-col"}
+  defp split_variant_prefix(class) do
+    case Regex.run(@variant_prefix_re, class) do
+      [_, "", base] -> {nil, base}
+      [_, prefix, base] -> {prefix, base}
+      _ -> {nil, class}
+    end
   end
 
   # ── Private helpers ──────────────────────────────────────────────────────────

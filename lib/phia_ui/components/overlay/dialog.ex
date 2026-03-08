@@ -144,6 +144,17 @@ defmodule PhiaUi.Components.Dialog do
     doc: "Add overflow-y-auto to the panel for content that may overflow the viewport"
   )
 
+  attr(:full_screen_mobile, :boolean,
+    default: false,
+    doc: """
+    When `true`, the dialog panel fills the entire screen on mobile viewports
+    (`fixed inset-0 rounded-none`) and reverts to its normal centered behavior
+    on `sm:` and wider screens (`sm:relative sm:inset-auto sm:rounded-lg`).
+    Ideal for complex forms or content that benefits from full viewport space
+    on small devices.
+    """
+  )
+
   attr(:class, :string, default: nil, doc: "Additional classes for the panel")
   slot(:inner_block, required: true)
 
@@ -168,6 +179,8 @@ defmodule PhiaUi.Components.Dialog do
           "transition-all ease-out duration-300 opacity-0 scale-95",
           dialog_content_size(@size),
           @scrollable && "overflow-y-auto max-h-[calc(100vh-8rem)]",
+          @full_screen_mobile &&
+            "max-sm:inset-0 max-sm:rounded-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:left-0 max-sm:top-0 max-sm:max-w-none max-sm:h-full",
           @class
         ])}
         data-dialog-panel

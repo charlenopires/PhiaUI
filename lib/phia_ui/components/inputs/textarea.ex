@@ -187,6 +187,7 @@ defmodule PhiaUi.Components.Textarea do
         placeholder={@placeholder}
         class={
           cn([
+            "phia-touch-target",
             "border rounded-md bg-background px-3 py-2 text-sm w-full resize-y min-h-[80px]",
             @class
           ])

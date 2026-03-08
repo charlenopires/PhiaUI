@@ -214,6 +214,15 @@ defmodule PhiaUi.Components.Sheet do
     """
   )
 
+  attr(:safe_area, :boolean,
+    default: false,
+    doc: """
+    When `true` and `side` is `"bottom"`, adds `pb-[env(safe-area-inset-bottom)]`
+    to the sheet panel for proper spacing on devices with a home indicator or notch
+    (e.g. iPhone X+).
+    """
+  )
+
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the sliding panel")
   attr(:rest, :global, doc: "Extra HTML attributes forwarded to the root element")
 
@@ -252,6 +261,7 @@ defmodule PhiaUi.Components.Sheet do
           "transition-transform duration-300 ease-in-out",
           panel_position_classes(@side),
           panel_size_classes(@side, @size),
+          @safe_area && @side == "bottom" && "pb-[env(safe-area-inset-bottom)]",
           @class
         ])}
       >

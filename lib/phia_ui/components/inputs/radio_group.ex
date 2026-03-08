@@ -281,7 +281,7 @@ defmodule PhiaUi.Components.RadioGroup do
     ~H"""
     <label
       for={@input_id}
-      class={cn(["flex items-center gap-2 cursor-pointer", @disabled && "cursor-not-allowed opacity-50", @class])}
+      class={cn(["phia-touch-target", "flex items-center gap-2 cursor-pointer", @disabled && "cursor-not-allowed opacity-50", @class])}
     >
       <%!-- sr-only input: invisible but receives keyboard focus and handles browser radio logic --%>
       <input

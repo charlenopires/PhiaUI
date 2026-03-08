@@ -108,11 +108,11 @@ defmodule PhiaUi.Components.TestimonialCard do
   def testimonial_card(assigns) do
     ~H"""
     <%= if @variant == :minimal do %>
-      <div class={cn(["flex flex-col gap-4", @class])} {@rest}>
+      <div class={cn(["@container", "flex flex-col gap-4", @class])} {@rest}>
         {render_testimonial_body(assigns)}
       </div>
     <% else %>
-      <.card class={cn([variant_card_class(@variant), @class])} {@rest}>
+      <.card class={cn(["@container", variant_card_class(@variant), @class])} {@rest}>
         <.card_content class="pt-6 flex flex-col gap-4">
           {render_testimonial_body(assigns)}
         </.card_content>

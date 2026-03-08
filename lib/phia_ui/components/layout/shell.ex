@@ -18,7 +18,7 @@ defmodule PhiaUi.Components.Shell do
       │                 │                        │
       └─────────────────┴────────────────────────┘
 
-  Desktop: `grid grid-cols-[240px_1fr] h-screen overflow-hidden`
+  Desktop: `grid grid-cols-[240px_1fr] h-dvh overflow-hidden`
   Mobile: `flex flex-col`; the `<aside>` becomes a fixed overlay drawer.
 
   ## CSS theme tokens
@@ -163,6 +163,14 @@ defmodule PhiaUi.Components.Shell do
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the outermost wrapper div")
 
+  attr(:safe_area, :boolean,
+    default: false,
+    doc: """
+    When `true`, adds `pb-[env(safe-area-inset-bottom)]` to the root element
+    to account for the iOS Safari home indicator and notch on modern devices.
+    """
+  )
+
   attr(:rest, :global,
     doc: "HTML attributes forwarded to the wrapper div (e.g. id, data-* attrs)"
   )
@@ -195,7 +203,8 @@ defmodule PhiaUi.Components.Shell do
   @doc """
   Full-height application shell using CSS Grid on desktop.
 
-  The outer wrapper grows to `h-screen` and clips overflow so that only the
+  The outer wrapper grows to `h-dvh` (dynamic viewport height, which handles
+  the iOS Safari address bar correctly) and clips overflow so that only the
   main content column scrolls — the sidebar and topbar stay fixed.
 
   On mobile (below `md:` breakpoint) the layout switches to `flex flex-col`.
@@ -219,9 +228,10 @@ defmodule PhiaUi.Components.Shell do
     ~H"""
     <div
       class={cn([
-        "h-screen overflow-hidden flex flex-col",
+        "h-dvh overflow-hidden flex flex-col",
         # CSS Grid kicks in at the md breakpoint: fixed 240 px sidebar + flexible main
         "md:grid md:grid-cols-[240px_1fr] md:grid-rows-[auto_1fr]",
+        @safe_area && "pb-[env(safe-area-inset-bottom)]",
         @class
       ])}
       {@rest}

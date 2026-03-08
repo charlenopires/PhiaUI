@@ -7,6 +7,9 @@ defmodule PhiaUi.Components.Layout.MasonryGrid do
   pack into gaps left by taller items. Use `break-inside-avoid` on children
   to prevent items from splitting across columns.
 
+  All layout attributes accept either a plain value (backward compatible) or a
+  responsive map like `%{base: 1, md: 3}` for per-breakpoint control.
+
   ## Examples
 
       <%!-- 3-column masonry --%>
@@ -18,6 +21,11 @@ defmodule PhiaUi.Components.Layout.MasonryGrid do
         <% end %>
       </.masonry_grid>
 
+      <%!-- Responsive masonry: 1 col on mobile, 2 from md, 3 from lg --%>
+      <.masonry_grid cols={%{base: 1, md: 2, lg: 3}} gap={%{base: 2, md: 4}}>
+        ...
+      </.masonry_grid>
+
       <%!-- 2-column narrow layout --%>
       <.masonry_grid cols={2} gap={3}>
         ...
@@ -27,13 +35,14 @@ defmodule PhiaUi.Components.Layout.MasonryGrid do
   use Phoenix.Component
 
   import PhiaUi.ClassMerger, only: [cn: 1]
+  import PhiaUi.ResponsiveHelpers, only: [resolve_responsive: 2]
 
-  attr(:cols, :integer,
+  attr(:cols, :any,
     default: 3,
-    doc: "Number of columns (1–5) → `columns-N`."
+    doc: "Number of columns (1–5) → `columns-N`. Accepts integer or responsive map."
   )
 
-  attr(:gap, :integer, default: 4, doc: "Gap between columns (0–12) → `gap-N`.")
+  attr(:gap, :any, default: 4, doc: "Gap between columns (0–12) → `gap-N`. Accepts integer or responsive map.")
 
   attr(:class, :string, default: nil, doc: "Additional CSS classes merged via cn/1.")
 
@@ -44,10 +53,27 @@ defmodule PhiaUi.Components.Layout.MasonryGrid do
   @doc "Renders a CSS columns masonry grid."
   def masonry_grid(assigns) do
     ~H"""
-    <div class={cn([cols_class(@cols), "gap-#{@gap}", @class])} {@rest}>
+    <div
+      class={cn([
+        responsive(@cols, &cols_class/1),
+        responsive(@gap, &gap_class/1),
+        @class
+      ])}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </div>
     """
+  end
+
+  defp responsive(value, mapper) do
+    resolve_responsive(value, mapper)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(" ")
+    |> case do
+      "" -> nil
+      s -> s
+    end
   end
 
   defp cols_class(1), do: "columns-1"
@@ -56,4 +82,7 @@ defmodule PhiaUi.Components.Layout.MasonryGrid do
   defp cols_class(4), do: "columns-4"
   defp cols_class(5), do: "columns-5"
   defp cols_class(n), do: "columns-#{n}"
+
+  defp gap_class(nil), do: nil
+  defp gap_class(n), do: "gap-#{n}"
 end

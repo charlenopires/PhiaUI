@@ -224,7 +224,7 @@ defmodule PhiaUi.Components.FormLayout do
   """
   def form_actions(assigns) do
     ~H"""
-    <div class={cn(["flex flex-wrap gap-3 border-t border-border pt-4", actions_align(@align), @class])}>
+    <div class={cn(["flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:gap-3", actions_align(@align), @class])}>
       {render_slot(@inner_block)}
     </div>
     """

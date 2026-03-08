@@ -200,7 +200,7 @@ defmodule PhiaUi.Components.Input do
         id={@id}
         name={@name}
         value={@value}
-        class={cn([base_class(), error_class(@errors), @class])}
+        class={cn(["phia-touch-target", base_class(), error_class(@errors), @class])}
         {@rest}
       />
       <p :for={error <- @errors} class="text-sm font-medium text-destructive">

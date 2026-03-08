@@ -1475,6 +1475,58 @@ defmodule PhiaUi.ComponentRegistry do
       status: :implemented
     },
 
+    # ── Responsive Architecture Utilities (v0.1.19) ─────────────────────────
+    show_on: %{
+      name: "show_on",
+      module: PhiaUi.Components.Layout.ResponsiveVisibility,
+      template_file: "priv/templates/components/layout/responsive_visibility.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    hide_on: %{
+      name: "hide_on",
+      module: PhiaUi.Components.Layout.ResponsiveVisibility,
+      template_file: "priv/templates/components/layout/responsive_visibility.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    show_between: %{
+      name: "show_between",
+      module: PhiaUi.Components.Layout.ResponsiveVisibility,
+      template_file: "priv/templates/components/layout/responsive_visibility.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    responsive_stack: %{
+      name: "responsive_stack",
+      module: PhiaUi.Components.Layout.ResponsiveStack,
+      template_file: "priv/templates/components/layout/responsive_stack.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    container_query_wrap: %{
+      name: "container_query_wrap",
+      module: PhiaUi.Components.Layout.ContainerQuery,
+      template_file: "priv/templates/components/layout/container_query.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
     # -------------------------------------------------------------------------
     # Card Suite — 15 new components (2026-03-06)
     # -------------------------------------------------------------------------

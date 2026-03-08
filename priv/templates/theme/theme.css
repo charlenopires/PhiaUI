@@ -107,6 +107,24 @@
   --animate-blink-cursor: blink-cursor 1s step-end infinite;
   --animate-border-spin: border-spin 4s linear infinite;
 
+  /* ── Fluid Typography Scale ───────────────────────────────────────────── */
+  --font-size-fluid-xs:   clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem);
+  --font-size-fluid-sm:   clamp(0.75rem, 0.625rem + 0.5vw, 0.875rem);
+  --font-size-fluid-base: clamp(0.875rem, 0.75rem + 0.5vw, 1rem);
+  --font-size-fluid-lg:   clamp(1rem, 0.875rem + 0.625vw, 1.25rem);
+  --font-size-fluid-xl:   clamp(1.125rem, 0.875rem + 1vw, 1.5rem);
+  --font-size-fluid-2xl:  clamp(1.25rem, 0.875rem + 1.5vw, 2rem);
+  --font-size-fluid-3xl:  clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  --font-size-fluid-4xl:  clamp(1.75rem, 1rem + 3vw, 3rem);
+
+  /* ── Fluid Spacing Scale ───────────────────────────────────────────────── */
+  --spacing-fluid-xs:  clamp(0.25rem, 0.125rem + 0.5vw, 0.5rem);
+  --spacing-fluid-sm:  clamp(0.5rem, 0.25rem + 0.75vw, 1rem);
+  --spacing-fluid-md:  clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
+  --spacing-fluid-lg:  clamp(1rem, 0.5rem + 1.5vw, 2rem);
+  --spacing-fluid-xl:  clamp(1.5rem, 0.75rem + 2vw, 3rem);
+  --spacing-fluid-2xl: clamp(2rem, 1rem + 3vw, 4rem);
+
   /* ── Button Wave Animation Tokens ──────────────────────────────────────── */
   --animate-shimmer-pass: phia-shimmer-pass 2s ease-in-out infinite;
   --animate-glow-pulse:   phia-neon-pulse   2s ease-in-out infinite;
@@ -539,6 +557,30 @@
     animation: none !important;
   }
 }
+
+/* ── Responsive Foundation ────────────────────────────────────────────────── */
+
+/* Touch targets on coarse pointers (phones/tablets) — WCAG 2.5.8 */
+@media (pointer: coarse) {
+  .phia-touch-target { min-height: 44px; min-width: 44px; }
+  .phia-touch-padding { padding-block: 0.75rem; }
+}
+
+/* High contrast mode — thicker borders and rings */
+@media (prefers-contrast: more) {
+  :root { --color-border: oklch(0 0 0); --color-ring: oklch(0 0 0); }
+  .dark { --color-border: oklch(1 0 0); --color-ring: oklch(1 0 0); }
+}
+
+/* Forced colors (Windows High Contrast) — system-aware focus and borders */
+@media (forced-colors: active) {
+  .phia-focus-ring { outline: 2px solid ButtonText; outline-offset: 2px; }
+  .phia-border-semantic { border-color: ButtonText; }
+}
+
+/* Modern viewport height utilities (handles iOS Safari address bar) */
+.phia-dvh { height: 100dvh; }
+.phia-svh { height: 100svh; }
 
 /* ── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {

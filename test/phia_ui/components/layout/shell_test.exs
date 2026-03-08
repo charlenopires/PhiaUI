@@ -152,9 +152,9 @@ defmodule PhiaUi.Components.ShellTest do
   # ---------------------------------------------------------------------------
 
   describe "shell/1 layout" do
-    test "has h-screen" do
+    test "has h-dvh" do
       html = render_component(&H.render_shell/1, %{})
-      assert html =~ "h-screen"
+      assert html =~ "h-dvh"
     end
 
     test "has overflow-hidden" do

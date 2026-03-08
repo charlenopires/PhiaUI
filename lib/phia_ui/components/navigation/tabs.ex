@@ -176,6 +176,16 @@ defmodule PhiaUi.Components.Tabs do
     """
   )
 
+  attr(:stacked_mobile, :boolean,
+    default: false,
+    doc: """
+    When `true`, adds `flex-col sm:flex-row` to the tabs list container so
+    that tab triggers stack vertically on mobile and return to horizontal
+    layout on `sm:` screens and wider. Useful when there are many tabs that
+    would overflow horizontally on small viewports.
+    """
+  )
+
   attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes applied to the outer wrapper `<div>`"
@@ -225,7 +235,7 @@ defmodule PhiaUi.Components.Tabs do
     ~H"""
     <div class={cn(["w-full", @class])} {@rest}>
       <%!-- Pass active tab value as context so sub-components can receive it via :let --%>
-      {render_slot(@inner_block, %{active: @default_value, variant: @variant})}
+      {render_slot(@inner_block, %{active: @default_value, variant: @variant, stacked_mobile: @stacked_mobile})}
     </div>
     """
   end
@@ -238,6 +248,15 @@ defmodule PhiaUi.Components.Tabs do
     values: [:underline, :solid, :pill, :scrollable],
     default: :underline,
     doc: "Visual style — must match the `variant` on the parent `tabs/1`"
+  )
+
+  attr(:stacked_mobile, :boolean,
+    default: false,
+    doc: """
+    When `true`, adds `flex-col sm:flex-row` to make tab triggers stack
+    vertically on mobile and arrange horizontally on `sm:` screens and wider.
+    Propagated automatically when using `:let` context from `tabs/1`.
+    """
   )
 
   attr(:class, :string,
@@ -280,7 +299,7 @@ defmodule PhiaUi.Components.Tabs do
     ~H"""
     <div
       role="tablist"
-      class={cn([list_variant_class(@variant), @class])}
+      class={cn([list_variant_class(@variant), @stacked_mobile && "flex-col sm:flex-row", @class])}
       {@rest}
     >
       {render_slot(@inner_block)}

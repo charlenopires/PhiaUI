@@ -170,6 +170,17 @@ defmodule PhiaUi.Components.Breadcrumb do
   # breadcrumb_item/1 — <li> item wrapper
   # ---------------------------------------------------------------------------
 
+  attr(:collapse_on_mobile, :boolean,
+    default: false,
+    doc: """
+    When `true`, adds `hidden sm:inline-flex` to this breadcrumb item so it
+    is hidden on mobile viewports and visible from `sm:` breakpoint and wider.
+    Apply this to middle items (not the first and last) to keep the breadcrumb
+    trail compact on small screens. Pair with a `breadcrumb_ellipsis/1` that
+    is only shown on mobile (`class="sm:hidden"`) for a complete pattern.
+    """
+  )
+
   attr(:class, :string,
     default: nil,
     doc: "Additional CSS classes applied to the `<li>` element."
@@ -189,6 +200,22 @@ defmodule PhiaUi.Components.Breadcrumb do
   Place `breadcrumb_separator/1` directly inside `breadcrumb_list/1` between
   items — it renders as its own `<li>` and does not need to be inside an item.
 
+  ## Collapsing on mobile
+
+  Set `collapse_on_mobile` on middle items to hide them on small screens,
+  then add a `breadcrumb_ellipsis/1` with `class="sm:hidden"` to indicate
+  hidden segments:
+
+      <.breadcrumb_item><.breadcrumb_link href="/">Home</.breadcrumb_link></.breadcrumb_item>
+      <.breadcrumb_separator />
+      <.breadcrumb_item collapse_on_mobile>
+        <.breadcrumb_link href="/products">Products</.breadcrumb_link>
+      </.breadcrumb_item>
+      <.breadcrumb_separator class={if @collapse, do: "hidden sm:list-item"} />
+      <.breadcrumb_item class="sm:hidden"><.breadcrumb_ellipsis /></.breadcrumb_item>
+      <.breadcrumb_separator class="sm:hidden" />
+      <.breadcrumb_item><.breadcrumb_page>Widget</.breadcrumb_page></.breadcrumb_item>
+
   ## Example
 
       <.breadcrumb_item>
@@ -197,7 +224,14 @@ defmodule PhiaUi.Components.Breadcrumb do
   """
   def breadcrumb_item(assigns) do
     ~H"""
-    <li class={cn(["inline-flex items-center gap-1.5", @class])} {@rest}>
+    <li
+      class={cn([
+        "inline-flex items-center gap-1.5",
+        @collapse_on_mobile && "hidden sm:inline-flex",
+        @class
+      ])}
+      {@rest}
+    >
       <%= render_slot(@inner_block) %>
     </li>
     """

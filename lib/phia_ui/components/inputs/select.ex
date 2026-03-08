@@ -214,6 +214,7 @@ defmodule PhiaUi.Components.Select do
           name={@field.name}
           class={
             cn([
+              "phia-touch-target",
               "h-10 w-full rounded-md border bg-background px-3 py-2 text-sm",
               "appearance-none pr-8 cursor-pointer",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

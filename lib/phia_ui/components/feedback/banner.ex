@@ -89,7 +89,7 @@ defmodule PhiaUi.Components.Banner do
     <div
       id={@id}
       role="alert"
-      class={cn(["w-full flex items-center gap-3 px-4 py-3 text-sm", banner_variant_class(@variant), @class])}
+      class={cn(["w-full flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 py-3 text-sm", banner_variant_class(@variant), @class])}
       {@rest}
     >
       <%!-- Icon --%>
@@ -252,7 +252,7 @@ defmodule PhiaUi.Components.Banner do
       </div>
 
       <%!-- Actions --%>
-      <div class="flex flex-wrap items-center gap-2 shrink-0">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
         <span :if={@secondary != []} class="[&>button]:text-sm [&>a]:text-sm">
           {render_slot(@secondary)}
         </span>

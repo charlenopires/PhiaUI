@@ -111,7 +111,7 @@ defmodule PhiaUi.Components.Slider do
           aria-valuenow={@value}
           aria-valuemin={@min}
           aria-valuemax={@max}
-          class={cn([slider_input_class(@vertical), @disabled && "opacity-50 cursor-not-allowed", @class])}
+          class={cn(["phia-touch-target", slider_input_class(@vertical), @disabled && "opacity-50 cursor-not-allowed", @class])}
           {@rest}
         />
         <%= if @marks != [] and not @vertical do %>
@@ -141,7 +141,7 @@ defmodule PhiaUi.Components.Slider do
         aria-valuenow={@value}
         aria-valuemin={@min}
         aria-valuemax={@max}
-        class={cn([slider_class(), @disabled && "opacity-50 cursor-not-allowed", @class])}
+        class={cn(["phia-touch-target", slider_class(), @disabled && "opacity-50 cursor-not-allowed", @class])}
         {@rest}
       />
     <% end %>
@@ -224,6 +224,7 @@ defmodule PhiaUi.Components.Slider do
           aria-valuemin={@min}
           aria-valuemax={@max}
           class={cn([
+            "phia-touch-target",
             @vertical && slider_input_class(true) || slider_class(),
             @errors != [] && "accent-destructive",
             @class

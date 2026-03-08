@@ -60,7 +60,7 @@ defmodule PhiaUi.Components.CommandPalette do
         class="absolute inset-0 bg-background/80 backdrop-blur-sm"
       />
       <%!-- Panel --%>
-      <div class="relative z-10 mx-auto mt-20 max-w-xl overflow-hidden rounded-xl border border-border bg-popover shadow-xl">
+      <div class="relative z-10 mx-auto mt-4 w-[calc(100%-2rem)] overflow-hidden rounded-xl border border-border bg-popover shadow-xl sm:mt-20 sm:max-w-lg">
         <input
           data-command-input
           role="combobox"

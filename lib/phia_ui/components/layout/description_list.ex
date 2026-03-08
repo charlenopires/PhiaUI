@@ -80,7 +80,7 @@ defmodule PhiaUi.Components.Layout.DescriptionList do
 
   defp dl_class(:vertical), do: "space-y-4"
   defp dl_class(:horizontal), do: "divide-y divide-border"
-  defp dl_class(:grid), do: "grid grid-cols-2 gap-x-8 gap-y-4"
+  defp dl_class(:grid), do: "grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4"
 
   # ---------------------------------------------------------------------------
   # dl_item/1

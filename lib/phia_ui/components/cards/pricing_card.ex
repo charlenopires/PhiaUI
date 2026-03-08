@@ -133,7 +133,7 @@ defmodule PhiaUi.Components.PricingCard do
   def pricing_card(assigns) do
     ~H"""
     <.card
-      class={cn([highlighted_class(@highlighted), @class])}
+      class={cn(["@container", highlighted_class(@highlighted), @class])}
       {@rest}
     >
       <.card_header>
