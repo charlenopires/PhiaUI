@@ -112,7 +112,7 @@ defmodule PhiaUi.Components.Menubar do
   """
   def menubar_menu(assigns) do
     ~H"""
-    <div class={cn(["relative", @class])} data-menubar-menu {@rest}>
+    <div class={cn(["relative z-50", @class])} data-menubar-menu {@rest}>
       {render_slot(@inner_block)}
     </div>
     """

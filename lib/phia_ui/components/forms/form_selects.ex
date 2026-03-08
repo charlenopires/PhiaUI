@@ -317,7 +317,7 @@ defmodule PhiaUi.Components.FormSelects do
       phx-hook="PhiaCascader"
       data-options={@options_json}
       data-value={Jason.encode!(@value)}
-      class={cn(["relative inline-block w-full", @class])}
+      class={cn(["relative inline-block w-full z-50", @class])}
     >
       <%!-- Trigger button --%>
       <button

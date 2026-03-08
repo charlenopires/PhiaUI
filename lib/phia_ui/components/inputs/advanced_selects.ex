@@ -62,7 +62,7 @@ defmodule PhiaUi.Components.AdvancedSelects do
     ~H"""
     <div
       id={@id}
-      class={cn(["relative inline-block", @class])}
+      class={cn(["relative inline-block z-50", @class])}
       phx-hook="PhiaTreeSelect"
       data-options={Jason.encode!(@options)}
       data-value={@value}

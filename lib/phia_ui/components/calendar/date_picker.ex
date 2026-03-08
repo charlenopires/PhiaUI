@@ -179,7 +179,7 @@ defmodule PhiaUi.Components.DatePicker do
   """
   def date_picker(assigns) do
     ~H"""
-    <div id={@id} class={cn(["relative", @class])} {@rest}>
+    <div id={@id} class={cn(["relative", @open && "z-50", @class])} {@rest}>
       <%!-- Trigger button — displays the selected date or the placeholder --%>
       <button
         type="button"

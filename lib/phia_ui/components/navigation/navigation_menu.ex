@@ -211,7 +211,7 @@ defmodule PhiaUi.Components.NavigationMenu do
   """
   def navigation_menu_item(assigns) do
     ~H"""
-    <li class={cn(["relative", @class])} {@rest}>
+    <li class={cn(["relative z-50", @class])} {@rest}>
       {render_slot(@inner_block)}
     </li>
     """

@@ -220,7 +220,7 @@ defmodule PhiaUi.Components.Combobox do
     ~H"""
     <div
       id={@id}
-      class={cn(["relative w-full", @class])}
+      class={cn(["relative w-full", @open && "z-50", @class])}
       {@rest}
     >
       <%!-- Trigger button — shows selected label or placeholder --%>

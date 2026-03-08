@@ -321,7 +321,7 @@ Expand/collapse panels.
   <.accordion_item value="faq-1">
     <.accordion_trigger>What is PhiaUI?</.accordion_trigger>
     <.accordion_content>
-      PhiaUI is a copy-paste Phoenix LiveView component library with 534 components.
+      PhiaUI is a copy-paste Phoenix LiveView component library with 584 components.
     </.accordion_content>
   </.accordion_item>
   <.accordion_item value="faq-2">

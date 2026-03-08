@@ -45,6 +45,62 @@ defmodule PhiaUi.Components.ResultState do
   slot(:extra, doc: "Optional extra content below the description.")
   slot(:actions, doc: "Optional CTA buttons below the extra content.")
 
+  @doc """
+  Renders a centered full-page result state with large icon, title, description, and CTA buttons.
+
+  Used for success confirmations, error pages, empty/not-found states, and
+  forbidden access screens. The component is always centered both vertically
+  and horizontally within its container — wrap in a `min-h-screen` parent
+  or use the `PhiaUI.Shell` layout to fill the full viewport.
+
+  ## Status → icon and color mapping
+
+  | `:status`      | Icon              | Color                     |
+  |----------------|-------------------|---------------------------|
+  | `:success`     | `circle-check`    | `text-green-500`          |
+  | `:error`       | `circle-x`        | `text-red-500`            |
+  | `:warning`     | `triangle-alert`  | `text-amber-500`          |
+  | `:info`        | `info`            | `text-blue-500`           |
+  | `:not_found`   | `file-question`   | `text-muted-foreground`   |
+  | `:forbidden`   | `shield-off`      | `text-muted-foreground`   |
+
+  ## Examples
+
+      <%!-- Payment confirmation --%>
+      <.result_state
+        status={:success}
+        title="Payment Complete!"
+        description="Your order has been placed. You'll receive a receipt by email."
+      >
+        <:actions>
+          <.button phx-click="go_to_orders">View Orders</.button>
+          <.button variant={:outline} phx-click="continue">Continue Shopping</.button>
+        </:actions>
+      </.result_state>
+
+      <%!-- 404 page --%>
+      <.result_state
+        status={:not_found}
+        title="Page not found"
+        description="We couldn't find the page you're looking for."
+      >
+        <:actions><.link navigate="/">Go home</.link></:actions>
+      </.result_state>
+
+      <%!-- Permission denied --%>
+      <.result_state
+        status={:forbidden}
+        title="Access denied"
+        description="You don't have permission to view this page."
+      >
+        <:extra>
+          <p class="text-xs text-muted-foreground">Contact your administrator to request access.</p>
+        </:extra>
+        <:actions>
+          <.button variant={:outline} phx-click="request_access">Request Access</.button>
+        </:actions>
+      </.result_state>
+  """
   def result_state(assigns) do
     ~H"""
     <div

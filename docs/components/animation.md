@@ -260,7 +260,7 @@ Fades and slides content into view on scroll. Hook: `PhiaScrollReveal`.
 
 ```heex
 <.fade_in id="feature-1" direction={:up} delay={0}>
-  <.feature_card title="Fast" description="534 components, zero bloat." />
+  <.feature_card title="Fast" description="584 components, zero bloat." />
 </.fade_in>
 <.fade_in id="feature-2" direction={:up} delay={100}>
   <.feature_card title="Accessible" description="Full WAI-ARIA on all interactive components." />
@@ -401,7 +401,7 @@ Canvas confetti explosion. Hook: `PhiaConfetti`.
   <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
     <.fade_in id="hero-badge" direction={:down} delay={0}>
       <.badge variant="outline" class="text-white border-white/20 mb-6">
-        v0.1.11 — 534 components
+        v0.1.13 — 584 components
       </.badge>
     </.fade_in>
 

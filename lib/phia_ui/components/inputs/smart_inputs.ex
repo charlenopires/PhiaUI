@@ -273,7 +273,7 @@ defmodule PhiaUi.Components.SmartInputs do
     ~H"""
     <div
       id={@id}
-      class={cn(["relative inline-block", @class])}
+      class={cn(["relative inline-block z-50", @class])}
       phx-hook="PhiaEmojiPicker"
       data-on-pick={@on_pick}
       data-placement={@placement}

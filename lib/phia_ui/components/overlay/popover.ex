@@ -156,7 +156,7 @@ defmodule PhiaUi.Components.Popover do
     <div
       id={@id}
       phx-hook="PhiaPopover"
-      class={cn(["relative inline-flex", @class])}
+      class={cn(["relative inline-flex z-50", @class])}
       {@rest}
     >
       <%= render_slot(@inner_block) %>

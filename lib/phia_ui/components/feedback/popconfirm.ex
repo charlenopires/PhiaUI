@@ -34,7 +34,10 @@ defmodule PhiaUi.Components.Popconfirm do
 
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string, required: true, doc: "Unique ID — used to reference the panel via JS.toggle.")
+  attr(:id, :string,
+    required: true,
+    doc: "Unique ID — used to reference the panel via JS.toggle."
+  )
 
   attr(:title, :string,
     required: true,
@@ -65,12 +68,58 @@ defmodule PhiaUi.Components.Popconfirm do
 
   slot(:trigger, required: true, doc: "Element that opens the popconfirm panel on click.")
 
+  @doc """
+  Renders an inline confirmation popup anchored to a trigger element.
+
+  When the trigger is clicked, Phoenix `JS.toggle/1` shows a small floating
+  panel containing:
+  - A warning icon (`triangle-alert` in amber)
+  - The confirmation `title` and optional `description`
+  - A cancel button and a confirm button
+
+  The panel is positioned relative to the trigger using the `placement` attr:
+
+  | `:placement` | Panel appears         |
+  |--------------|-----------------------|
+  | `:top`       | Above the trigger     |
+  | `:bottom`    | Below the trigger     |
+  | `:left`      | To the left           |
+  | `:right`     | To the right          |
+
+  Clicking the cancel button hides the panel via `JS.hide`. The confirm
+  button **does not have a built-in action** — add `phx-click` inside the
+  slot or via `:rest` to fire a LiveView event:
+
+      <.button slot_here phx-click="confirm_delete">Yes, delete</.button>
+
+  ## Examples
+
+      <%!-- Destructive delete with default confirm/cancel labels --%>
+      <.popconfirm id="delete-confirm" title="Delete this item?">
+        <:trigger>
+          <.button variant={:destructive}>Delete</.button>
+        </:trigger>
+      </.popconfirm>
+
+      <%!-- Non-destructive archive with custom labels --%>
+      <.popconfirm
+        id="archive-confirm"
+        title="Archive record?"
+        description="This can be undone later from the archive."
+        confirm_label="Archive"
+        cancel_label="Keep"
+        confirm_variant={:default}
+        placement={:bottom}
+      >
+        <:trigger><.button variant={:outline}>Archive</.button></:trigger>
+      </.popconfirm>
+  """
   def popconfirm(assigns) do
     panel_id = "#{assigns.id}-panel"
     assigns = assign(assigns, :panel_id, panel_id)
 
     ~H"""
-    <div class={cn(["relative inline-block", @class])} {@rest}>
+    <div class={cn(["relative inline-block z-50", @class])} {@rest}>
       <%!-- Trigger --%>
       <div
         phx-click={JS.toggle(to: "##{@panel_id}")}

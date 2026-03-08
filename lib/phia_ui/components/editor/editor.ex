@@ -665,7 +665,7 @@ defmodule PhiaUi.Components.Editor do
     ~H"""
     <div
       id={@picker_id}
-      class={cn(["relative", @class])}
+      class={cn(["relative z-50", @class])}
       phx-hook="PhiaEditorColorPicker"
       data-action={@action}
     >
@@ -744,7 +744,7 @@ defmodule PhiaUi.Components.Editor do
     ~H"""
     <div
       id={@id}
-      class={cn(["relative", @class])}
+      class={cn(["relative z-50", @class])}
       phx-hook="PhiaEditorDropdown"
     >
       <button

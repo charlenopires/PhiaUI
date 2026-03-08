@@ -843,7 +843,7 @@ defmodule PhiaUi.Components.DataGrid do
   """
   def data_grid_column_toggle(assigns) do
     ~H"""
-    <div class={cn(["relative", @class])} id={@id}>
+    <div class={cn(["relative z-50", @class])} id={@id}>
       <button
         type="button"
         aria-label="Toggle columns"

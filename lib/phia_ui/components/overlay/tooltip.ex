@@ -148,7 +148,7 @@ defmodule PhiaUi.Components.Tooltip do
       id={@id}
       phx-hook="PhiaTooltip"
       data-delay={@delay_ms}
-      class={cn(["relative inline-flex", @class])}
+      class={cn(["relative inline-flex z-50", @class])}
       {@rest}
     >
       <%= render_slot(@inner_block) %>

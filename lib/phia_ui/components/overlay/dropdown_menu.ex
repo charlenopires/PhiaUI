@@ -157,7 +157,7 @@ defmodule PhiaUi.Components.DropdownMenu do
     <div
       id={@id}
       phx-hook={@id && "PhiaDropdownMenu"}
-      class={cn(["relative inline-block", @class])}
+      class={cn(["relative inline-block z-50", @class])}
       {@rest}
     >
       <%= render_slot(@inner_block) %>

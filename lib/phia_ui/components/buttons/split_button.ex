@@ -66,7 +66,7 @@ defmodule PhiaUi.Components.SplitButton do
     <div
       id={@id}
       phx-hook="PhiaSplitButton"
-      class={cn(["relative inline-flex", @class])}
+      class={cn(["relative inline-flex z-50", @class])}
     >
       <%!-- Primary action button --%>
       <button

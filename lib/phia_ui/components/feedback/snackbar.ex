@@ -52,6 +52,52 @@ defmodule PhiaUi.Components.Snackbar do
   # Component
   # ---------------------------------------------------------------------------
 
+  @doc """
+  Renders a floating bottom action bar for bulk-selection feedback.
+
+  The bar slides up from the bottom center of the viewport using `phx-mounted`
+  and `phx-remove` JS transitions (no JavaScript hook needed). Visibility is
+  driven by the `visible` attribute — pair it with a LiveView assign to
+  react to selection changes.
+
+  The bar layout (left to right):
+  - **Icon** (optional `:icon` slot) — avatar or custom icon
+  - **Label** (required `:label` slot) — short message like "3 items selected"
+  - **Actions** (optional `:actions` slot) — buttons on the right
+
+  The bar uses `role="status"` and `aria-live="polite"` so screen readers
+  announce the count change each time it appears or the count updates.
+
+  ## Integration with LiveView selection state
+
+      # LiveView handle_event
+      def handle_event("toggle_select", %{"id" => id}, socket) do
+        selected = toggle_id(socket.assigns.selected, id)
+        {:noreply, assign(socket, selected: selected)}
+      end
+
+  ## Examples
+
+      <%!-- Contact table with bulk actions --%>
+      <.snackbar visible={length(@selected_ids) > 0}>
+        <:label>{length(@selected_ids)} contacts selected</:label>
+        <:actions>
+          <.button size={:sm} phx-click="assign_selected">Assign</.button>
+          <.button size={:sm} variant={:destructive} phx-click="delete_selected">Delete</.button>
+        </:actions>
+      </.snackbar>
+
+      <%!-- File manager with move/copy/delete --%>
+      <.snackbar visible={@selection_active}>
+        <:icon><.icon name="file" class="text-muted-foreground" /></:icon>
+        <:label>{@selected_count} items</:label>
+        <:actions>
+          <.button size={:sm} variant={:outline} phx-click="move_files">Move</.button>
+          <.button size={:sm} variant={:outline} phx-click="copy_files">Copy</.button>
+          <.button size={:sm} variant={:destructive} phx-click="delete_files">Delete</.button>
+        </:actions>
+      </.snackbar>
+  """
   def snackbar(assigns) do
     ~H"""
     <div

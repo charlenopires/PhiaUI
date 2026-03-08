@@ -33,7 +33,7 @@ defmodule PhiaUi.Components.MegaMenu do
     <div
       id={@id}
       phx-hook="PhiaMegaMenu"
-      class={cn(["relative", @class])}
+      class={cn(["relative z-50", @class])}
       {@rest}
     >
       {render_slot(@inner_block)}

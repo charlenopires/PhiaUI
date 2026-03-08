@@ -197,7 +197,7 @@ defmodule PhiaUi.Components.HoverCard do
       data-open-delay={@open_delay}
       data-close-delay={@close_delay}
       data-side={@side}
-      class={cn(["relative inline-flex", @class])}
+      class={cn(["relative inline-flex z-50", @class])}
       {@rest}
     >
       {render_slot(@inner_block)}

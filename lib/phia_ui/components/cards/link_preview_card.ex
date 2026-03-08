@@ -1,8 +1,47 @@
 defmodule PhiaUi.Components.LinkPreviewCard do
   @moduledoc """
-  Card component for displaying a link preview with title, description,
-  image, favicon, site name, and domain. Supports :default, :compact,
-  and :minimal variants.
+  Card component for displaying an Open Graph-style link preview with a
+  title, description, image, favicon, site name, and extracted domain.
+
+  Use this component to embed rich URL previews inside chat messages, comments,
+  shared content sections, or social-feed UIs.
+
+  ## Variants
+
+  | `:variant`  | Layout      | Best for                                         |
+  |-------------|-------------|--------------------------------------------------|
+  | `:default`  | Vertical    | Featured link previews with image + full text    |
+  | `:compact`  | Horizontal  | Inline link list, sidebar references             |
+  | `:minimal`  | Plain text  | Dense feeds, comment sections, footnote links    |
+
+  ## Domain extraction
+
+  The `domain` is automatically extracted from the `url` attribute via
+  `URI.parse/1`. If parsing fails, the raw `url` string is displayed instead.
+  You do not need to pass the domain explicitly.
+
+  ## Data sourcing
+
+  Metadata for real-world uses comes from scraping OG tags server-side
+  (e.g. via [og_scraper](https://hex.pm/packages/og_scraper)) and passing the
+  values as assigns:
+
+      case OgScraper.fetch(url) do
+        {:ok, meta} ->
+          assign(socket, link_preview: meta)
+        _ ->
+          assign(socket, link_preview: %{title: url, description: nil, image_src: nil})
+      end
+
+  Then in the template:
+
+      <.link_preview_card
+        url={@link_preview.url}
+        title={@link_preview.title}
+        description={@link_preview.description}
+        image_src={@link_preview.image_src}
+        site_name={@link_preview.site_name}
+      />
   """
 
   use Phoenix.Component
