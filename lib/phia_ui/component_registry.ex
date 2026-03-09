@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 579 PhiaUI components.
+  Source of truth for all 623 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -6064,6 +6064,411 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── shadcnuikit.com Gap Fill ─────────────────────────────────────────────────
+    button_group: %{
+      name: "button_group",
+      module: PhiaUi.Components.ButtonGroup,
+      template_file: "priv/templates/components/buttons/button_group.ex",
+      js_hooks: [],
+      dependencies: [:button],
+      tier: :interactive,
+      shadcn_equivalent: "ButtonGroup",
+      status: :implemented
+    },
+    field: %{
+      name: "field",
+      module: PhiaUi.Components.Field,
+      template_file: "priv/templates/components/forms/field.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: "Field",
+      status: :implemented
+    },
+    field_label: %{
+      name: "field_label",
+      module: PhiaUi.Components.Field,
+      template_file: "priv/templates/components/forms/field.ex",
+      js_hooks: [],
+      dependencies: [:field],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    field_description: %{
+      name: "field_description",
+      module: PhiaUi.Components.Field,
+      template_file: "priv/templates/components/forms/field.ex",
+      js_hooks: [],
+      dependencies: [:field],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    field_message: %{
+      name: "field_message",
+      module: PhiaUi.Components.Field,
+      template_file: "priv/templates/components/forms/field.ex",
+      js_hooks: [],
+      dependencies: [:field],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    empty: %{
+      name: "empty",
+      module: PhiaUi.Components.EmptyState,
+      template_file: "priv/templates/components/feedback/empty_state.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: "Empty",
+      status: :implemented
+    },
+    native_select: %{
+      name: "native_select",
+      module: PhiaUi.Components.NativeSelect,
+      template_file: "priv/templates/components/inputs/native_select.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :form,
+      shadcn_equivalent: "NativeSelect",
+      status: :implemented
+    },
+    item: %{
+      name: "item",
+      module: PhiaUi.Components.Item,
+      template_file: "priv/templates/components/display/item.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: "Item",
+      status: :implemented
+    },
+
+    # ── UIkit Gap Wave ──────────────────────────────────────────────────────
+    leader: %{
+      name: "leader",
+      module: PhiaUi.Components.Typography.Leader,
+      template_file: "priv/templates/components/typography/leader.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    article: %{
+      name: "article",
+      module: PhiaUi.Components.Article,
+      template_file: "priv/templates/components/display/article.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    comment: %{
+      name: "comment",
+      module: PhiaUi.Components.Comment,
+      template_file: "priv/templates/components/display/comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    comment_list: %{
+      name: "comment_list",
+      module: PhiaUi.Components.Comment,
+      template_file: "priv/templates/components/display/comment.ex",
+      js_hooks: [],
+      dependencies: [:comment],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    cover: %{
+      name: "cover",
+      module: PhiaUi.Components.Layout.Cover,
+      template_file: "priv/templates/components/layout/cover.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    marker: %{
+      name: "marker",
+      module: PhiaUi.Components.Marker,
+      template_file: "priv/templates/components/display/marker.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    thumbnav: %{
+      name: "thumbnav",
+      module: PhiaUi.Components.Thumbnav,
+      template_file: "priv/templates/components/navigation/thumbnav.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    thumbnav_item: %{
+      name: "thumbnav_item",
+      module: PhiaUi.Components.Thumbnav,
+      template_file: "priv/templates/components/navigation/thumbnav.ex",
+      js_hooks: [],
+      dependencies: [:thumbnav],
+      tier: :navigation,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    lightbox: %{
+      name: "lightbox",
+      module: PhiaUi.Components.Lightbox,
+      template_file: "priv/templates/components/media/lightbox.ex",
+      js_hooks: ["PhiaLightbox"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    lightbox_item: %{
+      name: "lightbox_item",
+      module: PhiaUi.Components.Lightbox,
+      template_file: "priv/templates/components/media/lightbox.ex",
+      js_hooks: [],
+      dependencies: [:lightbox],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # ── Untitled UI Gap Wave ─────────────────────────────────────────────────
+
+    # Category A: Previously unregistered existing components
+
+    activity_feed: %{
+      name: "activity_feed",
+      module: PhiaUi.Components.ActivityFeed,
+      template_file: "priv/templates/components/display/activity_feed.ex",
+      js_hooks: [],
+      dependencies: [:activity_item],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    activity_item: %{
+      name: "activity_item",
+      module: PhiaUi.Components.ActivityFeed,
+      template_file: "priv/templates/components/display/activity_feed.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chat_container: %{
+      name: "chat_container",
+      module: PhiaUi.Components.ChatMessage,
+      template_file: "priv/templates/components/display/chat_message.ex",
+      js_hooks: [],
+      dependencies: [:chat_message],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chat_message: %{
+      name: "chat_message",
+      module: PhiaUi.Components.ChatMessage,
+      template_file: "priv/templates/components/display/chat_message.ex",
+      js_hooks: [],
+      dependencies: [:chat_bubble],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chat_bubble: %{
+      name: "chat_bubble",
+      module: PhiaUi.Components.ChatMessage,
+      template_file: "priv/templates/components/display/chat_message.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chat_suggestions: %{
+      name: "chat_suggestions",
+      module: PhiaUi.Components.ChatMessage,
+      template_file: "priv/templates/components/display/chat_message.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chat_input: %{
+      name: "chat_input",
+      module: PhiaUi.Components.ChatMessage,
+      template_file: "priv/templates/components/display/chat_message.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Category B: New standalone components
+
+    tag: %{
+      name: "tag",
+      module: PhiaUi.Components.Tag,
+      template_file: "priv/templates/components/display/tag.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    badge_group: %{
+      name: "badge_group",
+      module: PhiaUi.Components.BadgeGroup,
+      template_file: "priv/templates/components/display/badge_group.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    section_header: %{
+      name: "section_header",
+      module: PhiaUi.Components.Layout.SectionHeader,
+      template_file: "priv/templates/components/layout/section_header.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    section_footer: %{
+      name: "section_footer",
+      module: PhiaUi.Components.Layout.SectionFooter,
+      template_file: "priv/templates/components/layout/section_footer.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    app_store_button: %{
+      name: "app_store_button",
+      module: PhiaUi.Components.AppStoreButton,
+      template_file: "priv/templates/components/buttons/app_store_button.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    video_player: %{
+      name: "video_player",
+      module: PhiaUi.Components.VideoPlayer,
+      template_file: "priv/templates/components/media/video_player.ex",
+      js_hooks: ["PhiaVideoPlayer"],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    code_snippet: %{
+      name: "code_snippet",
+      module: PhiaUi.Components.CodeSnippet,
+      template_file: "priv/templates/components/display/code_snippet.ex",
+      js_hooks: ["PhiaCodeSnippet"],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Category C: Marketing section components
+
+    hero_section: %{
+      name: "hero_section",
+      module: PhiaUi.Components.Marketing.HeroSection,
+      template_file: "priv/templates/components/marketing/hero_section.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    feature_section: %{
+      name: "feature_section",
+      module: PhiaUi.Components.Marketing.FeatureSection,
+      template_file: "priv/templates/components/marketing/feature_section.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pricing_table: %{
+      name: "pricing_table",
+      module: PhiaUi.Components.Marketing,
+      template_file: "priv/templates/components/marketing/marketing.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    cta_section: %{
+      name: "cta_section",
+      module: PhiaUi.Components.Marketing,
+      template_file: "priv/templates/components/marketing/marketing.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    newsletter_cta: %{
+      name: "newsletter_cta",
+      module: PhiaUi.Components.Marketing,
+      template_file: "priv/templates/components/marketing/marketing.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    logo_cloud: %{
+      name: "logo_cloud",
+      module: PhiaUi.Components.Marketing,
+      template_file: "priv/templates/components/marketing/marketing.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    site_footer: %{
+      name: "site_footer",
+      module: PhiaUi.Components.Marketing,
+      template_file: "priv/templates/components/marketing/marketing.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :layout,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -6071,7 +6476,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 579 component metadata entries."
+  @doc "Returns the full registry map — all 623 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

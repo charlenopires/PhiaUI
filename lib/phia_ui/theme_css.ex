@@ -162,13 +162,13 @@ defmodule PhiaUi.ThemeCSS do
       iex> css = PhiaUi.ThemeCSS.generate_for_selector(theme)
       iex> String.contains?(css, ~s([data-phia-theme="blue"]))
       true
-      iex> String.contains?(css, ~s(.dark [data-phia-theme="blue"]))
+      iex> String.contains?(css, ~s(.dark[data-phia-theme="blue"]))
       true
   """
   @spec generate_for_selector(Theme.t()) :: String.t()
   def generate_for_selector(%Theme{} = theme) do
     light_selector = ~s([data-phia-theme="#{theme.name}"])
-    dark_selector = ~s(.dark [data-phia-theme="#{theme.name}"])
+    dark_selector = ~s(.dark[data-phia-theme="#{theme.name}"])
 
     light_vars = color_vars(theme.colors.light)
     dark_vars = color_vars(theme.colors.dark)

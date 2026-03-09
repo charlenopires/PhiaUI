@@ -394,9 +394,9 @@ defmodule PhiaUi.ThemeCSSTest do
       assert css =~ ~s([data-phia-theme="zinc"])
     end
 
-    test "contains .dark [data-phia-theme=\"zinc\"] selector" do
+    test "contains .dark[data-phia-theme=\"zinc\"] selector" do
       css = ThemeCSS.generate_for_selector(zinc_theme())
-      assert css =~ ~s(.dark [data-phia-theme="zinc"])
+      assert css =~ ~s(.dark[data-phia-theme="zinc"])
     end
 
     test "does NOT contain @theme block" do
@@ -488,7 +488,7 @@ defmodule PhiaUi.ThemeCSSTest do
       css = ThemeCSS.generate_all()
 
       Enum.each(Theme.list(), fn key ->
-        assert css =~ ~s(.dark [data-phia-theme="#{key}"]), "missing dark selector for #{key}"
+        assert css =~ ~s(.dark[data-phia-theme="#{key}"]), "missing dark selector for #{key}"
       end)
     end
 
