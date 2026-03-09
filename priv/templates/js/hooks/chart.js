@@ -36,7 +36,7 @@ const PhiaChart = {
       if (!this._chart) return;
       const config = this._parseConfig();
       if (!config) return;
-      config.series = series;
+      config.series = this._mergeSeries(config, series);
       this._chart.setOption(config, { replaceMerge: ["series"] });
     });
   },
@@ -49,7 +49,7 @@ const PhiaChart = {
     const config = this._parseConfig();
     const series = this._parseSeries();
     if (config && series) {
-      config.series = series;
+      config.series = this._mergeSeries(config, series);
       this._chart.setOption(config, { notMerge: true });
     }
   },
@@ -71,7 +71,7 @@ const PhiaChart = {
       const config = this._parseConfig();
       const series = this._parseSeries();
       if (config && series) {
-        config.series = series;
+        config.series = this._mergeSeries(config, series);
         // Disable animations when user prefers reduced motion
         if (this._reducedMotion) {
           config.animation = false;
@@ -118,9 +118,20 @@ const PhiaChart = {
     const theme = detail && detail.theme === "dark" ? "dark" : null;
     this._chart = window.echarts.init(this.el, theme);
     if (config && series) {
-      config.series = series;
+      config.series = this._mergeSeries(config, series);
       this._chart.setOption(config);
     }
+  },
+
+  _mergeSeries(config, series) {
+    const template = config.series || [];
+    const isPie = template[0] && template[0].type === "pie";
+    if (isPie) {
+      const pieData = template[0].data || [];
+      const values = (series[0] && series[0].data) || [];
+      return [{ ...template[0], data: pieData.map((d, i) => ({ ...d, value: values[i] ?? 0 })) }];
+    }
+    return series.map((s, i) => ({ ...(template[i] || template[0] || {}), ...s }));
   },
 
   _parseConfig() {
