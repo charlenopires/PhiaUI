@@ -7,8 +7,8 @@ defmodule PhiaUi.MixProjectTest do
     assert @config[:app] == :phia_ui
   end
 
-  test "version is 0.1.13" do
-    assert @config[:version] == "0.1.13"
+  test "version is 0.1.14" do
+    assert @config[:version] == "0.1.14"
   end
 
   test "elixir requirement is ~> 1.17" do

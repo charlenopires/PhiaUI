@@ -70,7 +70,7 @@ PhiaUI is built on a simple principle: **ship fast, iterate based on real usage.
 # mix.exs
 def deps do
   [
-    {:phia_ui, "~> 0.1.13"}
+    {:phia_ui, "~> 0.1.14"}
   ]
 end
 ```

@@ -18,7 +18,7 @@ PhiaUI ships 19 chart types rendered entirely as server-side SVG with zero JavaS
 
 - Elixir 1.17+ and Phoenix 1.7+ with LiveView 1.0+
 - TailwindCSS v4 configured in your project
-- PhiaUI installed: `{:phia_ui, "~> 0.1.13"}` in `mix.exs`
+- PhiaUI installed: `{:phia_ui, "~> 0.1.14"}` in `mix.exs`
 
 ---
 
