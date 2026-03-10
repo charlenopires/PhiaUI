@@ -95,6 +95,8 @@ defmodule PhiaUi.MixProject do
   defp deps do
     [
       {:phoenix_live_view, "~> 1.1"},
+      {:phoenix, "~> 1.7"},
+      {:bandit, "~> 1.6", optional: true},
       {:eqrcode, "~> 0.2"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
