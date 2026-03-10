@@ -12,6 +12,31 @@ defmodule Mix.Tasks.Phia.Design do
   It starts its own HTTP server on a separate port (default: 4200)
   using Bandit, with its own Endpoint, Router, and LiveView.
 
+  ## Features
+
+  - **Component browser** — search and insert any of 623 PhiaUI components
+  - **Live canvas** — real component rendering (not placeholders)
+  - **Properties panel** — edit attributes and slots visually
+  - **Code panel** — live HEEx preview of your design
+  - **Page templates** — start from 9 pre-built layouts (dashboard, auth, landing, etc.)
+  - **Responsive preview** — desktop, tablet, and mobile viewports
+  - **Save/load** — persist designs as `.phia.json` files
+
+  ## Claude Code Integration
+
+  For AI-assisted design, use the MCP server instead:
+
+      mix phia.design.mcp
+
+  See `Mix.Tasks.Phia.Design.Mcp` for setup instructions, or the
+  [PhiaUI Design tutorial](docs/guides/tutorial-design.md) for a full walkthrough.
+
+  ## Related Tasks
+
+  - `mix phia.design.mcp` — MCP server for Claude Code integration
+  - `mix phia.design.export` — export designs to HEEx/LiveView code
+  - `mix phia.design.analyze` — analyze designs for dependencies
+
   ## Requirements
 
   - Bandit (`{:bandit, "~> 1.6"}`) must be in your deps.

@@ -2,6 +2,9 @@ defmodule Mix.Tasks.Phia.Design.Export do
   @moduledoc """
   Export a saved PhiaUI design to HEEx or LiveView source files.
 
+  Takes a `.phia.json` file (created by `mix phia.design` or the MCP server)
+  and generates production-ready Phoenix code.
+
   ## Usage
 
       mix phia.design.export my_design.phia.json
@@ -10,10 +13,27 @@ defmodule Mix.Tasks.Phia.Design.Export do
 
   ## Options
 
-  - `--format` — Output format: `heex` (default) or `liveview`
-  - `--output` — Output file path (prints to stdout if omitted)
-  - `--module` — Module name for LiveView format (default: `MyAppWeb.DesignedLive`)
+  - `--format` (`-f`) — Output format: `heex` (default) or `liveview`
+  - `--output` (`-o`) — Output file path (prints to stdout if omitted)
+  - `--module` (`-m`) — Module name for LiveView format (default: `MyAppWeb.DesignedLive`)
   - `--web-module` — Phoenix web module (default: `MyAppWeb`)
+
+  ## Examples
+
+      # Quick preview — print HEEx to terminal
+      mix phia.design.export priv/phiaui_design/projects/dashboard.phia.json
+
+      # Generate a LiveView module
+      mix phia.design.export dashboard.phia.json \\
+        -f liveview \\
+        -o lib/my_app_web/live/dashboard_live.ex \\
+        -m MyAppWeb.DashboardLive
+
+  ## Related Tasks
+
+  - `mix phia.design` — visual editor
+  - `mix phia.design.mcp` — MCP server for Claude Code
+  - `mix phia.design.analyze` — analyze a design file
   """
 
   @shortdoc "Export a .phia.json design to HEEx or LiveView code"

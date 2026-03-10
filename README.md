@@ -70,7 +70,7 @@ PhiaUI is built on a simple principle: **ship fast, iterate based on real usage.
 # mix.exs
 def deps do
   [
-    {:phia_ui, "~> 0.1.15"}
+    {:phia_ui, "~> 0.1.16"}
   ]
 end
 ```
@@ -446,12 +446,176 @@ PhiaUI provides components for virtually any Phoenix LiveView application. Here 
 
 ---
 
+## PhiaUI Design — Visual Editor + Claude Code
+
+**New in v0.1.16.** PhiaUI Design is a visual component editor and MCP server that lets you design Phoenix LiveView pages visually or by describing them to Claude Code — then export production-ready HEEx/LiveView code.
+
+### What's included
+
+| Tool | What it does |
+|---|---|
+| `mix phia.design` | Visual editor on port 4200 — drag components, configure attrs, live preview |
+| `mix phia.design.mcp` | MCP server for Claude Code — 15 tools to build UIs via natural language |
+| `mix phia.design.export` | Export `.phia.json` designs to HEEx templates or LiveView modules |
+| `mix phia.design.analyze` | Analyze designs — list components, hooks, install commands |
+
+### Tutorial: Design a Dashboard with Claude Code
+
+This tutorial shows how to use Claude Code + PhiaUI Design MCP to generate a complete analytics dashboard.
+
+#### Step 1 — Configure MCP
+
+Add to your project's `.mcp.json` (or `~/.claude/.mcp.json` for global):
+
+```json
+{
+  "mcpServers": {
+    "phiaui-design": {
+      "command": "mix",
+      "args": ["phia.design.mcp"],
+      "env": {"MIX_ENV": "dev"}
+    }
+  }
+}
+```
+
+#### Step 2 — Ask Claude Code to build your UI
+
+Open Claude Code in your Phoenix project and describe what you want:
+
+```
+Design a SaaS analytics dashboard with:
+- A sidebar with navigation links
+- 3 stat cards at the top (Revenue, Users, Orders)
+- A bar chart showing monthly revenue
+- A donut chart for traffic sources
+- A data grid with recent orders
+```
+
+Claude Code will use the MCP tools to:
+
+1. **Browse the catalog** (`get_phia_catalog`) to discover available components
+2. **Get component info** (`get_phia_component_info`) for attrs, slots, and variants
+3. **Insert components** (`insert_phia_component`) into the scene with proper attrs
+4. **Set slots** (`set_phia_slot`) for inner content like button labels
+5. **Organize layout** (`move_phia_node`) to nest components correctly
+6. **Export code** (`export_liveview`) as a ready-to-use LiveView module
+
+#### Step 3 — Export production code
+
+Ask Claude to export:
+
+```
+Export this design as a LiveView module for MyAppWeb.DashboardLive
+```
+
+Or use the CLI directly:
+
+```bash
+# Export as LiveView module
+mix phia.design.export my_dashboard.phia.json \
+  --format liveview \
+  --output lib/my_app_web/live/dashboard_live.ex \
+  --module MyAppWeb.DashboardLive
+
+# Export as HEEx template
+mix phia.design.export my_dashboard.phia.json \
+  --format heex \
+  --output lib/my_app_web/templates/dashboard.html.heex
+
+# Analyze what the design needs
+mix phia.design.analyze my_dashboard.phia.json
+```
+
+#### Step 4 — Use the visual editor (optional)
+
+For visual editing alongside Claude Code:
+
+```bash
+mix phia.design  # Opens on http://localhost:4200
+```
+
+The visual editor provides:
+- **Component browser** — search and insert any of the 623 components
+- **Live canvas** — real component rendering with PhiaUI's actual output
+- **Properties panel** — edit attrs and slots visually
+- **Code panel** — live HEEx preview of the current design
+- **Page templates** — start from 9 pre-built templates (dashboard, auth, landing, etc.)
+- **Responsive preview** — switch between desktop, tablet, and mobile viewports
+- **Save/load** — persist designs as `.phia.json` files
+
+#### Available MCP tools
+
+| Tool | Description |
+|---|---|
+| `insert_phia_component` | Insert a component by name with attrs and slots |
+| `set_phia_attr` | Update attributes on a node by ID |
+| `set_phia_slot` | Set slot content (e.g., inner_block text) |
+| `delete_phia_node` | Remove a node and its children |
+| `move_phia_node` | Move a node to a new parent at a given index |
+| `get_phia_component_info` | Get full component spec: attrs, slots, variants |
+| `get_phia_catalog` | Browse all 623 components grouped by tier |
+| `get_phia_families` | List composable family groups (e.g., card + card_header) |
+| `insert_phia_page` | Apply a page template (dashboard, settings, auth, etc.) |
+| `set_phia_theme` | Switch theme (zinc, slate, rose, blue, green, violet, etc.) |
+| `get_phia_theme` | Get current theme |
+| `export_heex` | Export the design as a HEEx template |
+| `export_liveview` | Export as a complete LiveView module |
+| `get_scene_tree` | Get the current design tree as JSON |
+| `clear_scene` | Clear all nodes from the canvas |
+
+#### Example: Full workflow in Claude Code
+
+```
+You: Create a login page with PhiaUI
+
+Claude: [uses get_phia_catalog to browse components]
+        [uses get_phia_component_info for card, input, button]
+        [uses insert_phia_component to add card, input fields, button]
+        [uses set_phia_slot for labels and button text]
+        [uses export_liveview to generate the module]
+
+Here's your login page LiveView:
+
+defmodule MyAppWeb.LoginLive do
+  use MyAppWeb, :live_view
+  import PhiaUi.Components.Cards
+  import PhiaUi.Components.Inputs
+  import PhiaUi.Components.Buttons
+
+  def render(assigns) do
+    ~H"""
+    <div class="flex items-center justify-center min-h-screen">
+      <.card class="w-full max-w-md">
+        <.card_header>
+          <.card_title>Sign in</.card_title>
+          <.card_description>Enter your credentials</.card_description>
+        </.card_header>
+        <.card_content>
+          <.phia_input type="email" label="Email" name="email" />
+          <.phia_input type="password" label="Password" name="password" class="mt-4" />
+        </.card_content>
+        <.card_footer>
+          <.button variant="default" class="w-full" phx-click="login">
+            Sign in
+          </.button>
+        </.card_footer>
+      </.card>
+    </div>
+    """
+  end
+end
+```
+
+---
+
 ## Documentation
 
 ### Tutorials
 
 | Guide | What you build |
 |---|---|
+| [PhiaUI Design + Claude Code](docs/guides/tutorial-design.md) | Visual design tool + AI workflow for building UIs |
 | [LiveBook — Task Manager](docs/guides/tutorial-livebook.md) | Render PhiaUI components interactively in Livebook |
 | [Analytics Dashboard](docs/guides/tutorial-dashboard.md) | Sidebar shell + KPI cards + chart + data grid |
 | [Charts — Complete Guide](docs/guides/tutorial-charts.md) | All 19 chart types, composable xy_chart, responsive wrappers, real-time updates |

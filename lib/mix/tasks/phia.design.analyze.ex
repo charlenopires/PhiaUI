@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Phia.Design.Analyze do
   Analyze a saved PhiaUI design file.
 
   Reports component usage, required JS hooks, install commands,
-  and potential issues.
+  and potential issues. Useful for CI pipelines or pre-deploy checks.
 
   ## Usage
 
@@ -12,7 +12,30 @@ defmodule Mix.Tasks.Phia.Design.Analyze do
 
   ## Options
 
-  - `--json` — Output as JSON instead of human-readable text
+  - `--json` (`-j`) — Output as JSON instead of human-readable text
+
+  ## Output
+
+  The analysis includes:
+
+  - **File metadata** — name, theme, node count
+  - **Components used** — sorted list of unique component names
+  - **JS hooks required** — hooks that must be registered in your app.js
+  - **Install commands** — `mix phia.add` commands to install needed components
+
+  ## Examples
+
+      # Human-readable report
+      mix phia.design.analyze dashboard.phia.json
+
+      # JSON for scripting
+      mix phia.design.analyze dashboard.phia.json --json | jq '.js_hooks_required'
+
+  ## Related Tasks
+
+  - `mix phia.design` — visual editor
+  - `mix phia.design.export` — export designs to code
+  - `mix phia.design.mcp` — MCP server for Claude Code
   """
 
   @shortdoc "Analyze a .phia.json design file"

@@ -1,7 +1,7 @@
 defmodule PhiaUi.MixProject do
   use Mix.Project
 
-  @version "0.1.15"
+  @version "0.1.16"
 
   def project do
     [
@@ -68,7 +68,8 @@ defmodule PhiaUi.MixProject do
         "docs/guides/tutorial-cms.md",
         "docs/guides/tutorial-dashboard.md",
         "docs/guides/tutorial-livebook.md",
-        "docs/guides/tutorial-charts.md"
+        "docs/guides/tutorial-charts.md",
+        "docs/guides/tutorial-design.md"
       ],
       main: "readme",
       source_url: "https://github.com/charlenopires/PhiaUI",

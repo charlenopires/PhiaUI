@@ -32,7 +32,7 @@ defmodule PhiaUiDesign.Mcp.ServerTest do
           "capabilities" => %{"tools" => %{}},
           "serverInfo" => %{
             "name" => "phiaui-design",
-            "version" => "0.1.15"
+            "version" => "0.1.16"
           }
         }
 
@@ -95,7 +95,7 @@ defmodule PhiaUiDesign.Mcp.ServerTest do
       assert response["id"] == 1
       assert response["result"]["protocolVersion"] == "2024-11-05"
       assert response["result"]["serverInfo"]["name"] == "phiaui-design"
-      assert response["result"]["serverInfo"]["version"] == "0.1.15"
+      assert response["result"]["serverInfo"]["version"] == "0.1.16"
       assert new_state.initialized == true
     end
 
