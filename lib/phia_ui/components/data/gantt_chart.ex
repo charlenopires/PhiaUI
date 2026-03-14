@@ -53,6 +53,9 @@ defmodule PhiaUi.Components.GanttChart do
     doc: "Last visible hour, exclusive (0–23). Default: `20` (8pm)."
   )
 
+  attr(:id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided).")
+  attr(:title, :string, default: nil, doc: "Chart title rendered above the visualization.")
+  attr(:description, :string, default: nil, doc: "Chart description for context (rendered below title).")
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the root element.")
   attr(:rest, :global, doc: "HTML attributes forwarded to the root `<div>` element.")
 
@@ -74,6 +77,8 @@ defmodule PhiaUi.Components.GanttChart do
   # ---------------------------------------------------------------------------
 
   def gantt_chart(assigns) do
+    chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
+
     total_hours = assigns.end_hour - assigns.start_hour
     total_minutes = total_hours * 60
 
@@ -83,10 +88,15 @@ defmodule PhiaUi.Components.GanttChart do
       |> assign(:hours, assigns.start_hour..(assigns.end_hour - 1))
       |> assign(:total_hours, total_hours)
       |> assign(:total_minutes, total_minutes)
+      |> assign(:chart_id, chart_id)
       |> assign(:grid_height_px, total_hours * 64)
 
     ~H"""
     <div class={cn(["w-full overflow-x-auto", @class])} {@rest}>
+      <div :if={@title} class="mb-2">
+        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
+        <p :if={@description} class="text-xs text-muted-foreground">{@description}</p>
+      </div>
       <div class="flex min-w-[640px]">
         <%!-- Time labels column --%>
         <div class="w-14 shrink-0 pt-10 select-none">
@@ -175,12 +185,12 @@ defmodule PhiaUi.Components.GanttChart do
 
   defp time_offset_pct(time_str, start_hour, total_minutes) do
     minutes = time_to_minutes(time_str) - start_hour * 60
-    Float.round(max(minutes, 0) / total_minutes * 100, 2)
+    Float.round(max(minutes, 0) / total_minutes * 100.0, 2)
   end
 
   defp duration_pct(start_str, end_str, total_minutes) do
     duration = time_to_minutes(end_str) - time_to_minutes(start_str)
-    Float.round(max(duration, 0) / total_minutes * 100, 2)
+    Float.round(max(duration, 0) / total_minutes * 100.0, 2)
   end
 
   defp time_to_minutes(time_str) do
@@ -191,7 +201,7 @@ defmodule PhiaUi.Components.GanttChart do
   defp current_time_pct(start_hour, total_minutes) do
     now = Time.utc_now()
     minutes = now.hour * 60 + now.minute - start_hour * 60
-    (minutes / total_minutes * 100) |> max(0) |> min(100) |> Float.round(2)
+    (minutes / total_minutes * 100.0) |> max(0.0) |> min(100.0) |> Float.round(2)
   end
 
   defp format_hour(hour) when hour < 12, do: "#{hour}am"

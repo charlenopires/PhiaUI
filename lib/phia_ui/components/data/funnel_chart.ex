@@ -38,10 +38,15 @@ defmodule PhiaUi.Components.FunnelChart do
 
   attr(:show_dropoff, :boolean, default: true, doc: "When `true`, shows drop-off % annotations.")
 
+  attr(:id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided).")
+  attr(:title, :string, default: nil, doc: "Chart title rendered above the visualization.")
+  attr(:description, :string, default: nil, doc: "Chart description for context (rendered below title).")
   attr(:class, :string, default: nil, doc: "Additional CSS classes for the root element.")
   attr(:rest, :global, doc: "HTML attributes forwarded to the root `<div>`.")
 
   def funnel_chart(assigns) do
+    chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
+
     max_val = assigns.stages |> Enum.map(& &1.value) |> Enum.max(fn -> 1 end)
     first_val = List.first(assigns.stages, %{value: 1}).value |> max(1)
 
@@ -59,10 +64,17 @@ defmodule PhiaUi.Components.FunnelChart do
         Map.merge(s, %{width_pct: width_pct, dropoff_pct: dropoff_pct, index: i})
       end)
 
-    assigns = assign(assigns, :stages_meta, stages_meta)
+    assigns =
+      assigns
+      |> assign(:stages_meta, stages_meta)
+      |> assign(:chart_id, chart_id)
 
     ~H"""
     <div class={cn(["w-full", @class])} {@rest}>
+      <div :if={@title} class="mb-2">
+        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
+        <p :if={@description} class="text-xs text-muted-foreground">{@description}</p>
+      </div>
       <%= for stage <- @stages_meta do %>
         <%!-- Drop-off annotation between stages --%>
         <div

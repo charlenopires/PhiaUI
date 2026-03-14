@@ -91,14 +91,14 @@ defmodule PhiaUi.Components.NativeSelect do
   attr :required, :boolean, default: false, doc: "Marks the field as required."
   attr :disabled, :boolean, default: false, doc: "Disables the select."
 
-  attr :size, :string,
-    values: ~w(sm default lg),
-    default: "default",
+  attr :size, :atom,
+    values: [:sm, :default, :lg],
+    default: :default,
     doc: "Size variant."
 
-  attr :variant, :string,
-    values: ~w(default inset overlapping),
-    default: "default",
+  attr :variant, :atom,
+    values: [:default, :inset, :overlapping],
+    default: :default,
     doc: "Layout variant."
 
   attr :class, :string, default: nil, doc: "Additional classes on the `<select>`."
@@ -134,7 +134,7 @@ defmodule PhiaUi.Components.NativeSelect do
     <div class={variant_wrapper_class(@variant)}>
       <%!-- Label: position varies by variant --%>
       <label
-        :if={@label && @variant == "default"}
+        :if={@label && @variant == :default}
         for={@select_id}
         class={cn(["text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", @error && "text-destructive"])}
       >
@@ -142,15 +142,15 @@ defmodule PhiaUi.Components.NativeSelect do
       </label>
 
       <%!-- Description (default variant only, above select) --%>
-      <p :if={@description && @variant == "default"} class="text-sm text-muted-foreground">
+      <p :if={@description && @variant == :default} class="text-sm text-muted-foreground">
         {@description}
       </p>
 
       <%!-- Select wrapper --%>
-      <div class={cn(["relative", @variant != "default" && "border rounded-md", @variant != "default" && @error && "border-destructive"])}>
+      <div class={cn(["relative", @variant != :default && "border rounded-md", @variant != :default && @error && "border-destructive"])}>
         <%!-- Inset label: inside border at top --%>
         <label
-          :if={@label && @variant == "inset"}
+          :if={@label && @variant == :inset}
           for={@select_id}
           class={cn(["block px-3 pt-2 text-xs text-muted-foreground", @error && "text-destructive"])}
         >
@@ -159,7 +159,7 @@ defmodule PhiaUi.Components.NativeSelect do
 
         <%!-- Overlapping label: floating on border --%>
         <label
-          :if={@label && @variant == "overlapping"}
+          :if={@label && @variant == :overlapping}
           for={@select_id}
           class={cn(["absolute -top-2.5 left-3 bg-background px-1 text-xs text-muted-foreground z-10", @error && "text-destructive"])}
         >
@@ -186,7 +186,7 @@ defmodule PhiaUi.Components.NativeSelect do
               size_class(@size),
               select_variant_class(@variant),
               @icon != [] && "pl-9",
-              @error && @variant == "default" && "border-destructive",
+              @error && @variant == :default && "border-destructive",
               @class
             ])
           }
@@ -214,7 +214,7 @@ defmodule PhiaUi.Components.NativeSelect do
       </div>
 
       <%!-- Description for non-default variants --%>
-      <p :if={@description && @variant != "default"} class="text-sm text-muted-foreground mt-1.5">
+      <p :if={@description && @variant != :default} class="text-sm text-muted-foreground mt-1.5">
         {@description}
       </p>
 
@@ -230,15 +230,15 @@ defmodule PhiaUi.Components.NativeSelect do
   # Private helpers
   # ---------------------------------------------------------------------------
 
-  defp size_class("sm"), do: "h-8 px-3 py-1 pr-8 text-xs"
-  defp size_class("default"), do: "h-10 px-3 py-2 pr-8"
-  defp size_class("lg"), do: "h-12 px-4 py-3 pr-10 text-base"
+  defp size_class(:sm), do: "h-8 px-3 py-1 pr-8 text-xs"
+  defp size_class(:default), do: "h-10 px-3 py-2 pr-8"
+  defp size_class(:lg), do: "h-12 px-4 py-3 pr-10 text-base"
 
-  defp variant_wrapper_class("default"), do: "space-y-2"
-  defp variant_wrapper_class("inset"), do: "space-y-1.5"
-  defp variant_wrapper_class("overlapping"), do: "relative space-y-1.5"
+  defp variant_wrapper_class(:default), do: "space-y-2"
+  defp variant_wrapper_class(:inset), do: "space-y-1.5"
+  defp variant_wrapper_class(:overlapping), do: "relative space-y-1.5"
 
-  defp select_variant_class("default"), do: "border"
-  defp select_variant_class("inset"), do: "border-0 pb-2 pt-0 focus-visible:ring-0"
-  defp select_variant_class("overlapping"), do: "border-0 focus-visible:ring-0"
+  defp select_variant_class(:default), do: "border"
+  defp select_variant_class(:inset), do: "border-0 pb-2 pt-0 focus-visible:ring-0"
+  defp select_variant_class(:overlapping), do: "border-0 focus-visible:ring-0"
 end

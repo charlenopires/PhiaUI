@@ -54,10 +54,14 @@ defmodule PhiaUi.Components.AreaChart do
   attr :animation_duration, :integer, default: 800
   attr :theme, :map, default: %{}, doc: "Chart theme overrides (see ChartTheme)."
   attr :show_point_labels, :boolean, default: false, doc: "Show value labels above data points."
+  attr :id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided)."
+  attr :title, :string, default: nil, doc: "Chart title rendered above the visualization."
+  attr :description, :string, default: nil, doc: "Chart description for context (rendered below title)."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def area_chart(assigns) do
+    chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
     series = ChartHelpers.normalize_series(assigns.data, assigns.series)
     vp = ChartViewport.build()
     theme = ChartTheme.merge(assigns.theme)
@@ -133,13 +137,27 @@ defmodule PhiaUi.Components.AreaChart do
       |> assign(:grid_x1, vp.pl)
       |> assign(:grid_x2, vp.pl + vp.cw)
       |> assign(:theme, theme)
+      |> assign(:chart_id, chart_id)
 
     ~H"""
     <div
       class={cn(["w-full", if(@animate, do: "phia-chart-animate", else: ""), @class])}
       {@rest}
     >
-      <svg viewBox={@viewbox} aria-hidden="true" class="w-full h-full overflow-visible">
+      <div :if={@title} class="mb-2">
+        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
+        <p :if={@description} class="text-xs text-muted-foreground">{@description}</p>
+      </div>
+      <svg
+        viewBox={@viewbox}
+        role={if(@title, do: "img", else: nil)}
+        aria-label={@title}
+        aria-describedby={if(@description, do: "#{@chart_id}-desc", else: nil)}
+        aria-hidden={if(@title, do: nil, else: "true")}
+        class="w-full h-full overflow-visible"
+      >
+        <title :if={@title}>{@title}</title>
+        <desc :if={@description} id={"#{@chart_id}-desc"}>{@description}</desc>
         <%!-- Grid --%>
         <g :if={@show_grid}>
           <line

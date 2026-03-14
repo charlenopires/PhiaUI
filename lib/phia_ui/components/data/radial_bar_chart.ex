@@ -45,10 +45,14 @@ defmodule PhiaUi.Components.RadialBarChart do
 
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 700
+  attr :id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided)."
+  attr :title, :string, default: nil, doc: "Chart title rendered above the visualization."
+  attr :description, :string, default: nil, doc: "Chart description for context (rendered below title)."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def radial_bar_chart(assigns) do
+    chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
     rings =
       assigns.data
       |> Enum.with_index()
@@ -89,13 +93,27 @@ defmodule PhiaUi.Components.RadialBarChart do
       |> assign(:cy, @cy)
       |> assign(:stroke_w, @stroke_w)
       |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
+      |> assign(:chart_id, chart_id)
 
     ~H"""
     <div
       class={cn(["w-full", if(@animate, do: "phia-chart-animate", else: ""), size_class(@size), @class])}
       {@rest}
     >
-      <svg viewBox={@viewbox} aria-hidden="true" class="w-full h-full overflow-visible">
+      <div :if={@title} class="mb-2">
+        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
+        <p :if={@description} class="text-xs text-muted-foreground">{@description}</p>
+      </div>
+      <svg
+        viewBox={@viewbox}
+        role={if(@title, do: "img", else: nil)}
+        aria-label={@title}
+        aria-describedby={if(@description, do: "#{@chart_id}-desc", else: nil)}
+        aria-hidden={if(@title, do: nil, else: "true")}
+        class="w-full h-full overflow-visible"
+      >
+        <title :if={@title}>{@title}</title>
+        <desc :if={@description} id={"#{@chart_id}-desc"}>{@description}</desc>
         <%!-- Track rings (full circle, muted) --%>
         <circle
           :for={ring <- @rings}

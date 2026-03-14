@@ -56,7 +56,7 @@ defmodule PhiaUi.Components.ItemTest do
 
     def render_outline(assigns) do
       ~H"""
-      <.item variant="outline">
+      <.item variant={:outline}>
         <.item_title>Outlined</.item_title>
       </.item>
       """
@@ -64,7 +64,7 @@ defmodule PhiaUi.Components.ItemTest do
 
     def render_muted(assigns) do
       ~H"""
-      <.item variant="muted">
+      <.item variant={:muted}>
         <.item_title>Muted</.item_title>
       </.item>
       """

@@ -18,7 +18,7 @@ defmodule PhiaUi.Components.Surface do
   # 1. surface/1
   # ---------------------------------------------------------------------------
 
-  attr :variant, :string, values: ~w(flat raised floating overlay), default: "flat"
+  attr :variant, :atom, values: [:flat, :raised, :floating, :overlay], default: :flat
   attr :elevation, :any, default: nil
   attr :tonal, :boolean, default: false
   attr :outlined, :boolean, default: false
@@ -57,24 +57,24 @@ defmodule PhiaUi.Components.Surface do
     """
   end
 
-  defp surface_variant_class("flat"),    do: "bg-card text-card-foreground rounded-lg"
-  defp surface_variant_class("raised"),  do: "bg-card text-card-foreground rounded-lg shadow-md"
-  defp surface_variant_class("floating"), do: "bg-card text-card-foreground rounded-xl shadow-xl"
-  defp surface_variant_class("overlay"), do: "bg-popover text-popover-foreground rounded-xl shadow-xl"
+  defp surface_variant_class(:flat),    do: "bg-card text-card-foreground rounded-lg"
+  defp surface_variant_class(:raised),  do: "bg-card text-card-foreground rounded-lg shadow-md"
+  defp surface_variant_class(:floating), do: "bg-card text-card-foreground rounded-xl shadow-xl"
+  defp surface_variant_class(:overlay), do: "bg-popover text-popover-foreground rounded-xl shadow-xl"
 
-  defp elevation_class("0"), do: "shadow-none"
-  defp elevation_class("1"), do: "shadow-sm"
-  defp elevation_class("2"), do: "shadow-md"
-  defp elevation_class("3"), do: "shadow-lg"
-  defp elevation_class("4"), do: "shadow-xl"
-  defp elevation_class("5"), do: "shadow-2xl"
+  defp elevation_class(0), do: "shadow-none"
+  defp elevation_class(1), do: "shadow-sm"
+  defp elevation_class(2), do: "shadow-md"
+  defp elevation_class(3), do: "shadow-lg"
+  defp elevation_class(4), do: "shadow-xl"
+  defp elevation_class(5), do: "shadow-2xl"
 
   # ---------------------------------------------------------------------------
   # 2. paper/1
   # ---------------------------------------------------------------------------
 
-  attr :elevation, :string, values: ~w(0 1 2 3 4 5), default: "1"
-  attr :variant, :string, values: ~w(elevation outlined), default: "elevation"
+  attr :elevation, :integer, values: [0, 1, 2, 3, 4, 5], default: 1
+  attr :variant, :atom, values: [:elevation, :outlined], default: :elevation
   attr :square, :boolean, default: false
   attr :class, :string, default: nil
   attr :rest, :global
@@ -100,8 +100,8 @@ defmodule PhiaUi.Components.Surface do
       class={cn([
         "bg-card text-card-foreground",
         @square && "rounded-none" || "rounded-lg",
-        @variant == "outlined" && "border border-border",
-        @variant == "elevation" && elevation_class(@elevation),
+        @variant == :outlined && "border border-border",
+        @variant == :elevation && elevation_class(@elevation),
         @class
       ])}
       {@rest}

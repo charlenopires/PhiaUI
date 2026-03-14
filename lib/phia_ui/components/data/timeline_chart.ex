@@ -37,10 +37,15 @@ defmodule PhiaUi.Components.TimelineChart do
   attr :colors, :list, default: [], doc: "Override default palette."
   attr :animate, :boolean, default: true
   attr :animation_duration, :integer, default: 500
+  attr :id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided)."
+  attr :title, :string, default: nil, doc: "Chart title rendered above the visualization."
+  attr :description, :string, default: nil, doc: "Chart description for context (rendered below title)."
   attr :class, :string, default: nil
   attr :rest, :global
 
   def timeline_chart(assigns) do
+    chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
+
     n = length(assigns.events)
     chart_w = @vw - @pl - @pr
 
@@ -73,6 +78,7 @@ defmodule PhiaUi.Components.TimelineChart do
       |> assign(:axis_y, @axis_y)
       |> assign(:axis_x1, @pl)
       |> assign(:axis_x2, @pl + chart_w)
+      |> assign(:chart_id, chart_id)
       |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
 
     ~H"""
@@ -80,7 +86,20 @@ defmodule PhiaUi.Components.TimelineChart do
       class={cn(["w-full", if(@animate, do: "phia-chart-animate", else: ""), @class])}
       {@rest}
     >
-      <svg viewBox={@viewbox} aria-hidden="true" class="w-full h-full overflow-visible">
+      <div :if={@title} class="mb-2">
+        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
+        <p :if={@description} class="text-xs text-muted-foreground">{@description}</p>
+      </div>
+      <svg
+        viewBox={@viewbox}
+        role={if(@title, do: "img", else: nil)}
+        aria-label={@title}
+        aria-describedby={if(@description, do: "#{@chart_id}-desc", else: nil)}
+        aria-hidden={if(@title, do: nil, else: "true")}
+        class="w-full h-full overflow-visible"
+      >
+        <title :if={@title}>{@title}</title>
+        <desc :if={@description} id={"#{@chart_id}-desc"}>{@description}</desc>
         <%!-- Axis line --%>
         <line
           x1={@axis_x1}

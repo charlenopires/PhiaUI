@@ -571,9 +571,9 @@ defmodule PhiaUiDesign.Canvas.SceneTest do
 
       hooks = Scene.hooks_needed(scene)
 
-      # dialog has ["FocusTrap", "Dialog"] hooks per the registry
-      assert "FocusTrap" in hooks
-      assert "Dialog" in hooks
+      # dialog has ["PhiaFocusTrap", "PhiaDialog"] hooks per the registry
+      assert "PhiaFocusTrap" in hooks
+      assert "PhiaDialog" in hooks
     end
 
     test "returns empty list when no components need hooks" do
@@ -587,14 +587,14 @@ defmodule PhiaUiDesign.Canvas.SceneTest do
 
     test "deduplicates hooks across components" do
       scene = new_scene()
-      # dialog has FocusTrap, sheet also has FocusTrap
+      # dialog has PhiaFocusTrap, sheet also has PhiaFocusTrap
       Scene.insert_component(scene, :dialog)
       Scene.insert_component(scene, :sheet)
 
       hooks = Scene.hooks_needed(scene)
 
-      # FocusTrap should appear only once
-      assert length(Enum.filter(hooks, &(&1 == "FocusTrap"))) == 1
+      # PhiaFocusTrap should appear only once
+      assert length(Enum.filter(hooks, &(&1 == "PhiaFocusTrap"))) == 1
     end
 
     test "returns empty list for empty scene" do

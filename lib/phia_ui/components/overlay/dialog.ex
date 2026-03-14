@@ -211,7 +211,13 @@ defmodule PhiaUi.Components.Dialog do
             <span class="sr-only">Close</span>
           </button>
         <% end %>
-        <%= render_slot(@inner_block) %>
+        <div
+          role={@scrollable && "region"}
+          aria-label={@scrollable && "Scrollable content"}
+          tabindex={@scrollable && "0"}
+        >
+          <%= render_slot(@inner_block) %>
+        </div>
       </div>
     </div>
     """

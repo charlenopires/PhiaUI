@@ -85,7 +85,7 @@ defmodule PhiaUi.Components.NativeSelectTest do
       <.native_select
         name="size"
         options={[{"A", "a"}, {"B", "b"}]}
-        size="sm"
+        size={:sm}
       />
       """
     end
@@ -95,7 +95,7 @@ defmodule PhiaUi.Components.NativeSelectTest do
       <.native_select
         name="size"
         options={[{"A", "a"}, {"B", "b"}]}
-        size="lg"
+        size={:lg}
       />
       """
     end
@@ -106,7 +106,7 @@ defmodule PhiaUi.Components.NativeSelectTest do
         name="category"
         options={[{"Tech", "tech"}, {"Design", "design"}]}
         label="Category"
-        variant="inset"
+        variant={:inset}
       />
       """
     end
@@ -117,7 +117,7 @@ defmodule PhiaUi.Components.NativeSelectTest do
         name="type"
         options={[{"Bug", "bug"}, {"Feature", "feature"}]}
         label="Type"
-        variant="overlapping"
+        variant={:overlapping}
       />
       """
     end

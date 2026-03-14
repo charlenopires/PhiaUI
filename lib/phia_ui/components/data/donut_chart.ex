@@ -50,6 +50,8 @@ defmodule PhiaUi.Components.DonutChart do
 
   attr :show_link_labels, :boolean, default: false, doc: "Show leader lines from slices to external labels."
 
+  attr :show_values, :boolean, default: false, doc: "Show data values alongside labels in the legend."
+
   attr :active_shape, :boolean,
     default: false,
     doc: "Enable hover expand effect on slices (Recharts activeShape pattern)."
@@ -58,12 +60,17 @@ defmodule PhiaUi.Components.DonutChart do
     default: 6,
     doc: "Radius expansion in px on hover when active_shape is true."
 
+  attr :id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided)."
+  attr :title, :string, default: nil, doc: "Chart title rendered above the visualization."
+  attr :description, :string, default: nil, doc: "Chart description for context (rendered below title)."
   attr :class, :string, default: nil
   attr :rest, :global
 
   slot :center, doc: "Content rendered in the donut center (text, value, etc.)."
 
   def donut_chart(assigns) do
+    chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
+
     r_inner = round(@r_outer * assigns.hole_ratio)
     slices =
       ChartHelpers.donut_slices(assigns.data, @cx, @cy, @r_outer, r_inner, assigns.colors,
@@ -131,6 +138,7 @@ defmodule PhiaUi.Components.DonutChart do
       assigns
       |> assign(:slices, slices_with_labels)
       |> assign(:link_label_slices, link_label_slices)
+      |> assign(:chart_id, chart_id)
       |> assign(:cx, @cx)
       |> assign(:cy, @cy)
       |> assign(:viewbox, "0 0 #{@vw} #{@vh}")
@@ -140,7 +148,20 @@ defmodule PhiaUi.Components.DonutChart do
       class={cn(["w-full", if(@animate, do: "phia-chart-animate", else: ""), @class])}
       {@rest}
     >
-      <svg viewBox={@viewbox} aria-hidden="true" class="w-full h-full overflow-visible">
+      <div :if={@title} class="mb-2">
+        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
+        <p :if={@description} class="text-xs text-muted-foreground">{@description}</p>
+      </div>
+      <svg
+        viewBox={@viewbox}
+        role={if(@title, do: "img", else: nil)}
+        aria-label={@title}
+        aria-describedby={if(@description, do: "#{@chart_id}-desc", else: nil)}
+        aria-hidden={if(@title, do: nil, else: "true")}
+        class="w-full h-full overflow-visible"
+      >
+        <title :if={@title}>{@title}</title>
+        <desc :if={@description} id={"#{@chart_id}-desc"}>{@description}</desc>
         <%!-- Donut slices --%>
         <%= for slice <- @slices do %>
           <%= if @active_shape && slice[:active_path] do %>
@@ -200,7 +221,7 @@ defmodule PhiaUi.Components.DonutChart do
               font-size="9"
               dominant-baseline="middle"
               class="fill-foreground"
-            >{slice.label}</text>
+            >{slice.label}<%= if @show_values do %> ({Enum.at(@data, i).value})<% end %></text>
           </g>
         </g>
 

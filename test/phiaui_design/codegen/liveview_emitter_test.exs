@@ -268,8 +268,8 @@ defmodule PhiaUiDesign.Codegen.LiveviewEmitterTest do
     test "returns JS hook names for components that need them" do
       hooks = LiveviewEmitter.required_hooks([:dialog])
 
-      assert "FocusTrap" in hooks
-      assert "Dialog" in hooks
+      assert "PhiaFocusTrap" in hooks
+      assert "PhiaDialog" in hooks
     end
 
     test "returns empty list for components without hooks" do
@@ -281,8 +281,8 @@ defmodule PhiaUiDesign.Codegen.LiveviewEmitterTest do
     test "deduplicates and sorts hooks" do
       hooks = LiveviewEmitter.required_hooks([:dialog, :sheet])
 
-      # Both have FocusTrap — should only appear once
-      assert length(Enum.filter(hooks, &(&1 == "FocusTrap"))) == 1
+      # Both have PhiaFocusTrap — should only appear once
+      assert length(Enum.filter(hooks, &(&1 == "PhiaFocusTrap"))) == 1
       # Should be sorted
       assert hooks == Enum.sort(hooks)
     end

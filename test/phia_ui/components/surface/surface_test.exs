@@ -23,44 +23,44 @@ defmodule PhiaUi.Components.Surface.SurfaceTest do
 
   describe "surface/1" do
     test "renders flat variant" do
-      html = render_component(&H.render_surface/1, %{variant: "flat", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :flat, class: nil})
       assert html =~ "bg-card"
       assert html =~ "rounded-lg"
       refute html =~ "shadow-md"
     end
 
     test "renders raised variant" do
-      html = render_component(&H.render_surface/1, %{variant: "raised", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :raised, class: nil})
       assert html =~ "shadow-md"
       assert html =~ "bg-card"
     end
 
     test "renders floating variant" do
-      html = render_component(&H.render_surface/1, %{variant: "floating", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :floating, class: nil})
       assert html =~ "shadow-xl"
       assert html =~ "rounded-xl"
     end
 
     test "renders overlay variant" do
-      html = render_component(&H.render_surface/1, %{variant: "overlay", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :overlay, class: nil})
       assert html =~ "bg-popover"
       assert html =~ "text-popover-foreground"
     end
 
     test "elevation overrides add shadow class" do
-      html = render_component(&H.render_surface/1, %{variant: "flat", elevation: "5", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :flat, elevation: 5, class: nil})
       assert html =~ "shadow-2xl"
     end
 
     test "elevation 0 adds shadow-none" do
-      html = render_component(&H.render_surface/1, %{variant: "flat", elevation: "0", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :flat, elevation: 0, class: nil})
       assert html =~ "shadow-none"
     end
 
     test "tonal adds primary/5 class" do
       html =
         render_component(&H.render_surface/1, %{
-          variant: "flat",
+          variant: :flat,
           tonal: true,
           class: nil
         })
@@ -71,7 +71,7 @@ defmodule PhiaUi.Components.Surface.SurfaceTest do
     test "outlined adds border class" do
       html =
         render_component(&H.render_surface/1, %{
-          variant: "flat",
+          variant: :flat,
           outlined: true,
           class: nil
         })
@@ -80,12 +80,12 @@ defmodule PhiaUi.Components.Surface.SurfaceTest do
     end
 
     test "renders inner content" do
-      html = render_component(&H.render_surface/1, %{variant: "flat", class: nil})
+      html = render_component(&H.render_surface/1, %{variant: :flat, class: nil})
       assert html =~ "content"
     end
 
     test "passes extra class through" do
-      html = render_component(&H.render_surface/1, %{variant: "flat", class: "my-custom"})
+      html = render_component(&H.render_surface/1, %{variant: :flat, class: "my-custom"})
       assert html =~ "my-custom"
     end
   end
@@ -96,29 +96,29 @@ defmodule PhiaUi.Components.Surface.SurfaceTest do
 
   describe "paper/1" do
     test "default elevation 1 renders shadow-sm" do
-      html = render_component(&H.render_paper/1, %{elevation: "1", variant: "elevation", square: false, class: nil})
+      html = render_component(&H.render_paper/1, %{elevation: 1, variant: :elevation, square: false, class: nil})
       assert html =~ "shadow-sm"
       assert html =~ "rounded-lg"
     end
 
     test "elevation 3 renders shadow-lg" do
-      html = render_component(&H.render_paper/1, %{elevation: "3", variant: "elevation", square: false, class: nil})
+      html = render_component(&H.render_paper/1, %{elevation: 3, variant: :elevation, square: false, class: nil})
       assert html =~ "shadow-lg"
     end
 
     test "variant outlined adds border" do
-      html = render_component(&H.render_paper/1, %{elevation: "1", variant: "outlined", square: false, class: nil})
+      html = render_component(&H.render_paper/1, %{elevation: 1, variant: :outlined, square: false, class: nil})
       assert html =~ "border border-border"
     end
 
     test "square removes rounding" do
-      html = render_component(&H.render_paper/1, %{elevation: "1", variant: "elevation", square: true, class: nil})
+      html = render_component(&H.render_paper/1, %{elevation: 1, variant: :elevation, square: true, class: nil})
       assert html =~ "rounded-none"
       refute html =~ "rounded-lg"
     end
 
     test "renders content" do
-      html = render_component(&H.render_paper/1, %{elevation: "1", variant: "elevation", square: false, class: nil})
+      html = render_component(&H.render_paper/1, %{elevation: 1, variant: :elevation, square: false, class: nil})
       assert html =~ "content"
     end
   end

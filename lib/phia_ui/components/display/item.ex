@@ -49,9 +49,9 @@ defmodule PhiaUi.Components.Item do
   # item/1
   # ---------------------------------------------------------------------------
 
-  attr :variant, :string,
-    values: ~w(default outline muted),
-    default: "default",
+  attr :variant, :atom,
+    values: [:default, :outline, :muted],
+    default: :default,
     doc: "Visual variant."
 
   attr :href, :string, default: nil, doc: "Renders as an `<a>` tag."
@@ -176,7 +176,7 @@ defmodule PhiaUi.Components.Item do
     ])
   end
 
-  defp variant_class("default"), do: nil
-  defp variant_class("outline"), do: "border border-border"
-  defp variant_class("muted"), do: "bg-muted/50"
+  defp variant_class(:default), do: nil
+  defp variant_class(:outline), do: "border border-border"
+  defp variant_class(:muted), do: "bg-muted/50"
 end

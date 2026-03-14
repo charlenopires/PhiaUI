@@ -155,8 +155,8 @@ defmodule PhiaUiDesign.Catalog.IntrospectorTest do
       info = Introspector.get_component_info(:dialog)
 
       assert is_list(info.js_hooks)
-      assert "FocusTrap" in info.js_hooks
-      assert "Dialog" in info.js_hooks
+      assert "PhiaFocusTrap" in info.js_hooks
+      assert "PhiaDialog" in info.js_hooks
     end
 
     test "includes dependencies from registry" do

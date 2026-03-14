@@ -64,7 +64,7 @@ defmodule PhiaUi.Components.Bento do
 
   attr :span_col, :string, values: ~w(1 2 3), default: "1"
   attr :span_row, :string, values: ~w(1 2), default: "1"
-  attr :variant, :string, values: ~w(default glass gradient outlined dark), default: "default"
+  attr :variant, :atom, values: [:default, :glass, :gradient, :outlined, :dark], default: :default
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -110,11 +110,11 @@ defmodule PhiaUi.Components.Bento do
   defp bento_span_row_class("1"), do: "row-span-1"
   defp bento_span_row_class("2"), do: "row-span-2"
 
-  defp bento_variant_class("default"),  do: "bg-card border border-border shadow-sm"
-  defp bento_variant_class("glass"),    do: "backdrop-blur-md bg-white/20 dark:bg-black/20 border border-white/20"
-  defp bento_variant_class("gradient"), do: "bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20"
-  defp bento_variant_class("outlined"), do: "border-2 border-border bg-transparent"
-  defp bento_variant_class("dark"),     do: "bg-foreground text-background"
+  defp bento_variant_class(:default),  do: "bg-card border border-border shadow-sm"
+  defp bento_variant_class(:glass),    do: "backdrop-blur-md bg-white/20 dark:bg-black/20 border border-white/20"
+  defp bento_variant_class(:gradient), do: "bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20"
+  defp bento_variant_class(:outlined), do: "border-2 border-border bg-transparent"
+  defp bento_variant_class(:dark),     do: "bg-foreground text-background"
 
   # ---------------------------------------------------------------------------
   # 24. bento_header/1
@@ -161,7 +161,7 @@ defmodule PhiaUi.Components.Bento do
   # ---------------------------------------------------------------------------
 
   attr :position, :string, values: ~w(top-left top-right bottom-left bottom-right), default: "top-right"
-  attr :variant, :string, values: ~w(default primary success warning destructive), default: "default"
+  attr :variant, :atom, values: [:default, :primary, :success, :warning, :destructive], default: :default
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -197,9 +197,9 @@ defmodule PhiaUi.Components.Bento do
   defp bento_badge_position_class("bottom-left"),  do: "bottom-3 left-3"
   defp bento_badge_position_class("bottom-right"), do: "bottom-3 right-3"
 
-  defp bento_badge_variant_class("default"),     do: "bg-secondary text-secondary-foreground"
-  defp bento_badge_variant_class("primary"),     do: "bg-primary text-primary-foreground"
-  defp bento_badge_variant_class("success"),     do: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-  defp bento_badge_variant_class("warning"),     do: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
-  defp bento_badge_variant_class("destructive"), do: "bg-destructive/10 text-destructive"
+  defp bento_badge_variant_class(:default),     do: "bg-secondary text-secondary-foreground"
+  defp bento_badge_variant_class(:primary),     do: "bg-primary text-primary-foreground"
+  defp bento_badge_variant_class(:success),     do: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+  defp bento_badge_variant_class(:warning),     do: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+  defp bento_badge_variant_class(:destructive), do: "bg-destructive/10 text-destructive"
 end
