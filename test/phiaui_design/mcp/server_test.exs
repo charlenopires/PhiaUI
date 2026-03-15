@@ -149,7 +149,7 @@ defmodule PhiaUiDesign.Mcp.ServerTest do
   # ---------------------------------------------------------------------------
 
   describe "tools/list message" do
-    test "returns all 15 tool definitions" do
+    test "returns all 20 tool definitions" do
       state = new_state()
 
       message = %{"jsonrpc" => "2.0", "id" => 2, "method" => "tools/list"}
@@ -160,7 +160,7 @@ defmodule PhiaUiDesign.Mcp.ServerTest do
 
       tools = response["result"]["tools"]
       assert is_list(tools)
-      assert length(tools) == 15
+      assert length(tools) == 20
     end
 
     test "each tool has name, description, and inputSchema" do
@@ -438,9 +438,9 @@ defmodule PhiaUiDesign.Mcp.ServerTest do
   # ---------------------------------------------------------------------------
 
   describe "ToolRegistry" do
-    test "all_tools returns a list of 15 tool definitions" do
+    test "all_tools returns a list of 20 tool definitions" do
       tools = ToolRegistry.all_tools()
-      assert length(tools) == 15
+      assert length(tools) == 20
     end
 
     test "each tool has required input schema type of object" do

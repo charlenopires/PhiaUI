@@ -76,6 +76,30 @@ defmodule PhiaUiDesign.Templates.PageTemplates do
       name: "Blank Page",
       description: "Empty page with just a container",
       category: :utility
+    },
+    %{
+      key: :blog,
+      name: "Blog",
+      description: "Article list with sidebar categories and featured post",
+      category: :marketing
+    },
+    %{
+      key: :inbox,
+      name: "Inbox",
+      description: "Two-panel inbox with message list and detail view",
+      category: :app
+    },
+    %{
+      key: :kanban,
+      name: "Kanban Board",
+      description: "Horizontal columns with draggable cards",
+      category: :app
+    },
+    %{
+      key: :analytics,
+      name: "Analytics",
+      description: "Charts, stat cards, and data visualization dashboard",
+      category: :app
     }
   ]
 
@@ -138,6 +162,10 @@ defmodule PhiaUiDesign.Templates.PageTemplates do
   def apply_template(scene, :profile), do: build_profile(scene)
   def apply_template(scene, :pricing), do: build_pricing(scene)
   def apply_template(scene, :empty), do: build_empty(scene)
+  def apply_template(scene, :blog), do: build_blog(scene)
+  def apply_template(scene, :inbox), do: build_inbox(scene)
+  def apply_template(scene, :kanban), do: build_kanban(scene)
+  def apply_template(scene, :analytics), do: build_analytics(scene)
   def apply_template(_scene, _key), do: {:error, :unknown_template}
 
   # ---------------------------------------------------------------------------
@@ -740,6 +768,284 @@ defmodule PhiaUiDesign.Templates.PageTemplates do
     {:ok, _container} = Scene.insert_element(scene, "div",
       classes: "p-6",
       name: "Container"
+    )
+
+    {:ok, scene}
+  end
+
+  # ---------------------------------------------------------------------------
+  # Blog — featured post + article list + sidebar
+  # ---------------------------------------------------------------------------
+
+  defp build_blog(scene) do
+    {:ok, root} = Scene.insert_element(scene, "div",
+      classes: "max-w-6xl mx-auto p-8 flex gap-8",
+      name: "Blog Root"
+    )
+
+    # -- Main column --
+    {:ok, main} = Scene.insert_element(scene, "main",
+      classes: "flex-1 space-y-8",
+      parent_id: root.id,
+      name: "Blog Main"
+    )
+
+    {:ok, _hdr} = Scene.insert_component(scene, :page_header,
+      attrs: %{title: "Blog", description: "Latest articles and updates"},
+      parent_id: main.id,
+      name: "Blog Header"
+    )
+
+    # Featured post
+    Scene.insert_component(scene, :article_card,
+      attrs: %{title: "Getting Started with PhiaUI", description: "A complete guide to building beautiful UIs"},
+      parent_id: main.id,
+      name: "Featured Post"
+    )
+
+    {:ok, grid} = Scene.insert_element(scene, "div",
+      classes: "grid grid-cols-1 gap-6 md:grid-cols-2",
+      parent_id: main.id,
+      name: "Articles Grid"
+    )
+
+    for title <- ["Component Patterns", "Design Tokens", "Accessibility Guide"] do
+      Scene.insert_component(scene, :article_card,
+        attrs: %{title: title, description: "Article description"},
+        parent_id: grid.id
+      )
+    end
+
+    # -- Sidebar --
+    {:ok, sidebar} = Scene.insert_element(scene, "aside",
+      classes: "w-64 space-y-6",
+      parent_id: root.id,
+      name: "Blog Sidebar"
+    )
+
+    Scene.insert_component(scene, :heading,
+      attrs: %{level: 3},
+      slots: %{inner_block: "Categories"},
+      parent_id: sidebar.id
+    )
+
+    {:ok, cats} = Scene.insert_component(scene, :nav_list,
+      parent_id: sidebar.id,
+      name: "Categories Nav"
+    )
+
+    for cat <- ["Tutorials", "Design", "Engineering", "Updates"] do
+      Scene.insert_component(scene, :button,
+        attrs: %{variant: "ghost", class: "w-full justify-start"},
+        slots: %{inner_block: cat},
+        parent_id: cats.id
+      )
+    end
+
+    {:ok, scene}
+  end
+
+  # ---------------------------------------------------------------------------
+  # Inbox — two-panel layout with message list + detail
+  # ---------------------------------------------------------------------------
+
+  defp build_inbox(scene) do
+    {:ok, root} = Scene.insert_element(scene, "div",
+      classes: "flex h-screen bg-background",
+      name: "Inbox Root"
+    )
+
+    # -- Message list panel --
+    {:ok, list_panel} = Scene.insert_element(scene, "div",
+      classes: "w-80 border-r border-border flex flex-col",
+      parent_id: root.id,
+      name: "Message List"
+    )
+
+    {:ok, list_header} = Scene.insert_element(scene, "div",
+      classes: "p-4 border-b border-border",
+      parent_id: list_panel.id,
+      name: "List Header"
+    )
+
+    Scene.insert_component(scene, :heading,
+      attrs: %{level: 2},
+      slots: %{inner_block: "Inbox"},
+      parent_id: list_header.id
+    )
+
+    Scene.insert_component(scene, :search_input,
+      attrs: %{placeholder: "Search messages..."},
+      parent_id: list_header.id
+    )
+
+    {:ok, messages} = Scene.insert_element(scene, "div",
+      classes: "flex-1 overflow-auto",
+      parent_id: list_panel.id,
+      name: "Messages"
+    )
+
+    for {name, subject} <- [{"Alice", "Project Update"}, {"Bob", "Meeting Notes"}, {"Carol", "Quick Question"}] do
+      Scene.insert_component(scene, :card,
+        attrs: %{class: "m-2 p-3 cursor-pointer hover:bg-muted/50"},
+        slots: %{inner_block: "#{name}: #{subject}"},
+        parent_id: messages.id
+      )
+    end
+
+    # -- Detail panel --
+    {:ok, detail} = Scene.insert_element(scene, "div",
+      classes: "flex-1 flex flex-col",
+      parent_id: root.id,
+      name: "Message Detail"
+    )
+
+    {:ok, detail_header} = Scene.insert_element(scene, "div",
+      classes: "p-6 border-b border-border",
+      parent_id: detail.id,
+      name: "Detail Header"
+    )
+
+    Scene.insert_component(scene, :heading,
+      attrs: %{level: 2},
+      slots: %{inner_block: "Project Update"},
+      parent_id: detail_header.id
+    )
+
+    {:ok, detail_body} = Scene.insert_element(scene, "div",
+      classes: "flex-1 p-6 overflow-auto",
+      parent_id: detail.id,
+      name: "Detail Body"
+    )
+
+    Scene.insert_component(scene, :paragraph,
+      slots: %{inner_block: "Message content goes here..."},
+      parent_id: detail_body.id
+    )
+
+    {:ok, scene}
+  end
+
+  # ---------------------------------------------------------------------------
+  # Kanban — horizontal columns with cards
+  # ---------------------------------------------------------------------------
+
+  defp build_kanban(scene) do
+    {:ok, root} = Scene.insert_element(scene, "div",
+      classes: "p-6 space-y-6",
+      name: "Kanban Root"
+    )
+
+    {:ok, _hdr} = Scene.insert_component(scene, :page_header,
+      attrs: %{title: "Kanban Board", description: "Manage your tasks"},
+      parent_id: root.id,
+      name: "Kanban Header"
+    )
+
+    {:ok, board} = Scene.insert_element(scene, "div",
+      classes: "flex gap-6 overflow-x-auto",
+      parent_id: root.id,
+      name: "Board"
+    )
+
+    columns = [
+      {"To Do", ["Design login page", "Create API endpoints"]},
+      {"In Progress", ["Build dashboard"]},
+      {"Review", ["Code review: auth module"]},
+      {"Done", ["Setup project", "Configure CI/CD"]}
+    ]
+
+    for {col_name, tasks} <- columns do
+      {:ok, col} = Scene.insert_element(scene, "div",
+        classes: "min-w-[280px] bg-muted/50 rounded-lg p-4 space-y-3",
+        parent_id: board.id,
+        name: col_name
+      )
+
+      Scene.insert_component(scene, :heading,
+        attrs: %{level: 4},
+        slots: %{inner_block: col_name},
+        parent_id: col.id
+      )
+
+      Scene.insert_component(scene, :badge,
+        slots: %{inner_block: to_string(length(tasks))},
+        parent_id: col.id
+      )
+
+      for task <- tasks do
+        Scene.insert_component(scene, :card,
+          attrs: %{class: "p-3"},
+          slots: %{inner_block: task},
+          parent_id: col.id
+        )
+      end
+    end
+
+    {:ok, scene}
+  end
+
+  # ---------------------------------------------------------------------------
+  # Analytics — stat cards + charts dashboard
+  # ---------------------------------------------------------------------------
+
+  defp build_analytics(scene) do
+    {:ok, root} = Scene.insert_element(scene, "div",
+      classes: "p-6 space-y-6",
+      name: "Analytics Root"
+    )
+
+    {:ok, _hdr} = Scene.insert_component(scene, :page_header,
+      attrs: %{title: "Analytics", description: "Performance metrics and trends"},
+      parent_id: root.id,
+      name: "Analytics Header"
+    )
+
+    # -- Stat cards row --
+    {:ok, stats_grid} = Scene.insert_element(scene, "div",
+      classes: "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4",
+      parent_id: root.id,
+      name: "Stats Grid"
+    )
+
+    stats = [
+      {"Total Views", "128,430"},
+      {"Unique Visitors", "45,231"},
+      {"Bounce Rate", "32.1%"},
+      {"Avg. Duration", "2m 34s"}
+    ]
+
+    for {title, value} <- stats do
+      Scene.insert_component(scene, :stat_card,
+        attrs: %{title: title, value: value},
+        parent_id: stats_grid.id
+      )
+    end
+
+    # -- Charts row --
+    {:ok, charts_row} = Scene.insert_element(scene, "div",
+      classes: "grid grid-cols-1 gap-6 lg:grid-cols-2",
+      parent_id: root.id,
+      name: "Charts Row"
+    )
+
+    Scene.insert_component(scene, :card,
+      slots: %{inner_block: "Traffic Over Time (Line Chart)"},
+      parent_id: charts_row.id,
+      name: "Traffic Chart"
+    )
+
+    Scene.insert_component(scene, :card,
+      slots: %{inner_block: "Top Pages (Bar Chart)"},
+      parent_id: charts_row.id,
+      name: "Pages Chart"
+    )
+
+    # -- Data table --
+    Scene.insert_component(scene, :card,
+      slots: %{inner_block: "Recent Events"},
+      parent_id: root.id,
+      name: "Events Table"
     )
 
     {:ok, scene}

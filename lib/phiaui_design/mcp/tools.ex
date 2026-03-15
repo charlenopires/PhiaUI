@@ -7,10 +7,11 @@ defmodule PhiaUiDesign.Mcp.Tools do
   MCP content format: `%{"content" => [%{"type" => "text", "text" => ...}]}`.
   """
 
-  alias PhiaUiDesign.Canvas.Scene
+  alias PhiaUiDesign.Canvas.{Scene, Variables}
   alias PhiaUiDesign.Codegen.{HeexEmitter, LiveviewEmitter}
   alias PhiaUiDesign.Templates.PageTemplates
   alias PhiaUiDesign.Catalog.{CatalogServer, Introspector}
+  alias PhiaUiDesign.Mcp.{BatchDesign, BatchGet, SnapshotLayout}
 
   @doc """
   Execute a tool by name. Returns `{result, state}`.
@@ -255,6 +256,88 @@ defmodule PhiaUiDesign.Mcp.Tools do
     {text_result("Cleared #{old_count} nodes."), %{state | scene: new_scene}}
   end
 
+  # ---------------------------------------------------------------------------
+  # Batch design tools
+  # ---------------------------------------------------------------------------
+
+  defp do_execute("batch_design", %{"operations" => operations}, state) do
+    case BatchDesign.execute(state.scene, operations) do
+      {:ok, results, bindings} ->
+        output = %{
+          "results" => results,
+          "bindings" => bindings,
+          "node_count" => Scene.count(state.scene)
+        }
+
+        {text_result(Jason.encode!(output, pretty: true)), state}
+
+      {:error, message, index} ->
+        {text_result("Error at operation #{index}: #{message}"), state}
+    end
+  end
+
+  defp do_execute("batch_get", args, state) do
+    case BatchGet.execute(state.scene, args) do
+      {:ok, results} ->
+        {text_result(Jason.encode!(results, pretty: true)), state}
+    end
+  end
+
+  defp do_execute("snapshot_layout", args, state) do
+    case SnapshotLayout.execute(state.scene, args) do
+      {:ok, tree} ->
+        output = serialize_snapshot(tree)
+        {text_result(Jason.encode!(output, pretty: true)), state}
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Variable tools
+  # ---------------------------------------------------------------------------
+
+  defp do_execute("get_phia_variables", _args, state) do
+    vars = Variables.get_all(state.scene)
+
+    formatted =
+      Map.new(vars, fn {name, definition} ->
+        {name, %{
+          "value" => definition.value,
+          "type" => to_string(definition.type),
+          "theme_overrides" => Map.new(definition.theme_overrides, fn {k, v} ->
+            {to_string(k), v}
+          end)
+        }}
+      end)
+
+    {text_result(Jason.encode!(formatted, pretty: true)), state}
+  end
+
+  defp do_execute("set_phia_variables", args, state) do
+    # Handle deletions
+    if deletes = args["delete"] do
+      Enum.each(deletes, &Variables.delete(state.scene, &1))
+    end
+
+    # Handle sets/updates
+    if variables = args["variables"] do
+      normalized =
+        Map.new(variables, fn {name, def_map} ->
+          {name, %{
+            value: def_map["value"],
+            type: safe_to_atom(def_map["type"] || "string"),
+            theme_overrides: Map.new(def_map["theme_overrides"] || %{}, fn {k, v} ->
+              {safe_to_atom(k), v}
+            end)
+          }}
+        end)
+
+      Variables.put_all(state.scene, normalized)
+    end
+
+    count = map_size(Variables.get_all(state.scene))
+    {text_result("Variables updated. #{count} variables defined."), state}
+  end
+
   # Unknown tool
   defp do_execute(tool_name, _args, state) do
     {text_result("Unknown tool: #{tool_name}"), state}
@@ -404,4 +487,39 @@ defmodule PhiaUiDesign.Mcp.Tools do
     do: ":#{v}"
 
   defp stringify_value(v), do: v
+
+  defp serialize_snapshot(tree) when is_list(tree) do
+    Enum.map(tree, &serialize_snapshot_node/1)
+  end
+
+  defp serialize_snapshot_node(%{bbox: bbox, children: children} = entry) do
+    %{
+      "id" => entry.id,
+      "name" => entry.name,
+      "type" => entry.type,
+      "bbox" => %{
+        "x" => bbox.x,
+        "y" => bbox.y,
+        "width" => bbox.width,
+        "height" => bbox.height
+      },
+      "problems" => entry.problems,
+      "children" => Enum.map(children, &serialize_snapshot_node/1)
+    }
+  end
+
+  defp serialize_snapshot_node(%{bbox: bbox} = entry) do
+    %{
+      "id" => entry.id,
+      "name" => entry.name,
+      "type" => entry.type,
+      "bbox" => %{
+        "x" => bbox.x,
+        "y" => bbox.y,
+        "width" => bbox.width,
+        "height" => bbox.height
+      },
+      "problems" => entry.problems
+    }
+  end
 end

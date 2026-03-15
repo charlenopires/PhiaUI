@@ -28,9 +28,9 @@ defmodule PhiaUiDesign.Canvas.Persistence do
       }
   """
 
-  alias PhiaUiDesign.Canvas.{Scene, Node}
+  alias PhiaUiDesign.Canvas.{Scene, Node, Variables}
 
-  @format_version 1
+  @format_version 2
 
   # ---------------------------------------------------------------------------
   # Save
@@ -49,12 +49,15 @@ defmodule PhiaUiDesign.Canvas.Persistence do
     nodes = Scene.all_nodes(scene)
     root_children = Scene.get_root_children(scene)
 
+    variables = Variables.get_all(scene)
+
     data = %{
       "version" => @format_version,
       "name" => meta[:name] || "Untitled",
       "theme" => to_string(theme),
       "root_children" => root_children,
-      "nodes" => Enum.map(nodes, &serialize_node/1)
+      "nodes" => Enum.map(nodes, &serialize_node/1),
+      "variables" => serialize_variables(variables)
     }
 
     dir = Path.dirname(path)
@@ -91,6 +94,10 @@ defmodule PhiaUiDesign.Canvas.Persistence do
 
       # Set root children
       :ets.insert(scene, {:__root_children__, root_children})
+
+      # Load variables (backward compatible — v1 files have no "variables" key)
+      variables = deserialize_variables(data["variables"] || %{})
+      Variables.put_all(scene, variables)
 
       # Update meta
       :ets.insert(scene, {:__meta__, %{
@@ -176,12 +183,43 @@ defmodule PhiaUiDesign.Canvas.Persistence do
         Map.put(base, "text_content", node.text_content)
 
       :frame ->
-        Map.put(base, "classes", node.classes)
+        base
+        |> Map.put("classes", node.classes)
+        |> serialize_layout_fields(node)
 
       _ ->
         base
     end
   end
+
+  defp serialize_layout_fields(map, node) do
+    layout_fields = [:layout, :gap, :padding, :justify_content, :align_items, :wrap, :width, :height]
+
+    Enum.reduce(layout_fields, map, fn field, acc ->
+      case Map.get(node, field) do
+        nil -> acc
+        false when field == :wrap -> acc
+        value -> Map.put(acc, to_string(field), serialize_layout_value(value))
+      end
+    end)
+  end
+
+  defp serialize_layout_value(v) when is_atom(v), do: to_string(v)
+  defp serialize_layout_value(v), do: v
+
+  defp serialize_variables(vars) when is_map(vars) do
+    Map.new(vars, fn {name, definition} ->
+      {name, %{
+        "value" => definition.value,
+        "type" => to_string(definition.type),
+        "theme_overrides" => Map.new(definition.theme_overrides, fn {k, v} ->
+          {to_string(k), v}
+        end)
+      }}
+    end)
+  end
+
+  defp serialize_variables(_), do: %{}
 
   defp serialize_attrs(map) when is_map(map) do
     Map.new(map, fn {k, v} ->
@@ -237,11 +275,96 @@ defmodule PhiaUiDesign.Canvas.Persistence do
 
       :frame ->
         %{base | classes: data["classes"]}
+        |> deserialize_layout_fields(data)
 
       _ ->
         base
     end
   end
+
+  defp deserialize_layout_fields(node, data) do
+    node
+    |> maybe_set_layout(data)
+    |> maybe_set_int_field(:gap, data["gap"])
+    |> maybe_set_padding(data["padding"])
+    |> maybe_set_atom_field(:justify_content, data["justify_content"])
+    |> maybe_set_atom_field(:align_items, data["align_items"])
+    |> maybe_set_bool_field(:wrap, data["wrap"])
+    |> maybe_set_size_field(:width, data["width"])
+    |> maybe_set_size_field(:height, data["height"])
+  end
+
+  defp maybe_set_layout(node, %{"layout" => dir}) when is_binary(dir) do
+    %{node | layout: safe_to_atom(dir)}
+  end
+
+  defp maybe_set_layout(node, _), do: node
+
+  defp maybe_set_int_field(node, _field, nil), do: node
+
+  defp maybe_set_int_field(node, field, value) when is_integer(value) do
+    Map.put(node, field, value)
+  end
+
+  defp maybe_set_int_field(node, field, value) when is_binary(value) do
+    case Integer.parse(value) do
+      {i, ""} -> Map.put(node, field, i)
+      _ -> Map.put(node, field, value)
+    end
+  end
+
+  defp maybe_set_int_field(node, _field, _), do: node
+
+  defp maybe_set_padding(node, nil), do: node
+  defp maybe_set_padding(node, value) when is_integer(value), do: %{node | padding: value}
+  defp maybe_set_padding(node, value) when is_list(value), do: %{node | padding: value}
+  defp maybe_set_padding(node, _), do: node
+
+  defp maybe_set_atom_field(node, _field, nil), do: node
+
+  defp maybe_set_atom_field(node, field, value) when is_binary(value) do
+    Map.put(node, field, safe_to_atom(value))
+  end
+
+  defp maybe_set_atom_field(node, _field, _), do: node
+
+  defp maybe_set_bool_field(node, _field, nil), do: node
+  defp maybe_set_bool_field(node, field, value) when is_boolean(value), do: Map.put(node, field, value)
+  defp maybe_set_bool_field(node, _field, _), do: node
+
+  defp maybe_set_size_field(node, _field, nil), do: node
+
+  defp maybe_set_size_field(node, field, value) when is_integer(value) do
+    Map.put(node, field, value)
+  end
+
+  defp maybe_set_size_field(node, field, value) when is_binary(value) do
+    case value do
+      "fill" -> Map.put(node, field, :fill)
+      "hug" -> Map.put(node, field, :hug)
+      _ ->
+        case Integer.parse(value) do
+          {i, ""} -> Map.put(node, field, i)
+          _ -> Map.put(node, field, value)
+        end
+    end
+  end
+
+  defp maybe_set_size_field(node, _field, _), do: node
+
+  defp deserialize_variables(vars) when is_map(vars) do
+    Map.new(vars, fn {name, def_map} ->
+      {name, %{
+        value: def_map["value"],
+        type: safe_to_atom(def_map["type"] || "string"),
+        theme_overrides: Map.new(def_map["theme_overrides"] || %{}, fn {k, v} ->
+          {safe_to_atom(k), v}
+        end)
+      }}
+    end)
+  end
+
+  defp deserialize_variables(_), do: %{}
 
   defp deserialize_attrs(map) when is_map(map) do
     Map.new(map, fn {k, v} ->

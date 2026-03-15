@@ -50,7 +50,7 @@ defmodule PhiaUiDesign.Canvas.PersistenceTest do
 
       {:ok, content} = File.read(path)
       data = Jason.decode!(content)
-      assert data["version"] == 1
+      assert data["version"] == 2
       assert length(data["nodes"]) == 1
     end
 
@@ -172,7 +172,7 @@ defmodule PhiaUiDesign.Canvas.PersistenceTest do
       assert is_reference(loaded_scene)
       assert metadata.theme == :rose
       assert metadata.name == "Untitled"
-      assert metadata.version == 1
+      assert metadata.version == 2
     end
 
     test "loaded scene has the same number of nodes" do

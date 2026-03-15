@@ -9,6 +9,9 @@ defmodule PhiaUiDesign.Canvas.Node do
   @type node_type :: :phia_component | :html_element | :text | :frame
   @type family_role :: :root | :child | nil
 
+  @type layout_direction :: :vertical | :horizontal | nil
+  @type size_value :: :fill | :hug | integer() | String.t() | nil
+
   @type t :: %__MODULE__{
           id: String.t(),
           type: node_type(),
@@ -23,7 +26,15 @@ defmodule PhiaUiDesign.Canvas.Node do
           parent_id: String.t() | nil,
           locked: boolean(),
           visible: boolean(),
-          name: String.t()
+          name: String.t(),
+          layout: layout_direction(),
+          gap: integer() | String.t() | nil,
+          padding: integer() | [integer()] | String.t() | nil,
+          justify_content: atom() | nil,
+          align_items: atom() | nil,
+          wrap: boolean(),
+          width: size_value(),
+          height: size_value()
         }
 
   @enforce_keys [:id, :type]
@@ -36,11 +47,19 @@ defmodule PhiaUiDesign.Canvas.Node do
     :classes,
     :text_content,
     :parent_id,
+    :layout,
+    :gap,
+    :padding,
+    :justify_content,
+    :align_items,
+    :width,
+    :height,
     attrs: %{},
     slots: %{},
     children: [],
     locked: false,
     visible: true,
+    wrap: false,
     name: ""
   ]
 
@@ -98,7 +117,15 @@ defmodule PhiaUiDesign.Canvas.Node do
       classes: Keyword.get(opts, :classes),
       parent_id: Keyword.get(opts, :parent_id),
       name: Keyword.get(opts, :name, "Frame"),
-      children: Keyword.get(opts, :children, [])
+      children: Keyword.get(opts, :children, []),
+      layout: Keyword.get(opts, :layout),
+      gap: Keyword.get(opts, :gap),
+      padding: Keyword.get(opts, :padding),
+      justify_content: Keyword.get(opts, :justify_content),
+      align_items: Keyword.get(opts, :align_items),
+      wrap: Keyword.get(opts, :wrap, false),
+      width: Keyword.get(opts, :width),
+      height: Keyword.get(opts, :height)
     }
   end
 

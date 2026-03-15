@@ -15,6 +15,7 @@ defmodule PhiaUiDesign.Canvas.Scene do
     table = :ets.new(:scene, [:set, :public, read_concurrency: true])
     :ets.insert(table, {:__root_children__, []})
     :ets.insert(table, {:__meta__, %{name: "Untitled", created_at: DateTime.utc_now()}})
+    :ets.insert(table, {:__variables__, %{}})
     table
   end
 
@@ -178,6 +179,12 @@ defmodule PhiaUiDesign.Canvas.Scene do
     |> Enum.reject(&is_nil/1)
     |> Enum.flat_map(& &1.js_hooks)
     |> Enum.uniq()
+  end
+
+  @doc "Find nodes matching a predicate function"
+  def find_nodes(scene, predicate) when is_function(predicate, 1) do
+    all_nodes(scene)
+    |> Enum.filter(predicate)
   end
 
   @doc "Destroy the scene (delete ETS table)"

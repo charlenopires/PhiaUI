@@ -15,7 +15,7 @@ defmodule PhiaUiDesign.Codegen.HeexEmitter do
   rendered as direct text content (not wrapped in a slot tag).
   """
 
-  alias PhiaUiDesign.Canvas.{Scene, Node}
+  alias PhiaUiDesign.Canvas.{Scene, Node, Layout}
   alias PhiaUiDesign.Codegen.AttrFormatter
 
   @void_elements ~w(area base br col embed hr img input link meta param source track wbr)
@@ -106,8 +106,18 @@ defmodule PhiaUiDesign.Codegen.HeexEmitter do
   end
 
   defp emit_tree_node(%{node: %Node{type: :frame} = node, children: children}, indent, size) do
-    # Frames render as plain <div> wrappers
-    div_node = %{node | type: :html_element, tag: "div"}
+    # Frames render as plain <div> wrappers with layout classes merged
+    layout_classes = Layout.to_classes(node)
+
+    merged_classes =
+      case {node.classes, layout_classes} do
+        {nil, ""} -> nil
+        {nil, lc} -> lc
+        {c, ""} -> c
+        {c, lc} -> "#{lc} #{c}"
+      end
+
+    div_node = %{node | type: :html_element, tag: "div", classes: merged_classes}
     emit_html_element(div_node, children, indent, size)
   end
 

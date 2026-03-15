@@ -24,7 +24,12 @@ defmodule PhiaUiDesign.Mcp.ToolRegistry do
       export_heex(),
       export_liveview(),
       get_scene_tree(),
-      clear_scene()
+      clear_scene(),
+      batch_design(),
+      batch_get(),
+      snapshot_layout(),
+      get_phia_variables(),
+      set_phia_variables()
     ]
   end
 
@@ -311,6 +316,187 @@ defmodule PhiaUiDesign.Mcp.ToolRegistry do
       "inputSchema" => %{
         "type" => "object",
         "properties" => %{}
+      }
+    }
+  end
+
+  # ---------------------------------------------------------------------------
+  # Batch design tools
+  # ---------------------------------------------------------------------------
+
+  defp batch_design do
+    %{
+      "name" => "batch_design",
+      "description" =>
+        "Execute multiple design operations atomically (max 25). " <>
+          "Operations: I(insert), C(copy), U(update), R(replace), M(move), D(delete). " <>
+          "Supports bindings ($name) for referencing created nodes. " <>
+          "Rolls back all changes on any failure.",
+      "inputSchema" => %{
+        "type" => "object",
+        "properties" => %{
+          "operations" => %{
+            "type" => "array",
+            "description" =>
+              "List of operation objects. Each has 'op' (I/C/U/R/M/D), optional 'bind', " <>
+                "'id' or 'parent' (use $binding to reference), and 'data' with node details.",
+            "items" => %{
+              "type" => "object",
+              "properties" => %{
+                "op" => %{
+                  "type" => "string",
+                  "enum" => ["I", "C", "U", "R", "M", "D"],
+                  "description" => "Operation type"
+                },
+                "bind" => %{
+                  "type" => "string",
+                  "description" => "Name to bind the resulting node ID (for $ref in later ops)"
+                },
+                "id" => %{
+                  "type" => "string",
+                  "description" => "Target node ID (or $binding reference)"
+                },
+                "parent" => %{
+                  "type" => "string",
+                  "description" => "Parent node ID (or $binding reference, null for root)"
+                },
+                "index" => %{
+                  "type" => "integer",
+                  "description" => "Position index for Move operations"
+                },
+                "data" => %{
+                  "type" => "object",
+                  "description" =>
+                    "Node data: type (phia_component/html_element/text/frame), " <>
+                      "component, tag, attrs, slots, classes, name, layout properties"
+                }
+              },
+              "required" => ["op"]
+            }
+          }
+        },
+        "required" => ["operations"]
+      }
+    }
+  end
+
+  defp batch_get do
+    %{
+      "name" => "batch_get",
+      "description" =>
+        "Search and retrieve nodes by pattern matching or specific IDs. " <>
+          "Supports type, name (regex), and component filters with configurable depth.",
+      "inputSchema" => %{
+        "type" => "object",
+        "properties" => %{
+          "patterns" => %{
+            "type" => "array",
+            "description" =>
+              "Search patterns: [{\"type\": \"frame\", \"name\": \"Side.*\", \"component\": \"button\"}]",
+            "items" => %{
+              "type" => "object",
+              "properties" => %{
+                "type" => %{"type" => "string", "description" => "Node type filter"},
+                "name" => %{"type" => "string", "description" => "Name regex pattern"},
+                "component" => %{"type" => "string", "description" => "Component name filter"}
+              }
+            }
+          },
+          "node_ids" => %{
+            "type" => "array",
+            "items" => %{"type" => "string"},
+            "description" => "Specific node IDs to retrieve"
+          },
+          "parent_id" => %{
+            "type" => "string",
+            "description" => "Scope search to children of this node"
+          },
+          "read_depth" => %{
+            "type" => "integer",
+            "description" => "How deep to expand children (default 1, 0 = node only)"
+          }
+        }
+      }
+    }
+  end
+
+  defp snapshot_layout do
+    %{
+      "name" => "snapshot_layout",
+      "description" =>
+        "Compute approximate bounding boxes for scene nodes based on layout properties. " <>
+          "Detects overflow, zero-size, and missing layout problems.",
+      "inputSchema" => %{
+        "type" => "object",
+        "properties" => %{
+          "parent_id" => %{
+            "type" => "string",
+            "description" => "Scope to a subtree (null = entire scene)"
+          },
+          "max_depth" => %{
+            "type" => "integer",
+            "description" => "How deep to recurse (default 2)"
+          },
+          "problems_only" => %{
+            "type" => "boolean",
+            "description" => "Only return nodes with detected problems (default false)"
+          },
+          "viewport_width" => %{
+            "type" => "integer",
+            "description" => "Root container width in px (default 1280)"
+          }
+        }
+      }
+    }
+  end
+
+  defp get_phia_variables do
+    %{
+      "name" => "get_phia_variables",
+      "description" => "Get all design variables/tokens defined in the current scene.",
+      "inputSchema" => %{
+        "type" => "object",
+        "properties" => %{}
+      }
+    }
+  end
+
+  defp set_phia_variables do
+    %{
+      "name" => "set_phia_variables",
+      "description" =>
+        "Set or update design variables/tokens. Variables can be referenced in attrs as $name.",
+      "inputSchema" => %{
+        "type" => "object",
+        "properties" => %{
+          "variables" => %{
+            "type" => "object",
+            "description" =>
+              "Map of variable definitions: {\"primary\": {\"value\": \"#3b82f6\", \"type\": \"color\", " <>
+                "\"theme_overrides\": {\"dark\": \"#60a5fa\"}}}",
+            "additionalProperties" => %{
+              "type" => "object",
+              "properties" => %{
+                "value" => %{"description" => "Default value"},
+                "type" => %{
+                  "type" => "string",
+                  "enum" => ["color", "spacing", "number", "string"],
+                  "description" => "Variable type"
+                },
+                "theme_overrides" => %{
+                  "type" => "object",
+                  "description" => "Theme-specific value overrides"
+                }
+              },
+              "required" => ["value", "type"]
+            }
+          },
+          "delete" => %{
+            "type" => "array",
+            "items" => %{"type" => "string"},
+            "description" => "Variable names to delete"
+          }
+        }
       }
     }
   end
