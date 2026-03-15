@@ -3217,6 +3217,90 @@ defmodule PhiaUi.ComponentRegistry do
       status: :implemented
     },
 
+    # ── TipTap Editor Suite ──────────────────────────────────────────────────
+    # 8 new components — ProseMirror-powered rich text editing
+
+    tiptap_editor: %{
+      name: "tiptap_editor",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: ["PhiaTipTap"],
+      dependencies: [:tiptap_toolbar],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_toolbar: %{
+      name: "tiptap_toolbar",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_content: %{
+      name: "tiptap_content",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :primitive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_bubble_menu: %{
+      name: "tiptap_bubble_menu",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: ["PhiaTipTap"],
+      dependencies: [:tiptap_editor],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_floating_menu: %{
+      name: "tiptap_floating_menu",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: ["PhiaTipTap"],
+      dependencies: [:tiptap_editor],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_slash_commands: %{
+      name: "tiptap_slash_commands",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: ["PhiaTipTap"],
+      dependencies: [:tiptap_editor],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_mention: %{
+      name: "tiptap_mention",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: ["PhiaTipTap"],
+      dependencies: [:tiptap_editor],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    tiptap_collab_cursors: %{
+      name: "tiptap_collab_cursors",
+      module: PhiaUi.Components.Editor.TipTap,
+      template_file: "priv/templates/components/editor/tiptap.ex",
+      js_hooks: ["PhiaTipTapCollab"],
+      dependencies: [:tiptap_editor],
+      tier: :interactive,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
     # ── Menu Suite (v0.1.7) ───────────────────────────────────────────────────
     # 39 new components across navigation + overlay extensions
 

@@ -593,6 +593,58 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* ── TipTap / ProseMirror Editor Styles ───────────────────────────────────── */
+
+/* ProseMirror core — remove default outline, inherit min-height from parent */
+.ProseMirror {
+  outline: none;
+  min-height: inherit;
+}
+
+/* Placeholder text for empty paragraphs (TipTap Placeholder extension) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--color-muted-foreground);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Collaboration cursor — colored caret line */
+.collaboration-cursor__caret {
+  border-left: 2px solid currentColor;
+  border-right: none;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Collaboration cursor — name label above caret */
+.collaboration-cursor__label {
+  border-radius: 3px 3px 3px 0;
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  left: -1px;
+  line-height: 1;
+  padding: 1px 4px;
+  position: absolute;
+  top: -1.4em;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* TipTap mention node styling */
+.tiptap-mention {
+  background-color: var(--color-primary-100, oklch(0.93 0.03 264));
+  border-radius: 0.25rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  padding: 0 0.25rem;
+}
+
 /* ── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {
   * {
