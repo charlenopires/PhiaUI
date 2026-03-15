@@ -49,7 +49,7 @@ defmodule Mix.Tasks.Phia.Design.Mcp do
   | Tool | Description |
   |------|-------------|
   | `get_phia_component_info` | Get attrs, slots, variants for a component |
-  | `get_phia_catalog` | List all 623+ components grouped by tier |
+  | `get_phia_catalog` | List all 650+ components grouped by tier |
   | `get_phia_families` | List composable family groups (card, form, etc.) |
 
   ### Templates and themes

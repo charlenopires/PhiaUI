@@ -10,7 +10,7 @@ defmodule PhiaUi.Components.Data.ChartSeriesRegistry do
   alias PhiaUi.Components.Data.ChartCell
   alias PhiaUi.Components.Data.ChartSymbols
 
-  @supported_types [:bar, :line, :area, :scatter, :error_bar, :range_area, :column_range, :spline]
+  @supported_types [:bar, :line, :area, :scatter, :error_bar, :range_area, :column_range, :spline, :candlestick, :box, :violin, :lollipop, :dumbbell]
 
   @doc """
   Returns the list of supported series types.
@@ -299,6 +299,159 @@ defmodule PhiaUi.Components.Data.ChartSeriesRegistry do
       stroke_width: stroke_width,
       anim_style: spline_anim(animate, dur, si * 100, path_length)
     }]
+  end
+
+  def render(:candlestick, data, coord, opts) do
+    bullish_color = Keyword.get(opts, :bullish_color, "oklch(0.70 0.18 145)")
+    bearish_color = Keyword.get(opts, :bearish_color, "oklch(0.60 0.25 0)")
+    animate = Keyword.get(opts, :animate, true)
+    dur = Keyword.get(opts, :animation_duration, 600)
+    body_width = Keyword.get(opts, :body_width, nil)
+
+    bw = Map.get(coord, :bandwidth, 20)
+    w = body_width || bw * 0.6
+
+    data
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {item, gi} ->
+      {cx, _} = coord.data_to_point.(item.label, 0)
+      open = Map.get(item, :open, 0)
+      high = Map.get(item, :high, 0)
+      low = Map.get(item, :low, 0)
+      close = Map.get(item, :close, 0)
+      bullish = close >= open
+      color = if bullish, do: bullish_color, else: bearish_color
+
+      {_, y_high} = coord.data_to_point.(item.label, high)
+      {_, y_low} = coord.data_to_point.(item.label, low)
+      {_, y_open} = coord.data_to_point.(item.label, open)
+      {_, y_close} = coord.data_to_point.(item.label, close)
+
+      body_top = min(y_open, y_close)
+      body_h = max(abs(y_open - y_close), 1.0)
+
+      wick = %{
+        type: :candlestick_wick,
+        x1: Float.round(cx * 1.0, 2),
+        y1: Float.round(y_high * 1.0, 2),
+        x2: Float.round(cx * 1.0, 2),
+        y2: Float.round(y_low * 1.0, 2),
+        color: color,
+        anim_style: if(animate, do: "transform-box: fill-box; transform-origin: center; animation: phia-candle-grow #{dur}ms ease-out #{gi * 60}ms both", else: "")
+      }
+
+      body = %{
+        type: :candlestick_body,
+        x: Float.round(cx - w / 2, 2),
+        y: Float.round(body_top * 1.0, 2),
+        w: Float.round(w, 2),
+        h: Float.round(body_h, 2),
+        color: color,
+        filled: not bullish,
+        anim_style: if(animate, do: "transform-box: fill-box; transform-origin: center; animation: phia-candle-grow #{dur}ms ease-out #{gi * 60}ms both", else: "")
+      }
+
+      [wick, body]
+    end)
+  end
+
+  def render(:box, data, coord, opts) do
+    alias PhiaUi.Components.Data.ChartMathHelpers
+    color = Keyword.fetch!(opts, :color)
+    animate = Keyword.get(opts, :animate, true)
+    dur = Keyword.get(opts, :animation_duration, 600)
+
+    bw = Map.get(coord, :bandwidth, 20)
+    box_w = bw * 0.6
+
+    data
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {item, gi} ->
+      {cx, _} = coord.data_to_point.(item.label, 0)
+      stats = if Map.has_key?(item, :q1) do
+        item
+      else
+        ChartMathHelpers.quartiles(Map.get(item, :values, []))
+      end
+
+      {_, y_q1} = coord.data_to_point.(item.label, stats.q1)
+      {_, y_q3} = coord.data_to_point.(item.label, stats.q3)
+      {_, y_med} = coord.data_to_point.(item.label, stats.median)
+      {_, y_wl} = coord.data_to_point.(item.label, stats.whisker_low)
+      {_, y_wh} = coord.data_to_point.(item.label, stats.whisker_high)
+
+      anim = if(animate, do: "transform-box: fill-box; transform-origin: center; animation: phia-box-pop #{dur}ms ease-out #{gi * 80}ms both", else: "")
+      x_left = cx - box_w / 2
+
+      box_elements = [
+        %{type: :box_whisker, x1: Float.round(cx * 1.0, 2), y1: Float.round(y_wl * 1.0, 2), x2: Float.round(cx * 1.0, 2), y2: Float.round(y_q1 * 1.0, 2), color: color, anim_style: anim},
+        %{type: :box_whisker, x1: Float.round(cx * 1.0, 2), y1: Float.round(y_q3 * 1.0, 2), x2: Float.round(cx * 1.0, 2), y2: Float.round(y_wh * 1.0, 2), color: color, anim_style: anim},
+        %{type: :box_cap, x1: Float.round(x_left, 2), y1: Float.round(y_wl * 1.0, 2), x2: Float.round(x_left + box_w, 2), y2: Float.round(y_wl * 1.0, 2), color: color, anim_style: anim},
+        %{type: :box_cap, x1: Float.round(x_left, 2), y1: Float.round(y_wh * 1.0, 2), x2: Float.round(x_left + box_w, 2), y2: Float.round(y_wh * 1.0, 2), color: color, anim_style: anim},
+        %{type: :box_rect, x: Float.round(x_left, 2), y: Float.round(min(y_q1, y_q3) * 1.0, 2), w: Float.round(box_w, 2), h: Float.round(abs(y_q1 - y_q3), 2), color: color, anim_style: anim},
+        %{type: :box_median, x1: Float.round(x_left, 2), y1: Float.round(y_med * 1.0, 2), x2: Float.round(x_left + box_w, 2), y2: Float.round(y_med * 1.0, 2), color: color, anim_style: anim}
+      ]
+
+      outliers = Map.get(stats, :outliers, [])
+      outlier_elements = Enum.map(outliers, fn val ->
+        {_, y_out} = coord.data_to_point.(item.label, val)
+        %{type: :box_outlier, cx: Float.round(cx * 1.0, 2), cy: Float.round(y_out * 1.0, 2), r: 3, color: color, anim_style: anim}
+      end)
+
+      box_elements ++ outlier_elements
+    end)
+  end
+
+  def render(:lollipop, data, coord, opts) do
+    color = Keyword.fetch!(opts, :color)
+    animate = Keyword.get(opts, :animate, true)
+    dur = Keyword.get(opts, :animation_duration, 600)
+    dot_r = Keyword.get(opts, :dot_radius, 5)
+
+    data
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {item, gi} ->
+      {cx, _} = coord.data_to_point.(item.label, 0)
+      {_, y_val} = coord.data_to_point.(item.label, item.value)
+      {_, y_base} = coord.data_to_point.(item.label, 0)
+      anim = if(animate, do: "animation: phia-dot-pop #{dur}ms ease-out #{gi * 60}ms both", else: "")
+
+      [
+        %{type: :lollipop_stem, x1: Float.round(cx * 1.0, 2), y1: Float.round(y_base * 1.0, 2), x2: Float.round(cx * 1.0, 2), y2: Float.round(y_val * 1.0, 2), color: color, anim_style: anim},
+        %{type: :lollipop_dot, cx: Float.round(cx * 1.0, 2), cy: Float.round(y_val * 1.0, 2), r: dot_r, color: color, anim_style: anim}
+      ]
+    end)
+  end
+
+  def render(:dumbbell, data, coord, opts) do
+    color = Keyword.fetch!(opts, :color)
+    animate = Keyword.get(opts, :animate, true)
+    dur = Keyword.get(opts, :animation_duration, 600)
+    dot_r = Keyword.get(opts, :dot_radius, 5)
+    end_color = Keyword.get(opts, :end_color, color)
+
+    data
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {item, gi} ->
+      {cx, _} = coord.data_to_point.(item.label, 0)
+      start_val = Map.get(item, :start_value, Map.get(item, :value, 0))
+      end_val = Map.get(item, :end_value, Map.get(item, :value, 0))
+      {_, y_start} = coord.data_to_point.(item.label, start_val)
+      {_, y_end} = coord.data_to_point.(item.label, end_val)
+      anim = if(animate, do: "animation: phia-dot-pop #{dur}ms ease-out #{gi * 60}ms both", else: "")
+
+      [
+        %{type: :dumbbell_bar, x1: Float.round(cx * 1.0, 2), y1: Float.round(y_start * 1.0, 2), x2: Float.round(cx * 1.0, 2), y2: Float.round(y_end * 1.0, 2), color: color, anim_style: anim},
+        %{type: :dumbbell_dot, cx: Float.round(cx * 1.0, 2), cy: Float.round(y_start * 1.0, 2), r: dot_r, color: color, anim_style: anim},
+        %{type: :dumbbell_dot, cx: Float.round(cx * 1.0, 2), cy: Float.round(y_end * 1.0, 2), r: dot_r, color: end_color, anim_style: anim}
+      ]
+    end)
+  end
+
+  def render(:violin, _data, _coord, _opts) do
+    # Violin plot rendering is handled directly in violin_plot.ex
+    # This stub exists for xy_chart integration
+    []
   end
 
   # ---------------------------------------------------------------------------

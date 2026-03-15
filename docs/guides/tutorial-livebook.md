@@ -384,5 +384,5 @@ Now that you can render PhiaUI components in Livebook:
 
 - [`kino_live_component` on Hex](https://hex.pm/packages/kino_live_component) — the Kino package used here
 - [Livebook documentation](https://livebook.dev/docs) — notebook features and tips
-- [PhiaUI component catalog](https://hexdocs.pm/phia_ui) — all 623 components with examples
+- [PhiaUI component catalog](https://hexdocs.pm/phia_ui) — all 650 components with examples
 - [Phoenix LiveView docs](https://hexdocs.pm/phoenix_live_view) — official LiveView reference

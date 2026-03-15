@@ -47,9 +47,17 @@ defmodule PhiaUi.Components.Data.ChartSeriesRegistryTest do
       assert ChartSeriesRegistry.supported?(:spline)
     end
 
+    test "returns true for new chart types" do
+      assert ChartSeriesRegistry.supported?(:candlestick)
+      assert ChartSeriesRegistry.supported?(:box)
+      assert ChartSeriesRegistry.supported?(:lollipop)
+      assert ChartSeriesRegistry.supported?(:dumbbell)
+      assert ChartSeriesRegistry.supported?(:violin)
+    end
+
     test "returns false for unsupported types" do
-      refute ChartSeriesRegistry.supported?(:candlestick)
       refute ChartSeriesRegistry.supported?(:treemap)
+      refute ChartSeriesRegistry.supported?(:unknown_type)
     end
   end
 

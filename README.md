@@ -4,7 +4,7 @@
 
 # PhiaUI
 
-**623 production-ready Phoenix LiveView components — the most complete UI library in the Elixir ecosystem.**
+**650 production-ready Phoenix LiveView components — the most complete UI library in the Elixir ecosystem.**
 
 PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadcn/ui. Components are ejected directly into your project — you own the code, customise every detail, and never fight a black-box abstraction. Built on TailwindCSS v4 semantic tokens, every component ships with full WAI-ARIA accessibility, zero heavy npm runtime dependencies, and first-class dark mode out of the box.
 
@@ -21,7 +21,7 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 | Feature | **PhiaUI** | [Salad UI](https://github.com/bluzky/salad_ui) | [Mishka Chelekom](https://mishka.tools/chelekom) | [Doggo](https://github.com/woylie/doggo) | [Primer Live](https://github.com/ArthurClemens/primer_live) | [shadcn/ui](https://ui.shadcn.com) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Platform** | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView | React |
-| **Components** | **623** | ~40 | ~100 | ~40 | ~45 | ~50 |
+| **Components** | **650** | ~40 | ~100 | ~40 | ~45 | ~50 |
 | Copy-paste ownership | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
 | LiveView-native (`phx-*`, streams) | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Zero npm runtime deps | ✅ | ✅ | ✅ | ✅ | Partial | ❌ |
@@ -46,7 +46,7 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 PhiaUI is built on a simple principle: **ship fast, iterate based on real usage.**
 
 - **Copy-paste ownership** means you own every line of code. No waiting for upstream PRs. No dependency lock-in. Fork a component, change it, ship it.
-- **623 components built in weeks, not months.** Speed comes from convention over configuration, consistent patterns, and relentless focus on what developers actually need.
+- **650 components built in weeks, not months.** Speed comes from convention over configuration, consistent patterns, and relentless focus on what developers actually need.
 - **Every component works today.** They render, they handle events, they integrate with Ecto forms, they respect dark mode and accessibility. Are they all perfect? No. Are they all useful? Yes.
 - **Community-driven improvement cycle.** Use a component, find a rough edge, submit a PR. The bar for contribution is low: if you make it better, it ships.
 
@@ -128,7 +128,7 @@ end
 
 ## Component Catalog
 
-623 components across 18 categories. Click any category for full API docs and examples.
+650 components across 18 categories. Click any category for full API docs and examples.
 
 | Category | Count | Key Components |
 |---|:---:|---|
@@ -536,7 +536,7 @@ mix phia.design  # Opens on http://localhost:4200
 ```
 
 The visual editor provides:
-- **Component browser** — search and insert any of the 623 components
+- **Component browser** — search and insert any of the 650 components
 - **Live canvas** — real component rendering with PhiaUI's actual output
 - **Properties panel** — edit attrs and slots visually
 - **Code panel** — live HEEx preview of the current design
@@ -554,7 +554,7 @@ The visual editor provides:
 | `delete_phia_node` | Remove a node and its children |
 | `move_phia_node` | Move a node to a new parent at a given index |
 | `get_phia_component_info` | Get full component spec: attrs, slots, variants |
-| `get_phia_catalog` | Browse all 623 components grouped by tier |
+| `get_phia_catalog` | Browse all 650 components grouped by tier |
 | `get_phia_families` | List composable family groups (e.g., card + card_header) |
 | `insert_phia_page` | Apply a page template (dashboard, settings, auth, etc.) |
 | `set_phia_theme` | Switch theme (zinc, slate, rose, blue, green, violet, etc.) |

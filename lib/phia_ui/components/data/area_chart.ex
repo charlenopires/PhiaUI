@@ -38,8 +38,8 @@ defmodule PhiaUi.Components.AreaChart do
 
   attr :variant, :atom,
     default: :default,
-    values: [:default, :stacked],
-    doc: "`:default` overlays areas; `:stacked` accumulates them."
+    values: [:default, :stacked, :stream],
+    doc: "`:default` overlays areas; `:stacked` accumulates them; `:stream` uses wiggle baseline (streamgraph)."
 
   attr :curve, :atom,
     default: :linear,
@@ -69,7 +69,7 @@ defmodule PhiaUi.Components.AreaChart do
     n_groups = length(first_data)
 
     {y_ticks, y_max_nice} =
-      if assigns.variant == :stacked do
+      if assigns.variant in [:stacked, :stream] do
         ChartHelpers.compute_stacked_y_domain(series)
       else
         {ticks, _min, max_n} = ChartHelpers.compute_y_domain(series, include_negative: false)
@@ -84,10 +84,15 @@ defmodule PhiaUi.Components.AreaChart do
     curve = assigns.curve
 
     series_areas =
-      if assigns.variant == :stacked do
-        build_stacked_areas(series, x0, x1, y_max_nice, px_top, px_bot, n_groups, curve, assigns.colors)
-      else
-        build_overlaid_areas(series, x0, x1, y_max_nice, px_top, px_bot, n_groups, curve, assigns.colors)
+      cond do
+        assigns.variant == :stream ->
+          build_stream_areas(series, x0, x1, px_top, px_bot, n_groups, assigns.colors)
+
+        assigns.variant == :stacked ->
+          build_stacked_areas(series, x0, x1, y_max_nice, px_top, px_bot, n_groups, curve, assigns.colors)
+
+        true ->
+          build_overlaid_areas(series, x0, x1, y_max_nice, px_top, px_bot, n_groups, curve, assigns.colors)
       end
 
     # Point labels
@@ -357,5 +362,65 @@ defmodule PhiaUi.Components.AreaChart do
 
     line_part = Enum.map_join(pts, " L ", fn {x, y} -> "#{x} #{y}" end)
     "M #{first_x} #{px_bot} L #{line_part} L #{last_x} #{px_bot} Z"
+  end
+
+  # Stream areas — wiggle baseline centering (streamgraph)
+  defp build_stream_areas(series, x0, x1, px_top, px_bot, _n_groups, colors) do
+    stacked = ChartMathHelpers.stack_series(series)
+    baselines = ChartMathHelpers.wiggle_baseline(series)
+    px_range = px_bot - px_top
+
+    # Compute y domain with baseline offsets
+    all_values =
+      Enum.flat_map(Enum.with_index(stacked), fn {s, _} ->
+        Enum.with_index(s.data)
+        |> Enum.flat_map(fn {item, i} ->
+          offset = Enum.at(baselines, i, 0.0)
+          [item.base + offset, item.base + item.value + offset]
+        end)
+      end)
+
+    y_min = if all_values == [], do: 0, else: Enum.min(all_values)
+    y_max = if all_values == [], do: 10, else: Enum.max(all_values)
+    y_range = max(y_max - y_min, 1)
+
+    stacked
+    |> Enum.with_index()
+    |> Enum.map(fn {s, i} ->
+      color = ChartHelpers.chart_color(i, colors)
+      count = length(s.data)
+
+      top_points =
+        s.data
+        |> Enum.with_index()
+        |> Enum.map(fn {item, di} ->
+          offset = Enum.at(baselines, di, 0.0)
+          px_x = x0 + di / max(count - 1, 1) * (x1 - x0)
+          px_y = px_bot - (item.base + item.value + offset - y_min) / y_range * px_range
+          {Float.round(px_x, 2), Float.round(px_y, 2)}
+        end)
+
+      base_points =
+        s.data
+        |> Enum.with_index()
+        |> Enum.map(fn {item, di} ->
+          offset = Enum.at(baselines, di, 0.0)
+          px_x = x0 + di / max(count - 1, 1) * (x1 - x0)
+          px_y = px_bot - (item.base + offset - y_min) / y_range * px_range
+          {Float.round(px_x, 2), Float.round(px_y, 2)}
+        end)
+        |> Enum.reverse()
+
+      top_part = Enum.map_join(top_points, " L ", fn {x, y} -> "#{x} #{y}" end)
+      base_part = Enum.map_join(base_points, " L ", fn {x, y} -> "#{x} #{y}" end)
+      {fx, fy} = List.first(top_points)
+      area_path = "M #{fx} #{fy} L #{top_part} L #{base_part} Z"
+
+      pts = Enum.map_join(top_points, " ", fn {x, y} -> "#{x},#{y}" end)
+      line_len = ChartHelpers.polyline_length(pts)
+
+      %{points: pts, line_path: nil, area_path: area_path, line_len: Float.round(line_len, 2),
+        color: color, delay_ms: i * 100, curved: false}
+    end)
   end
 end

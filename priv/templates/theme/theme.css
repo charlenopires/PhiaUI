@@ -301,6 +301,53 @@
   to   { stroke-dashoffset: 0; }
 }
 
+/* ── Advanced Chart Keyframes (v0.1.17) ────────────────────────────────────── */
+
+@keyframes phia-candle-grow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+@keyframes phia-box-pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes phia-violin-draw {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0); }
+}
+
+@keyframes phia-sunburst-arc {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes phia-sankey-flow {
+  from { opacity: 0; }
+  to   { opacity: 0.5; }
+}
+
+@keyframes phia-waffle-fill {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+@keyframes phia-stream-wave {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes phia-chord-ribbon {
+  from { opacity: 0; }
+  to   { opacity: 0.65; }
+}
+
+@keyframes phia-pack-pop {
+  from { r: 0; }
+  to   { r: var(--target-r); }
+}
+
 /* ── Drag-and-Drop Keyframes ──────────────────────────────────────────────── */
 
 @keyframes phia-drop-in {

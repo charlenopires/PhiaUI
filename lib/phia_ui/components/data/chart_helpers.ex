@@ -424,6 +424,113 @@ defmodule PhiaUi.Components.Data.ChartHelpers do
   end
 
   @doc """
+  Builds an SVG path with per-segment styling.
+  Each segment is `%{start: idx, end: idx, color: string, dash: string | nil}`.
+  Returns a list of `%{path_d, color, dash}` for rendering as separate `<path>` elements.
+  """
+  def segment_path(data, segments, {x0, x1, y_min, y_max, px_top, px_bot}) do
+    count = length(data)
+    y_range = max(y_max - y_min, 1)
+    px_range = px_bot - px_top
+
+    points =
+      data
+      |> Enum.with_index()
+      |> Enum.map(fn {item, i} ->
+        px_x = x0 + i / max(count - 1, 1) * (x1 - x0)
+        px_y = px_bot - (item.value - y_min) / y_range * px_range
+        %{x: Float.round(px_x, 2), y: Float.round(px_y, 2)}
+      end)
+
+    Enum.map(segments, fn seg ->
+      slice = Enum.slice(points, seg.start..min(seg.end, length(points) - 1))
+
+      path_d =
+        case slice do
+          [] -> ""
+          [single] -> "M #{f(single.x)} #{f(single.y)}"
+          [first | rest] ->
+            move = "M #{f(first.x)} #{f(first.y)}"
+            lines = Enum.map_join(rest, " ", fn pt -> "L #{f(pt.x)} #{f(pt.y)}" end)
+            "#{move} #{lines}"
+        end
+
+      %{path_d: path_d, color: Map.get(seg, :color, "currentColor"), dash: Map.get(seg, :dash)}
+    end)
+  end
+
+  @doc """
+  Sorts data descending by value and computes cumulative percentages.
+  Returns `{sorted_data, cumulative_percentages}` where percentages are 0-100.
+  """
+  def pareto_cumulative(data) when is_list(data) do
+    sorted = Enum.sort_by(data, & &1.value, :desc)
+    total = sorted |> Enum.map(& &1.value) |> Enum.sum() |> max(1)
+
+    {pcts, _} =
+      Enum.map_reduce(sorted, 0.0, fn item, acc ->
+        new_acc = acc + item.value
+        {Float.round(new_acc / total * 100.0, 2), new_acc}
+      end)
+
+    {sorted, pcts}
+  end
+
+  @doc "Returns a 10-color perceptually distinct OKLCH categorical palette."
+  def categorical_10 do
+    [
+      "oklch(0.60 0.20 240)",   # blue
+      "oklch(0.70 0.18 145)",   # green
+      "oklch(0.65 0.22 30)",    # orange
+      "oklch(0.60 0.25 0)",     # red
+      "oklch(0.65 0.20 300)",   # purple
+      "oklch(0.75 0.15 200)",   # teal
+      "oklch(0.70 0.18 90)",    # yellow-green
+      "oklch(0.65 0.20 340)",   # pink
+      "oklch(0.55 0.22 270)",   # indigo
+      "oklch(0.72 0.16 60)"    # amber
+    ]
+  end
+
+  @doc """
+  Generates a sequential color palette (single hue gradient) with `n` steps.
+  `hue` is the OKLCH hue angle (0-360).
+  """
+  def sequential(hue, n) when n > 0 do
+    Enum.map(0..(n - 1), fn i ->
+      lightness = 0.35 + i / max(n - 1, 1) * 0.50
+      chroma = 0.20 - i / max(n - 1, 1) * 0.10
+      "oklch(#{Float.round(lightness, 2)} #{Float.round(chroma, 2)} #{hue})"
+    end)
+  end
+
+  @doc """
+  Generates a diverging color palette with neutral midpoint.
+  `hue_low` and `hue_high` are OKLCH hue angles, `n` is total steps (should be odd).
+  """
+  def diverging(hue_low, hue_high, n) when n > 0 do
+    mid = div(n, 2)
+
+    Enum.map(0..(n - 1), fn i ->
+      if i == mid do
+        "oklch(0.90 0.02 0)"
+      else
+        if i < mid do
+          t = i / max(mid, 1)
+          lightness = 0.45 + t * 0.40
+          chroma = 0.22 - t * 0.18
+          "oklch(#{Float.round(lightness, 2)} #{Float.round(chroma, 2)} #{hue_low})"
+        else
+          t = (i - mid) / max(n - 1 - mid, 1)
+          lightness = 0.85 - t * 0.40
+          chroma = 0.04 + t * 0.18
+          "oklch(#{Float.round(lightness, 2)} #{Float.round(chroma, 2)} #{hue_high})"
+        end
+      end
+    end)
+  end
+
+  @doc """
   Recomputes a pie arc path with a larger radius for hover/active state.
 
   Given original pie parameters, returns a new SVG path with radius expanded

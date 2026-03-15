@@ -56,6 +56,7 @@ defmodule PhiaUi.Components.BarChart do
   attr :border_radius, :integer, default: 2, doc: "Corner radius for bars in pixels (0–12)."
   attr :theme, :map, default: %{}, doc: "Chart theme overrides (see ChartTheme)."
   attr :show_totals, :boolean, default: false, doc: "Show sum labels on stacked bars."
+  attr :percent, :boolean, default: false, doc: "Normalize values to percentage of total (0-100% Y-axis)."
   attr :id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided)."
   attr :title, :string, default: nil, doc: "Chart title rendered above the visualization."
   attr :description, :string, default: nil, doc: "Chart description for context (rendered below title)."
@@ -64,7 +65,15 @@ defmodule PhiaUi.Components.BarChart do
 
   def bar_chart(assigns) do
     chart_id = assigns.id || "chart-#{System.unique_integer([:positive])}"
-    series = ChartHelpers.normalize_series(assigns.data, assigns.series)
+    series_raw = ChartHelpers.normalize_series(assigns.data, assigns.series)
+
+    series =
+      if assigns.percent do
+        alias PhiaUi.Components.Data.ChartPipeline
+        ChartPipeline.process(series_raw, [{:percent, :of_total}])
+      else
+        series_raw
+      end
     vp = ChartViewport.build()
     theme = ChartTheme.merge(assigns.theme)
     n_series = length(series)

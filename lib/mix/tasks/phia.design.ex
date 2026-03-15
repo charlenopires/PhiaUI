@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Phia.Design do
 
   ## Features
 
-  - **Component browser** — search and insert any of 623 PhiaUI components
+  - **Component browser** — search and insert any of 650 PhiaUI components
   - **Live canvas** — real component rendering (not placeholders)
   - **Properties panel** — edit attributes and slots visually
   - **Code panel** — live HEEx preview of your design

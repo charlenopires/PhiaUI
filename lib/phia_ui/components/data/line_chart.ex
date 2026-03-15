@@ -79,6 +79,15 @@ defmodule PhiaUi.Components.LineChart do
     default: nil,
     doc: "Active dot config on hover: `%{r: 8, color: \"red\"}`. nil disables."
 
+  attr :segments, :list,
+    default: [],
+    doc: "Per-segment styling: `[%{start: idx, end: idx, color: string, dash: string | nil}]`. Overrides default line rendering."
+
+  attr :gap_strategy, :atom,
+    default: nil,
+    values: [nil, :skip, :zero, :interpolate, :span],
+    doc: "How to handle nil values in data: `:skip` removes, `:zero` replaces with 0, `:interpolate` fills linearly, `:span` connects across."
+
   attr :id, :string, default: nil, doc: "Unique ID for the chart (auto-generated if not provided)."
   attr :title, :string, default: nil, doc: "Chart title rendered above the visualization."
   attr :description, :string, default: nil, doc: "Chart description for context (rendered below title)."
@@ -90,7 +99,17 @@ defmodule PhiaUi.Components.LineChart do
     vp = ChartViewport.build()
     theme = ChartTheme.merge(assigns.theme)
 
-    series = ChartHelpers.normalize_series(assigns.data, assigns.series)
+    series_raw = ChartHelpers.normalize_series(assigns.data, assigns.series)
+
+    # Apply gap strategy if specified
+    series =
+      if assigns.gap_strategy do
+        alias PhiaUi.Components.Data.ChartPipeline
+        ChartPipeline.process(series_raw, [{:gap, assigns.gap_strategy}])
+      else
+        series_raw
+      end
+
     first_data = series |> List.first(%{data: []}) |> Map.get(:data, [])
     n_groups = length(first_data)
 
@@ -216,12 +235,30 @@ defmodule PhiaUi.Components.LineChart do
         %{label: item.label, px: px, py: vp.pt + vp.ch + 14}
       end)
 
+    # Compute segment paths if segments are provided
+    segment_paths =
+      if assigns.segments != [] do
+        series
+        |> List.first(%{data: []})
+        |> Map.get(:data, [])
+        |> then(fn data ->
+          ChartHelpers.segment_path(
+            data,
+            assigns.segments,
+            {vp.pl * 1.0, (vp.pl + vp.cw) * 1.0, y_min_nice, y_max_nice, vp.pt * 1.0, (vp.pt + vp.ch) * 1.0}
+          )
+        end)
+      else
+        []
+      end
+
     assigns =
       assigns
       |> assign(:series_lines, series_lines)
       |> assign(:all_dots, all_dots)
       |> assign(:tick_entries, tick_entries)
       |> assign(:x_label_entries, x_label_entries)
+      |> assign(:segment_paths, segment_paths)
       |> assign(:viewbox, ChartViewport.viewbox(vp))
       |> assign(:grid_x1, vp.pl)
       |> assign(:grid_x2, vp.pl + vp.cw)
@@ -322,6 +359,19 @@ defmodule PhiaUi.Components.LineChart do
               ""
             end
           }
+        />
+
+        <%!-- Segment-styled lines (overrides default lines when segments are set) --%>
+        <path
+          :for={seg <- @segment_paths}
+          :if={seg.path_d != ""}
+          d={seg.path_d}
+          fill="none"
+          stroke={seg.color}
+          stroke-width={@stroke_width}
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-dasharray={seg.dash}
         />
 
         <%!-- Dots --%>

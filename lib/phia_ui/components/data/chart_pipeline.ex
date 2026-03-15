@@ -163,6 +163,36 @@ defmodule PhiaUi.Components.Data.ChartPipeline do
     end)
   end
 
+  # Gap handling — manages nil/missing values in data series
+  defp apply_step(series, {:gap, :skip}) do
+    Enum.map(series, fn s ->
+      %{s | data: Enum.reject(s.data, fn d -> is_nil(d.value) end)}
+    end)
+  end
+
+  defp apply_step(series, {:gap, :zero}) do
+    Enum.map(series, fn s ->
+      data = Enum.map(s.data, fn d ->
+        if is_nil(d.value), do: %{d | value: 0}, else: d
+      end)
+      %{s | data: data}
+    end)
+  end
+
+  defp apply_step(series, {:gap, :interpolate}) do
+    Enum.map(series, fn s ->
+      data = interpolate_gaps(s.data)
+      %{s | data: data}
+    end)
+  end
+
+  defp apply_step(series, {:gap, :span}) do
+    # Span connects across gaps (just removes nil points like :skip but preserves indices)
+    Enum.map(series, fn s ->
+      %{s | data: Enum.reject(s.data, fn d -> is_nil(d.value) end)}
+    end)
+  end
+
   # Group data by category for side-by-side rendering (e.g., grouped bars)
   defp apply_step(series, {:group, :by_category}) do
     categories =
@@ -244,5 +274,35 @@ defmodule PhiaUi.Components.Data.ChartPipeline do
   defp attach_error(point, {:custom, func}) when is_function(func, 1) do
     {low, high} = func.(point)
     Map.merge(point, %{error_low: low, error_high: high})
+  end
+
+  # ---------------------------------------------------------------------------
+  # Private — gap interpolation
+  # ---------------------------------------------------------------------------
+
+  defp interpolate_gaps([]), do: []
+
+  defp interpolate_gaps(data) do
+    indexed = Enum.with_index(data)
+
+    Enum.map(indexed, fn {item, i} ->
+      if is_nil(item.value) do
+        # Find prev and next non-nil values
+        prev = Enum.find(Enum.reverse(Enum.take(data, i)), fn d -> not is_nil(d.value) end)
+        next = Enum.find(Enum.drop(data, i + 1), fn d -> not is_nil(d.value) end)
+
+        interpolated =
+          cond do
+            prev != nil and next != nil -> (prev.value + next.value) / 2.0
+            prev != nil -> prev.value
+            next != nil -> next.value
+            true -> 0
+          end
+
+        %{item | value: interpolated}
+      else
+        item
+      end
+    end)
   end
 end

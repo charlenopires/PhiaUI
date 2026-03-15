@@ -38,7 +38,7 @@ The editor runs alongside your existing Phoenix app on a separate port.
 
 The editor has three panels:
 
-1. **Left — Component Browser**: Search and browse all 623 components by tier (primitive, interactive, widget, composite, surface, animation). Click to insert.
+1. **Left — Component Browser**: Search and browse all 650 components by tier (primitive, interactive, widget, composite, surface, animation). Click to insert.
 
 2. **Center — Canvas**: Live rendering of your design. Components render with real PhiaUI output (not placeholders). Click nodes to select. Toolbar provides:
    - Save/load designs as `.phia.json` files
@@ -104,7 +104,7 @@ configures attrs/slots → exports code → user gets a working LiveView
 
 | Tool | Description |
 |---|---|
-| `get_phia_catalog` | Browse all 623 components grouped by tier |
+| `get_phia_catalog` | Browse all 650 components grouped by tier |
 | `get_phia_component_info` | Get attrs, slots, variants for a specific component |
 | `get_phia_families` | List composable family groups |
 | `insert_phia_component` | Insert a component with attrs and slots |

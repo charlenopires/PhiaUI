@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 623 PhiaUI components.
+  Source of truth for all 650 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -6553,6 +6553,198 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :layout,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Advanced Chart Suite (v0.1.17) — 19 new chart types ─────────────────
+    candlestick_chart: %{
+      name: "candlestick_chart",
+      module: PhiaUi.Components.CandlestickChart,
+      template_file: "priv/templates/components/data/candlestick_chart.ex",
+      js_hooks: [],
+      dependencies: [:bar_chart],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    box_plot: %{
+      name: "box_plot",
+      module: PhiaUi.Components.BoxPlot,
+      template_file: "priv/templates/components/data/box_plot.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    violin_plot: %{
+      name: "violin_plot",
+      module: PhiaUi.Components.ViolinPlot,
+      template_file: "priv/templates/components/data/violin_plot.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sunburst_chart: %{
+      name: "sunburst_chart",
+      module: PhiaUi.Components.SunburstChart,
+      template_file: "priv/templates/components/data/sunburst_chart.ex",
+      js_hooks: [],
+      dependencies: [:pie_chart],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    sankey_chart: %{
+      name: "sankey_chart",
+      module: PhiaUi.Components.SankeyChart,
+      template_file: "priv/templates/components/data/sankey_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pareto_chart: %{
+      name: "pareto_chart",
+      module: PhiaUi.Components.ParetoChart,
+      template_file: "priv/templates/components/data/pareto_chart.ex",
+      js_hooks: [],
+      dependencies: [:bar_chart, :line_chart],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    lollipop_chart: %{
+      name: "lollipop_chart",
+      module: PhiaUi.Components.LollipopChart,
+      template_file: "priv/templates/components/data/lollipop_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    dumbbell_chart: %{
+      name: "dumbbell_chart",
+      module: PhiaUi.Components.DumbbellChart,
+      template_file: "priv/templates/components/data/dumbbell_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    waffle_chart: %{
+      name: "waffle_chart",
+      module: PhiaUi.Components.WaffleChart,
+      template_file: "priv/templates/components/data/waffle_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    stream_chart: %{
+      name: "stream_chart",
+      module: PhiaUi.Components.StreamChart,
+      template_file: "priv/templates/components/data/stream_chart.ex",
+      js_hooks: [],
+      dependencies: [:area_chart],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    ridgeline_chart: %{
+      name: "ridgeline_chart",
+      module: PhiaUi.Components.RidgelineChart,
+      template_file: "priv/templates/components/data/ridgeline_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    icicle_chart: %{
+      name: "icicle_chart",
+      module: PhiaUi.Components.IcicleChart,
+      template_file: "priv/templates/components/data/icicle_chart.ex",
+      js_hooks: [],
+      dependencies: [:treemap_chart],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    circle_packing_chart: %{
+      name: "circle_packing_chart",
+      module: PhiaUi.Components.CirclePackingChart,
+      template_file: "priv/templates/components/data/circle_packing_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    chord_chart: %{
+      name: "chord_chart",
+      module: PhiaUi.Components.ChordChart,
+      template_file: "priv/templates/components/data/chord_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    dot_plot: %{
+      name: "dot_plot",
+      module: PhiaUi.Components.DotPlot,
+      template_file: "priv/templates/components/data/dot_plot.ex",
+      js_hooks: [],
+      dependencies: [:scatter_chart],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    arc_diagram: %{
+      name: "arc_diagram",
+      module: PhiaUi.Components.ArcDiagram,
+      template_file: "priv/templates/components/data/arc_diagram.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    pictogram_chart: %{
+      name: "pictogram_chart",
+      module: PhiaUi.Components.PictogramChart,
+      template_file: "priv/templates/components/data/pictogram_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    parliament_chart: %{
+      name: "parliament_chart",
+      module: PhiaUi.Components.ParliamentChart,
+      template_file: "priv/templates/components/data/parliament_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    word_cloud_chart: %{
+      name: "word_cloud_chart",
+      module: PhiaUi.Components.WordCloudChart,
+      template_file: "priv/templates/components/data/word_cloud_chart.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :widget,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -6560,7 +6752,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 623 component metadata entries."
+  @doc "Returns the full registry map — all 650 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

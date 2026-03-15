@@ -175,6 +175,53 @@ defmodule PhiaUi.Components.Data.ChartScales do
     end
   end
 
+  @doc """
+  Creates a gaps-aware time scale that skips specified periods (weekends, holidays).
+  Useful for financial data where weekends/holidays should not create gaps.
+
+  `skip_fn` is a function that returns true for dates that should be skipped.
+  Default skips Saturday (6) and Sunday (7).
+
+  Returns `fn(datetime) -> pixel_position`.
+  """
+  def time_series_scale(dates, range_min, range_max, opts \\ []) do
+    skip_fn = Keyword.get(opts, :skip_fn, fn dt ->
+      day = Date.day_of_week(to_date(dt))
+      day in [6, 7]
+    end)
+
+    # Filter out skipped dates and map to sequential indices
+    valid_dates =
+      dates
+      |> Enum.reject(skip_fn)
+      |> Enum.sort_by(&to_unix/1)
+
+    n = length(valid_dates)
+    p_range = range_max - range_min
+
+    index_map =
+      valid_dates
+      |> Enum.with_index()
+      |> Map.new(fn {dt, i} -> {to_unix_key(dt), i} end)
+
+    fn datetime ->
+      key = to_unix_key(datetime)
+      case Map.get(index_map, key) do
+        nil ->
+          # Find nearest valid date
+          t = to_unix(datetime)
+          nearest_idx = valid_dates
+            |> Enum.with_index()
+            |> Enum.min_by(fn {vd, _} -> abs(to_unix(vd) - t) end, fn -> {datetime, 0} end)
+            |> elem(1)
+          range_min + nearest_idx / max(n - 1, 1) * p_range
+
+        idx ->
+          range_min + idx / max(n - 1, 1) * p_range
+      end
+    end
+  end
+
   # ---------------------------------------------------------------------------
   # Invert
   # ---------------------------------------------------------------------------
@@ -225,4 +272,11 @@ defmodule PhiaUi.Components.Data.ChartScales do
   defp to_unix(%DateTime{} = dt), do: DateTime.to_unix(dt, :second) * 1.0
   defp to_unix(%NaiveDateTime{} = ndt), do: NaiveDateTime.diff(ndt, ~N[1970-01-01 00:00:00]) * 1.0
   defp to_unix(unix) when is_number(unix), do: unix * 1.0
+
+  defp to_date(%DateTime{} = dt), do: DateTime.to_date(dt)
+  defp to_date(%NaiveDateTime{} = ndt), do: NaiveDateTime.to_date(ndt)
+  defp to_date(%Date{} = d), do: d
+  defp to_date(_), do: Date.utc_today()
+
+  defp to_unix_key(dt), do: trunc(to_unix(dt))
 end

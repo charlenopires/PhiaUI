@@ -153,6 +153,17 @@ defmodule PhiaUi.Components.Data.XyChart do
     error_bars_list = Enum.filter(elements, &(&1.type == :error_bar))
     range_areas = Enum.filter(elements, &(&1.type == :range_area))
     column_ranges = Enum.filter(elements, &(&1.type == :column_range))
+    candlestick_wicks = Enum.filter(elements, &(&1.type == :candlestick_wick))
+    candlestick_bodies = Enum.filter(elements, &(&1.type == :candlestick_body))
+    box_rects = Enum.filter(elements, &(&1.type == :box_rect))
+    box_medians = Enum.filter(elements, &(&1.type == :box_median))
+    box_whiskers = Enum.filter(elements, &(&1.type == :box_whisker))
+    box_caps = Enum.filter(elements, &(&1.type == :box_cap))
+    box_outliers = Enum.filter(elements, &(&1.type == :box_outlier))
+    lollipop_stems = Enum.filter(elements, &(&1.type == :lollipop_stem))
+    lollipop_dots = Enum.filter(elements, &(&1.type == :lollipop_dot))
+    dumbbell_bars = Enum.filter(elements, &(&1.type == :dumbbell_bar))
+    dumbbell_dots = Enum.filter(elements, &(&1.type == :dumbbell_dot))
 
     # X-axis label rendering
     x_label_entries =
@@ -212,6 +223,17 @@ defmodule PhiaUi.Components.Data.XyChart do
       |> assign(:error_bars_list, error_bars_list)
       |> assign(:range_areas, range_areas)
       |> assign(:column_ranges, column_ranges)
+      |> assign(:candlestick_wicks, candlestick_wicks)
+      |> assign(:candlestick_bodies, candlestick_bodies)
+      |> assign(:box_rects, box_rects)
+      |> assign(:box_medians, box_medians)
+      |> assign(:box_whiskers, box_whiskers)
+      |> assign(:box_caps, box_caps)
+      |> assign(:box_outliers, box_outliers)
+      |> assign(:lollipop_stems, lollipop_stems)
+      |> assign(:lollipop_dots, lollipop_dots)
+      |> assign(:dumbbell_bars, dumbbell_bars)
+      |> assign(:dumbbell_dots, dumbbell_dots)
       |> assign(:y_tick_entries, y_tick_entries)
       |> assign(:right_y_tick_entries, right_y_tick_entries)
       |> assign(:x_label_entries, x_label_entries)
@@ -381,6 +403,39 @@ defmodule PhiaUi.Components.Data.XyChart do
             stroke-width={eb.stroke_width}
           />
         </g>
+
+        <%!-- Candlestick wicks --%>
+        <line :for={w <- @candlestick_wicks} x1={w.x1} y1={w.y1} x2={w.x2} y2={w.y2}
+              stroke={w.color} stroke-width="1" style={w.anim_style} />
+
+        <%!-- Candlestick bodies --%>
+        <rect :for={b <- @candlestick_bodies} x={b.x} y={b.y} width={b.w} height={b.h}
+              fill={if b.filled, do: b.color, else: "none"} stroke={b.color} stroke-width="1"
+              style={b.anim_style} />
+
+        <%!-- Box plot elements --%>
+        <line :for={w <- @box_whiskers} x1={w.x1} y1={w.y1} x2={w.x2} y2={w.y2}
+              stroke={w.color} stroke-width="1" style={w.anim_style} />
+        <line :for={c <- @box_caps} x1={c.x1} y1={c.y1} x2={c.x2} y2={c.y2}
+              stroke={c.color} stroke-width="1" style={c.anim_style} />
+        <rect :for={b <- @box_rects} x={b.x} y={b.y} width={b.w} height={b.h}
+              fill={b.color} fill-opacity="0.3" stroke={b.color} stroke-width="1" style={b.anim_style} />
+        <line :for={m <- @box_medians} x1={m.x1} y1={m.y1} x2={m.x2} y2={m.y2}
+              stroke={m.color} stroke-width="2" style={m.anim_style} />
+        <circle :for={o <- @box_outliers} cx={o.cx} cy={o.cy} r={o.r}
+                fill="none" stroke={o.color} stroke-width="1" style={o.anim_style} />
+
+        <%!-- Lollipop elements --%>
+        <line :for={s <- @lollipop_stems} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+              stroke={s.color} stroke-width="2" style={s.anim_style} />
+        <circle :for={d <- @lollipop_dots} cx={d.cx} cy={d.cy} r={d.r}
+                fill={d.color} style={d.anim_style} />
+
+        <%!-- Dumbbell elements --%>
+        <line :for={b <- @dumbbell_bars} x1={b.x1} y1={b.y1} x2={b.x2} y2={b.y2}
+              stroke={b.color} stroke-width="3" style={b.anim_style} />
+        <circle :for={d <- @dumbbell_dots} cx={d.cx} cy={d.cy} r={d.r}
+                fill={d.color} style={d.anim_style} />
 
         <%!-- Right Y-axis labels (multi-axis) --%>
         <g :if={@right_y_tick_entries != []}>
