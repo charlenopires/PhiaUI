@@ -104,6 +104,18 @@ class PhiaEditor {
     this._fireUpdate();
   }
 
+  // AC: toggleSuperscript() → execCommand('superscript')
+  toggleSuperscript() {
+    document.execCommand("superscript", false, null);
+    this._fireUpdate();
+  }
+
+  // AC: toggleSubscript() → execCommand('subscript')
+  toggleSubscript() {
+    document.execCommand("subscript", false, null);
+    this._fireUpdate();
+  }
+
   // AC: setLink(href) → execCommand('createLink', href)
   setLink(href) {
     document.execCommand("createLink", false, href);
@@ -158,6 +170,79 @@ class PhiaEditor {
   }
 
   // ---------------------------------------------------------------------------
+  // Extended formatting — execCommand + DOM manipulation
+  // AC: setTextAlign/setColor/setHighlight/setFontFamily/insertHorizontalRule/
+  //     insertImage/clearFormatting/selectAll/insertText/insertHTML/insertTable
+  // ---------------------------------------------------------------------------
+
+  setTextAlign(alignment) {
+    const cmd = "justify" + alignment.charAt(0).toUpperCase() + alignment.slice(1);
+    document.execCommand(cmd === "justifyJustify" ? "justifyFull" : cmd, false, null);
+    this._fireUpdate();
+  }
+
+  setColor(color) {
+    document.execCommand("foreColor", false, color);
+    this._fireUpdate();
+  }
+
+  setHighlight(color) {
+    document.execCommand("hiliteColor", false, color);
+    this._fireUpdate();
+  }
+
+  setFontFamily(font) {
+    document.execCommand("fontName", false, font);
+    this._fireUpdate();
+  }
+
+  insertHorizontalRule() {
+    document.execCommand("insertHorizontalRule", false, null);
+    this._fireUpdate();
+  }
+
+  insertImage(src, alt = "") {
+    const escaped = src.replace(/"/g, "&quot;");
+    const altEscaped = alt.replace(/"/g, "&quot;");
+    document.execCommand("insertHTML", false, `<img src="${escaped}" alt="${altEscaped}">`);
+    this._fireUpdate();
+  }
+
+  clearFormatting() {
+    document.execCommand("removeFormat", false, null);
+    this._fireUpdate();
+  }
+
+  selectAll() {
+    document.execCommand("selectAll", false, null);
+  }
+
+  insertText(text) {
+    document.execCommand("insertText", false, text);
+    this._fireUpdate();
+  }
+
+  insertHTML(html) {
+    document.execCommand("insertHTML", false, html);
+    this._fireUpdate();
+  }
+
+  insertTable(rows = 3, cols = 3) {
+    let html = '<table style="border-collapse:collapse;width:100%">';
+    for (let r = 0; r < rows; r++) {
+      html += "<tr>";
+      for (let c = 0; c < cols; c++) {
+        const tag = r === 0 ? "th" : "td";
+        html += `<${tag} style="border:1px solid #d1d5db;padding:0.5em 0.75em">&nbsp;</${tag}>`;
+      }
+      html += "</tr>";
+    }
+    html += "</table>";
+    document.execCommand("insertHTML", false, html);
+    this._fireUpdate();
+  }
+
+  // ---------------------------------------------------------------------------
   // isActive — DOM tree traversal via Selection API
   // AC: isActive(format, attrs?) detection via parentElement chain + closest block
   // ---------------------------------------------------------------------------
@@ -184,6 +269,10 @@ class PhiaEditor {
         return !!element.closest("s, strike");
       case "code":
         return !!element.closest("code");
+      case "superscript":
+        return !!element.closest("sup");
+      case "subscript":
+        return !!element.closest("sub");
       case "link":
         return !!element.closest("a[href]");
 
@@ -194,6 +283,10 @@ class PhiaEditor {
         return !!element.closest("h2");
       case "h3":
         return !!element.closest("h3");
+      case "h4":
+        return !!element.closest("h4");
+      case "h5":
+        return !!element.closest("h5");
       case "bulletList":
         return !!element.closest("ul");
       case "orderedList":
@@ -223,6 +316,47 @@ class PhiaEditor {
     this._el.innerHTML = html;
     this._updateEmptyClass();
     this._fireUpdate();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Utility methods — word count, outline, plain text, scroll
+  // AC: getText/getWordCount/getOutline/scrollToElement
+  // ---------------------------------------------------------------------------
+
+  getText() {
+    return this._el.textContent || "";
+  }
+
+  getWordCount() {
+    const text = this.getText().trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    const chars = text.length;
+    const pages = Math.max(1, Math.ceil(words / 250));
+    const reading_time = words > 0 ? Math.max(1, Math.ceil(words / 200)) : 0;
+    return { words, chars, pages, reading_time };
+  }
+
+  getOutline() {
+    const headings = [];
+    const els = this._el.querySelectorAll("h1, h2, h3, h4, h5");
+    els.forEach((el, i) => {
+      // Assign stable IDs to heading elements for scroll targeting
+      if (!el.id) {
+        el.id = "heading-" + i;
+      }
+      headings.push({
+        level: parseInt(el.tagName.charAt(1), 10),
+        text: el.textContent,
+        id: el.id,
+      });
+    });
+    return headings;
+  }
+
+  scrollToElement(el) {
+    if (el && el.scrollIntoView) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -309,6 +443,18 @@ class PhiaEditor {
           this.redo();
         } else {
           this.undo();
+        }
+        break;
+      case "x":
+        if (e.shiftKey) {
+          e.preventDefault();
+          this.toggleStrike();
+        }
+        break;
+      case "k":
+        e.preventDefault();
+        if (this._onLinkRequest) {
+          this._onLinkRequest();
         }
         break;
     }

@@ -142,10 +142,21 @@ const PhiaAdvancedEditor = {
       case "bulletList":  this._editor.toggleBulletList(); break;
       case "orderedList": this._editor.toggleOrderedList(); break;
       case "blockquote":  this._editor.toggleBlockquote(); break;
-      case "codeBlock":   this._editor.toggleCodeBlock(); break;
-      case "undo":        this._editor.undo(); break;
-      case "redo":        this._editor.redo(); break;
-      case "findReplace": this._toggleFindBar(); return;
+      case "codeBlock":       this._editor.toggleCodeBlock(); break;
+      case "superscript":     this._editor.toggleSuperscript(); break;
+      case "subscript":       this._editor.toggleSubscript(); break;
+      case "clearFormatting": this._editor.clearFormatting(); break;
+      case "selectAll":       this._editor.selectAll(); break;
+      case "horizontalRule":  this._editor.insertHorizontalRule(); break;
+      case "setTextAlign":    this._editor.setTextAlign(this._getActionValue(action) || "left"); break;
+      case "setColor":        this._editor.setColor(this._getActionValue(action) || "#000"); break;
+      case "setHighlight":    this._editor.setHighlight(this._getActionValue(action) || "#FFEB3B"); break;
+      case "setFontFamily":   this._editor.setFontFamily(this._getActionValue(action) || "serif"); break;
+      case "insertImage":     this._editor.insertImage(this._getActionValue(action) || ""); break;
+      case "insertTable":     this._editor.insertTable(3, 3); break;
+      case "undo":            this._editor.undo(); break;
+      case "redo":            this._editor.redo(); break;
+      case "findReplace":     this._toggleFindBar(); return;
       default: break;
     }
 
@@ -238,6 +249,11 @@ const PhiaAdvancedEditor = {
     }
     this._closeLinkDialog();
     this._updateActiveStates();
+  },
+
+  _getActionValue(action) {
+    const btn = this.el.querySelector(`[data-action="${action}"]`);
+    return btn ? btn.dataset.value : null;
   },
 
   // Minimal fallback editor if PhiaEditor is not globally available

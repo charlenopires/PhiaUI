@@ -244,11 +244,23 @@ defmodule PhiaUi.Components.Editor.TipTapHelpers do
     wrap_marks(escaped, marks)
   end
 
+  defp node_to_html(%{"type" => "paragraph", "attrs" => %{"textAlign" => align}, "content" => content})
+       when align in ~w(left center right justify) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<p style=\"text-align: #{align}\">#{inner}</p>"
+  end
+
   defp node_to_html(%{"type" => "paragraph", "content" => content}) do
     inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
     "<p>#{inner}</p>"
   end
   defp node_to_html(%{"type" => "paragraph"}), do: "<p></p>"
+
+  defp node_to_html(%{"type" => "heading", "attrs" => %{"level" => level, "textAlign" => align}, "content" => content})
+       when level in 1..6 and align in ~w(left center right justify) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<h#{level} style=\"text-align: #{align}\">#{inner}</h#{level}>"
+  end
 
   defp node_to_html(%{"type" => "heading", "attrs" => %{"level" => level}, "content" => content})
        when level in 1..6 do
@@ -297,6 +309,45 @@ defmodule PhiaUi.Components.Editor.TipTapHelpers do
     "<img src=\"#{src}\" alt=\"#{alt}\"#{title_attr}>"
   end
 
+  # Tables
+  defp node_to_html(%{"type" => "table", "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<table>#{inner}</table>"
+  end
+
+  defp node_to_html(%{"type" => "tableRow", "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<tr>#{inner}</tr>"
+  end
+
+  defp node_to_html(%{"type" => "tableHeader", "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<th>#{inner}</th>"
+  end
+
+  defp node_to_html(%{"type" => "tableCell", "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<td>#{inner}</td>"
+  end
+
+  # Task lists
+  defp node_to_html(%{"type" => "taskList", "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<ul data-type=\"taskList\">#{inner}</ul>"
+  end
+
+  defp node_to_html(%{"type" => "taskItem", "attrs" => %{"checked" => true}, "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<li data-type=\"taskItem\" data-checked=\"true\"><label><input type=\"checkbox\" checked></label><div>#{inner}</div></li>"
+  end
+
+  defp node_to_html(%{"type" => "taskItem", "content" => content}) do
+    inner = content |> Enum.map(&node_to_html/1) |> Enum.join()
+    "<li data-type=\"taskItem\" data-checked=\"false\"><label><input type=\"checkbox\"></label><div>#{inner}</div></li>"
+  end
+
+  defp node_to_html(%{"type" => "taskItem"}), do: "<li data-type=\"taskItem\" data-checked=\"false\"><label><input type=\"checkbox\"></label><div></div></li>"
+
   # Unknown node — skip
   defp node_to_html(_), do: ""
 
@@ -309,6 +360,28 @@ defmodule PhiaUi.Components.Editor.TipTapHelpers do
   defp wrap_marks(html, [%{"type" => "link", "attrs" => %{"href" => href}} | rest]) do
     escaped_href = Phoenix.HTML.html_escape(href) |> Phoenix.HTML.safe_to_string()
     wrap_marks("<a href=\"#{escaped_href}\">#{html}</a>", rest)
+  end
+  defp wrap_marks(html, [%{"type" => "superscript"} | rest]), do: wrap_marks("<sup>#{html}</sup>", rest)
+  defp wrap_marks(html, [%{"type" => "subscript"} | rest]), do: wrap_marks("<sub>#{html}</sub>", rest)
+  defp wrap_marks(html, [%{"type" => "highlight", "attrs" => %{"color" => color}} | rest]) do
+    escaped = Phoenix.HTML.html_escape(color) |> Phoenix.HTML.safe_to_string()
+    wrap_marks("<mark style=\"background-color: #{escaped}\">#{html}</mark>", rest)
+  end
+  defp wrap_marks(html, [%{"type" => "highlight"} | rest]), do: wrap_marks("<mark>#{html}</mark>", rest)
+  defp wrap_marks(html, [%{"type" => "textStyle", "attrs" => attrs} | rest]) do
+    styles =
+      Enum.flat_map(attrs, fn
+        {"color", c} -> ["color: #{Phoenix.HTML.html_escape(c) |> Phoenix.HTML.safe_to_string()}"]
+        {"fontFamily", f} -> ["font-family: #{Phoenix.HTML.html_escape(f) |> Phoenix.HTML.safe_to_string()}"]
+        _ -> []
+      end)
+      |> Enum.join("; ")
+
+    if styles == "" do
+      wrap_marks(html, rest)
+    else
+      wrap_marks("<span style=\"#{styles}\">#{html}</span>", rest)
+    end
   end
   # Unknown mark — skip
   defp wrap_marks(html, [_ | rest]), do: wrap_marks(html, rest)
