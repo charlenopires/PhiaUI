@@ -13,7 +13,7 @@ defmodule PhiaUi.ComponentRegistryTest do
     :shadcn_equivalent,
     :status
   ]
-  @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget, :layout, :animation, :surface]
+  @valid_tiers [:primitive, :interactive, :form, :navigation, :shell, :widget, :layout, :animation, :surface, :collab]
   @valid_statuses [:planned, :implemented]
 
   describe "all/0" do
@@ -21,8 +21,8 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert is_map(ComponentRegistry.all())
     end
 
-    test "contains exactly 650 components" do
-      assert map_size(ComponentRegistry.all()) == 650
+    test "contains exactly 685 components" do
+      assert map_size(ComponentRegistry.all()) == 685
     end
 
     test "all keys are atom component names" do
@@ -580,6 +580,59 @@ defmodule PhiaUi.ComponentRegistryTest do
       assert meta != nil
       assert meta.tier == :interactive
       assert "PhiaCountdownButton" in meta.js_hooks
+    end
+
+    # Collab Suite
+    test "collab_avatar_stack is registered as collab" do
+      meta = ComponentRegistry.get(:collab_avatar_stack)
+      assert meta != nil
+      assert meta.tier == :collab
+    end
+
+    test "collab_cursors_overlay is registered as collab with hook" do
+      meta = ComponentRegistry.get(:collab_cursors_overlay)
+      assert meta != nil
+      assert meta.tier == :collab
+      assert "PhiaCollabCursors" in meta.js_hooks
+    end
+
+    test "collab_comment is registered as collab" do
+      meta = ComponentRegistry.get(:collab_comment)
+      assert meta != nil
+      assert meta.tier == :collab
+    end
+
+    test "collab_floating_thread is registered as collab with hook" do
+      meta = ComponentRegistry.get(:collab_floating_thread)
+      assert meta != nil
+      assert meta.tier == :collab
+      assert "PhiaFloatingThread" in meta.js_hooks
+    end
+
+    test "collab_composer is registered as collab with hook" do
+      meta = ComponentRegistry.get(:collab_composer)
+      assert meta != nil
+      assert meta.tier == :collab
+      assert "PhiaCollabComposer" in meta.js_hooks
+    end
+
+    test "collab_editor is registered as collab" do
+      meta = ComponentRegistry.get(:collab_editor)
+      assert meta != nil
+      assert meta.tier == :collab
+      assert :collab_status_bar in meta.dependencies
+    end
+
+    test "version_panel is registered as collab" do
+      meta = ComponentRegistry.get(:version_panel)
+      assert meta != nil
+      assert meta.tier == :collab
+    end
+
+    test "collab_inbox_panel is registered as collab" do
+      meta = ComponentRegistry.get(:collab_inbox_panel)
+      assert meta != nil
+      assert meta.tier == :collab
     end
   end
 end

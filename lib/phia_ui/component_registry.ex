@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 650 PhiaUI components.
+  Source of truth for all 685 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -9,7 +9,7 @@ defmodule PhiaUi.ComponentRegistry do
   - `:template_file` — path inside `priv/templates/` for the EEx source
   - `:js_hooks` — list of JS hook names required by this component
   - `:dependencies` — list of component atoms this component composes
-  - `:tier` — domain tier (`:primitive | :interactive | :form | :navigation | :shell | :widget`)
+  - `:tier` — domain tier (`:primitive | :interactive | :form | :navigation | :shell | :widget | :collab`)
   - `:shadcn_equivalent` — matching shadcn/ui component name, or `nil`
   - `:status` — `:planned` or `:implemented`
 
@@ -25,7 +25,7 @@ defmodule PhiaUi.ComponentRegistry do
       PhiaUi.ComponentRegistry.by_tier(:primitive)
   """
 
-  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout | :animation | :surface
+  @type tier :: :primitive | :interactive | :form | :navigation | :shell | :widget | :layout | :animation | :surface | :collab
   @type status :: :planned | :implemented
 
   @type component_meta :: %{
@@ -3217,85 +3217,85 @@ defmodule PhiaUi.ComponentRegistry do
       status: :implemented
     },
 
-    # ── TipTap Editor Suite ──────────────────────────────────────────────────
-    # 8 new components — ProseMirror-powered rich text editing
+    # ── Rich Editor Suite ────────────────────────────────────────────────────
+    # 8 components — native rich text editing (zero npm deps)
 
-    tiptap_editor: %{
-      name: "tiptap_editor",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
-      js_hooks: ["PhiaTipTap"],
-      dependencies: [:tiptap_toolbar],
+    rich_editor: %{
+      name: "rich_editor",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
+      js_hooks: ["PhiaRichEditor"],
+      dependencies: [:rich_toolbar],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_toolbar: %{
-      name: "tiptap_toolbar",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
+    rich_toolbar: %{
+      name: "rich_toolbar",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
       js_hooks: [],
       dependencies: [],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_content: %{
-      name: "tiptap_content",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
+    rich_content: %{
+      name: "rich_content",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
       js_hooks: [],
       dependencies: [],
       tier: :primitive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_bubble_menu: %{
-      name: "tiptap_bubble_menu",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
-      js_hooks: ["PhiaTipTap"],
-      dependencies: [:tiptap_editor],
+    rich_bubble_menu: %{
+      name: "rich_bubble_menu",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
+      js_hooks: ["PhiaRichEditor"],
+      dependencies: [:rich_editor],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_floating_menu: %{
-      name: "tiptap_floating_menu",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
-      js_hooks: ["PhiaTipTap"],
-      dependencies: [:tiptap_editor],
+    rich_floating_menu: %{
+      name: "rich_floating_menu",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
+      js_hooks: ["PhiaRichEditor"],
+      dependencies: [:rich_editor],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_slash_commands: %{
-      name: "tiptap_slash_commands",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
-      js_hooks: ["PhiaTipTap"],
-      dependencies: [:tiptap_editor],
+    rich_slash_commands: %{
+      name: "rich_slash_commands",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
+      js_hooks: ["PhiaRichEditor"],
+      dependencies: [:rich_editor],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_mention: %{
-      name: "tiptap_mention",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
-      js_hooks: ["PhiaTipTap"],
-      dependencies: [:tiptap_editor],
+    rich_mention: %{
+      name: "rich_mention",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
+      js_hooks: ["PhiaRichEditor"],
+      dependencies: [:rich_editor],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
     },
-    tiptap_collab_cursors: %{
-      name: "tiptap_collab_cursors",
-      module: PhiaUi.Components.Editor.TipTap,
-      template_file: "priv/templates/components/editor/tiptap.ex",
-      js_hooks: ["PhiaTipTapCollab"],
-      dependencies: [:tiptap_editor],
+    collab_cursors: %{
+      name: "collab_cursors",
+      module: PhiaUi.Components.Editor.RichEditor,
+      template_file: "priv/templates/components/editor/rich_editor.ex",
+      js_hooks: ["PhiaCollab"],
+      dependencies: [:rich_editor],
       tier: :interactive,
       shadcn_equivalent: nil,
       status: :implemented
@@ -6745,6 +6745,377 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :widget,
       shadcn_equivalent: nil,
       status: :implemented
+    },
+
+    # ── Collab Suite (v0.1.18) — 35 collaboration components ──────────────────
+
+    # Presence (4)
+    collab_avatar_stack: %{
+      name: "collab_avatar_stack",
+      module: PhiaUi.Components.Collab.Presence,
+      template_file: "priv/templates/components/collab/presence.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    who_is_typing: %{
+      name: "who_is_typing",
+      module: PhiaUi.Components.Collab.Presence,
+      template_file: "priv/templates/components/collab/presence.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_status_bar: %{
+      name: "collab_status_bar",
+      module: PhiaUi.Components.Collab.Presence,
+      template_file: "priv/templates/components/collab/presence.ex",
+      js_hooks: [],
+      dependencies: [:collab_avatar_stack, :who_is_typing],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_user_list: %{
+      name: "collab_user_list",
+      module: PhiaUi.Components.Collab.Presence,
+      template_file: "priv/templates/components/collab/presence.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Cursors (4)
+    collab_cursor: %{
+      name: "collab_cursor",
+      module: PhiaUi.Components.Collab.Cursor,
+      template_file: "priv/templates/components/collab/cursor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_cursors_overlay: %{
+      name: "collab_cursors_overlay",
+      module: PhiaUi.Components.Collab.Cursor,
+      template_file: "priv/templates/components/collab/cursor.ex",
+      js_hooks: ["PhiaCollabCursors"],
+      dependencies: [:collab_cursor],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_selection: %{
+      name: "collab_selection",
+      module: PhiaUi.Components.Collab.Cursor,
+      template_file: "priv/templates/components/collab/cursor.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_cursor_chat: %{
+      name: "collab_cursor_chat",
+      module: PhiaUi.Components.Collab.Cursor,
+      template_file: "priv/templates/components/collab/cursor.ex",
+      js_hooks: ["PhiaCollabCursorChat"],
+      dependencies: [:collab_cursor],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Comments (6)
+    collab_comment: %{
+      name: "collab_comment",
+      module: PhiaUi.Components.Collab.CollabComment,
+      template_file: "priv/templates/components/collab/collab_comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_comment_body: %{
+      name: "collab_comment_body",
+      module: PhiaUi.Components.Collab.CollabComment,
+      template_file: "priv/templates/components/collab/collab_comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_comment_reactions: %{
+      name: "collab_comment_reactions",
+      module: PhiaUi.Components.Collab.CollabComment,
+      template_file: "priv/templates/components/collab/collab_comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_comment_actions: %{
+      name: "collab_comment_actions",
+      module: PhiaUi.Components.Collab.CollabComment,
+      template_file: "priv/templates/components/collab/collab_comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_comment_pin: %{
+      name: "collab_comment_pin",
+      module: PhiaUi.Components.Collab.CollabComment,
+      template_file: "priv/templates/components/collab/collab_comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_comment_indicator: %{
+      name: "collab_comment_indicator",
+      module: PhiaUi.Components.Collab.CollabComment,
+      template_file: "priv/templates/components/collab/collab_comment.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Threads (5)
+    collab_thread: %{
+      name: "collab_thread",
+      module: PhiaUi.Components.Collab.Thread,
+      template_file: "priv/templates/components/collab/thread.ex",
+      js_hooks: [],
+      dependencies: [:collab_comment],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_thread_header: %{
+      name: "collab_thread_header",
+      module: PhiaUi.Components.Collab.Thread,
+      template_file: "priv/templates/components/collab/thread.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_thread_list: %{
+      name: "collab_thread_list",
+      module: PhiaUi.Components.Collab.Thread,
+      template_file: "priv/templates/components/collab/thread.ex",
+      js_hooks: [],
+      dependencies: [:collab_thread],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_floating_thread: %{
+      name: "collab_floating_thread",
+      module: PhiaUi.Components.Collab.Thread,
+      template_file: "priv/templates/components/collab/thread.ex",
+      js_hooks: ["PhiaFloatingThread"],
+      dependencies: [:collab_thread],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_thread_resolved: %{
+      name: "collab_thread_resolved",
+      module: PhiaUi.Components.Collab.Thread,
+      template_file: "priv/templates/components/collab/thread.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Composer (3)
+    collab_composer: %{
+      name: "collab_composer",
+      module: PhiaUi.Components.Collab.Composer,
+      template_file: "priv/templates/components/collab/composer.ex",
+      js_hooks: ["PhiaCollabComposer"],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_mention_suggest: %{
+      name: "collab_mention_suggest",
+      module: PhiaUi.Components.Collab.Composer,
+      template_file: "priv/templates/components/collab/composer.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_floating_composer: %{
+      name: "collab_floating_composer",
+      module: PhiaUi.Components.Collab.Composer,
+      template_file: "priv/templates/components/collab/composer.ex",
+      js_hooks: ["PhiaFloatingThread"],
+      dependencies: [:collab_composer],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Notifications (6)
+    collab_inbox_notification: %{
+      name: "collab_inbox_notification",
+      module: PhiaUi.Components.Collab.CollabNotification,
+      template_file: "priv/templates/components/collab/collab_notification.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_inbox_list: %{
+      name: "collab_inbox_list",
+      module: PhiaUi.Components.Collab.CollabNotification,
+      template_file: "priv/templates/components/collab/collab_notification.ex",
+      js_hooks: [],
+      dependencies: [:collab_inbox_notification],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_inbox_panel: %{
+      name: "collab_inbox_panel",
+      module: PhiaUi.Components.Collab.CollabNotification,
+      template_file: "priv/templates/components/collab/collab_notification.ex",
+      js_hooks: [],
+      dependencies: [:collab_inbox_list],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_notification_badge: %{
+      name: "collab_notification_badge",
+      module: PhiaUi.Components.Collab.CollabNotification,
+      template_file: "priv/templates/components/collab/collab_notification.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_mention_notification: %{
+      name: "collab_mention_notification",
+      module: PhiaUi.Components.Collab.CollabNotification,
+      template_file: "priv/templates/components/collab/collab_notification.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    collab_thread_notification: %{
+      name: "collab_thread_notification",
+      module: PhiaUi.Components.Collab.CollabNotification,
+      template_file: "priv/templates/components/collab/collab_notification.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Version History (6)
+    version_summary: %{
+      name: "version_summary",
+      module: PhiaUi.Components.Collab.VersionHistory,
+      template_file: "priv/templates/components/collab/version_history.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    version_list: %{
+      name: "version_list",
+      module: PhiaUi.Components.Collab.VersionHistory,
+      template_file: "priv/templates/components/collab/version_history.ex",
+      js_hooks: [],
+      dependencies: [:version_summary],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    version_diff: %{
+      name: "version_diff",
+      module: PhiaUi.Components.Collab.VersionHistory,
+      template_file: "priv/templates/components/collab/version_history.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    version_restore_dialog: %{
+      name: "version_restore_dialog",
+      module: PhiaUi.Components.Collab.VersionHistory,
+      template_file: "priv/templates/components/collab/version_history.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    version_panel: %{
+      name: "version_panel",
+      module: PhiaUi.Components.Collab.VersionHistory,
+      template_file: "priv/templates/components/collab/version_history.ex",
+      js_hooks: [],
+      dependencies: [:version_list, :version_diff],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+    version_badge: %{
+      name: "version_badge",
+      module: PhiaUi.Components.Collab.VersionHistory,
+      template_file: "priv/templates/components/collab/version_history.ex",
+      js_hooks: [],
+      dependencies: [],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
+    },
+
+    # Composite Widget (1)
+    collab_editor: %{
+      name: "collab_editor",
+      module: PhiaUi.Components.Collab.CollabEditor,
+      template_file: "priv/templates/components/collab/collab_editor.ex",
+      js_hooks: ["PhiaCollabCursors", "PhiaCollabComposer", "PhiaFloatingThread"],
+      dependencies: [
+        :collab_status_bar, :collab_cursors_overlay, :collab_thread_list,
+        :collab_floating_composer, :version_panel, :version_badge
+      ],
+      tier: :collab,
+      shadcn_equivalent: nil,
+      status: :implemented
     }
   }
 
@@ -6752,7 +7123,7 @@ defmodule PhiaUi.ComponentRegistry do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 650 component metadata entries."
+  @doc "Returns the full registry map — all 685 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

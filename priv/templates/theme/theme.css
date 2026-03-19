@@ -133,6 +133,14 @@
   --animate-command-in: phia-command-in 150ms ease-out forwards;
   --animate-step-fill:  phia-step-fill  300ms ease-out forwards;
   --animate-toc-active: phia-toc-active 150ms ease-out forwards;
+
+  /* ── Collab Suite Animation Tokens ──────────────────────────────────────── */
+  --animate-cursor-blink:     phia-cursor-blink     1s step-end infinite;
+  --animate-typing-dots:      phia-typing-dots      1.4s ease-in-out infinite;
+  --animate-thread-slide:     phia-thread-slide     200ms ease-out forwards;
+  --animate-comment-pin-pop:  phia-comment-pin-pop  200ms ease-out forwards;
+  --animate-inbox-slide:      phia-inbox-slide      250ms ease-out forwards;
+  --animate-diff-highlight:   phia-diff-highlight   2s ease-in-out;
 }
 
 /* ── CSS Variable Aliases ─────────────────────────────────────────────────── */
@@ -690,6 +698,57 @@
   color: var(--color-primary);
   font-weight: 500;
   padding: 0 0.25rem;
+}
+
+/* ── Collab Suite Keyframes (v0.1.18) ─────────────────────────────────────── */
+
+@keyframes phia-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+@keyframes phia-typing-dots {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-4px); }
+}
+
+@keyframes phia-thread-slide {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes phia-comment-pin-pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+@keyframes phia-inbox-slide {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes phia-diff-highlight {
+  0%, 100% { background-color: transparent; }
+  50%      { background-color: oklch(0.85 0.1 90 / 0.3); }
+}
+
+/* Collab utility classes */
+.phia-cursor-idle {
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+}
+
+.phia-typing-dot {
+  display: inline-block;
+  animation: phia-typing-dots 1.4s ease-in-out infinite;
+}
+
+.phia-typing-dot:nth-child(2) { animation-delay: 0.16s; }
+.phia-typing-dot:nth-child(3) { animation-delay: 0.32s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .phia-cursor-idle { transition: none; }
+  .phia-typing-dot  { animation: none; }
 }
 
 /* ── Base Layer ───────────────────────────────────────────────────────────── */

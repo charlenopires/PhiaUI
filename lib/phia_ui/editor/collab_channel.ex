@@ -14,11 +14,29 @@ defmodule PhiaUi.Editor.CollabChannel do
   - `"yjs:update"`       — client sends incremental update, server broadcasts + persists
   - `"awareness:update"` — client sends cursor/selection awareness, server broadcasts
 
+  ### Collaboration Messages (Client → Server)
+  - `"collab:thread:create"` — create a new comment thread anchored to a selection
+  - `"collab:thread:resolve"` — mark a thread as resolved
+  - `"collab:thread:reopen"` — reopen a resolved thread
+  - `"collab:comment:create"` — add a comment to a thread
+  - `"collab:comment:edit"` — edit an existing comment
+  - `"collab:comment:delete"` — delete a comment
+  - `"collab:comment:react"` — toggle a reaction on a comment
+  - `"collab:cursor:update"` — broadcast cursor position to peers
+  - `"collab:typing:start"` — broadcast typing indicator on
+  - `"collab:typing:stop"` — broadcast typing indicator off
+  - `"collab:version:snapshot"` — trigger a version snapshot
+
   ### Server → Client
   - `"yjs:sync-step-1"` — server sends its state vector (on join)
   - `"yjs:sync-step-2"` — server sends diff in response to client sync-step-1
   - `"yjs:update"`       — server broadcasts updates from other clients
   - `"awareness:update"` — server broadcasts awareness from other clients
+  - `"collab:thread:created"` / `"collab:thread:resolved"` / `"collab:thread:reopened"`
+  - `"collab:comment:created"` / `"collab:comment:edited"` / `"collab:comment:deleted"` / `"collab:comment:reacted"`
+  - `"collab:cursor:updated"` — peer cursor positions
+  - `"collab:typing:updated"` — peer typing state
+  - `"collab:version:saved"` — version snapshot confirmation
 
   ## Setup
 
@@ -51,8 +69,18 @@ defmodule PhiaUi.Editor.CollabChannel do
           MyApp.Repo.insert_or_update!(...)
           :ok
         end
+
+        @impl true
+        def load_threads(doc_id) do
+          threads = MyApp.Repo.all(from t in MyApp.Thread, where: t.doc_id == ^doc_id)
+          {:ok, threads}
+        end
       end
   """
+
+  # ---------------------------------------------------------------------------
+  # Existing callbacks
+  # ---------------------------------------------------------------------------
 
   @doc """
   Load persisted Y.Doc state for a document.
@@ -70,6 +98,46 @@ defmodule PhiaUi.Editor.CollabChannel do
   """
   @callback save_document(doc_id :: String.t(), state :: binary()) :: :ok | {:error, term()}
 
+  # ---------------------------------------------------------------------------
+  # New collaboration callbacks
+  # ---------------------------------------------------------------------------
+
+  @doc "Load all comment threads for a document."
+  @callback load_threads(doc_id :: String.t()) :: {:ok, list()} | {:error, term()}
+
+  @doc "Persist a new or updated comment thread."
+  @callback save_thread(doc_id :: String.t(), thread :: map()) ::
+              {:ok, map()} | {:error, term()}
+
+  @doc "Delete a comment thread by ID."
+  @callback delete_thread(doc_id :: String.t(), thread_id :: String.t()) ::
+              :ok | {:error, term()}
+
+  @doc "Persist a new or updated comment."
+  @callback save_comment(doc_id :: String.t(), comment :: map()) ::
+              {:ok, map()} | {:error, term()}
+
+  @doc "Delete a comment by ID."
+  @callback delete_comment(doc_id :: String.t(), comment_id :: String.t()) ::
+              :ok | {:error, term()}
+
+  @doc "Load all version snapshots for a document."
+  @callback load_versions(doc_id :: String.t()) :: {:ok, list()} | {:error, term()}
+
+  @doc "Persist a version snapshot."
+  @callback save_version(doc_id :: String.t(), version :: map()) ::
+              {:ok, map()} | {:error, term()}
+
+  @optional_callbacks [
+    load_threads: 1,
+    save_thread: 2,
+    delete_thread: 2,
+    save_comment: 2,
+    delete_comment: 2,
+    load_versions: 1,
+    save_version: 2
+  ]
+
   defmacro __using__(_opts) do
     quote do
       use Phoenix.Channel
@@ -83,11 +151,40 @@ defmodule PhiaUi.Editor.CollabChannel do
       @impl PhiaUi.Editor.CollabChannel
       def save_document(_doc_id, _state), do: :ok
 
-      defoverridable load_document: 1, save_document: 2
+      @impl PhiaUi.Editor.CollabChannel
+      def load_threads(_doc_id), do: {:ok, []}
 
-      # -----------------------------------------------------------------------
+      @impl PhiaUi.Editor.CollabChannel
+      def save_thread(_doc_id, thread), do: {:ok, thread}
+
+      @impl PhiaUi.Editor.CollabChannel
+      def delete_thread(_doc_id, _thread_id), do: :ok
+
+      @impl PhiaUi.Editor.CollabChannel
+      def save_comment(_doc_id, comment), do: {:ok, comment}
+
+      @impl PhiaUi.Editor.CollabChannel
+      def delete_comment(_doc_id, _comment_id), do: :ok
+
+      @impl PhiaUi.Editor.CollabChannel
+      def load_versions(_doc_id), do: {:ok, []}
+
+      @impl PhiaUi.Editor.CollabChannel
+      def save_version(_doc_id, version), do: {:ok, version}
+
+      defoverridable load_document: 1,
+                     save_document: 2,
+                     load_threads: 1,
+                     save_thread: 2,
+                     delete_thread: 2,
+                     save_comment: 2,
+                     delete_comment: 2,
+                     load_versions: 1,
+                     save_version: 2
+
+      # =====================================================================
       # Channel callbacks
-      # -----------------------------------------------------------------------
+      # =====================================================================
 
       @impl Phoenix.Channel
       def join("editor:collab:" <> doc_id, _params, socket) do
@@ -170,6 +267,136 @@ defmodule PhiaUi.Editor.CollabChannel do
         # Broadcast cursor positions to all other clients
         broadcast_from!(socket, "awareness:update", payload)
         {:noreply, socket}
+      end
+
+      # =====================================================================
+      # Thread handlers
+      # =====================================================================
+
+      def handle_in("collab:thread:create", %{"thread" => thread_data}, socket) do
+        doc_id = socket.assigns.doc_id
+
+        case save_thread(doc_id, thread_data) do
+          {:ok, thread} ->
+            broadcast!(socket, "collab:thread:created", %{thread: thread})
+            {:reply, {:ok, %{thread: thread}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
+      end
+
+      def handle_in("collab:thread:resolve", %{"thread_id" => thread_id}, socket) do
+        doc_id = socket.assigns.doc_id
+        resolved = %{"id" => thread_id, "resolved" => true, "resolved_at" => DateTime.utc_now() |> DateTime.to_iso8601()}
+
+        case save_thread(doc_id, resolved) do
+          {:ok, thread} ->
+            broadcast!(socket, "collab:thread:resolved", %{thread_id: thread_id, thread: thread})
+            {:reply, {:ok, %{thread: thread}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
+      end
+
+      def handle_in("collab:thread:reopen", %{"thread_id" => thread_id}, socket) do
+        doc_id = socket.assigns.doc_id
+        reopened = %{"id" => thread_id, "resolved" => false, "resolved_at" => nil}
+
+        case save_thread(doc_id, reopened) do
+          {:ok, thread} ->
+            broadcast!(socket, "collab:thread:reopened", %{thread_id: thread_id, thread: thread})
+            {:reply, {:ok, %{thread: thread}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
+      end
+
+      # =====================================================================
+      # Comment handlers
+      # =====================================================================
+
+      def handle_in("collab:comment:create", %{"comment" => comment_data}, socket) do
+        doc_id = socket.assigns.doc_id
+
+        case save_comment(doc_id, comment_data) do
+          {:ok, comment} ->
+            broadcast!(socket, "collab:comment:created", %{comment: comment})
+            {:reply, {:ok, %{comment: comment}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
+      end
+
+      def handle_in("collab:comment:edit", %{"comment" => comment_data}, socket) do
+        doc_id = socket.assigns.doc_id
+
+        case save_comment(doc_id, comment_data) do
+          {:ok, comment} ->
+            broadcast!(socket, "collab:comment:edited", %{comment: comment})
+            {:reply, {:ok, %{comment: comment}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
+      end
+
+      def handle_in("collab:comment:delete", %{"comment_id" => comment_id}, socket) do
+        doc_id = socket.assigns.doc_id
+
+        case delete_comment(doc_id, comment_id) do
+          :ok ->
+            broadcast!(socket, "collab:comment:deleted", %{comment_id: comment_id})
+            {:reply, :ok, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
+      end
+
+      def handle_in("collab:comment:react", %{"comment_id" => comment_id, "reaction" => reaction, "user_id" => user_id}, socket) do
+        payload = %{comment_id: comment_id, reaction: reaction, user_id: user_id}
+        broadcast!(socket, "collab:comment:reacted", payload)
+        {:reply, :ok, socket}
+      end
+
+      # =====================================================================
+      # Cursor & typing handlers
+      # =====================================================================
+
+      def handle_in("collab:cursor:update", %{"cursor" => cursor_data, "user_id" => user_id}, socket) do
+        broadcast_from!(socket, "collab:cursor:updated", %{user_id: user_id, cursor: cursor_data})
+        {:noreply, socket}
+      end
+
+      def handle_in("collab:typing:start", %{"user_id" => user_id}, socket) do
+        broadcast_from!(socket, "collab:typing:updated", %{user_id: user_id, typing: true})
+        {:noreply, socket}
+      end
+
+      def handle_in("collab:typing:stop", %{"user_id" => user_id}, socket) do
+        broadcast_from!(socket, "collab:typing:updated", %{user_id: user_id, typing: false})
+        {:noreply, socket}
+      end
+
+      # =====================================================================
+      # Version snapshot handler
+      # =====================================================================
+
+      def handle_in("collab:version:snapshot", %{"version" => version_data}, socket) do
+        doc_id = socket.assigns.doc_id
+
+        case save_version(doc_id, version_data) do
+          {:ok, version} ->
+            broadcast!(socket, "collab:version:saved", %{version: version})
+            {:reply, {:ok, %{version: version}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+        end
       end
     end
   end

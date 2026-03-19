@@ -75,6 +75,9 @@ defmodule PhiaUi.Components.Editor.TipTap do
   attr :show_word_count, :boolean, default: true
   attr :show_find_replace, :boolean, default: false
   attr :content_format, :atom, default: :json, values: [:json, :html]
+  attr :collab_enabled, :boolean, default: false, doc: "Enable collaborative editing mode"
+  attr :collab_doc_id, :string, default: nil, doc: "Document ID for collaboration channel"
+  attr :collab_user, :map, default: nil, doc: "Current user map with :id, :name, :color keys"
   attr :class, :string, default: nil
   attr :rest, :global
 
@@ -142,6 +145,11 @@ defmodule PhiaUi.Components.Editor.TipTap do
       data-on-update={@on_update}
       data-on-selection={@on_selection}
       data-content-format={to_string(@content_format)}
+      data-collab-enabled={to_string(@collab_enabled)}
+      data-collab-doc-id={@collab_doc_id}
+      data-collab-user-id={@collab_user && @collab_user[:id]}
+      data-collab-user-name={@collab_user && @collab_user[:name]}
+      data-collab-user-color={@collab_user && @collab_user[:color]}
       class={cn([
         "flex flex-col rounded-xl border border-border bg-background shadow-sm",
         "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1",
