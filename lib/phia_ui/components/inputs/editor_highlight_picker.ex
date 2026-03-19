@@ -172,9 +172,6 @@ defmodule PhiaUi.Components.EditorHighlightPicker do
           <span>No highlight</span>
         </button>
         <div class="my-1 border-t border-gray-100"></div>
-        <div data-recent-colors class="hidden">
-          <button :for={_ <- 1..5} type="button" data-recent-slot data-highlight-color="" style="display:none" class="hidden" />
-        </div>
         <div class="grid grid-cols-5 gap-1">
           <button
             :for={color <- @colors}
