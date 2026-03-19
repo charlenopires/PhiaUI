@@ -640,6 +640,7 @@ defmodule PhiaUi.Components.Editor do
   attr :label, :string, default: "Text color"
   attr :colors, :list, default: []
   attr :value, :string, default: nil
+  attr :editor_id, :string, default: nil
   attr :class, :string, default: nil
 
   @doc """
@@ -668,6 +669,7 @@ defmodule PhiaUi.Components.Editor do
       class={cn(["relative z-50", @class])}
       phx-hook="PhiaEditorColorPicker"
       data-action={@action}
+      data-editor-id={@editor_id}
     >
       <button
         type="button"
@@ -717,6 +719,7 @@ defmodule PhiaUi.Components.Editor do
   attr :id, :string, required: true
   attr :label, :string, required: true
   attr :value, :string, default: nil
+  attr :editor_id, :string, default: nil
   attr :class, :string, default: nil
 
   slot :item do
@@ -746,6 +749,7 @@ defmodule PhiaUi.Components.Editor do
       id={@id}
       class={cn(["relative z-50", @class])}
       phx-hook="PhiaEditorDropdown"
+      data-toolbar-editor-id={@editor_id}
     >
       <button
         type="button"

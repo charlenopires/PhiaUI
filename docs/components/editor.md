@@ -1,6 +1,59 @@
 # Editor
 
-Rich text editor toolkit for Phoenix LiveView. All 19 components live in `PhiaUi.Components.Editor`. Designed around TipTap/ProseMirror patterns but implemented entirely in Elixir/HEEx with vanilla JS hooks — no npm runtime dependencies.
+Rich text editor system for Phoenix LiveView. **170+ components across 12 modules** — from low-level formatting controls to complete preset editors. Designed around TipTap/ProseMirror patterns but implemented entirely in Elixir/HEEx with vanilla JS hooks — no npm runtime dependencies.
+
+## Module Overview
+
+| Module | Import | Components | Description |
+|--------|--------|:---:|-------------|
+| `PhiaUi.Components.Editor` | `import PhiaUi.Components.Editor` | 19 | Core toolbar, bubble/floating menus, slash commands, find-replace |
+| `PhiaUi.Components.Editor.RichEditor` | `import PhiaUi.Components.Editor.RichEditor` | 6 | Rich editor shell, toolbar, content area, floating/slash menus |
+| `PhiaUi.Components.Editor.Blocks` | `import PhiaUi.Components.Editor.Blocks` | 9 | Task list, callout, collapsible section, columns layout, page break |
+| `PhiaUi.Components.Editor.MediaBlocks` | `import PhiaUi.Components.Editor.MediaBlocks` | 8 | Image (with resize), table tools, equation editor, diagram, drawing canvas, embed |
+| `PhiaUi.Components.Editor.ContentBlocks` | `import PhiaUi.Components.Editor.ContentBlocks` | 14 | Toggle list, tab block, video/audio, bookmark card, math block, social embed, PDF viewer, map embed |
+| `PhiaUi.Components.Editor.BlockControls` | `import PhiaUi.Components.Editor.BlockControls` | 4 | Block add button, conversion menu, block toolbar, drag indicator |
+| `PhiaUi.Components.Editor.AdvancedBlocks` | `import PhiaUi.Components.Editor.AdvancedBlocks` | 5 | Synced block, columns block, code sandbox, A4 page, page header/footer |
+| `PhiaUi.Components.Editor.Formatting` | `import PhiaUi.Components.Editor.Formatting` | 16 | Bold, italic, underline, strikethrough, highlight, subscript, superscript, alignment, lists, etc. |
+| `PhiaUi.Components.Editor.FormattingToolbar` | `import PhiaUi.Components.Editor.FormattingToolbar` | 1 | Assembled formatting toolbar component |
+| `PhiaUi.Components.Editor.Extensions` | `import PhiaUi.Components.Editor.Extensions` | 10 | Track changes, search/nav, export, AI assistant bridge |
+| `PhiaUi.Components.Editor.TextDirection` | `import PhiaUi.Components.Editor.TextDirection` | 2 | RTL/LTR toggle, bidirectional text block |
+| `PhiaUi.Components.Editor.LanguageTools` | `import PhiaUi.Components.Editor.LanguageTools` | 4 | Grammar panel, grammar suggestion, spell check toggle, dictionary panel |
+| `PhiaUi.Components.Editor.Presets` | `import PhiaUi.Components.Editor.Presets` | 10 | 5 original + 5 v2 preset editors |
+| `PhiaUi.Components.Editor.Academic` | `import PhiaUi.Components.Editor.Academic` | ~8 | Citation toolbar, reference list, footnotes |
+| `PhiaUi.Components.Editor.WritingTools` | `import PhiaUi.Components.Editor.WritingTools` | ~6 | Focus mode, typewriter scroll, distraction-free |
+| `PhiaUi.Components.Editor.SearchNav` | `import PhiaUi.Components.Editor.SearchNav` | ~4 | Document outline navigation, search within editor |
+| `PhiaUi.Components.Editor.TrackChanges` | `import PhiaUi.Components.Editor.TrackChanges` | ~5 | Track changes UI, accept/reject, change markers |
+| `PhiaUi.Components.Editor.Export` | `import PhiaUi.Components.Editor.Export` | ~4 | Export to PDF/HTML/Markdown, print layout |
+| `PhiaUi.Components.Editor.AiAssistant` | `import PhiaUi.Components.Editor.AiAssistant` | ~4 | AI writing assistant, autocomplete, rewrite |
+| `PhiaUi.Components.Editor.DocumentShell` | `import PhiaUi.Components.Editor.DocumentShell` | ~4 | Document shell, sidebar, status bar |
+| `PhiaUi.Components.Editor.EditorContent` | `import PhiaUi.Components.Editor.EditorContent` | ~6 | Editor content area, block rendering |
+
+## Preset Editors
+
+The fastest way to use the editor system — drop in a single component:
+
+```heex
+<%!-- Notion-style: slash commands, drag handles, block toolbars --%>
+<.notion_editor id="notion" name="doc[body]" value={@body} />
+
+<%!-- Google Docs-style: menu bar, A4 pages, track changes --%>
+<.google_docs_editor id="gdocs" name="doc[body]" value={@body} />
+
+<%!-- Medium-style: floating toolbar, clean reading, images --%>
+<.medium_editor_v2 id="medium" name="post[body]" value={@body} />
+
+<%!-- Developer notes: syntax highlighting, code sandbox --%>
+<.code_notes_editor id="notes" name="note[body]" value={@body} />
+
+<%!-- Full collaboration: presence, cursors, comments --%>
+<.collaborative_editor id="collab" name="doc[body]" value={@body} room_id="doc-123" />
+```
+
+See also: [Rich Editor v2 Tutorial](../guides/tutorial-editor.md)
+
+---
+
+## Core Editor Components (PhiaUi.Components.Editor)
 
 ```elixir
 import PhiaUi.Components.Editor
@@ -524,3 +577,272 @@ end
   <.button type="submit">Publish</.button>
 </.form>
 ```
+
+---
+
+## Rich Editor (PhiaUi.Components.Editor.RichEditor)
+
+```elixir
+import PhiaUi.Components.Editor.RichEditor
+```
+
+The v2 rich editor shell — a composable editor with toolbar, content area, and floating menus. Powered by the PhiaEditor v2 JS engine (~1,200 LOC).
+
+| Component | Tier | Hook | Description |
+|-----------|------|------|-------------|
+| `rich_editor` | interactive | `PhiaRichEditor` | Main editor shell with toolbar/content slots |
+| `rich_toolbar` | interactive | — | Toolbar container for the rich editor |
+| `rich_content` | interactive | — | Content area with block rendering |
+| `rich_floating_menu` | interactive | — | Floating block insert menu |
+| `rich_slash_command` | interactive | — | Slash command menu for rich editor |
+| `rich_bubble_toolbar` | interactive | — | Selection-aware floating toolbar |
+
+### Usage
+
+```heex
+<.rich_editor id="my-editor" name="content[body]" value={@body}>
+  <:toolbar>
+    <.formatting_toolbar editor_id="my-editor" />
+  </:toolbar>
+</.rich_editor>
+```
+
+---
+
+## Editor Blocks (PhiaUi.Components.Editor.Blocks)
+
+```elixir
+import PhiaUi.Components.Editor.Blocks
+```
+
+Structural block types for the editor.
+
+| Component | Description |
+|-----------|-------------|
+| `task_list` | Interactive checklist with checkboxes |
+| `task_list_item` | Individual task item |
+| `callout_block` | Highlighted callout with icon and color |
+| `collapsible_section` | Expandable/collapsible content section |
+| `columns_layout` | Multi-column content layout |
+| `column` | Individual column in a columns layout |
+| `page_break` | Visual page break separator |
+| `horizontal_rule` | Themed horizontal divider |
+| `block_quote` | Styled blockquote for the editor |
+
+---
+
+## Media Blocks (PhiaUi.Components.Editor.MediaBlocks)
+
+```elixir
+import PhiaUi.Components.Editor.MediaBlocks
+```
+
+Rich media embedding blocks.
+
+| Component | Hook | Description |
+|-----------|------|-------------|
+| `image_block` | `PhiaImageResize` | Image with resize handles, caption, alignment |
+| `table_block` | `PhiaTableEditor` | Interactive table with add/remove rows/cols |
+| `equation_editor` | `PhiaEquationRenderer` | KaTeX math equation editor |
+| `diagram_block` | `PhiaDiagramRenderer` | Mermaid diagram renderer |
+| `drawing_canvas` | `PhiaDrawingCanvas` | Freehand drawing canvas |
+| `embed_block` | — | oEmbed content embedding |
+| `code_block_enhanced` | `PhiaCodeHighlight` | Syntax-highlighted code with language selector |
+| `emoji_picker_block` | `PhiaEmojiPickerBlock` | Inline emoji picker |
+
+---
+
+## Content Blocks (PhiaUi.Components.Editor.ContentBlocks) — v0.1.17
+
+```elixir
+import PhiaUi.Components.Editor.ContentBlocks
+```
+
+| Component | Description |
+|-----------|-------------|
+| `toggle_list` | Expandable list items (FAQ-style) |
+| `toggle_list_item` | Individual toggle item |
+| `tab_block` | Tabbed content container |
+| `tab_block_item` | Individual tab panel |
+| `video_block` | Video embed with controls |
+| `audio_block` | Audio player block |
+| `bookmark_card` | URL bookmark with preview |
+| `math_block` | Display math (block-level KaTeX) |
+| `social_embed` | Twitter/YouTube/etc embed |
+| `pdf_viewer` | Inline PDF viewer |
+| `map_embed` | Map embed block |
+| `file_attachment` | File attachment block |
+| `divider_block` | Decorative divider with styles |
+| `table_of_contents_block` | Auto-generated TOC from headings |
+
+---
+
+## Block Controls (PhiaUi.Components.Editor.BlockControls) — v0.1.17
+
+```elixir
+import PhiaUi.Components.Editor.BlockControls
+```
+
+| Component | Hook | Description |
+|-----------|------|-------------|
+| `block_add_button` | — | "+" button to insert new blocks |
+| `block_conversion_menu` | — | Menu to convert block types (paragraph to heading, etc.) |
+| `block_toolbar` | — | Floating toolbar for selected blocks |
+| `block_drag_indicator` | `PhiaDragHandle` | Drag handle for reordering blocks |
+
+---
+
+## Advanced Blocks (PhiaUi.Components.Editor.AdvancedBlocks) — v0.1.17
+
+```elixir
+import PhiaUi.Components.Editor.AdvancedBlocks
+```
+
+| Component | Description |
+|-----------|-------------|
+| `synced_block` | Block synced across multiple locations |
+| `columns_block` | Advanced multi-column layout with resize |
+| `code_sandbox` | Interactive code sandbox with preview |
+| `a4_page` | A4-sized page container for document layout |
+| `page_header_footer` | Header/footer for A4 page mode |
+
+---
+
+## Formatting (PhiaUi.Components.Editor.Formatting)
+
+```elixir
+import PhiaUi.Components.Editor.Formatting
+```
+
+16 individual formatting control components. Each fires a `phx-click` event to toggle formatting.
+
+| Component | Description |
+|-----------|-------------|
+| `bold_button` | Toggle bold |
+| `italic_button` | Toggle italic |
+| `underline_button` | Toggle underline |
+| `strikethrough_button` | Toggle strikethrough |
+| `highlight_button` | Toggle text highlight |
+| `subscript_button` | Toggle subscript |
+| `superscript_button` | Toggle superscript |
+| `code_button` | Toggle inline code |
+| `link_button` | Insert/edit link |
+| `align_left_button` | Align text left |
+| `align_center_button` | Center text |
+| `align_right_button` | Align text right |
+| `align_justify_button` | Justify text |
+| `bullet_list_button` | Toggle bullet list |
+| `ordered_list_button` | Toggle ordered list |
+| `clear_formatting_button` | Clear all formatting |
+
+---
+
+## Text Direction (PhiaUi.Components.Editor.TextDirection) — v0.1.17
+
+```elixir
+import PhiaUi.Components.Editor.TextDirection
+```
+
+| Component | Description |
+|-----------|-------------|
+| `text_direction_toggle` | Toggle between LTR and RTL text direction |
+| `bidi_text_block` | Bidirectional text block with auto-detection |
+
+---
+
+## Language Tools (PhiaUi.Components.Editor.LanguageTools) — v0.1.17
+
+```elixir
+import PhiaUi.Components.Editor.LanguageTools
+```
+
+| Component | Description |
+|-----------|-------------|
+| `grammar_panel` | Grammar checking panel with suggestions |
+| `grammar_suggestion` | Individual grammar suggestion item |
+| `spell_check_toggle` | Toggle spell checking on/off |
+| `dictionary_panel` | Dictionary/thesaurus lookup panel |
+
+---
+
+## Extensions (PhiaUi.Components.Editor.Extensions)
+
+```elixir
+import PhiaUi.Components.Editor.Extensions
+```
+
+| Component | Hook | Description |
+|-----------|------|-------------|
+| `track_changes_panel` | `PhiaTrackChanges` | Track changes sidebar with accept/reject |
+| `search_nav` | — | Document search and navigation |
+| `export_menu` | — | Export to PDF/HTML/Markdown menu |
+| `ai_assistant_panel` | — | AI writing assistant sidebar |
+| `version_history` | — | Document version history viewer |
+| `comments_sidebar` | — | Inline comments sidebar |
+| `outline_panel` | — | Document outline/structure panel |
+| `word_count_bar` | — | Bottom bar with word/char/page counts |
+| `reading_time` | — | Estimated reading time display |
+| `focus_mode` | — | Distraction-free writing mode |
+
+---
+
+## Presets (PhiaUi.Components.Editor.Presets)
+
+```elixir
+import PhiaUi.Components.Editor.Presets
+```
+
+### Original Presets (v0.1.17)
+
+| Preset | Description |
+|--------|-------------|
+| `simple_editor` | Minimal editor with bold/italic/link/lists toolbar |
+| `article_editor` | Medium-style editor for blog posts and articles |
+| `document_editor_full` | Full document shell with header/footer/sidebar |
+| `academic_editor` | Academic editor with citation toolbar |
+| `email_composer` | Email-style editor with To/Subject/Signature |
+
+### v2 Presets (v0.1.17)
+
+| Preset | Description |
+|--------|-------------|
+| `notion_editor` | Notion-style: slash commands, drag, block toolbars |
+| `google_docs_editor` | GDocs: menu bar, A4 pages, track changes |
+| `medium_editor_v2` | Medium: floating toolbar, clean reading, images |
+| `code_notes_editor` | Dev notes: syntax highlighting, code sandbox, markdown |
+| `collaborative_editor` | Full collab: presence, cursors, comments sidebar |
+
+### Usage
+
+```heex
+<.notion_editor
+  id="my-editor"
+  name="document[body]"
+  value={@document.body}
+  placeholder="Type / for commands..."
+/>
+```
+
+---
+
+## JS Hooks
+
+The editor system ships with 10+ JS hooks in v0.1.17:
+
+| Hook | File | Description |
+|------|------|-------------|
+| `PhiaRichEditor` | `phia_rich_editor.js` | Core editor engine (v2, ~1,200 LOC) |
+| `PhiaEditorV2` | `phia_editor_v2.js` | Editor v2 lifecycle management |
+| `PhiaEditorBundle` | `phia_editor_bundle.js` | Bundled editor with all extensions |
+| `PhiaCodeHighlight` | `code_highlight.js` | Syntax highlighting for code blocks |
+| `PhiaImageResize` | `image_resize.js` | Image resize handles |
+| `PhiaTableEditor` | `table_editor.js` | Interactive table editing |
+| `PhiaEquationRenderer` | `equation_renderer.js` | KaTeX equation rendering |
+| `PhiaDiagramRenderer` | `diagram_renderer.js` | Mermaid diagram rendering |
+| `PhiaDrawingCanvas` | `drawing_canvas.js` | Freehand drawing canvas |
+| `PhiaDragHandle` | `drag_handle.js` | Block drag-and-drop |
+| `PhiaEmojiPickerBlock` | `emoji_picker_block.js` | Emoji picker popup |
+| `PhiaFormatPainter` | `format_painter.js` | Format painter tool |
+| `PhiaTrackChanges` | `track_changes.js` | Track changes engine |
+| `PhiaRibbonToolbar` | `ribbon_toolbar.js` | Microsoft-style ribbon toolbar |
+| `PhiaCollab` | `phia_collab.js` | Collaborative editing bridge |

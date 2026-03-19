@@ -84,6 +84,19 @@ const PhiaEditorColorPicker = {
   },
 
   _applyColor(hex) {
+    // If editor bridge is configured, dispatch toolbar-command for undo/redo support
+    const editorId = this.el.dataset.editorId;
+    if (editorId) {
+      const editorEl = document.getElementById(editorId);
+      if (editorEl) {
+        const cmd = this._action === "hiliteColor" ? "toggleHighlight" : "setColor";
+        editorEl.dispatchEvent(new CustomEvent("toolbar-command", {
+          detail: { cmd, args: { color: hex } }
+        }));
+        return;
+      }
+    }
+    // Fallback: direct execCommand for standalone usage
     const action = this._action === "hiliteColor"
       ? (this._isFirefox() ? "backColor" : "hiliteColor")
       : "foreColor";

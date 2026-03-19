@@ -94,6 +94,48 @@ const PhiaEditorDropdown = {
   },
 
   _executeAction(action) {
+    // If editor bridge is configured, dispatch toolbar-command for undo/redo support
+    const editorId = this.el.dataset.toolbarEditorId;
+    if (editorId) {
+      const editorEl = document.getElementById(editorId);
+      if (editorEl) {
+        const option = this._panel?.querySelector(`[data-action="${action}"]`);
+        const value = option?.dataset.value;
+        let cmd, args;
+        switch (action) {
+          case "setHeading":
+            cmd = "setHeading";
+            args = { level: parseInt(value, 10) };
+            break;
+          case "setParagraph":
+            cmd = "setParagraph";
+            args = {};
+            break;
+          case "setFontFamily":
+            cmd = "setFontFamily";
+            args = { font: value };
+            break;
+          case "setLineSpacing":
+            cmd = "setLineSpacing";
+            args = { value };
+            break;
+          case "setZoom":
+            this.el.dispatchEvent(new CustomEvent("toolbar-action", {
+              detail: { action: "setZoom", value },
+              bubbles: true
+            }));
+            return;
+          default:
+            cmd = action;
+            args = value ? { value } : {};
+        }
+        editorEl.dispatchEvent(new CustomEvent("toolbar-command", {
+          detail: { cmd, args }
+        }));
+        return;
+      }
+    }
+    // Fallback: direct execCommand for standalone usage
     const actionMap = {
       h1: () => document.execCommand("formatBlock", false, "<h1>"),
       h2: () => document.execCommand("formatBlock", false, "<h2>"),

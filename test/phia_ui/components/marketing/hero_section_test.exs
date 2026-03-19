@@ -37,8 +37,8 @@ defmodule PhiaUi.Components.Marketing.HeroSectionTest do
     end
 
     test "renders description when provided" do
-      html = render_hero(%{description: "650 components ready."})
-      assert html =~ "650 components ready."
+      html = render_hero(%{description: "829 components ready."})
+      assert html =~ "829 components ready."
       assert html =~ "text-muted-foreground"
     end
 

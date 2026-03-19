@@ -173,7 +173,7 @@ defmodule PhiaUiDesign.Mcp.ToolRegistry do
     %{
       "name" => "get_phia_catalog",
       "description" =>
-        "Return all 650+ PhiaUI components grouped by tier " <>
+        "Return all 829 PhiaUI components grouped by tier " <>
           "(primitive, interactive, form, navigation, shell, widget, layout, surface, animation).",
       "inputSchema" => %{
         "type" => "object",

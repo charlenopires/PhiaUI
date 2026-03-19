@@ -2,6 +2,53 @@
 
 All notable changes to PhiaUI are documented here.
 
+## 0.1.17 — 2026-03-19
+
+### Added — 179 new components (650 → 829)
+
+#### Rich Editor v2 Suite — 34 components
+
+Content Blocks (14): toggle_list, toggle_list_item, tab_block, tab_block_item, video_block, audio_block, bookmark_card, math_block, social_embed, pdf_viewer, map_embed, file_attachment, divider_block, table_of_contents_block.
+Block Controls (4): block_add_button, block_conversion_menu, block_toolbar, block_drag_indicator.
+Advanced Blocks (5): synced_block, columns_block, code_sandbox, a4_page, page_header_footer.
+Text Direction (2): text_direction_toggle, bidi_text_block.
+Language Tools (4): grammar_panel, grammar_suggestion, spell_check_toggle, dictionary_panel.
+New Presets (5): notion_editor, google_docs_editor, medium_editor_v2, code_notes_editor, collaborative_editor.
+PhiaEditor v2 engine (~1,200 LOC JS). 10 new JS hooks: PhiaRichEditor, PhiaEditorV2, PhiaEditorBundle, PhiaCodeHighlight, PhiaImageResize, PhiaTableEditor, PhiaEquationRenderer, PhiaDiagramRenderer, PhiaDrawingCanvas, PhiaDragHandle, PhiaEmojiPickerBlock, PhiaFormatPainter, PhiaTrackChanges, PhiaRibbonToolbar.
+
+#### Collab Suite — 35 components
+
+Presence (4), Cursors (4), Comments (6), Threads (5), Composer (3), Notifications (6), Version History (6), Collab Editor (1). Infrastructure: CollabRoom, CollabPresence, RoomManager, Supervisor. 4 new JS hooks: PhiaCollab, PhiaCollabCursors, PhiaCollabPresence, PhiaCollabComments.
+
+#### Advanced Chart Suite — 19 chart types
+
+Candlestick, box_plot, violin, sunburst, sankey, pareto, lollipop, dumbbell, waffle, stream, ridgeline, icicle, circle_packing, chord, dot_plot, arc_diagram, pictogram, parliament, word_cloud. New helper modules: ChartForceLayout, ChartHierarchy, ChartSankey.
+
+#### Activity & Presence — 6 components
+
+Activity timeline, connection status, presence avatars, editor highlight picker, document outline, word count bar.
+
+#### Formatting & Extensions — 91 components across internal waves
+
+Rich editor shell (6), editor blocks (9), media blocks (8), formatting controls (16), formatting toolbar (1), extensions (10), academic (8), writing tools (6), search nav (4), track changes (5), export (4), AI assistant (4), document shell (4), editor content (6).
+
+### Changed
+
+- Editor component count: 19 → ~170 (12 new editor modules)
+- JS hooks count: 81 → 95+
+- Test count: 8045+ → 9510+
+
+### Infrastructure
+
+- PhiaEditor v2 JS engine: ~1,200 LOC vanilla JS, contenteditable-based
+- OT engine for collaborative editing (`PhiaUi.Editor.OtEngine`)
+- Collab server GenServer (`PhiaUi.Editor.CollabServer`)
+- AI bridge module (`PhiaUi.Editor.AiBridge`)
+- Citation helpers (`PhiaUi.Editor.CitationHelpers`)
+- Export helpers (`PhiaUi.Editor.ExportHelpers`)
+
+---
+
 ## 0.1.7 — 2026-03-07
 
 ### Added — 189 new components across 9 waves (154 → 343 total)

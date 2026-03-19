@@ -14,7 +14,7 @@ defmodule PhiaUi.Components.Marketing.HeroSection do
 
   ## Examples
 
-      <.hero_section title="Build faster with PhiaUI" description="650 components ready to use.">
+      <.hero_section title="Build faster with PhiaUI" description="829 components ready to use.">
         <:actions>
           <.button size={:lg}>Get Started</.button>
           <.button variant={:outline} size={:lg}>Learn More</.button>

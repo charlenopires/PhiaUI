@@ -751,6 +751,172 @@
   .phia-typing-dot  { animation: none; }
 }
 
+/* ── Editor v2 Suite ─────────────────────────────────────────────────────── */
+
+/* A4 Page Styles */
+.phia-a4-page {
+  width: 210mm;
+  max-width: 100%;
+  min-height: 297mm;
+  background: var(--color-background);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
+  padding: 25.4mm;
+  margin: 0 auto 2rem;
+  position: relative;
+}
+
+@media print {
+  .phia-a4-page {
+    box-shadow: none;
+    margin: 0;
+    padding: 25.4mm;
+    page-break-after: always;
+    break-after: page;
+  }
+  .phia-a4-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}
+
+/* Syntax Highlighting Theme */
+.phia-hl-keyword    { color: oklch(0.55 0.18 280); } /* purple */
+.phia-hl-string     { color: oklch(0.55 0.15 145); } /* green */
+.phia-hl-comment    { color: oklch(0.6 0 0); font-style: italic; } /* gray */
+.phia-hl-number     { color: oklch(0.6 0.16 45); }  /* orange */
+.phia-hl-function   { color: oklch(0.5 0.18 250); } /* blue */
+.phia-hl-builtin    { color: oklch(0.55 0.14 200); } /* teal */
+.phia-hl-operator   { color: oklch(0.5 0.12 350); } /* pink */
+.phia-hl-punctuation { color: oklch(0.55 0 0); }     /* gray */
+.phia-hl-tag        { color: oklch(0.55 0.18 20); }  /* red */
+.phia-hl-attribute  { color: oklch(0.55 0.16 70); }  /* amber */
+.phia-hl-selector   { color: oklch(0.55 0.18 280); }
+.phia-hl-property   { color: oklch(0.5 0.18 250); }
+.phia-hl-decorator  { color: oklch(0.55 0.16 70); }
+.phia-hl-atom       { color: oklch(0.55 0.18 250); }
+.phia-hl-module     { color: oklch(0.55 0.14 200); font-weight: 600; }
+
+.dark .phia-hl-keyword    { color: oklch(0.75 0.18 280); }
+.dark .phia-hl-string     { color: oklch(0.75 0.15 145); }
+.dark .phia-hl-comment    { color: oklch(0.55 0 0); }
+.dark .phia-hl-number     { color: oklch(0.75 0.16 45); }
+.dark .phia-hl-function   { color: oklch(0.75 0.18 250); }
+.dark .phia-hl-builtin    { color: oklch(0.7 0.14 200); }
+.dark .phia-hl-operator   { color: oklch(0.7 0.12 350); }
+.dark .phia-hl-punctuation { color: oklch(0.6 0 0); }
+.dark .phia-hl-tag        { color: oklch(0.75 0.18 20); }
+.dark .phia-hl-attribute  { color: oklch(0.75 0.16 70); }
+.dark .phia-hl-selector   { color: oklch(0.75 0.18 280); }
+.dark .phia-hl-property   { color: oklch(0.75 0.18 250); }
+.dark .phia-hl-decorator  { color: oklch(0.75 0.16 70); }
+.dark .phia-hl-atom       { color: oklch(0.75 0.18 250); }
+.dark .phia-hl-module     { color: oklch(0.7 0.14 200); }
+
+/* Track Changes Decorations */
+.phia-tc-ins {
+  background: oklch(0.95 0.05 145);
+  border-bottom: 2px solid oklch(0.55 0.15 145);
+  text-decoration: none;
+}
+.phia-tc-del {
+  background: oklch(0.95 0.05 25);
+  text-decoration: line-through;
+  color: oklch(0.55 0.15 25);
+  opacity: 0.7;
+}
+.dark .phia-tc-ins {
+  background: oklch(0.25 0.05 145);
+  border-bottom-color: oklch(0.65 0.15 145);
+}
+.dark .phia-tc-del {
+  background: oklch(0.25 0.05 25);
+  color: oklch(0.7 0.15 25);
+}
+
+/* Equation Display */
+.phia-eq-display {
+  font-family: var(--font-mono);
+  font-style: italic;
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+.phia-eq-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 0.15em;
+}
+.phia-eq-frac-num { font-size: 0.85em; }
+.phia-eq-frac-bar { width: 100%; height: 1px; background: currentColor; margin: 1px 0; }
+.phia-eq-frac-den { font-size: 0.85em; }
+.phia-eq-sqrt { display: inline-flex; align-items: stretch; }
+.phia-eq-sqrt-sign { font-size: 1.2em; margin-right: 1px; }
+.phia-eq-sqrt-content {
+  border-top: 1px solid currentColor;
+  padding: 0 2px;
+}
+.phia-eq-sup { font-size: 0.7em; vertical-align: super; }
+.phia-eq-sub { font-size: 0.7em; vertical-align: sub; }
+.phia-eq-symbol { font-style: normal; }
+
+/* Grammar Underlines */
+.phia-grammar-error   { text-decoration: wavy underline oklch(0.55 0.2 25) 1px; text-underline-offset: 3px; }
+.phia-grammar-warning { text-decoration: wavy underline oklch(0.6 0.16 80) 1px; text-underline-offset: 3px; }
+.phia-grammar-info    { text-decoration: wavy underline oklch(0.55 0.18 250) 1px; text-underline-offset: 3px; }
+
+/* RTL Spacing */
+[dir="rtl"] .phia-editor-toolbar { direction: rtl; }
+[dir="rtl"] .phia-editor-content { text-align: right; }
+
+/* Block Selection */
+.phia-block-selected {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Cell Selection */
+.phia-cell-selected {
+  background: oklch(0.93 0.06 250) !important;
+}
+.dark .phia-cell-selected {
+  background: oklch(0.25 0.06 250) !important;
+}
+
+/* Editor v2 Keyframes */
+@keyframes phia-block-appear {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes phia-tab-switch {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes phia-resize-pulse {
+  0%, 100% { outline-color: var(--color-primary); }
+  50%      { outline-color: transparent; }
+}
+
+/* Print Stylesheet Additions */
+@media print {
+  .phia-no-print { display: none !important; }
+  .phia-print-only { display: block !important; }
+  .phia-tc-ins { border-bottom: none; background: none; }
+  .phia-tc-del { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .phia-a4-page,
+  .phia-block-selected,
+  .phia-cell-selected {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* ── Base Layer ───────────────────────────────────────────────────────────── */
 @layer base {
   * {

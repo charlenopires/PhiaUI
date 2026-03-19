@@ -1,6 +1,6 @@
 defmodule PhiaUi.ComponentRegistry do
   @moduledoc """
-  Source of truth for all 685 PhiaUI components.
+  Source of truth for all 829 PhiaUI components.
 
   Each entry is keyed by an atom and contains:
 
@@ -7116,14 +7116,203 @@ defmodule PhiaUi.ComponentRegistry do
       tier: :collab,
       shadcn_equivalent: nil,
       status: :implemented
-    }
+    },
+
+    # ── Rich Editor Wave 1: Formatting (20 components) ─────────────────────────
+
+    font_family_selector: %{name: "font_family_selector", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    font_size_selector: %{name: "font_size_selector", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    text_color_picker: %{name: "text_color_picker", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    bg_color_picker: %{name: "bg_color_picker", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    text_case_toggle: %{name: "text_case_toggle", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    clear_formatting_button: %{name: "clear_formatting_button", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    format_painter: %{name: "format_painter", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: ["PhiaFormatPainter"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    text_align_group: %{name: "text_align_group", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    indent_controls: %{name: "indent_controls", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    line_height_selector: %{name: "line_height_selector", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    letter_spacing_selector: %{name: "letter_spacing_selector", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    paragraph_spacing: %{name: "paragraph_spacing", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    subscript_button: %{name: "subscript_button", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    superscript_button: %{name: "superscript_button", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    small_caps_button: %{name: "small_caps_button", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    drop_cap_toggle: %{name: "drop_cap_toggle", module: PhiaUi.Components.Editor.Formatting, template_file: "priv/templates/components/editor/formatting.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    formatting_toolbar: %{name: "formatting_toolbar", module: PhiaUi.Components.Editor.FormattingToolbar, template_file: "priv/templates/components/editor/formatting_toolbar.ex", js_hooks: [], dependencies: [:font_family_selector, :font_size_selector, :text_align_group], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    formatting_toolbar_compact: %{name: "formatting_toolbar_compact", module: PhiaUi.Components.Editor.FormattingToolbar, template_file: "priv/templates/components/editor/formatting_toolbar.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    formatting_toolbar_ribbon: %{name: "formatting_toolbar_ribbon", module: PhiaUi.Components.Editor.FormattingToolbar, template_file: "priv/templates/components/editor/formatting_toolbar.ex", js_hooks: ["PhiaRibbonToolbar"], dependencies: [:font_family_selector, :font_size_selector], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    formatting_toolbar_floating: %{name: "formatting_toolbar_floating", module: PhiaUi.Components.Editor.FormattingToolbar, template_file: "priv/templates/components/editor/formatting_toolbar.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 2: Blocks & Media (18 components) ─────────────────────
+
+    task_list: %{name: "task_list", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    callout_block: %{name: "callout_block", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    collapsible_section: %{name: "collapsible_section", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    columns_layout: %{name: "columns_layout", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    page_break: %{name: "page_break", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    section_break: %{name: "section_break", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    details_block: %{name: "details_block", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    block_quote_styled: %{name: "block_quote_styled", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    horizontal_rule_styled: %{name: "horizontal_rule_styled", module: PhiaUi.Components.Editor.Blocks, template_file: "priv/templates/components/editor/blocks.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    image_block: %{name: "image_block", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: ["PhiaImageResize"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    table_inserter: %{name: "table_inserter", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    table_operations: %{name: "table_operations", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    editor_table_of_contents: %{name: "editor_table_of_contents", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    equation_editor: %{name: "equation_editor", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: ["PhiaEquation"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    embed_block: %{name: "embed_block", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    file_attachment_block: %{name: "file_attachment_block", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    diagram_block: %{name: "diagram_block", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: ["PhiaDiagram"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    drawing_canvas: %{name: "drawing_canvas", module: PhiaUi.Components.Editor.MediaBlocks, template_file: "priv/templates/components/editor/media_blocks.ex", js_hooks: ["PhiaDrawingCanvas"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 3: Track Changes (7 components) ───────────────────────
+
+    track_change_mark: %{name: "track_change_mark", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    track_change_panel: %{name: "track_change_panel", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    track_change_toggle: %{name: "track_change_toggle", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    accept_reject_controls: %{name: "accept_reject_controls", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    change_diff_inline: %{name: "change_diff_inline", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    share_permissions_dialog: %{name: "share_permissions_dialog", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    auto_save_indicator: %{name: "auto_save_indicator", module: PhiaUi.Components.Editor.TrackChanges, template_file: "priv/templates/components/editor/track_changes.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 4: References & Academic (14 components) ──────────────
+
+    footnote: %{name: "footnote", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    endnote: %{name: "endnote", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    bookmark_anchor: %{name: "bookmark_anchor", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    cross_reference: %{name: "cross_reference", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    citation_mark: %{name: "citation_mark", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    bibliography: %{name: "bibliography", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    citation_dialog: %{name: "citation_dialog", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    abbreviation_mark: %{name: "abbreviation_mark", module: PhiaUi.Components.Editor.References, template_file: "priv/templates/components/editor/references.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    citation_style_selector: %{name: "citation_style_selector", module: PhiaUi.Components.Editor.Academic, template_file: "priv/templates/components/editor/academic.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    structure_validator: %{name: "structure_validator", module: PhiaUi.Components.Editor.Academic, template_file: "priv/templates/components/editor/academic.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    abbreviation_manager: %{name: "abbreviation_manager", module: PhiaUi.Components.Editor.Academic, template_file: "priv/templates/components/editor/academic.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    reading_level_indicator: %{name: "reading_level_indicator", module: PhiaUi.Components.Editor.Academic, template_file: "priv/templates/components/editor/academic.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    page_numbering: %{name: "page_numbering", module: PhiaUi.Components.Editor.Academic, template_file: "priv/templates/components/editor/academic.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    margin_note: %{name: "margin_note", module: PhiaUi.Components.Editor.Academic, template_file: "priv/templates/components/editor/academic.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 5: Search & Writing (14 components) ───────────────────
+
+    regex_search_bar: %{name: "regex_search_bar", module: PhiaUi.Components.Editor.SearchNav, template_file: "priv/templates/components/editor/search_nav.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    document_outline: %{name: "document_outline", module: PhiaUi.Components.Editor.SearchNav, template_file: "priv/templates/components/editor/search_nav.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    navigation_pane: %{name: "navigation_pane", module: PhiaUi.Components.Editor.SearchNav, template_file: "priv/templates/components/editor/search_nav.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    keyboard_shortcuts_panel: %{name: "keyboard_shortcuts_panel", module: PhiaUi.Components.Editor.SearchNav, template_file: "priv/templates/components/editor/search_nav.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    go_to_line: %{name: "go_to_line", module: PhiaUi.Components.Editor.SearchNav, template_file: "priv/templates/components/editor/search_nav.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    minimap: %{name: "minimap", module: PhiaUi.Components.Editor.SearchNav, template_file: "priv/templates/components/editor/search_nav.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    readability_score: %{name: "readability_score", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    writing_goals: %{name: "writing_goals", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    focus_mode: %{name: "focus_mode", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    voice_typing_indicator: %{name: "voice_typing_indicator", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    text_to_speech: %{name: "text_to_speech", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    writing_statistics: %{name: "writing_statistics", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    document_metrics: %{name: "document_metrics", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    grammar_highlight: %{name: "grammar_highlight", module: PhiaUi.Components.Editor.WritingTools, template_file: "priv/templates/components/editor/writing_tools.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 6: AI (10 components) ─────────────────────────────────
+
+    ai_sidebar: %{name: "ai_sidebar", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    ai_inline_suggestion: %{name: "ai_inline_suggestion", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    ai_summary_card: %{name: "ai_summary_card", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    ai_rewrite_dialog: %{name: "ai_rewrite_dialog", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    ai_translate_dialog: %{name: "ai_translate_dialog", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    ai_command_bar: %{name: "ai_command_bar", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    ai_autocomplete: %{name: "ai_autocomplete", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    ai_tone_adjuster: %{name: "ai_tone_adjuster", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    ai_grammar_check: %{name: "ai_grammar_check", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    ai_content_score: %{name: "ai_content_score", module: PhiaUi.Components.Editor.AiAssistant, template_file: "priv/templates/components/editor/ai_assistant.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 7: Document Shell & Export (12 components) ─────────────
+
+    document_editor: %{name: "document_editor", module: PhiaUi.Components.Editor.DocumentShell, template_file: "priv/templates/components/editor/document_shell.ex", js_hooks: [], dependencies: [], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    document_header: %{name: "document_header", module: PhiaUi.Components.Editor.DocumentShell, template_file: "priv/templates/components/editor/document_shell.ex", js_hooks: [], dependencies: [], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    document_title: %{name: "document_title", module: PhiaUi.Components.Editor.DocumentShell, template_file: "priv/templates/components/editor/document_shell.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    document_sidebar: %{name: "document_sidebar", module: PhiaUi.Components.Editor.DocumentShell, template_file: "priv/templates/components/editor/document_shell.ex", js_hooks: [], dependencies: [], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    document_footer: %{name: "document_footer", module: PhiaUi.Components.Editor.DocumentShell, template_file: "priv/templates/components/editor/document_shell.ex", js_hooks: [], dependencies: [], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    document_breadcrumb: %{name: "document_breadcrumb", module: PhiaUi.Components.Editor.DocumentShell, template_file: "priv/templates/components/editor/document_shell.ex", js_hooks: [], dependencies: [], tier: :navigation, shadcn_equivalent: nil, status: :implemented},
+    export_dialog: %{name: "export_dialog", module: PhiaUi.Components.Editor.Export, template_file: "priv/templates/components/editor/export.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    print_preview: %{name: "print_preview", module: PhiaUi.Components.Editor.Export, template_file: "priv/templates/components/editor/export.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    download_button: %{name: "download_button", module: PhiaUi.Components.Editor.Export, template_file: "priv/templates/components/editor/export.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    import_dialog: %{name: "import_dialog", module: PhiaUi.Components.Editor.Export, template_file: "priv/templates/components/editor/export.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    template_gallery: %{name: "template_gallery", module: PhiaUi.Components.Editor.Export, template_file: "priv/templates/components/editor/export.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    page_setup_dialog: %{name: "page_setup_dialog", module: PhiaUi.Components.Editor.Export, template_file: "priv/templates/components/editor/export.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 8: Extensions (10 components) ─────────────────────────
+
+    extension_toolbar_slot: %{name: "extension_toolbar_slot", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    extension_sidebar_panel: %{name: "extension_sidebar_panel", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    emoji_picker_block: %{name: "emoji_picker_block", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: ["PhiaEmojiPickerBlock"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    special_character_picker: %{name: "special_character_picker", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    editor_drag_handle: %{name: "editor_drag_handle", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    block_type_menu: %{name: "block_type_menu", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    placeholder_extension: %{name: "placeholder_extension", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    typography_extension: %{name: "typography_extension", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    unique_id_extension: %{name: "unique_id_extension", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    custom_node_renderer: %{name: "custom_node_renderer", module: PhiaUi.Components.Editor.Extensions, template_file: "priv/templates/components/editor/extensions.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor Wave 9: Presets (5 components) ─────────────────────────────
+
+    simple_editor: %{name: "simple_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor"], dependencies: [:rich_editor], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    article_editor: %{name: "article_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor"], dependencies: [:rich_editor], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    document_editor_full: %{name: "document_editor_full", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor"], dependencies: [:rich_editor, :document_editor], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    academic_editor: %{name: "academic_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor"], dependencies: [:rich_editor], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    email_composer: %{name: "email_composer", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor"], dependencies: [:rich_editor], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor v2 Wave 10: Content Blocks (14 components) ─────────────────
+
+    toggle_list: %{name: "toggle_list", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    toggle_list_item: %{name: "toggle_list_item", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    tab_block: %{name: "tab_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    tab_block_panel: %{name: "tab_block_panel", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    video_block: %{name: "video_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    audio_block: %{name: "audio_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    bookmark_card: %{name: "bookmark_card", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    button_block: %{name: "button_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    progress_bar_block: %{name: "progress_bar_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    divider_with_label: %{name: "divider_with_label", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+    math_block: %{name: "math_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: ["PhiaEquation"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    social_embed_block: %{name: "social_embed_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    pdf_viewer_block: %{name: "pdf_viewer_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    map_embed_block: %{name: "map_embed_block", module: PhiaUi.Components.Editor.ContentBlocks, template_file: "priv/templates/components/editor/content_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor v2 Wave 11: Block Controls (4 components) ──────────────────
+
+    block_add_button: %{name: "block_add_button", module: PhiaUi.Components.Editor.BlockControls, template_file: "priv/templates/components/editor/block_controls.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    block_conversion_menu: %{name: "block_conversion_menu", module: PhiaUi.Components.Editor.BlockControls, template_file: "priv/templates/components/editor/block_controls.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    block_toolbar: %{name: "block_toolbar", module: PhiaUi.Components.Editor.BlockControls, template_file: "priv/templates/components/editor/block_controls.ex", js_hooks: [], dependencies: [:editor_drag_handle], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    block_drag_indicator: %{name: "block_drag_indicator", module: PhiaUi.Components.Editor.BlockControls, template_file: "priv/templates/components/editor/block_controls.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor v2 Wave 12: Advanced Blocks (5 components) ─────────────────
+
+    synced_block: %{name: "synced_block", module: PhiaUi.Components.Editor.AdvancedBlocks, template_file: "priv/templates/components/editor/advanced_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    columns_block: %{name: "columns_block", module: PhiaUi.Components.Editor.AdvancedBlocks, template_file: "priv/templates/components/editor/advanced_blocks.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    code_sandbox_block: %{name: "code_sandbox_block", module: PhiaUi.Components.Editor.AdvancedBlocks, template_file: "priv/templates/components/editor/advanced_blocks.ex", js_hooks: ["PhiaCodeHighlight"], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    a4_page: %{name: "a4_page", module: PhiaUi.Components.Editor.AdvancedBlocks, template_file: "priv/templates/components/editor/advanced_blocks.ex", js_hooks: [], dependencies: [], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    page_header_footer: %{name: "page_header_footer", module: PhiaUi.Components.Editor.AdvancedBlocks, template_file: "priv/templates/components/editor/advanced_blocks.ex", js_hooks: [], dependencies: [], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor v2 Wave 13: Text Direction (2 components) ──────────────────
+
+    text_direction_toggle: %{name: "text_direction_toggle", module: PhiaUi.Components.Editor.TextDirection, template_file: "priv/templates/components/editor/text_direction.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    bidi_text_block: %{name: "bidi_text_block", module: PhiaUi.Components.Editor.TextDirection, template_file: "priv/templates/components/editor/text_direction.ex", js_hooks: [], dependencies: [], tier: :primitive, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor v2 Wave 14: Language Tools (4 components) ──────────────────
+
+    grammar_panel: %{name: "grammar_panel", module: PhiaUi.Components.Editor.LanguageTools, template_file: "priv/templates/components/editor/language_tools.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+    grammar_suggestion: %{name: "grammar_suggestion", module: PhiaUi.Components.Editor.LanguageTools, template_file: "priv/templates/components/editor/language_tools.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    spell_check_toggle: %{name: "spell_check_toggle", module: PhiaUi.Components.Editor.LanguageTools, template_file: "priv/templates/components/editor/language_tools.ex", js_hooks: [], dependencies: [], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    dictionary_panel: %{name: "dictionary_panel", module: PhiaUi.Components.Editor.LanguageTools, template_file: "priv/templates/components/editor/language_tools.ex", js_hooks: [], dependencies: [], tier: :widget, shadcn_equivalent: nil, status: :implemented},
+
+    # ── Rich Editor v2 Wave 15: New Presets (5 components) ─────────────────────
+
+    notion_editor: %{name: "notion_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor", "PhiaDragHandle"], dependencies: [:rich_editor], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    google_docs_editor: %{name: "google_docs_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor", "PhiaTrackChanges"], dependencies: [:rich_editor, :a4_page], tier: :shell, shadcn_equivalent: nil, status: :implemented},
+    medium_editor_v2: %{name: "medium_editor_v2", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor", "PhiaImageResize"], dependencies: [:rich_editor], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    code_notes_editor: %{name: "code_notes_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor", "PhiaCodeHighlight"], dependencies: [:rich_editor], tier: :interactive, shadcn_equivalent: nil, status: :implemented},
+    collaborative_editor: %{name: "collaborative_editor", module: PhiaUi.Components.Editor.Presets, template_file: "priv/templates/components/editor/presets.ex", js_hooks: ["PhiaRichEditor"], dependencies: [:rich_editor], tier: :shell, shadcn_equivalent: nil, status: :implemented}
   }
 
   # ---------------------------------------------------------------------------
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc "Returns the full registry map — all 685 component metadata entries."
+  @doc "Returns the full registry map — all 829 component metadata entries."
   @spec all() :: %{atom() => component_meta()}
   def all, do: @registry
 

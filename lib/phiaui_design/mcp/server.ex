@@ -34,7 +34,7 @@ defmodule PhiaUiDesign.Mcp.Server do
 
   @protocol_version "2024-11-05"
   @server_name "phiaui-design"
-  @server_version "0.1.16"
+  @server_version "0.1.17"
 
   @doc """
   Run the MCP server. Blocks indefinitely reading from stdin.

@@ -4,7 +4,7 @@
 
 # PhiaUI
 
-**650 production-ready Phoenix LiveView components — the most complete UI library in the Elixir ecosystem.**
+**829 production-ready Phoenix LiveView components — the most complete UI library in the Elixir ecosystem.**
 
 PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadcn/ui. Components are ejected directly into your project — you own the code, customise every detail, and never fight a black-box abstraction. Built on TailwindCSS v4 semantic tokens, every component ships with full WAI-ARIA accessibility, zero heavy npm runtime dependencies, and first-class dark mode out of the box.
 
@@ -12,7 +12,7 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 [![Elixir](https://img.shields.io/badge/elixir-%3E%3D1.17-purple)](https://elixir-lang.org)
 [![Phoenix LiveView](https://img.shields.io/badge/phoenix_live_view-%3E%3D1.0-orange)](https://hex.pm/packages/phoenix_live_view)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-8045%2B%20passing-brightgreen)](https://github.com/charlenopires/phia_ui/tree/main/test)
+[![Tests](https://img.shields.io/badge/tests-9510%2B%20passing-brightgreen)](https://github.com/charlenopires/phia_ui/tree/main/test)
 
 ---
 
@@ -21,7 +21,7 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 | Feature | **PhiaUI** | [Salad UI](https://github.com/bluzky/salad_ui) | [Mishka Chelekom](https://mishka.tools/chelekom) | [Doggo](https://github.com/woylie/doggo) | [Primer Live](https://github.com/ArthurClemens/primer_live) | [shadcn/ui](https://ui.shadcn.com) |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Platform** | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView | Phoenix LiveView | React |
-| **Components** | **650** | ~40 | ~100 | ~40 | ~45 | ~50 |
+| **Components** | **829** | ~40 | ~100 | ~40 | ~45 | ~50 |
 | Copy-paste ownership | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
 | LiveView-native (`phx-*`, streams) | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
 | Zero npm runtime deps | ✅ | ✅ | ✅ | ✅ | Partial | ❌ |
@@ -46,7 +46,7 @@ PhiaUI is a copy-paste component library for Phoenix LiveView, inspired by shadc
 PhiaUI is built on a simple principle: **ship fast, iterate based on real usage.**
 
 - **Copy-paste ownership** means you own every line of code. No waiting for upstream PRs. No dependency lock-in. Fork a component, change it, ship it.
-- **650 components built in weeks, not months.** Speed comes from convention over configuration, consistent patterns, and relentless focus on what developers actually need.
+- **829 components built in weeks, not months.** Speed comes from convention over configuration, consistent patterns, and relentless focus on what developers actually need.
 - **Every component works today.** They render, they handle events, they integrate with Ecto forms, they respect dark mode and accessibility. Are they all perfect? No. Are they all useful? Yes.
 - **Community-driven improvement cycle.** Use a component, find a rough edge, submit a PR. The bar for contribution is low: if you make it better, it ships.
 
@@ -70,7 +70,7 @@ PhiaUI is built on a simple principle: **ship fast, iterate based on real usage.
 # mix.exs
 def deps do
   [
-    {:phia_ui, "~> 0.1.16"}
+    {:phia_ui, "~> 0.1.17"}
   ]
 end
 ```
@@ -128,7 +128,7 @@ end
 
 ## Component Catalog
 
-650 components across 18 categories. Click any category for full API docs and examples.
+829 components across 20+ categories. Click any category for full API docs and examples.
 
 | Category | Count | Key Components |
 |---|:---:|---|
@@ -137,9 +137,10 @@ end
 | [**Buttons**](docs/components/buttons.md) | ~20 | button, toggle, split_button, icon_button, social_button, gradient_button |
 | [**Calendar**](docs/components/calendar.md) | 33 | date/time pickers, booking_calendar, big_calendar, streak_calendar |
 | [**Cards**](docs/components/cards.md) | 22 | stat_card, article_card, profile_card, pricing_card, product_card |
-| [**Charts & Data**](docs/components/data.md) | ~80 | 19 chart types, data_grid, data_table, trees, kanban_board |
+| [**Charts & Data**](docs/components/data.md) | ~80 | 35+ chart types, data_grid, data_table, trees, kanban_board |
+| [**Collaboration**](docs/components/collaboration.md) | ~35 | presence, cursors, comments, threads, notifications, version_history |
 | [**Display**](docs/components/display.md) | 27 | icon, badge, avatar, timeline, utilities, avatar_group |
-| [**Editor**](docs/components/editor.md) | 19 | editor_toolbar, bubble_menu, markdown_editor, advanced_editor |
+| [**Editor**](docs/components/editor.md) | ~170 | rich_editor, 10 presets, blocks, media, formatting, track_changes |
 | [**Feedback**](docs/components/feedback.md) | 21 | alert, banner, snackbar, loading_overlay, skeleton, error_display |
 | [**Forms**](docs/components/forms.md) | 34 | form_section, form_fieldset, radio_card, cascader, signature_pad |
 | [**Inputs**](docs/components/inputs.md) | 61 | text, rich, OTP, upload, textarea variants, emoji_picker |
@@ -302,6 +303,63 @@ end
 
 ---
 
+## Rich Editor v2
+
+PhiaUI v0.1.17 includes a full rich text editor system with **~170 editor components** across 12 modules, **10 preset editors**, and the PhiaEditor v2 JS engine (~1,200 LOC). All editors are composable, server-rendered, and work with Phoenix LiveView out of the box.
+
+### 5 preset editors — drop-in and ready
+
+```heex
+<%!-- Notion-style: slash commands, drag handles, block toolbars --%>
+<.notion_editor id="notion" name="doc[body]" value={@body} />
+
+<%!-- Google Docs-style: menu bar, A4 pages, track changes --%>
+<.google_docs_editor id="gdocs" name="doc[body]" value={@body} />
+
+<%!-- Medium-style: floating toolbar, clean reading experience --%>
+<.medium_editor_v2 id="medium" name="post[body]" value={@body} />
+
+<%!-- Developer notes: syntax highlighting, code sandbox, markdown --%>
+<.code_notes_editor id="notes" name="note[body]" value={@body} />
+
+<%!-- Full collaboration: presence, cursors, comments sidebar --%>
+<.collaborative_editor id="collab" name="doc[body]" value={@body} room_id="doc-123" />
+```
+
+### Block types
+
+The editor supports 20+ block types including headings, paragraphs, task lists, callout blocks, collapsible sections, code blocks with syntax highlighting, tables, images with resize handles, equations (KaTeX), diagrams (Mermaid), drawings (canvas), embeds, and more.
+
+```heex
+<%!-- Build a custom editor with specific blocks --%>
+<.rich_editor id="my-editor" name="content[body]" value={@body}>
+  <:toolbar>
+    <.formatting_toolbar editor_id="my-editor" />
+  </:toolbar>
+</.rich_editor>
+```
+
+### Editor modules
+
+| Module | Components | Description |
+|--------|:---:|-------------|
+| `Editor` | 19 | Core toolbar, bubble/floating menus, slash commands |
+| `RichEditor` | 6 | Rich editor shell, toolbar, content area |
+| `Blocks` | 9 | Task list, callout, collapsible, columns, page break |
+| `MediaBlocks` | 8 | Image, table, equation, diagram, drawing, embed |
+| `ContentBlocks` | 14 | Toggle list, tabs, video/audio, bookmark, math, PDF |
+| `BlockControls` | 4 | Add button, conversion menu, toolbar, drag indicator |
+| `AdvancedBlocks` | 5 | Synced block, columns, code sandbox, A4 page |
+| `Formatting` | 16 | Bold, italic, underline, strikethrough, highlight, etc. |
+| `Extensions` | 10 | Track changes, search/nav, export, AI assistant |
+| `TextDirection` | 2 | RTL/LTR toggle, bidirectional text block |
+| `LanguageTools` | 4 | Grammar panel, spell check, dictionary |
+| `Presets` | 10 | 5 original + 5 v2 preset editors |
+
+> Full API docs: [`docs/components/editor.md`](docs/components/editor.md) | Tutorial: [`docs/guides/tutorial-editor.md`](docs/guides/tutorial-editor.md)
+
+---
+
 ## Usage Examples
 
 ### Data table with server-side sorting
@@ -448,7 +506,7 @@ PhiaUI provides components for virtually any Phoenix LiveView application. Here 
 
 ## PhiaUI Design — Visual Editor + Claude Code
 
-**New in v0.1.16.** PhiaUI Design is a visual component editor and MCP server that lets you design Phoenix LiveView pages visually or by describing them to Claude Code — then export production-ready HEEx/LiveView code.
+**New in v0.1.17.** PhiaUI Design is a visual component editor and MCP server that lets you design Phoenix LiveView pages visually or by describing them to Claude Code — then export production-ready HEEx/LiveView code.
 
 ### What's included
 
@@ -536,7 +594,7 @@ mix phia.design  # Opens on http://localhost:4200
 ```
 
 The visual editor provides:
-- **Component browser** — search and insert any of the 650 components
+- **Component browser** — search and insert any of the 829 components
 - **Live canvas** — real component rendering with PhiaUI's actual output
 - **Properties panel** — edit attrs and slots visually
 - **Code panel** — live HEEx preview of the current design
@@ -554,7 +612,7 @@ The visual editor provides:
 | `delete_phia_node` | Remove a node and its children |
 | `move_phia_node` | Move a node to a new parent at a given index |
 | `get_phia_component_info` | Get full component spec: attrs, slots, variants |
-| `get_phia_catalog` | Browse all 650 components grouped by tier |
+| `get_phia_catalog` | Browse all 829 components grouped by tier |
 | `get_phia_families` | List composable family groups (e.g., card + card_header) |
 | `insert_phia_page` | Apply a page template (dashboard, settings, auth, etc.) |
 | `set_phia_theme` | Switch theme (zinc, slate, rose, blue, green, violet, etc.) |
@@ -649,7 +707,7 @@ PhiaUI uses a CSS-first token system built on TailwindCSS v4 `@theme`. Every col
 
 ## JS Hooks
 
-PhiaUI ships 81 vanilla-JS hooks. All hooks are registered via `PhiaHooks` in `assets/js/phia_hooks/index.js` after running `mix phia.install`.
+PhiaUI ships 95+ vanilla-JS hooks. All hooks are registered via `PhiaHooks` in `assets/js/phia_hooks/index.js` after running `mix phia.install`.
 
 Hooks respect `prefers-reduced-motion`, clean up on `destroyed()`, and never require npm packages.
 
