@@ -243,7 +243,7 @@ defmodule PhiaUi.Components.DropdownMenu do
       data-dropdown-content
       class={cn([
         "absolute z-50 min-w-[8rem] hidden",
-        "overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+        "overflow-visible rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
         @class
       ])}
       {@rest}

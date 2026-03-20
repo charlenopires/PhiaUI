@@ -3,6 +3,7 @@
 // - Smart positioning via getBoundingClientRect() + auto-flip
 // - Click-outside detection with cleanup
 // - Full keyboard navigation: Escape, Arrow keys, Enter, Space
+// - Submenu support: hover open/close with delay, keyboard ArrowRight/Left
 //
 // Registration in app.js:
 //   import PhiaDropdownMenu from "./phia_hooks/dropdown_menu.js"
@@ -25,6 +26,9 @@ const PhiaDropdownMenu = {
     this._trigger.addEventListener("click", this._handleTriggerClick);
     document.addEventListener("click", this._handleClickOutside);
     document.addEventListener("keydown", this._handleKeydown);
+
+    // Initialize submenu handling
+    this._initSubs();
   },
 
   destroyed() {
@@ -35,6 +39,94 @@ const PhiaDropdownMenu = {
     }
     document.removeEventListener("click", this._handleClickOutside);
     document.removeEventListener("keydown", this._handleKeydown);
+
+    // Clear any pending submenu timers
+    if (this._subs) {
+      for (const sub of this._subs) {
+        if (sub.timer) clearTimeout(sub.timer);
+      }
+    }
+  },
+
+  // ---------------------------------------------------------------------------
+  // Submenu initialization
+  // ---------------------------------------------------------------------------
+
+  _initSubs() {
+    this._subs = [];
+    if (!this._content) return;
+
+    const subWrappers = this._content.querySelectorAll("[data-dropdown-sub]");
+    for (const wrapper of subWrappers) {
+      const trigger = wrapper.querySelector("[data-dropdown-sub-trigger]");
+      const content = wrapper.querySelector("[data-dropdown-sub-content]");
+      if (!trigger || !content) continue;
+
+      const sub = { wrapper, trigger, content, timer: null };
+      this._subs.push(sub);
+
+      // Hover handlers with 150ms close delay
+      wrapper.addEventListener("mouseenter", () => {
+        if (sub.timer) { clearTimeout(sub.timer); sub.timer = null; }
+        this._openSub(sub);
+      });
+
+      wrapper.addEventListener("mouseleave", () => {
+        sub.timer = setTimeout(() => this._closeSub(sub), 150);
+      });
+    }
+
+    // Click handler on items (excluding sub-triggers) to close menu after action
+    this._content.addEventListener("click", (e) => {
+      const item = e.target.closest("[data-dropdown-item]");
+      if (!item) return;
+      // Don't close when clicking a sub-trigger — it should open the submenu
+      if (item.hasAttribute("data-dropdown-sub-trigger")) return;
+      // Don't close disabled items
+      if (item.getAttribute("aria-disabled") === "true") return;
+      // Let the click propagate (phx-click), then close
+      requestAnimationFrame(() => this._close());
+    });
+  },
+
+  // ---------------------------------------------------------------------------
+  // Submenu open / close
+  // ---------------------------------------------------------------------------
+
+  _openSub(sub) {
+    // Close sibling subs first
+    for (const s of this._subs) {
+      if (s !== sub) this._closeSub(s);
+    }
+    sub.content.classList.remove("hidden");
+    sub.trigger.setAttribute("aria-expanded", "true");
+
+    // Flip position if right-edge overflow
+    const rect = sub.content.getBoundingClientRect();
+    if (rect.right > window.innerWidth - 8) {
+      // Open to the left instead
+      sub.content.style.left = "auto";
+      sub.content.style.right = "100%";
+    } else {
+      sub.content.style.left = "";
+      sub.content.style.right = "";
+    }
+  },
+
+  _closeSub(sub) {
+    sub.content.classList.add("hidden");
+    sub.trigger.setAttribute("aria-expanded", "false");
+    // Reset positioning
+    sub.content.style.left = "";
+    sub.content.style.right = "";
+    if (sub.timer) { clearTimeout(sub.timer); sub.timer = null; }
+  },
+
+  _closeAllSubs() {
+    if (!this._subs) return;
+    for (const sub of this._subs) {
+      this._closeSub(sub);
+    }
   },
 
   // ---------------------------------------------------------------------------
@@ -55,6 +147,7 @@ const PhiaDropdownMenu = {
   },
 
   _close() {
+    this._closeAllSubs();
     this._content.classList.add("hidden");
     this._trigger.setAttribute("aria-expanded", "false");
     // Return focus to trigger (AC: Escape retorna foco ao trigger).
@@ -111,43 +204,119 @@ const PhiaDropdownMenu = {
   _onKeydown(e) {
     if (!this._isOpen()) return;
 
+    // Find if we're currently inside a submenu
+    const activeSub = this._getActiveSub();
+
     switch (e.key) {
       case "Escape":
-        // Close and return focus to trigger (AC: Escape fecha e retorna foco).
         e.preventDefault();
-        this._close();
+        if (activeSub) {
+          // Close only the submenu, return focus to sub-trigger
+          this._closeSub(activeSub);
+          activeSub.trigger.focus();
+        } else {
+          this._close();
+        }
         break;
 
       case "ArrowDown":
-        // Move focus to next item, wrapping around (AC: Arrow keys navegam).
         e.preventDefault();
         this._focusNext(1);
         break;
 
       case "ArrowUp":
-        // Move focus to previous item, wrapping around (AC: Arrow keys navegam).
         e.preventDefault();
         this._focusNext(-1);
         break;
 
+      case "ArrowRight": {
+        // If focused element is a sub-trigger, open its submenu
+        const sub = this._findSubByTrigger(document.activeElement);
+        if (sub) {
+          e.preventDefault();
+          this._openSub(sub);
+          const subItems = this._getItemsIn(sub.content);
+          if (subItems.length > 0) subItems[0].focus();
+        }
+        break;
+      }
+
+      case "ArrowLeft":
+        // If inside a submenu, close it and return to sub-trigger
+        if (activeSub) {
+          e.preventDefault();
+          this._closeSub(activeSub);
+          activeSub.trigger.focus();
+        }
+        break;
+
       case "Enter":
-      case " ":
-        // Activate the focused item (AC: Enter/Space selecionam item focado).
+      case " ": {
         e.preventDefault();
         const active = document.activeElement;
-        if (active && active.getAttribute("aria-disabled") !== "true" && this._content.contains(active)) {
+        if (!active || !this._content.contains(active)) break;
+        // If it's a sub-trigger, open submenu instead of closing
+        const subForTrigger = this._findSubByTrigger(active);
+        if (subForTrigger) {
+          this._openSub(subForTrigger);
+          const subItems = this._getItemsIn(subForTrigger.content);
+          if (subItems.length > 0) subItems[0].focus();
+        } else if (active.getAttribute("aria-disabled") !== "true") {
           active.click();
           this._close();
         }
         break;
+      }
     }
   },
 
-  // Returns all focusable, non-disabled menu items.
-  _getItems() {
+  // ---------------------------------------------------------------------------
+  // Submenu helpers
+  // ---------------------------------------------------------------------------
+
+  _getActiveSub() {
+    if (!this._subs) return null;
+    const active = document.activeElement;
+    if (!active) return null;
+    for (const sub of this._subs) {
+      if (!sub.content.classList.contains("hidden") && sub.content.contains(active)) {
+        return sub;
+      }
+    }
+    return null;
+  },
+
+  _findSubByTrigger(el) {
+    if (!this._subs || !el) return null;
+    for (const sub of this._subs) {
+      if (sub.trigger === el) return sub;
+    }
+    return null;
+  },
+
+  // Returns items scoped to a specific container
+  _getItemsIn(container) {
     return Array.from(
-      this._content.querySelectorAll('[data-dropdown-item]:not([aria-disabled="true"])')
-    );
+      container.querySelectorAll('[data-dropdown-item]:not([aria-disabled="true"])')
+    ).filter((item) => {
+      // Exclude items inside hidden sub-content panels
+      const parent = item.closest("[data-dropdown-sub-content]");
+      if (parent && parent !== container && parent.classList.contains("hidden")) return false;
+      // Only include direct items of this container
+      const closestSubContent = item.closest("[data-dropdown-sub-content]");
+      if (container.hasAttribute("data-dropdown-content")) {
+        // Main content: exclude items inside any sub-content (unless that sub-content is visible and is the container)
+        return !closestSubContent || closestSubContent === container;
+      }
+      return closestSubContent === container;
+    });
+  },
+
+  // Returns all focusable, non-disabled menu items scoped to the active container.
+  _getItems() {
+    const activeSub = this._getActiveSub();
+    const container = activeSub ? activeSub.content : this._content;
+    return this._getItemsIn(container);
   },
 
   // Moves focus to the next/previous item with wrap-around.
